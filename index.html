@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Stock the Block — student-run food recovery, NYC</title>
+<meta name="description" content="Students move surplus cafeteria food from share tables to food banks. Every pound logged and public on Track the Box.">
+<meta property="og:title" content="Stock the Block — student-run food recovery, NYC">
+<meta property="og:description" content="Students move surplus cafeteria food from share tables to food banks. Every pound logged and public.">
+<meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://safthelegend.github.io/stock/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 260'><rect x='26' y='26' width='248' height='188' rx='28' fill='%23EAF2DE' stroke='%232E5A22' stroke-width='24'/><path d='M32 93 L268 93' stroke='%232E5A22' stroke-width='24'/><path d='M68 168 L100 130 L132 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M178 168 L210 130 L242 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M106 188 Q151 220 196 188' fill='none' stroke='%23E8871E' stroke-width='26' stroke-linecap='round'/></svg>">
+<script>
+try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F5F5F7; --surface:#FFFFFF; --tint:#EAF2DE; --text:#1D1D1F; --text-secondary:#86868B;
+    --rule:#DDDDDD; --brand:#2E5A22; --accent:#E8871E; --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22;
+    --on-brand:#FFFFFF; --brand-press:#234618;
+    --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
+    --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
+    --nav-bg:rgba(245,245,247,0.72);
+    --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
+    --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
+      --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
+      --on-brand:#14170F; --brand-press:#A5D186;
+      --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
+      --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
+      --nav-bg:rgba(20,23,15,0.72);
+      --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
+      --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
+    --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
+    --on-brand:#14170F; --brand-press:#A5D186;
+    --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
+    --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
+    --nav-bg:rgba(20,23,15,0.72);
+    --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
+    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+  }
+  @media (prefers-contrast: more) {
+    :root {
+      --rule:#55565A; --line:rgba(29,29,31,0.55); --line-soft:rgba(29,29,31,0.32);
+      --text-secondary:#4A4A4F; --tint:#FFFFFF;
+      --brand-line:rgba(46,90,34,0.75); --brand-line-soft:rgba(46,90,34,0.42); --brand-line-mid:rgba(46,90,34,0.85);
+      --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
+    }
+    :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
+  html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
+  a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
+  a:hover { color:var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  canvas:focus-visible { outline:2px solid var(--brand); outline-offset:4px; }
+  ::selection { background:var(--tint); color:var(--brand); }
+  .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
+  .body-p { font-size:19px; line-height:1.6; max-width:60ch; color:var(--text); text-wrap:pretty; }
+  .skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
+  .skip-link:focus { transform:translateY(0); color:var(--on-brand); }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes rowUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes riseIn { from{transform:translateY(110%)} to{transform:translateY(0)} }
+  @keyframes blinkL { 0%,95.5%,100%{transform:scaleY(1)} 97%{transform:scaleY(0.1)} 98.5%{transform:scaleY(1)} }
+  @keyframes blinkR { 0%,96%,100%{transform:scaleY(1)} 97.5%{transform:scaleY(0.1)} 99%{transform:scaleY(1)} }
+  @keyframes lidBreathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
+  @keyframes squashIn { from{transform:scale(0.94,1.06)} to{transform:scale(1,1)} }
+  nav.bar { position:fixed; top:0; left:0; right:0; z-index:50; height:48px; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); opacity:0; pointer-events:none; transition:opacity 200ms ease; }
+  nav.bar.on { opacity:1; pointer-events:auto; }
+  nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
+  nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
+  nav.bar .links a { color:var(--text); }
+  nav.bar .links a.cta { color:var(--brand); font-weight:600; }
+  #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
+  .hero-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(240px,0.95fr); gap:48px; align-items:center; padding-top:88px; padding-bottom:72px; }
+  .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
+  .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
+  .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
+  .marker { position:relative; height:18px; }
+  .marker .rule { position:absolute; left:0; right:0; top:9px; height:1px; background:var(--rule); transform-origin:left center; }
+  .marker p { position:relative; display:inline-block; margin:0; padding-right:14px; font-size:13px; line-height:18px; background:var(--bg); }
+  .marker p .ix { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; color:var(--text-secondary); }
+  .marker p .lb { font-family:'Archivo',sans-serif; font-weight:500; color:var(--text); }
+  .marker.on-pale p { background:var(--tint); }
+  .marker.on-pale .rule { background:var(--brand-line); }
+  h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
+  h2.hd { font-size:clamp(32px,4.5vw,44px); color:var(--brand); margin:0; }
+  .mask-l { display:block; overflow:hidden; }
+  .mask-l > span { display:block; }
+  .figure { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
+  .btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
+  .btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
+  .btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
+  .btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
+  .btn.line:hover { border-color:var(--brand); color:var(--brand); }
+  .statband { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); }
+  .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+  .statband .cell { padding:32px 24px 24px 0; }
+  .statband .cell + .cell { padding-left:24px; }
+  .statband .cell:not(:last-child) { border-right:1px solid var(--line-soft); }
+  .statband .fig { font-size:clamp(30px,3vw,40px); letter-spacing:-0.03em; margin:0; color:var(--text); }
+  .statband .cap { font-size:14px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
+  .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; border-top:1px solid var(--line-soft); }
+  .prow { border-bottom:1px solid var(--line); }
+  .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
+  .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
+  .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
+  .prow .ttl { grid-area:ttl; font-size:19px; font-weight:600; color:var(--text); }
+  .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
+  .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
+  .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
+  .prow.open .pdetail { grid-template-rows:1fr; }
+  .prow .pdetail > div { overflow:hidden; }
+  .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
+  .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
+  .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
+  .divider .mascot-slot { width:140px; transform-origin:center bottom; }
+  .chip { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.05em; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
+  .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
+  .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
+  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
+  .mhead .left { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .mhead .right { display:flex; align-items:center; gap:16px; }
+  .mhead .verify { font-weight:500; color:var(--brand); text-decoration:underline; text-underline-offset:3px; }
+  #mascotMood { width:64px; display:block; transition:transform 200ms ease; }
+  #mascotMood.glance { transform:translate(0,3px); }
+  .thead { position:sticky; top:48px; z-index:10; background:var(--surface); display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:0 20px; border-bottom:1px solid var(--brand-line-soft); transition:box-shadow 200ms ease; }
+  .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
+  .thead .lab { cursor:default; }
+  .thead button:hover { color:var(--brand); }
+  .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
+  .mrow { display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:14px 20px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:14px; color:var(--text); transition:background-color 120ms ease; }
+  .mrow:hover { background:var(--tint); }
+  .mrow .lbs { font-variant-numeric:tabular-nums; transition:font-weight 120ms ease; }
+  .mrow:hover .lbs { font-weight:500; }
+  .mrow .st { font-weight:500; }
+  .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:56px 24px 60px; }
+  .empty-state .mascot-slot { width:96px; }
+  .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .cold-panel .row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:baseline; width:100%; padding:7px 8px; border:none; border-bottom:1px solid var(--line-soft); background:transparent; cursor:pointer; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); text-align:left; transition:background-color 160ms ease; }
+  .cold-panel .row:hover { background:var(--tint); }
+  .cold-panel .row.active { background:var(--tint); }
+  .cold-panel .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
+  .collage-wrap { position:relative; }
+  .collage-piece { position:relative; }
+  .collage-piece .tear { position:absolute; filter:drop-shadow(0 var(--paper-y) var(--paper-blur) var(--paper-shadow)); }
+  .collage-fig { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
+  .collage-copy { font-size:17px; line-height:1.55; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
+  .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
+  .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
+  .limits-grid .lbl { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:13px; color:var(--text-secondary); margin:0 0 8px; }
+  .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:24px; }
+  .cards-grid .card .kicker { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--brand); margin:0 0 10px; }
+  .cards-grid .card p.body { font-size:16px; line-height:1.6; color:var(--text); margin:0; }
+  .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
+  form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
+  form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
+  form.join .span2 { grid-column:span 2; }
+  form.join textarea { resize:none; }
+  form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
+  form.join button:hover { background:var(--brand-press); }
+  .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; border-radius:12px; }
+  footer { background:var(--bg); border-top:1px solid var(--line); }
+  footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
+  footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
+  @media (max-width:760px) {
+    .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
+    .hero-grid > .visual { order:-1; max-width:240px; margin:0 auto; }
+    .sensor-row { grid-template-columns:1fr; gap:24px; }
+    .sensor-row > div:first-child { max-width:150px; }
+    .prow > button { grid-template-columns:32px 36px 1fr 24px; grid-template-areas:"num pmasc ttl caret" "bdy bdy bdy bdy"; row-gap:8px; }
+    .prow .pdetail p { padding-left:24px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+  @media print {
+    nav.bar, .skip-link, .divider, #fridgeWrap, #hero3d, #formWrap, .paper-grain { display:none !important; }
+    #heropin { height:auto !important; }
+    #top, .thead { position:static !important; min-height:0 !important; }
+    * { animation:none !important; transition:none !important; box-shadow:none !important; }
+    body { background:#fff; color:#000; }
+    a.verify::after { content:" — " attr(href); font-weight:400; }
+    section { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+
+<nav class="bar" id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand">
+      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+      Stock the Block
+    </a>
+    <div class="links">
+      <a href="#tracker">Tracker</a>
+      <a href="#how">How it works</a>
+      <a href="#story">Story</a>
+      <a href="#join" class="cta">Partner with us</a>
+      <button id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+        <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div id="heropin">
+<header id="top" class="wrap hero-grid">
+  <div>
+    <div class="marker" data-fxm style="margin-bottom:28px; animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0ms both;">
+      <div class="rule" data-rule></div>
+      <p data-lbl><span class="ix">01 — </span><span class="lb">live manifest</span></p>
+    </div>
+    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 120ms both;">
+      <p class="figure" id="heroFig" style="font-size:clamp(56px,9vw,96px); line-height:1; margin:0; color:var(--brand);"><span class="lbs-live" id="heroNum">8,000</span><span style="font-size:0.38em; font-weight:600; letter-spacing:-0.02em; margin-left:10px;">lbs</span></p>
+      <div id="glyphs" style="display:flex; gap:6px; margin-top:14px;" aria-hidden="true"></div>
+      <p style="font-size:14px; color:var(--text-secondary); margin:10px 0 0; line-height:1.6;">of food recovered — every pound logged and public · one box per 500 lbs</p>
+    </div>
+    <h1 style="font-size:clamp(32px,4.5vw,44px); margin:32px 0 0; color:var(--text);">
+      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 260ms both;">Students move surplus cafeteria food from share tables to food banks.</span></span>
+      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 380ms both;">The tracker proves it.</span></span>
+    </h1>
+    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 420ms both;">
+      <p class="body-p" style="margin:16px 0 0;">Stock the Block is a student-run food recovery operation across NYC schools, in partnership with Green Garden NYC. Insulated boxes, fixed routes, and a delivery log anyone can audit.</p>
+      <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
+        <a href="#join" class="btn solid">Partner with us</a>
+        <a href="#tracker" class="btn line">See the log</a>
+      </div>
+    </div>
+  </div>
+  <div class="visual" style="display:flex; justify-content:center; align-items:center;">
+    <div id="hero3d" style="width:100%; max-width:420px; display:none;"></div>
+    <div id="mascotHero" class="mascot-slot" style="width:100%; max-width:420px; display:block;" data-state="idle" data-blink data-informative data-label="Stock the Block mascot — a smiling insulated box"></div>
+  </div>
+</header>
+</div>
+
+<section id="whynow" class="wrap" style="padding-top:88px; padding-bottom:72px;">
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
+    <defs>
+      <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-b" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.031" numOctaves="3" seed="23" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-c" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="41" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-d" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.044" numOctaves="3" seed="67" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
+    </defs>
+  </svg>
+  <div class="marker" data-fxm style="margin-bottom:32px;">
+    <div class="rule" data-rule></div>
+    <p data-lbl><span class="ix">02 — </span><span class="lb">why now</span></p>
+  </div>
+  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+    <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
+    <span class="mask-l"><span data-line>This is the scale of it.</span></span>
+  </h2>
+  <div class="collage-wrap">
+    <div style="display:grid; gap:20px;">
+      <div class="collage-piece" style="width:100%; max-width:100%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-a);"></rect></svg>
+        <div style="position:relative; padding:40px 44px;">
+          <p class="collage-fig" style="font-size:clamp(38px,6vw,60px);">$186 billion</p>
+          <p class="collage-copy">Federal SNAP cut over ten years, One Big Beautiful Bill Act, signed July 4, 2025.</p>
+          <p class="collage-src">Congressional Budget Office</p>
+        </div>
+      </div>
+      <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
+        <div style="position:relative; padding:34px 38px;">
+          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million</p>
+          <p class="collage-copy">People off SNAP nationally between enactment and April 2026 — about 11 percent.</p>
+          <p class="collage-src">CBPP, USDA data</p>
+        </div>
+      </div>
+      <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
+        <div style="position:relative; padding:28px 32px;">
+          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026</p>
+          <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
+          <p class="collage-src" style="color:var(--accent);">[CITATION NEEDED]</p>
+        </div>
+      </div>
+      <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
+        <div style="position:relative; padding:24px 28px;">
+          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026</p>
+          <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
+          <p class="collage-src" style="color:var(--accent);">[CITATION NEEDED]</p>
+        </div>
+      </div>
+      <div class="collage-piece" style="width:190px; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:6px; top:6px; width:calc(100% - 12px); height:calc(100% - 12px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--brand); filter:url(#torn-e);"></rect></svg>
+        <div style="position:relative; padding:14px 18px;">
+          <p class="mono" style="font-weight:500; font-size:15px; margin:0; color:var(--on-brand); font-variant-numeric:tabular-nums;"><span class="lbs-live">8,000</span> lbs recovered</p>
+        </div>
+      </div>
+    </div>
+    <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
+  </div>
+  <p class="body-p" style="margin:40px 0 0; max-width:62ch;">SNAP runs to roughly $298 per person per month in NYC <span style="color:var(--accent);">[CITATION NEEDED]</span>. Stock the Block has recovered <span class="lbs-live">8,000</span> lbs. Those are not the same unit and not the same order of magnitude. Recovered food is meals a pantry can hand out this week; it is not income, and it does not replace a benefits program.</p>
+</section>
+
+<section class="statband" id="statband">
+  <div class="wrap">
+    <div class="grid">
+      <div class="cell" data-stat>
+        <p class="figure fig" id="statMeals">880,000</p>
+        <p class="cap">school meals served daily in NYC</p>
+      </div>
+      <div class="cell" data-stat>
+        <p class="figure fig" id="statPct">4%</p>
+        <p class="cap">of school buildings donate surplus food</p>
+      </div>
+      <div class="cell" data-stat>
+        <p class="figure fig" id="statLbs" style="color:var(--brand);">8,000 lbs</p>
+        <p class="cap">recovered by Stock the Block, verified on Track the Box</p>
+      </div>
+    </div>
+    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: Track the Box, updated live.</p>
+  </div>
+</section>
+
+<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
+  <div class="marker" data-fxm style="margin-bottom:32px;">
+    <div class="rule" data-rule></div>
+    <p data-lbl><span class="ix">03 — </span><span class="lb">standard operating procedure</span></p>
+  </div>
+  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+    <span class="mask-l"><span data-line>Four steps, same every day,</span></span>
+    <span class="mask-l"><span data-line>all on the record.</span></span>
+  </h2>
+  <div id="steps" style="border-top:1px solid var(--line);"></div>
+</section>
+
+<div id="fridgeWrap">
+<section id="fridgeSticky" aria-label="A delivery in motion: from the cafeteria fridge, into the box, to the food bank" class="wrap" style="padding-bottom:72px;">
+  <div id="fridge3d" style="width:100%; display:none; position:relative;">
+    <div id="fridgeLabels" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
+      <span id="flabelA" style="position:absolute; left:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary);">cafeteria fridge</span>
+      <span id="flabelB" style="position:absolute; right:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); opacity:0;">food bank</span>
+    </div>
+  </div>
+  <svg id="fridgeFallback" viewBox="0 0 1052 300" role="img" aria-label="From the cafeteria fridge, the box travels to the food bank and arrives confirmed" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+    <rect x="44" y="36" width="150" height="204" rx="6" style="fill:var(--surface); stroke:var(--mascot-stroke);" stroke-width="3"></rect>
+    <path d="M150 36 L150 240" style="stroke:var(--mascot-stroke);" stroke-width="2"></path>
+    <rect x="158" y="100" width="6" height="52" rx="3" style="fill:var(--mascot-stroke);"></rect>
+    <path d="M44 105 L150 105 M44 172 L150 172" style="stroke:var(--brand-line-mid);" stroke-width="2"></path>
+    <rect x="60" y="88" width="34" height="16" style="fill:var(--tint); stroke:var(--mascot-stroke);" stroke-width="2"></rect>
+    <rect x="102" y="156" width="34" height="16" style="fill:var(--accent);"></rect>
+    <text x="44" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">cafeteria fridge</text>
+    <path d="M210 160 C 400 80, 620 220, 880 156" fill="none" stroke-dasharray="2 9" stroke-linecap="round" style="stroke:var(--brand);" stroke-width="2.5"></path>
+    <g transform="translate(930, 152)">
+      <rect x="-40" y="-32" width="80" height="64" rx="9" style="fill:var(--mascot-fill); stroke:var(--mascot-stroke);" stroke-width="4"></rect>
+      <path d="M-38 -12 L38 -12" style="stroke:var(--mascot-stroke);" stroke-width="4"></path>
+      <path d="M-26 12 L-17 2 L-8 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M8 12 L17 2 L26 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M-12 18 Q0 32 12 18 Q0 24 -12 18 Z" style="fill:var(--accent);"></path>
+    </g>
+    <circle cx="1010" cy="176" r="9" fill="none" style="stroke:var(--brand);" stroke-width="3"></circle>
+    <text x="912" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">food bank</text>
+  </svg>
+</section>
+</div>
+
+<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
+  <div class="marker" data-fxm style="margin-bottom:32px;">
+    <div class="rule" data-rule></div>
+    <p data-lbl><span class="ix">04 — </span><span class="lb">the instruments</span></p>
+  </div>
+  <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
+    <span class="mask-l"><span data-line>A school cannot release food</span></span>
+    <span class="mask-l"><span data-line>without a record.</span></span>
+  </h2>
+  <p class="body-p" style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off <span style="color:var(--accent);">[CITATION NEEDED — NYC Health Code / DOHMH guidance]</span>. That record is the reason the box carries an instrument at all.</p>
+  <p class="body-p" style="margin:16px 0 0;">There are three logger units in the fleet, not one per box. They rotate across routes. A run without a unit is validated against a thermal model built from the logged runs on the same route <span style="color:var(--accent);">[CITATION NEEDED — model and validation method]</span>; when the model carries the record rather than a sensor, the manifest line says so. There is no location sensor, and the log makes no claim about where a box was.</p>
+  <div class="sensor-row cold-panel" style="margin-top:40px;">
+    <div>
+      <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
+      <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:500; font-size:13px; margin:12px 0 0; color:var(--brand);">in range</p>
+      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · sample data · safe ≤ 41°F</p>
+      <div id="coldRows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);"></div>
+    </div>
+    <div>
+      <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <rect x="100" y="70" width="520" height="185" fill="none" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="7 6"></rect>
+        <rect x="140" y="105" width="150" height="68" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <g style="fill:var(--sensor-deep);"><rect x="152" y="117" width="34" height="20"></rect><rect x="152" y="147" width="18" height="14"></rect><rect x="196" y="117" width="12" height="44"></rect></g>
+        <g style="fill:var(--bg);"><rect x="222" y="117" width="56" height="8"></rect><rect x="222" y="131" width="56" height="8"></rect></g>
+        <rect x="140" y="190" width="150" height="48" rx="4" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <path d="M290 202 L306 202 M290 214 L306 214" style="stroke:var(--sensor-deep);" stroke-width="3"></path>
+        <rect x="330" y="110" width="110" height="58" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <rect x="344" y="124" width="30" height="18" style="fill:var(--sensor-deep);"></rect>
+        <rect x="386" y="124" width="40" height="8" style="fill:var(--bg);"></rect>
+        <path d="M440 200 C 476 200, 470 138, 506 132" fill="none" style="stroke:var(--sensor-deep);" stroke-width="5" stroke-linecap="round"></path>
+        <rect x="506" y="118" width="86" height="28" rx="14" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <circle cx="580" cy="132" r="6" style="fill:var(--sensor-deep);"></circle>
+        <g style="stroke:var(--rule);" stroke-width="1">
+          <line x1="130" y1="70" x2="112" y2="44"></line>
+          <line x1="215" y1="105" x2="248" y2="48"></line>
+          <line x1="385" y1="110" x2="424" y2="48"></line>
+          <line x1="215" y1="238" x2="188" y2="292"></line>
+          <line x1="549" y1="146" x2="566" y2="292"></line>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+          <text x="112" y="36" text-anchor="middle">printed enclosure</text>
+          <text x="248" y="40" text-anchor="middle">ESP32-C3 SuperMini</text>
+          <text x="424" y="40" text-anchor="middle">TP4056 charge module</text>
+          <text x="188" y="310" text-anchor="middle">LiPo cell</text>
+          <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
+        </g>
+      </svg>
+      <p class="mono" style="font-weight:400; font-size:12px; color:var(--text-secondary); margin:14px 0 0;">reading interval <span style="color:var(--accent);">[XX s]</span> · unit cost <span style="color:var(--accent);">[$XX]</span></p>
+    </div>
+  </div>
+</section>
+
+<section aria-hidden="true" class="divider">
+  <div class="inner" data-dpar>
+    <div class="mascot-slot" data-dsvg data-state="confirmed" data-breathe data-fill="var(--bg)"></div>
+  </div>
+</section>
+
+<section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
+  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
+    <div class="marker on-pale" data-fxm style="margin-bottom:32px;">
+      <div class="rule" data-rule></div>
+      <p data-lbl><span class="ix">05 — </span><span class="lb">the delivery log</span></p>
+    </div>
+    <h2 class="hd" data-mask style="max-width:620px;">
+      <span class="mask-l"><span data-line>The delivery log</span></span>
+      <span class="mask-l"><span data-line>is the whole pitch.</span></span>
+    </h2>
+    <p class="body-p" style="margin:16px 0 0;">No annual report, no estimates. A live public record of every box that moved — sort it, filter it, add it up yourself.</p>
+    <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
+    <div class="manifest" id="manifest">
+      <div class="mhead">
+        <span class="left">
+          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST — <span id="filterLabel">RECENT</span></span>
+          <a class="verify" href="https://trackthebox.nyc" target="_blank" rel="noopener">verify on Track the Box ↗</a>
+        </span>
+        <span class="right">
+          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal">392</span> lbs shown</span>
+          <span style="color:var(--text-secondary);">sample data</span>
+          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">en route</span>
+          <span id="mascotMood" class="mascot-slot" data-state="idle"></span>
+        </span>
+      </div>
+      <div class="thead" id="thead">
+        <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="from" aria-sort="none">Origin <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="to" aria-sort="none">Destination <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="lbs" aria-sort="none">Lbs <span class="caret" aria-hidden="true">▾</span></button>
+        <span class="lab">Status</span>
+      </div>
+      <div id="mempty" class="empty-state" style="display:none;">
+        <div class="mascot-slot" data-state="empty"></div>
+        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">no deliveries logged</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary);">clear the filter to see the full record</p>
+      </div>
+      <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
+    </div>
+  </div>
+</section>
+
+<section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+  <div class="marker" data-fxm style="margin-bottom:32px;">
+    <div class="rule" data-rule></div>
+    <p data-lbl><span class="ix">06 — </span><span class="lb">why we exist</span></p>
+  </div>
+  <div class="two-grid">
+    <h2 class="hd" data-mask>
+      <span class="mask-l"><span data-line>Run by the students who watched</span></span>
+      <span class="mask-l"><span data-line>the share table get thrown out.</span></span>
+    </h2>
+    <div>
+      <p class="body-p" style="margin:0;">We started Stock the Block because the food on our share tables was sealed, safe, and three blocks from people who needed it. Students run the routes, keep the logs, and built the tracker.</p>
+      <p class="body-p" style="margin:16px 0 0;">If your building has a share table, we can run this in your school too.</p>
+    </div>
+  </div>
+</section>
+
+<section id="limits" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+    <div class="marker" data-fxm style="margin-bottom:32px;">
+      <div class="rule" data-rule></div>
+      <p data-lbl><span class="ix">07 — </span><span class="lb">the limits</span></p>
+    </div>
+    <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+      <span class="mask-l"><span data-line>What this does not do.</span></span>
+      <span class="mask-l"><span data-line>Plainly.</span></span>
+    </h2>
+    <div class="limits-grid">
+      <div>
+        <p class="lbl">the mechanism</p>
+        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. We move sealed, unserved items off share tables and into a partner food bank the same afternoon. That is the whole operation.</p>
+      </div>
+      <div>
+        <p class="lbl">what it measurably changes</p>
+        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when someone asks what happened to the surplus.</p>
+      </div>
+      <div>
+        <p class="lbl">what it does not touch</p>
+        <p class="body">Income. SNAP enrollment. Rent, wages, or any of the reasons need exists in the first place. A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
+      </div>
+      <div>
+        <p class="lbl">what would have to be true</p>
+        <p class="body">Many more buildings than the three we run in. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Receiving sites with the capacity to take same-day perishable food.</p>
+      </div>
+      <div>
+        <p class="lbl">what would show it is not working</p>
+        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. We publish the log partly so this is checkable by someone other than us.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+    <div class="marker on-pale" data-fxm style="margin-bottom:32px;">
+      <div class="rule" data-rule></div>
+      <p data-lbl><span class="ix">08 — </span><span class="lb">run this yourself</span></p>
+    </div>
+    <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
+      <span class="mask-l"><span data-line>Everything we use</span></span>
+      <span class="mask-l"><span data-line>is yours to copy.</span></span>
+    </h2>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch;">Start here: read the health code memo, then the box spec. Those two decide whether your building can run this at all. The agreement, the firmware and the intake workflow follow from them.</p>
+    <div class="cards-grid">
+      <div class="card">
+        <p class="kicker">01 · health code memo</p>
+        <p class="body">What a school may release, and the records it has to keep to release it.</p>
+        <p class="meta">Food service directors and school administrators.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">02 · box spec</p>
+        <p class="body">Cut sheet, materials list and fold order for one insulated transport box.</p>
+        <p class="meta">Whoever builds the first three boxes.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">03 · partner agreement</p>
+        <p class="body">One page between a school and a receiving site, signed before the first run.</p>
+        <p class="meta">School administrators and pantry directors.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">04 · firmware repo</p>
+        <p class="body">Logger sketch, probe calibration notes and wiring for the unit in section 04.</p>
+        <p class="meta">The student build team.</p>
+      </div>
+      <div class="card">
+        <p class="kicker">05 · intake workflow</p>
+        <p class="body">How a receiving site confirms a delivery and closes out the manifest line.</p>
+        <p class="meta">Pantry staff and volunteers.</p>
+      </div>
+    </div>
+    <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
+      <p class="mono" style="font-weight:500; font-size:13px; color:var(--text-secondary); margin:0 0 8px;">the kit, flat</p>
+      <p class="body-p" style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, the route sheet, and the log template are yours to copy.</p>
+      <div style="position:relative; max-width:760px;">
+        <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <g fill="none" style="stroke:var(--mascot-stroke);" stroke-width="2.5" stroke-linejoin="round">
+            <path d="M262 152 L262 62 L412 62 L412 152"></path>
+            <path d="M262 302 L262 392 L412 392 L412 302"></path>
+            <path d="M262 152 L112 152 L112 302 L262 302"></path>
+            <path d="M412 152 L712 152 L712 302 L412 302"></path>
+            <path d="M262 152 L412 152 M262 302 L412 302"></path>
+          </g>
+          <g fill="none" style="stroke:var(--brand-line-mid);" stroke-width="1.5" stroke-dasharray="6 6">
+            <path d="M262 152 L412 152"></path>
+            <path d="M262 302 L412 302"></path>
+            <path d="M262 152 L262 302"></path>
+            <path d="M412 152 L412 302"></path>
+            <path d="M562 152 L562 302"></path>
+          </g>
+          <rect x="140" y="196" width="56" height="16" rx="8" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></rect>
+          <rect x="450" y="196" width="74" height="58" fill="none" style="stroke:var(--accent);" stroke-width="2.5" stroke-dasharray="5 5"></rect>
+          <g style="stroke:var(--rule);" stroke-width="1">
+            <line x1="337" y1="62" x2="337" y2="32"></line>
+            <line x1="300" y1="290" x2="232" y2="344"></line>
+            <line x1="168" y1="212" x2="140" y2="122"></line>
+            <line x1="337" y1="392" x2="337" y2="432"></line>
+            <line x1="487" y1="254" x2="487" y2="336"></line>
+            <line x1="637" y1="152" x2="637" y2="104"></line>
+          </g>
+          <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+            <text x="337" y="26" text-anchor="middle">lid flap</text>
+            <text x="232" y="362" text-anchor="middle">face panel</text>
+            <text x="140" y="114" text-anchor="middle">handle cut</text>
+            <text x="337" y="450" text-anchor="middle">base</text>
+            <text x="487" y="354" text-anchor="middle">sensor pocket</text>
+            <text x="637" y="96" text-anchor="middle">back panel</text>
+          </g>
+        </svg>
+        <div class="mascot-slot" aria-hidden="true" style="position:absolute; left:35.5%; top:33.5%; width:17.5%;" data-state="neutral" data-bare></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-hidden="true" class="divider" style="border-bottom:1px solid var(--brand-line-soft);">
+  <div class="inner" data-dpar style="padding:64px 24px;">
+    <div class="mascot-slot" data-dsvg data-state="idle" data-breathe data-fill="var(--bg)"></div>
+  </div>
+</section>
+
+<section id="join" style="background:var(--surface);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+    <div class="marker" data-fxm style="margin-bottom:32px;">
+      <div class="rule" data-rule></div>
+      <p data-lbl><span class="ix">09 — </span><span class="lb">get involved</span></p>
+    </div>
+    <div class="join-grid">
+      <div>
+        <h2 class="hd" data-mask>
+          <span class="mask-l"><span data-line>Bring Stock the Block</span></span>
+          <span class="mask-l"><span data-line>to your building.</span></span>
+        </h2>
+        <p class="body-p" style="margin:16px 0 0;">Administrators, students, and partner organizations — tell us who you are and we'll follow up with the playbook for your role.</p>
+        <div style="margin-top:28px; display:flex; align-items:center; gap:14px;">
+          <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>In partnership with Green Garden NYC.</p>
+        </div>
+      </div>
+      <div id="formWrap">
+        <form class="join" id="joinForm">
+          <input data-ff required type="text" placeholder="Name" aria-label="Name">
+          <input data-ff required type="email" placeholder="Email" aria-label="Email">
+          <select data-ff class="span2" aria-label="Your role">
+            <option>School administrator</option>
+            <option>Cafeteria staff</option>
+            <option>Student — I want to join</option>
+            <option>Partner organization / food bank</option>
+            <option>Press</option>
+          </select>
+          <input data-ff class="span2" type="text" placeholder="School or organization" aria-label="School or organization">
+          <textarea data-ff class="span2" placeholder="Anything we should know?" aria-label="Message" rows="3"></textarea>
+          <button data-ff data-ffb type="submit">Get in touch</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-label="Partners" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding:20px 24px; display:flex; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-secondary);">
+    <span style="color:var(--text); font-weight:500;">In partnership with Green Garden NYC</span>
+    <span>Stuyvesant HS</span>
+    <span>IS 289</span>
+    <span>Millennium HS</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap top">
+    <span style="display:flex; align-items:center; gap:12px;">
+      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+      <span>© 2026 Stock the Block — student-run food recovery, NYC</span>
+    </span>
+    <span class="mono" style="font-weight:500;">8,000 lbs recovered · Track the Box</span>
+  </div>
+  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var mob = innerWidth < 768;
+  var f = mob ? 0.5 : 1;
+  var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
+  var cl = function (x) { return Math.max(0, Math.min(x, 1)); };
+  var eo = function (x) { return 1 - Math.pow(1 - x, 3); };
+  var ei = function (x) { return x * x * (3 - 2 * x); };
+  var mix = function (a, b, t) { return a + (b - a) * t; };
+  var fmtN = function (n) { return n.toLocaleString("en-US"); };
+
+  var TODAY = "2026-07-29";
+  var ROWS = [
+    { date: "2026-07-29", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 18, status: "EN ROUTE" },
+    { date: "2026-07-24", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 42, status: "RECEIVED" },
+    { date: "2026-07-23", from: "IS 289", to: "Green Garden NYC", lbs: 31, status: "RECEIVED" },
+    { date: "2026-07-23", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 56, status: "RECEIVED" },
+    { date: "2026-07-22", from: "Millennium HS", to: "Green Garden NYC", lbs: 27, status: "RECEIVED" },
+    { date: "2026-07-21", from: "IS 289", to: "Green Garden NYC", lbs: 38, status: "RECEIVED" },
+    { date: "2026-07-21", from: "Millennium HS", to: "Green Garden NYC", lbs: 22, status: "RECEIVED" },
+    { date: "2026-07-20", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 49, status: "RECEIVED" },
+    { date: "2026-07-17", from: "IS 289", to: "Green Garden NYC", lbs: 35, status: "RECEIVED" },
+    { date: "2026-07-16", from: "Millennium HS", to: "Green Garden NYC", lbs: 30, status: "RECEIVED" },
+    { date: "2026-07-15", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 44, status: "RECEIVED" }
+  ];
+  var STEPS = [
+    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from cafeteria share tables at the end of lunch.", detail: "Sealed items only, nothing served or opened. Share-table collection follows DOE wellness policy: items must be commercially packaged, unopened, and temperature-safe before they leave the cafeteria.", state: "collect" },
+    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated transport boxes before it leaves the building.", detail: "Each box carries a number; weight, contents category, and packing time are recorded against the box ID so every pound is traceable. The weight goes into the manifest before the box leaves.", state: "pack" },
+    { num: "03", title: "Deliver after school", body: "Student teams walk fixed routes to partner food banks, and recipients confirm receipt on the spot.", detail: "Routes are walked in pairs and take under thirty minutes; a recipient signature closes out each box before it counts. Green Garden NYC anchors the downtown route.", state: "deliver" },
+    { num: "04", title: "Log it publicly", body: "Every delivery posts to Track the Box in real time — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time.", state: "record" }
+  ];
+  var COLD = [
+    { t: "13:42", note: "packed", temp: 36 },
+    { t: "14:05", note: "in transit", temp: 38 },
+    { t: "14:28", note: "street handoff", temp: 43 },
+    { t: "14:51", note: "received", temp: 39 }
+  ];
+  var SAFE_MAX = 41;
+  var MOOD_LABEL = { idle: "all quiet", record: "record haul", confirmed: "all confirmed", empty: "no runs today", active: "en route" };
+
+  /* ---------- mascot component ---------- */
+  var MASCOT_EYES = {
+    idle:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
+    warm:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
+    record:    { l: "M95 146 L96 147 L97 146", r: "M214 146 L215 147 L216 146", w: 38 },
+    confirmed: { l: "M63 158 L96 126 L128 158", r: "M182 158 L215 126 L247 158", w: 14 },
+    empty:     { l: "M63 150 L96 150 L128 150", r: "M182 150 L215 150 L247 150", w: 14 },
+    active:    { l: "M63 141 L96 148 L128 156", r: "M182 156 L215 148 L247 141", w: 14 },
+    collect:   { l: "M63 150 L96 122 L128 150", r: "M182 150 L215 122 L247 150", w: 14 },
+    pack:      { l: "M63 138 L96 166 L128 138", r: "M182 138 L215 166 L247 138", w: 14 },
+    deliver:   { l: "M63 160 L96 134 L128 160", r: "M182 160 L215 134 L247 160", w: 14 },
+    neutral:   { l: "M63 158 L96 138 L128 158", r: "M182 158 L215 138 L247 158", w: 14 },
+    inrange:   { l: "M74 152 L96 136 L118 152", r: "M193 152 L215 136 L237 152", w: 13 },
+    danger:    { l: "M74 146 L96 158 L118 146", r: "M193 146 L215 158 L237 146", w: 13 }
+  };
+  var MASCOT_SMILE = {
+    idle: "M110 184 Q151 212 193 184", warm: "M110 180 Q151 226 193 180",
+    record: "M125 190 L177 190", confirmed: "M110 184 Q151 212 193 184",
+    empty: "M130 186 Q151 196 172 186", active: "M125 190 L177 190",
+    collect: "M120 186 Q151 208 182 186", pack: "M124 190 L178 190",
+    deliver: "M112 184 Q151 210 190 184", neutral: "M118 188 L184 188",
+    inrange: "M118 202 Q151 222 184 202", danger: "M124 205 L178 205"
+  };
+  var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
+  var MASCOT_LEAN = { deliver: "rotate(5deg)" };
+
+  function mascotSVG(state, opts) {
+    opts = opts || {};
+    state = MASCOT_EYES[state] ? state : "idle";
+    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
+    var bare = !!opts.bare, faceless = !!opts.faceless, glasses = !!opts.glasses && !faceless;
+    var fill = opts.fill || "var(--mascot-fill)";
+    var lidT = MASCOT_LID[state] || "rotate(0deg)";
+    var leanT = MASCOT_LEAN[state] || "rotate(0deg)";
+    var breatheAnim = opts.breathe ? "lidBreathe 4s ease-in-out infinite" : "none";
+    var blinkLAnim = opts.blink ? "blinkL 6s ease-in-out infinite" : "none";
+    var blinkRAnim = opts.blink ? "blinkR 6.4s ease-in-out infinite" : "none";
+    var informative = !!opts.informative;
+    var label = opts.label || "Stock the Block mascot";
+    var isRecord = state === "record", isConfirmed = state === "confirmed";
+    var bodyMk = bare ? "" : (
+      '<rect x="20" y="20" width="260" height="200" rx="28" fill="' + fill + '" style="stroke:var(--mascot-stroke);" stroke-width="12"></rect>' +
+      '<g data-lid-g style="transform:' + lidT + ';transform-origin:150px 93px;transition:transform 340ms cubic-bezier(0.16,1,0.3,1);">' +
+        '<path d="M26 93 L274 93" fill="none" stroke-width="12" style="stroke:var(--mascot-stroke); animation:' + breatheAnim + ';"></path>' +
+      '</g>'
+    );
+    var glassesMk = glasses ? (
+      '<circle cx="96" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
+      '<circle cx="215" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
+      '<path d="M132 152 L179 152" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></path>'
+    ) : "";
+    var faceMk = faceless ? "" : (
+      '<path data-eye-l d="' + e.l + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkLAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
+      '<path data-eye-r d="' + e.r + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkRAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
+      '<path data-mouth-stroke d="' + smile + '" fill="none" stroke-width="14" stroke-linecap="round" style="stroke:var(--accent); opacity:' + (isRecord || isConfirmed ? 0 : 1) + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease;"></path>' +
+      '<path data-mouth-o d="M151 170 Q127 170 127 192 Q127 214 151 214 Q175 214 175 192 Q175 170 151 170 Z" style="fill:var(--accent); opacity:' + (isRecord ? 1 : 0) + '; transition:opacity 220ms ease;"></path>' +
+      '<path data-mouth-grin d="M112 176 Q151 224 190 176 Q151 198 112 176 Z" style="fill:var(--accent); opacity:' + (isConfirmed ? 1 : 0) + '; transition:opacity 220ms ease;"></path>'
+    );
+    return '<svg data-mascot data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + label + '"' : '') + ' style="width:100%;height:auto;display:block;">' +
+      '<g data-lean-g style="transform:' + leanT + ';transform-origin:150px 230px;transition:transform 320ms cubic-bezier(0.16,1,0.3,1);">' + bodyMk + glassesMk + faceMk + '</g></svg>';
+  }
+  function paintMascot(svg, state) {
+    if (!svg) return;
+    state = MASCOT_EYES[state] ? state : "idle";
+    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
+    var isRecord = state === "record", isConfirmed = state === "confirmed";
+    var eyeL = svg.querySelector("[data-eye-l]"), eyeR = svg.querySelector("[data-eye-r]");
+    if (eyeL) { eyeL.setAttribute("d", e.l); eyeL.setAttribute("stroke-width", e.w); }
+    if (eyeR) { eyeR.setAttribute("d", e.r); eyeR.setAttribute("stroke-width", e.w); }
+    var ms = svg.querySelector("[data-mouth-stroke]");
+    if (ms) { ms.setAttribute("d", smile); ms.style.opacity = (isRecord || isConfirmed) ? 0 : 1; }
+    var mo = svg.querySelector("[data-mouth-o]"); if (mo) mo.style.opacity = isRecord ? 1 : 0;
+    var mg = svg.querySelector("[data-mouth-grin]"); if (mg) mg.style.opacity = isConfirmed ? 1 : 0;
+    var lidG = svg.querySelector("[data-lid-g]"); if (lidG) lidG.style.transform = MASCOT_LID[state] || "rotate(0deg)";
+    var leanG = svg.querySelector("[data-lean-g]"); if (leanG) leanG.style.transform = MASCOT_LEAN[state] || "rotate(0deg)";
+    svg.setAttribute("data-state", state);
+  }
+  function initMascotSlots(root) {
+    $$(".mascot-slot", root).forEach(function (el) {
+      if (el.dataset.mascotInit) return;
+      el.dataset.mascotInit = "1";
+      var state = el.getAttribute("data-state") || "idle";
+      el.innerHTML = mascotSVG(state, {
+        glasses: el.hasAttribute("data-glasses"),
+        bare: el.hasAttribute("data-bare"),
+        faceless: el.hasAttribute("data-faceless"),
+        fill: el.getAttribute("data-fill"),
+        blink: el.hasAttribute("data-blink"),
+        breathe: el.hasAttribute("data-breathe"),
+        informative: el.hasAttribute("data-informative"),
+        label: el.getAttribute("data-label")
+      });
+    });
+  }
+  initMascotSlots();
+
+  /* ---------- theme ---------- */
+  var html = document.documentElement;
+  var sysDark = matchMedia("(prefers-color-scheme: dark)");
+  function currentTheme() { return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light"); }
+  var toggle = $("#themeToggle");
+  function reflectTheme() {
+    var dark = currentTheme() === "dark";
+    toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    $("#iconMoon").style.display = dark ? "none" : "block";
+    $("#iconSun").style.display = dark ? "block" : "none";
+  }
+  toggle.addEventListener("click", function () {
+    var next = currentTheme() === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme-anim", "");
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("stb-theme", next); } catch (e) {}
+    reflectTheme();
+    updateThreeTheme();
+  });
+  sysDark.addEventListener("change", function () { if (!html.getAttribute("data-theme")) { reflectTheme(); updateThreeTheme(); } });
+  reflectTheme();
+  function getVar(n) { return getComputedStyle(html).getPropertyValue(n).trim(); }
+
+  /* ---------- nav ---------- */
+  var nav = $("#nav");
+  addEventListener("scroll", function () { nav.classList.toggle("on", scrollY > 100); }, { passive: true });
+
+  /* ---------- torn-paper responsive scale ---------- */
+  function tornResize() {
+    var narrow = innerWidth < 480;
+    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6 };
+    Object.keys(base).forEach(function (id) {
+      var filt = document.getElementById(id);
+      if (!filt) return;
+      var dm = filt.querySelector("feDisplacementMap");
+      if (dm) dm.setAttribute("scale", String(narrow ? Math.round(base[id] * 0.5) : base[id]));
+    });
+  }
+  tornResize();
+  addEventListener("resize", tornResize, { passive: true });
+
+  /* ---------- glyph row ---------- */
+  var glyphs = $("#glyphs");
+  for (var gi = 0; gi < 16; gi++) {
+    var gs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    gs.setAttribute("viewBox", "0 0 300 260");
+    gs.style.cssText = "width:18px;height:auto;opacity:0.18;transform:scale(0.6);transition:opacity 300ms cubic-bezier(0.34,1.56,0.64,1) " + (gi * 40) + "ms,transform 300ms cubic-bezier(0.34,1.56,0.64,1) " + (gi * 40) + "ms;";
+    gs.innerHTML = '<rect x="20" y="20" width="260" height="200" rx="28" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);" stroke-width="20"/><path d="M26 93 L274 93" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="20"/>';
+    glyphs.appendChild(gs);
+  }
+  function setGlyphs(lbs) {
+    var filled = Math.min(16, Math.round(lbs / 500));
+    $$("#glyphs svg").forEach(function (el, i) {
+      el.style.opacity = i < filled ? "1" : "0.18";
+      el.style.transform = i < filled ? "scale(1)" : "scale(0.6)";
+    });
+  }
+
+  /* ---------- counters ---------- */
+  var spinBoost = false;
+  function setLbsText(v) { $$(".lbs-live").forEach(function (el) { el.textContent = fmtN(v); }); }
+  function count(target, onTick, done) {
+    if (reduced) { onTick(target); if (done) done(); return; }
+    var t0 = performance.now(), dur = 1200;
+    (function tick(now) {
+      var p = Math.min((now - t0) / dur, 1);
+      var v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      onTick(v);
+      if (p < 1) requestAnimationFrame(tick); else if (done) done();
+    })(t0);
+  }
+  var heroDone = false, bandDone = false;
+  function checkCounters() {
+    var vh = innerHeight;
+    if (!heroDone) {
+      var r = $("#heroFig").getBoundingClientRect();
+      if (r.top < vh * 0.9 && r.bottom > 0) {
+        heroDone = true; spinBoost = true;
+        count(8000, function (v) { setLbsText(v); setGlyphs(v); }, function () { spinBoost = false; });
+      }
+    }
+    if (!bandDone) {
+      var r2 = $("#statband").getBoundingClientRect();
+      if (r2.top < vh * 0.9 && r2.bottom > 0) {
+        bandDone = true;
+        count(880000, function (v) { $("#statMeals").textContent = fmtN(v); });
+        count(4, function (v) { $("#statPct").textContent = v + "%"; });
+        count(8000, function (v) { $("#statLbs").textContent = fmtN(v) + " lbs"; });
+      }
+    }
+  }
+  if (reduced) setGlyphs(8000);
+
+  /* ---------- procedure rows ---------- */
+  var stepsHost = $("#steps");
+  STEPS.forEach(function (s, idx) {
+    var d = document.createElement("div");
+    d.className = "prow";
+    d.setAttribute("data-prow", "");
+    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + s.title + '</span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
+    var maskHost = d.querySelector(".pmasc");
+    maskHost.innerHTML = mascotSVG("idle", {});
+    var btn = d.querySelector("button");
+    btn.addEventListener("click", function () {
+      var open = d.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.querySelector(".caret").textContent = open ? "−" : "+";
+      paintMascot(maskHost.querySelector("svg"), open ? s.state : "idle");
+    });
+    stepsHost.appendChild(d);
+  });
+
+  /* ---------- cold-chain readout ---------- */
+  var coldIdx = 3;
+  var coldRowsHost = $("#coldRows");
+  function renderCold() {
+    var cur = COLD[coldIdx];
+    var coldSafe = cur.temp <= SAFE_MAX;
+    paintMascot($("#mascotCold svg"), coldSafe ? "inrange" : "danger");
+    var lbl = $("#coldLabel");
+    lbl.textContent = coldSafe ? "in range" : "danger zone";
+    lbl.style.color = coldSafe ? "var(--brand)" : "var(--accent)";
+    coldRowsHost.innerHTML = "";
+    COLD.forEach(function (c, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "row" + (i === coldIdx ? " active" : "");
+      b.setAttribute("aria-pressed", i === coldIdx ? "true" : "false");
+      var safe = c.temp <= SAFE_MAX;
+      b.innerHTML = '<span>' + c.t + ' ' + c.note + '</span><span class="temp" style="color:' + (safe ? "var(--brand)" : "var(--accent)") + ';">' + c.temp + '°F</span>';
+      b.addEventListener("click", function () { coldIdx = i; renderCold(); });
+      coldRowsHost.appendChild(b);
+    });
+  }
+  renderCold();
+
+  /* ---------- chips + manifest ---------- */
+  var sortKey = "date", sortDir = "desc", filter = "All";
+  var schools = ["All", "Stuyvesant HS", "IS 289", "Millennium HS"];
+  var chipsHost = $("#chips");
+  schools.forEach(function (label) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = label;
+    b.setAttribute("aria-pressed", label === "All" ? "true" : "false");
+    b.addEventListener("click", function () {
+      filter = label;
+      $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === label ? "true" : "false"); });
+      render(); glance();
+    });
+    chipsHost.appendChild(b);
+  });
+  $$("#thead button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-key");
+      if (k === sortKey) sortDir = sortDir === "asc" ? "desc" : "asc";
+      else { sortKey = k; sortDir = (k === "date" || k === "lbs") ? "desc" : "asc"; }
+      render(); glance();
+    });
+  });
+  var glT;
+  function glance() {
+    if (reduced) return;
+    var svg = $("#mascotMood");
+    clearTimeout(glT);
+    svg.classList.add("glance");
+    glT = setTimeout(function () { svg.classList.remove("glance"); }, 400);
+  }
+  var tableSeen = false;
+  function render() {
+    var filtered = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
+    var sorted = filtered.slice().sort(function (a, b) {
+      var va = a[sortKey], vb = b[sortKey];
+      var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
+      return sortDir === "asc" ? c : -c;
+    });
+    var label = filter === "All" ? "RECENT" : filter.toUpperCase();
+    $("#mbody").innerHTML = sorted.map(function (r) {
+      var col = r.status === "RECEIVED" ? "var(--brand)" : "var(--accent)";
+      return '<div class="mrow"><span style="color:var(--text-secondary);">' + r.date + "</span><span>" + r.from + "</span><span>" + r.to + '</span><span class="lbs">' + r.lbs + '</span><span class="st" style="color:' + col + ';">' + r.status + "</span></div>";
+    }).join("");
+    $("#mempty").style.display = sorted.length ? "none" : "flex";
+    $("#emptyMsg").textContent = "no deliveries logged for " + label;
+    $("#shownTotal").textContent = fmtN(filtered.reduce(function (t, r) { return t + r.lbs; }, 0));
+    $("#filterLabel").textContent = label;
+    $$("#thead button").forEach(function (b) {
+      var k = b.getAttribute("data-key"), on = k === sortKey;
+      b.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+      var c = b.querySelector(".caret");
+      c.style.opacity = on ? "1" : "0";
+      c.style.transform = on && sortDir === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+    });
+    var mood = "idle";
+    if (!filtered.length) mood = "empty";
+    else if (filtered.some(function (r) { return r.lbs >= 50; })) mood = "record";
+    else if (filtered.some(function (r) { return r.date === TODAY && r.status !== "RECEIVED"; })) mood = "active";
+    else if (filtered.every(function (r) { return r.status === "RECEIVED"; })) mood = "confirmed";
+    paintMascot($("#mascotMood svg"), mood);
+    $("#moodLabel").textContent = MOOD_LABEL[mood];
+    if (tableSeen && !reduced) {
+      requestAnimationFrame(function () {
+        $$(".mrow").forEach(function (el, i) {
+          el.style.animation = "none"; void el.offsetWidth;
+          el.style.animation = "rowUp 0.35s " + PRO + " " + (i * 40) + "ms both";
+        });
+      });
+    }
+  }
+  render();
+
+  /* ---------- join form ---------- */
+  var form = $("#joinForm");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    $("#formWrap").innerHTML = '<div class="done-card"><h3 style="font-size:19px;font-weight:600;margin:0;color:var(--brand);">Logged. We’ll be in touch.</h3><p style="font-size:14px;color:var(--text);margin:8px 0 0;line-height:1.6;">Thanks — expect a reply within a few school days.</p></div>';
+    paintMascot($("#mascotJoin svg"), "confirmed");
+    setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
+  });
+
+  /* ---------- scroll FX ---------- */
+  var shots = [];
+  function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
+  $$("[data-fxm]").forEach(function (m) {
+    var rule = m.querySelector("[data-rule]"), lbl = m.querySelector("[data-lbl]");
+    if (!reduced) { rule.style.transform = "scaleX(0)"; lbl.style.opacity = "0"; }
+    shot(m, function () {
+      rule.style.transition = "transform 600ms " + PRO; rule.style.transform = "scaleX(1)";
+      lbl.style.transition = "opacity 400ms " + PRO + " 300ms"; lbl.style.opacity = "1";
+    });
+  });
+  $$("[data-mask]").forEach(function (mk) {
+    var lines = $$("[data-line]", mk);
+    if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
+    shot(mk, function () {
+      lines.forEach(function (l, i) {
+        l.style.transition = "transform 700ms " + EXP + " " + (i * 80) + "ms";
+        l.style.transform = "translateY(0)";
+      });
+    });
+  });
+  (function () {
+    var items = $$("[data-stat]");
+    if (!reduced) items.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
+    shot($("#statband"), function () {
+      items.forEach(function (el, i) {
+        el.style.transition = "opacity 600ms " + EXP + " " + i * 90 + "ms, transform 600ms " + EXP + " " + i * 90 + "ms";
+        el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
+      });
+    });
+  })();
+  $$("[data-prow]").forEach(function (row) {
+    var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
+    if (!reduced) {
+      num.style.opacity = "0";
+      ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
+      bdy.style.opacity = "0";
+    }
+    shot(row, function () {
+      num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1";
+      ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
+      ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
+      bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1";
+    });
+  });
+  $$("[data-dsvg]").forEach(function (svg) {
+    shot(svg, function () { if (!reduced) svg.style.animation = "squashIn 500ms " + EXP + " both"; });
+  });
+  (function () {
+    var fields = $$("[data-ff]");
+    if (!reduced) fields.forEach(function (el) {
+      el.style.opacity = "0";
+      el.style.transform = el.hasAttribute("data-ffb") ? "scale(0.96)" : "translateY(" + 14 * f + "px)";
+    });
+    shot($("#formWrap"), function () {
+      fields.forEach(function (el, i) {
+        el.style.transition = "opacity 450ms " + PRO + " " + i * 50 + "ms, transform 450ms " + PRO + " " + i * 50 + "ms";
+        el.style.opacity = "1"; el.style.transform = "none";
+      });
+    });
+  })();
+  shot($("#manifest"), function () { tableSeen = true; render(); });
+
+  var pinOn = false, heroP = 0, fridgePinOn = false, fridgeP = 0, dtick = 0;
+  function fxLoop() {
+    requestAnimationFrame(fxLoop);
+    var vh = innerHeight;
+    for (var i = 0; i < shots.length; i++) {
+      var s = shots[i];
+      if (s.done) continue;
+      var r = s.el.getBoundingClientRect();
+      if (r.top < vh * 0.85 && r.bottom > 0) { s.done = true; s.fire(); }
+    }
+    heroP = reduced ? 1 : Math.max(0, Math.min(scrollY / (pinOn ? vh : 400), 1));
+    var fw = $("#fridgeWrap");
+    if (fw && fridgePinOn) {
+      var r2 = fw.getBoundingClientRect();
+      var range = r2.height - vh;
+      fridgeP = range > 0 ? cl(-r2.top / range) : 1;
+    } else fridgeP = 1;
+    var la = $("#flabelA"), lb = $("#flabelB");
+    if (la && fridgePinOn) {
+      la.style.opacity = (1 - ei(cl((fridgeP - 0.6) / 0.2))).toFixed(3);
+      lb.style.opacity = ei(cl((fridgeP - 0.72) / 0.18)).toFixed(3);
+    }
+    checkCounters();
+    if (!reduced && !mob) {
+      $$("[data-dpar]").forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var d = (r.top + r.height / 2 - vh / 2) * 0.12;
+        d = Math.max(-60, Math.min(60, d));
+        el.style.transform = "translateY(" + d.toFixed(1) + "px)";
+      });
+    }
+    var th = $("#thead");
+    if (th) {
+      var tr = th.getBoundingClientRect();
+      var mr = $("#manifest").getBoundingClientRect();
+      th.style.boxShadow = (tr.top <= 49 && mr.bottom > tr.bottom + 40) ? "0 4px 12px rgba(0,0,0,0.14)" : "none";
+    }
+    dtick++;
+    if (three && dtick % 120 === 0 && three.defs.fridge.built && three.active !== three.defs.fridge) {
+      var fr = three.defs.fridge.watch.getBoundingClientRect();
+      if (fr.bottom < -2.5 * vh || fr.top > 3.5 * vh) disposeDef(three.defs.fridge);
+    }
+  }
+  requestAnimationFrame(fxLoop);
+
+  /* ---------- shared 3D — one renderer, two scenes (hero + fridge) ---------- */
+  var three = null, faceCanvas, faceBlink = false, confirmCanvas;
+  function drawFace() {
+    var c = faceCanvas.getContext("2d");
+    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 512);
+    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 26; c.lineCap = "round"; c.lineJoin = "round";
+    c.beginPath();
+    if (faceBlink) { c.moveTo(110, 295); c.lineTo(220, 295); c.moveTo(292, 295); c.lineTo(402, 295); }
+    else { c.moveTo(110, 320); c.lineTo(165, 258); c.lineTo(220, 320); c.moveTo(292, 320); c.lineTo(347, 258); c.lineTo(402, 320); }
+    c.stroke();
+    c.strokeStyle = getVar("--accent") || "#E8871E"; c.beginPath();
+    c.moveTo(192, 372); c.quadraticCurveTo(256, 422, 320, 372); c.stroke();
+  }
+  function drawConfirmFace() {
+    if (!confirmCanvas) return;
+    var c = confirmCanvas.getContext("2d");
+    c.clearRect(0, 0, 512, 384);
+    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 384);
+    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 24; c.lineCap = "round"; c.lineJoin = "round";
+    c.beginPath();
+    c.moveTo(96, 200); c.lineTo(160, 132); c.lineTo(224, 200);
+    c.moveTo(288, 200); c.lineTo(352, 132); c.lineTo(416, 200);
+    c.stroke();
+    c.fillStyle = getVar("--accent") || "#E8871E"; c.beginPath();
+    c.moveTo(186, 246); c.quadraticCurveTo(256, 336, 326, 246); c.quadraticCurveTo(256, 288, 186, 246); c.closePath(); c.fill();
+  }
+  function updateThreeTheme() {
+    if (!three) return;
+    requestAnimationFrame(function () {
+      var tint = getVar("--tint"), brand = getVar("--brand"), surface = getVar("--surface"), accent = getVar("--accent");
+      var h = three.defs.hero;
+      if (h.built) {
+        h.plain.color.set(tint);
+        h.edgeMats.forEach(function (m) { m.color.set(brand); });
+        h.hemi.groundColor.set(tint);
+        drawFace(); h.tex.needsUpdate = true;
+      }
+      var fr = three.defs.fridge;
+      if (fr.built) {
+        fr.hemi.groundColor.set(tint);
+        fr.plainMats.forEach(function (m) { m.color.set(surface); });
+        fr.tintMats.forEach(function (m) { m.color.set(tint); });
+        fr.accentMats.forEach(function (m) { m.color.set(accent); });
+        fr.edgeMats.forEach(function (m) { m.color.set(brand); });
+        drawConfirmFace(); fr.faceTex.needsUpdate = true;
+      }
+    });
+  }
+  function mkOrbit(ambient) {
+    return { spin: 0, rotX: 0, spinVel: ambient, velX: 0, mode: "idle", resumeT: 0, resumeFrom: 0, resumeRotX: 0, idleAt: 0, ambient: ambient };
+  }
+  function stepOrbit(o, dt, now, amb) {
+    if (o.mode === "coast") {
+      var decay = Math.pow(0.94, dt * 60);
+      o.spinVel *= decay; o.velX *= decay;
+      o.spin += o.spinVel * dt;
+      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + o.velX * dt));
+      if (Math.abs(o.spinVel) <= amb && Math.abs(o.velX) < 0.05 && now >= o.idleAt) {
+        o.mode = "resume"; o.resumeT = now; o.resumeFrom = o.spinVel; o.resumeRotX = o.rotX;
+      }
+    } else if (o.mode === "resume") {
+      var t = Math.min((now - o.resumeT) / 1500, 1);
+      var e2 = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      o.spinVel = o.resumeFrom + (amb - o.resumeFrom) * e2;
+      o.rotX = o.resumeRotX * (1 - e2);
+      o.spin += o.spinVel * dt;
+      if (t >= 1) o.mode = "idle";
+    } else {
+      o.spinVel += (amb - o.spinVel) * 0.05;
+      o.spin += o.spinVel * dt;
+      o.rotX += (0 - o.rotX) * 0.08;
+    }
+  }
+  var threeTried = false;
+  function init3D() {
+    if (threeTried) return;
+    threeTried = true;
+    if (mob || reduced) return;
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+    s.onload = function () { try { buildThree(); } catch (e) {} };
+    document.head.appendChild(s);
+  }
+  function buildHero(T) {
+    var d = three.defs.hero;
+    var brand = getVar("--brand") || "#2E5A22";
+    var tint = getVar("--tint") || "#EAF2DE";
+    var scene = new T.Scene();
+    var cam = new T.PerspectiveCamera(35, 1, 0.1, 100);
+    cam.position.set(0, 0.85, 4.6); cam.lookAt(0, 0, 0);
+    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.9);
+    scene.add(hemi);
+    var dl = new T.DirectionalLight(0xffffff, 0.5);
+    dl.position.set(-2, 3, 2); scene.add(dl);
+    var group = new T.Group();
+    faceCanvas = document.createElement("canvas");
+    faceCanvas.width = faceCanvas.height = 512;
+    drawFace();
+    var tex = new T.CanvasTexture(faceCanvas);
+    var plain = new T.MeshLambertMaterial({ color: new T.Color(tint) });
+    var faceMat = new T.MeshLambertMaterial({ map: tex });
+    var edgeMat = new T.LineBasicMaterial({ color: new T.Color(brand) });
+    var body = new T.Mesh(new T.BoxGeometry(1.6, 1.2, 1.2), [plain, plain, plain, plain, faceMat, plain]);
+    body.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.6, 1.2, 1.2)), edgeMat));
+    var lidGeo = new T.BoxGeometry(1.6, 0.08, 1.2); lidGeo.translate(0, 0.04, 0.6);
+    var lid = new T.Mesh(lidGeo, plain);
+    lid.add(new T.LineSegments(new T.EdgesGeometry(lidGeo), edgeMat));
+    lid.position.set(0, 0.6, -0.6);
+    group.add(body); group.add(lid);
+    group.position.y = -0.1;
+    scene.add(group);
+    d.scene = scene; d.cam = cam; d.group = group; d.lid = lid; d.plain = plain; d.tex = tex; d.hemi = hemi; d.edgeMats = [edgeMat]; d.built = true; d.lidCur = 0;
+    if (!three.blinkStarted) {
+      three.blinkStarted = true;
+      (function blinkLoop() {
+        setTimeout(function () {
+          faceBlink = true; drawFace(); tex.needsUpdate = true;
+          setTimeout(function () { faceBlink = false; drawFace(); tex.needsUpdate = true; }, 140);
+          blinkLoop();
+        }, 5000 + Math.random() * 2000);
+      })();
+    }
+  }
+  function buildFridge(T) {
+    var d = three.defs.fridge;
+    var brand = getVar("--brand") || "#2E5A22";
+    var tint = getVar("--tint") || "#EAF2DE";
+    var surface = getVar("--surface") || "#FFFFFF";
+    var accent = getVar("--accent") || "#E8871E";
+    function v(x, y, z) { return new T.Vector3(x, y, z); }
+    var scene = new T.Scene();
+    var cam = new T.PerspectiveCamera(38, 1, 0.1, 100);
+    cam.position.set(0, 0.4, 7.4); cam.lookAt(0, -0.2, 0);
+    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.95);
+    scene.add(hemi);
+    var dl = new T.DirectionalLight(0xffffff, 0.5);
+    dl.position.set(-2, 4, 3); scene.add(dl);
+    var plainMats = [], tintMats = [], accentMats = [], edgeMats = [];
+    function mkPlain() { var m = new T.MeshLambertMaterial({ color: new T.Color(surface), transparent: true }); plainMats.push(m); return m; }
+    function mkTint() { var m = new T.MeshLambertMaterial({ color: new T.Color(tint), transparent: true }); tintMats.push(m); return m; }
+    function mkAccent() { var m = new T.MeshLambertMaterial({ color: new T.Color(accent), transparent: true }); accentMats.push(m); return m; }
+    function mkEdge() { var m = new T.LineBasicMaterial({ color: new T.Color(brand), transparent: true }); edgeMats.push(m); return m; }
+    var fridge = new T.Group();
+    fridge.position.set(-1.7, 0.35, 0);
+    var fridgeMats = [];
+    var shellMat = mkPlain(); fridgeMats.push(shellMat);
+    function addBox(w, h, dep, x, y, z, mat) {
+      var m = new T.Mesh(new T.BoxGeometry(w, h, dep), mat);
+      m.position.set(x, y, z); fridge.add(m); return m;
+    }
+    addBox(1.5, 2.5, 0.08, 0, 0, -0.51, shellMat);
+    addBox(0.08, 2.5, 1.1, -0.71, 0, 0, shellMat);
+    addBox(0.08, 2.5, 1.1, 0.71, 0, 0, shellMat);
+    addBox(1.5, 0.08, 1.1, 0, 1.21, 0, shellMat);
+    addBox(1.5, 0.08, 1.1, 0, -1.21, 0, shellMat);
+    var fEdgeMat = mkEdge(); fridgeMats.push(fEdgeMat);
+    var outline = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.5, 2.5, 1.1)), fEdgeMat);
+    fridge.add(outline);
+    var shelfMat = mkTint(); fridgeMats.push(shelfMat);
+    [-0.5, 0.1, 0.7].forEach(function (y) { addBox(1.3, 0.04, 0.9, 0, y, 0, shelfMat); });
+    var doorPivot = new T.Group();
+    doorPivot.position.set(-0.75, 0, 0.56);
+    var doorMat = mkPlain(); fridgeMats.push(doorMat);
+    var door = new T.Mesh(new T.BoxGeometry(1.46, 2.42, 0.07), doorMat);
+    door.position.set(0.73, 0, 0);
+    var dEdgeMat = mkEdge(); fridgeMats.push(dEdgeMat);
+    door.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.46, 2.42, 0.07)), dEdgeMat));
+    var handleMat = mkEdge();
+    var handle = new T.Mesh(new T.BoxGeometry(0.05, 0.6, 0.05), handleMat);
+    handle.position.set(0.65, 0.3, 0.06);
+    door.add(handle);
+    doorPivot.add(door);
+    fridge.add(doorPivot);
+    var trayDefs = [
+      { x: -0.28, shelf: 0.7, w: 0.34, mat: mkTint() },
+      { x: 0.26, shelf: 0.7, w: 0.3, mat: mkAccent() },
+      { x: -0.24, shelf: 0.1, w: 0.32, mat: mkAccent() },
+      { x: 0.28, shelf: -0.5, w: 0.34, mat: mkTint() }
+    ];
+    var trays = [], trayCurves = [];
+    trayDefs.forEach(function (t) {
+      var mesh = new T.Mesh(new T.BoxGeometry(t.w, 0.14, 0.3), t.mat);
+      mesh.position.set(t.x, t.shelf + 0.1, 0.15);
+      fridge.add(mesh); trays.push(mesh);
+      var sy = t.shelf + 0.1;
+      trayCurves.push(new T.CatmullRomCurve3([
+        v(t.x, sy, 0.15), v(t.x, sy + 0.12, 0.85), v(mix(t.x, 1.2, 0.55), sy * 0.4 + 0.35, 1.05), v(1.2, -1.15, 0.9)
+      ]));
+    });
+    scene.add(fridge);
+    var box = new T.Group();
+    var boxTint = mkTint();
+    var bodyMesh = new T.Mesh(new T.BoxGeometry(1.0, 0.72, 0.72), boxTint);
+    var bEdge = mkEdge();
+    bodyMesh.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.0, 0.72, 0.72)), bEdge));
+    box.add(bodyMesh);
+    var boxLidGeo = new T.BoxGeometry(1.0, 0.05, 0.72); boxLidGeo.translate(0, 0.025, 0.36);
+    var lid = new T.Mesh(boxLidGeo, boxTint);
+    lid.add(new T.LineSegments(new T.EdgesGeometry(boxLidGeo), bEdge));
+    lid.position.set(0, 0.36, -0.36);
+    box.add(lid);
+    confirmCanvas = document.createElement("canvas");
+    confirmCanvas.width = 512; confirmCanvas.height = 384;
+    drawConfirmFace();
+    var faceTex = new T.CanvasTexture(confirmCanvas);
+    var face = new T.Mesh(new T.PlaneGeometry(0.62, 0.46), new T.MeshBasicMaterial({ map: faceTex, transparent: true, opacity: 0 }));
+    face.position.set(0, -0.02, 0.365);
+    box.add(face);
+    scene.add(box);
+    var travel = new T.CatmullRomCurve3([v(-0.5, -1.15, 0.9), v(0.35, -0.5, 0.5), v(1.35, -0.78, 0.1), v(2.35, -1.15, -0.35)]);
+    var marker = new T.Group();
+    var ring = new T.Mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), mkEdgeSolid());
+    function mkEdgeSolid() { var m = new T.MeshLambertMaterial({ color: new T.Color(brand) }); edgeMats.push(m); return m; }
+    marker.add(ring);
+    var post = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 0.6, 10), mkEdgeSolid());
+    post.position.y = -0.62;
+    marker.add(post);
+    marker.position.set(2.35, -0.35, -0.75);
+    marker.scale.set(0.001, 0.001, 0.001);
+    scene.add(marker);
+    d.scene = scene; d.cam = cam; d.fridge = fridge; d.fridgeMats = fridgeMats; d.doorPivot = doorPivot; d.trays = trays; d.trayCurves = trayCurves;
+    d.box = box; d.lid = lid; d.face = face; d.faceTex = faceTex; d.travel = travel; d.marker = marker;
+    d.plainMats = plainMats; d.tintMats = tintMats; d.accentMats = accentMats; d.edgeMats = edgeMats; d.hemi = hemi; d.built = true;
+  }
+  function disposeDef(d) {
+    if (!d || !d.built || !d.scene) return;
+    d.scene.traverse(function (o) {
+      if (o.geometry) o.geometry.dispose();
+      var m = o.material;
+      if (m) (Array.isArray(m) ? m : [m]).forEach(function (x) { if (x.map) x.map.dispose(); x.dispose(); });
+    });
+    if (d.scene.clear) d.scene.clear();
+    d.scene = null; d.cam = null; d.built = false;
+    ["fridge", "doorPivot", "trays", "trayCurves", "box", "lid", "face", "marker", "edgeMats", "plainMats", "tintMats", "accentMats", "fridgeMats", "hemi", "faceTex", "travel"].forEach(function (k) { delete d[k]; });
+  }
+  function tickHero(dt, now) {
+    var h = three.defs.hero;
+    h.lidCur += (-1.7 * heroP - h.lidCur) * 0.08;
+    h.lid.rotation.x = h.lidCur;
+    var sc = pinOn ? 0.92 + 0.08 * heroP : 1;
+    h.group.scale.set(sc, sc, sc);
+    var amb = spinBoost ? 0.4 : 0.15;
+    stepOrbit(h.orbit, dt, now, amb);
+    h.group.rotation.y = h.orbit.spin;
+    h.group.rotation.x = h.orbit.rotX;
+  }
+  function tickFridge(dt, now) {
+    var fr = three.defs.fridge;
+    var p = fridgePinOn ? fridgeP : 1;
+    var e1 = eo(cl(p / 0.2));
+    var e2 = ei(cl((p - 0.2) / 0.25));
+    var tFill = cl((p - 0.45) / 0.15);
+    var e4 = ei(cl((p - 0.6) / 0.25));
+    var e5 = ei(cl((p - 0.85) / 0.15));
+    fr.fridge.position.y = 0.35 - 2.7 * (1 - e1);
+    fr.fridge.position.z = -1.7 * e4;
+    fr.fridge.rotation.y = -0.8 * (1 - e1);
+    fr.fridge.visible = e4 < 0.995;
+    fr.fridgeMats.forEach(function (m) { m.opacity = 1 - e4; });
+    fr.doorPivot.rotation.y = -1.9 * e2;
+    fr.trays.forEach(function (tr, i) {
+      var u = cl((tFill - i * 0.12) / 0.52);
+      var pos = fr.trayCurves[i].getPoint(eo(u));
+      tr.position.copy(pos);
+      tr.rotation.z = 0.5 * Math.sin(Math.PI * u) * (i % 2 ? -1 : 1);
+      tr.visible = u < 1 && e4 < 0.4;
+    });
+    var bp = fr.travel.getPoint(e4);
+    fr.box.position.copy(bp);
+    fr.box.rotation.y = -0.35 + 0.75 * e4 - 0.4 * e5 + 0.35 * Math.sin(e4 * Math.PI * 2) * (1 - e5);
+    var lastU = cl((tFill - 3 * 0.12) / 0.52);
+    var lidA;
+    if (p < 0.45) lidA = -1.5 * ei(cl((p - 0.36) / 0.09));
+    else lidA = -1.5 * (1 - ei(cl((lastU - 0.82) / 0.18)));
+    lidA += -1.35 * Math.sin(Math.PI * e5);
+    fr.lid.rotation.x = lidA;
+    fr.face.material.opacity = cl((e5 - 0.35) / 0.45);
+    var ms = Math.max(0.001, e4);
+    fr.marker.scale.set(ms, ms, ms);
+    var b = 1 + 0.05 * Math.sin(Math.PI * e5);
+    fr.box.scale.set(b, b, b);
+  }
+  function buildThree() {
+    var T = window.THREE;
+    var heroHost = $("#hero3d"), fridgeHost = $("#fridge3d");
+    if (!T || !heroHost || !fridgeHost) return;
+    var renderer;
+    try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    var cv = renderer.domElement;
+    cv.tabIndex = 0;
+    cv.setAttribute("role", "img");
+    cv.setAttribute("aria-label", "3D scene — drag or use arrow keys to spin");
+    cv.style.touchAction = "none";
+    cv.style.cursor = "grab";
+    cv.style.display = "block";
+    var fridgeWatch = $("#fridgeWrap");
+    three = {
+      renderer: renderer, cv: cv, active: null, running: false, blinkStarted: false,
+      defs: {
+        hero: { name: "hero", host: heroHost, watch: heroHost.parentElement, aspect: 0.86, orbit: mkOrbit(0.15), built: false },
+        fridge: { name: "fridge", host: fridgeHost, watch: fridgeWatch, aspect: 0.52, orbit: null, built: false }
+      }
+    };
+    var samples = [];
+    cv.addEventListener("pointerdown", function (e) {
+      var o = three.active && three.active.orbit; if (!o) return;
+      cv.setPointerCapture(e.pointerId);
+      o.mode = "drag"; cv.style.cursor = "grabbing";
+      samples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+    });
+    cv.addEventListener("pointermove", function (e) {
+      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
+      var s0 = samples[samples.length - 1];
+      o.spin += (e.clientX - s0.x) * 0.008;
+      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + (e.clientY - s0.y) * 0.008));
+      samples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+      if (samples.length > 6) samples.shift();
+    });
+    function release() {
+      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
+      cv.style.cursor = "grab";
+      var now = performance.now();
+      var recent = samples.filter(function (s) { return now - s.t < 120; });
+      if (recent.length >= 2) {
+        var a = recent[0], b = recent[recent.length - 1];
+        var dt = Math.max((b.t - a.t) / 1000, 0.016);
+        o.spinVel = (b.x - a.x) * 0.008 / dt;
+        o.velX = (b.y - a.y) * 0.008 / dt;
+      } else { o.spinVel = 0; o.velX = 0; }
+      o.mode = "coast"; o.idleAt = now + 800;
+    }
+    cv.addEventListener("pointerup", release);
+    cv.addEventListener("pointercancel", release);
+    cv.addEventListener("keydown", function (e) {
+      var o = three.active && three.active.orbit; if (!o) return;
+      if (e.key === "ArrowLeft") o.spin -= 0.1;
+      else if (e.key === "ArrowRight") o.spin += 0.1;
+      else if (e.key === "ArrowUp") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX - 0.1));
+      else if (e.key === "ArrowDown") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + 0.1));
+      else return;
+      e.preventDefault();
+    });
+    var vis = { hero: false, fridge: false };
+    function attachThree(force) {
+      var want = null;
+      if (vis.hero) want = three.defs.hero; else if (vis.fridge) want = three.defs.fridge;
+      three.running = !!want;
+      if (!want) return;
+      if (!want.built) {
+        try { if (want.name === "hero") buildHero(T); else buildFridge(T); } catch (e) { return; }
+      }
+      if (want === three.active && !force) return;
+      three.active = want;
+      var host = want.host;
+      host.style.display = "block";
+      host.insertBefore(cv, host.firstChild);
+      var w = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || 420, h = Math.round(w * want.aspect);
+      renderer.setSize(w, h);
+      want.cam.aspect = w / h;
+      want.cam.updateProjectionMatrix();
+      cv.style.cursor = want.orbit ? "grab" : "default";
+      if (want.name === "hero") {
+        heroHost.style.display = "block"; $("#mascotHero").style.display = "none";
+        fridgeHost.style.display = "none"; $("#fridgeFallback").style.display = "block";
+      } else {
+        heroHost.style.display = "none"; $("#mascotHero").style.display = "block";
+        fridgeHost.style.display = "block"; $("#fridgeFallback").style.display = "none";
+      }
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.target === three.defs.hero.watch) vis.hero = e.isIntersecting;
+        else if (e.target === fridgeWatch) vis.fridge = e.isIntersecting;
+      });
+      attachThree();
+    }, { rootMargin: "100px" });
+    io.observe(three.defs.hero.watch);
+    io.observe(fridgeWatch);
+    var last = performance.now();
+    function loop(now) {
+      requestAnimationFrame(loop);
+      if (!three.active || !three.running || !three.active.built) { last = now; return; }
+      var dt = Math.min((now - last) / 1000, 0.05); last = now;
+      if (three.active.name === "hero") tickHero(dt, now); else tickFridge(dt, now);
+      renderer.render(three.active.scene, three.active.cam);
+    }
+    requestAnimationFrame(loop);
+    if (!mob && !reduced) {
+      pinOn = true;
+      $("#heropin").style.height = "200vh";
+      var st = $("#top");
+      st.style.position = "sticky"; st.style.top = "0";
+      st.style.minHeight = "100vh"; st.style.alignContent = "center";
+    }
+    var fSticky = $("#fridgeSticky");
+    if (fridgeWatch && fSticky) {
+      fridgePinOn = true;
+      fridgeWatch.style.height = "300vh";
+      fSticky.style.position = "sticky"; fSticky.style.top = "15vh";
+    }
+    buildHero(T);
+    vis.hero = true;
+    attachThree(true);
+  }
+  setTimeout(init3D, 700);
+
+  /* ---------- hero mascot mouth hover ---------- */
+  var heroSlot = $("#mascotHero");
+  heroSlot.addEventListener("mouseenter", function () { paintMascot(heroSlot.querySelector("svg"), "warm"); });
+  heroSlot.addEventListener("mouseleave", function () { paintMascot(heroSlot.querySelector("svg"), "idle"); });
+})();
+</script>
+</body>
+</html>
