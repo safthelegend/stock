@@ -176,6 +176,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .cards-grid .card .kicker { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--brand); margin:0 0 10px; }
   .cards-grid .card p.body { font-size:16px; line-height:1.6; color:var(--text); margin:0; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
+  .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:13px; color:var(--brand); cursor:pointer; }
+  .cards-grid .card .doc-toggle:hover { color:var(--accent); }
+  .cards-grid .card .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
+  .cards-grid .card.doc-open .doc-panel { grid-template-rows:1fr; }
+  .cards-grid .card .doc-panel > div { overflow:hidden; }
+  .cards-grid .card .doc-inner { padding-top:14px; }
+  .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:420px; overflow-y:auto; margin:0 0 10px; }
+  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.04em; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
+  .cards-grid .card .doc-copy:hover, .cards-grid .card .doc-download:hover { border-color:var(--brand); color:var(--brand); }
   form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
   form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
@@ -285,8 +294,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <div style="display:grid; gap:20px;">
       <div class="collage-piece" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-a);"></rect></svg>
-        <div style="position:relative; padding:40px 44px;">
-          <p class="collage-fig" style="font-size:clamp(38px,6vw,60px);">$186 billion</p>
+        <div style="position:relative; padding:44px 48px;">
+          <p class="collage-fig" style="font-size:clamp(40px,6.4vw,64px);">$<span id="collageBillion">186</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span></p>
           <p class="collage-copy">Federal SNAP cut over ten years, One Big Beautiful Bill Act, signed July 4, 2025.</p>
           <p class="collage-src">Congressional Budget Office</p>
         </div>
@@ -320,7 +329,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
         <div style="position:relative; padding:24px 28px;">
           <div id="videoSlot">
-            <button type="button" class="video-thumb" id="videoThumb" aria-label="Play video: PBS NewsHour, Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in">
+            <button type="button" class="video-thumb" id="videoThumb" aria-label="Play 30-second clip: PBS NewsHour, Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in">
               <svg viewBox="0 0 64 64" aria-hidden="true" style="position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%);">
                 <circle cx="32" cy="32" r="30" style="fill:var(--brand);"></circle>
                 <path d="M26 20 L46 32 L26 44 Z" style="fill:var(--on-brand);"></path>
@@ -328,7 +337,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
             </button>
           </div>
           <p class="collage-copy" style="margin-top:12px;">Millions lose SNAP benefits as stricter work requirements take effect nationally.</p>
-          <p class="collage-src">PBS NewsHour, 2026</p>
+          <p class="collage-src">PBS NewsHour · 30-second clip</p>
         </div>
       </div>
       <div class="collage-piece" style="width:190px; justify-self:start;">
@@ -573,26 +582,196 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         <p class="kicker">01 · health code memo</p>
         <p class="body">What a school may release, and the records it has to keep to release it.</p>
         <p class="meta">Food service directors and school administrators.</p>
+        <button type="button" class="doc-toggle" aria-expanded="false">Read the memo <span class="doc-caret" aria-hidden="true">+</span></button>
+        <div class="doc-panel"><div class="doc-inner">
+          <pre class="doc-text mono" id="docHealth">STOCK THE BLOCK — HEALTH CODE MEMO (TEMPLATE)
+For food service directors and school administrators
+
+WHAT THIS COVERS
+This memo explains why unopened, sealed share-table surplus is generally
+lower-risk to release than prepared or served food, and what record a
+school should keep before releasing it. It is a starting template, not
+legal advice — read the bracketed sections and fill them in with your
+own health department's guidance before relying on it.
+
+WHAT COUNTS AS TCS FOOD
+Time/Temperature Control for Safety (TCS) food is food that can support
+rapid bacterial growth if it sits at an unsafe temperature — milk and
+dairy, cut produce, anything that needs refrigeration. Most share-table
+surplus (sealed milk cartons, prepackaged snacks, whole fruit) is
+lower-risk than prepared or served food because it was never opened,
+plated, or handled after packaging. That does not mean it is exempt
+from time/temperature rules — it means the risk profile is different
+from a steam-table item that sat out during lunch service.
+
+WHY A TEMPERATURE RECORD IS WHAT LETS YOU RELEASE IT
+A school cannot show a box of surplus was safe by asserting it — it has
+to show it. A written record of the load's temperature from pack-out to
+hand-off (or, when a logger unit wasn't available for that run, a
+documented model of the same route's typical time-and-temperature
+profile) is the artifact a health department or a skeptical parent can
+actually check. No record, no defensible release.
+
+[Insert your local health department's specific guidance on TCS food
+donation and record-keeping — verify with your health department before
+relying on this memo. Requirements vary by jurisdiction.]
+
+LIABILITY: THE BILL EMERSON GOOD SAMARITAN FOOD DONATION ACT
+The federal Bill Emerson Good Samaritan Food Donation Act protects
+schools and other good-faith donors from civil and criminal liability
+if a food item donated in good faith later causes harm, except in cases
+of gross negligence or intentional misconduct. It does not replace
+local health code compliance — a school still has to follow its state
+and local food safety rules. What the Emerson Act does is remove the
+liability fear that keeps some schools from donating at all, once
+they're already following the rules above.
+
+BEFORE YOU RELEASE A BOX
+  1. Confirm every item is sealed and unopened — nothing served, nothing
+     plated, nothing that touched an open steam table.
+  2. Confirm the box has a temperature record covering pack-out to
+     hand-off (sensor log, or a documented route model per the note
+     above).
+  3. Confirm the record is attached to a box ID that appears on the
+     delivery manifest.
+  4. Keep the record after the delivery — it's what you'd show if
+     anyone ever asked what happened to the surplus.
+
+[Insert your school's contact for questions about this memo]
+[Insert local health department name and contact]
+
+This is a template. Read it, adapt it, verify it with your own health
+department — do not treat it as a substitute for their guidance.</pre>
+          <button type="button" class="doc-copy" data-copy-target="docHealth">Copy to clipboard</button>
+        </div></div>
       </div>
       <div class="card">
         <p class="kicker">02 · box spec</p>
         <p class="body">Cut sheet, materials list and fold order for one insulated transport box.</p>
         <p class="meta">Whoever builds the first three boxes.</p>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQppbiBzZWN0aW9uIDA4IG9mIHRoZSBzaXRlOiBzaXggbGFiZWxlZCBlbGVtZW50cyDigJQgbGlkIGZsYXAsIGZhY2UgcGFuZWwsCmJhc2UsIGhhbmRsZSBjdXQsIHNlbnNvciBwb2NrZXQsIGFuZCBiYWNrIHBhbmVsLgoKVGhpcyBpcyBhIHN0YXJ0aW5nIHRlbXBsYXRlIGZvciBhIGJ1aWxkIHRlYW0sIG5vdCBhIGZpbmlzaGVkCmVuZ2luZWVyaW5nIGRyYXdpbmcuIEV4YWN0IHBhbmVsIGRpbWVuc2lvbnMgYW5kIHRoZSBwcmVjaXNlIGZvbGQKc2VxdWVuY2UgZGVwZW5kIG9uIHRoZSBzaGVldCBtYXRlcmlhbCB5b3UgY2hvb3NlIGFuZCBhcmVuJ3QgaW52ZW50ZWQKaGVyZSDigJQgdmVyaWZ5IHRoZW0gYWdhaW5zdCB0aGUgZGlhZ3JhbSBvbiB0aGUgc2l0ZSBhbmQgeW91ciBhY3R1YWwKbWF0ZXJpYWwgYmVmb3JlIGN1dHRpbmcuCgojIyBUaGUgc2l4IGxhYmVsZWQgZWxlbWVudHMKCi0gKipMaWQgZmxhcCoqIOKAlCBmb2xkcyBkb3duIG92ZXIgdGhlIG9wZW4gdG9wIHRvIGNsb3NlIHRoZSBib3guCi0gKipGYWNlIHBhbmVsKiog4oCUIHRoZSBmcm9udCB3YWxsOyBjYXJyaWVzIHRoZSBoYW5kbGUgY3V0LgotICoqQmFzZSoqIOKAlCB0aGUgYm90dG9tIHBhbmVsLgotICoqSGFuZGxlIGN1dCoqIOKAlCBhbiBvcGVuaW5nIGluIHRoZSBmYWNlIHBhbmVsIHNpemVkIGZvciBhIGdsb3ZlZAogIGhhbmQsIHJlaW5mb3JjZWQgYXQgdGhlIGVkZ2UuCi0gKipTZW5zb3IgcG9ja2V0Kiog4oCUIGEgcG9ja2V0IGluIHRoZSBiYWNrIHBhbmVsIHRoYXQgaG9sZHMgdGhlIGxvZ2dlcgogIHVuaXQgZGVzY3JpYmVkIGluIHNlY3Rpb24gMDQgb2YgdGhlIHNpdGUgKEVTUDMyLUMzIFN1cGVyTWluaSArCiAgRFMxOEIyMCBwcm9iZSksIG9wZW4gZW5vdWdoIGZvciB0aGUgcHJvYmUgdG8gcmVhY2ggdGhlIGludGVyaW9yLgotICoqQmFjayBwYW5lbCoqIOKAlCB0aGUgcmVhciB3YWxsOyBjYXJyaWVzIHRoZSBzZW5zb3IgcG9ja2V0LgoKIyMgTWF0ZXJpYWxzIChnZW5lcmljIOKAlCBjb25maXJtIHF1YW50aXRpZXMgYWdhaW5zdCB5b3VyIGFjdHVhbCBzaGVldCBzaXplKQoKfCBJdGVtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCBOb3RlcyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwKfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfAp8IFJpZ2lkIGluc3VsYXRpb24gYm9hcmQgICAgICAgICAgICAgfCBTaXplZCB0byB0aGUgcGFuZWwgbGF5b3V0IGluIHRoZSBkaWFncmFtIOKAlCBhcHByb3guIGNvc3QgWyRYWF0gfAp8IFJlZmxlY3RpdmUgbGluZXIgb3IgZm9pbCB0YXBlICAgICAgfCBJbnRlcmlvciBmYWNlLCBhbGwgcGFuZWxzICAgICAgICAgICAgICAgICB8CnwgU2VhbSB0YXBlICAgICAgICAgICAgICAgICAgICAgICAgICB8IEZvbGQgbGluZXMgYW5kIGpvaW50cyAgICAgICAgICAgICAgICAgICAgIHwKfCBDbG9zdXJlIChob29rLWFuZC1sb29wIG9yIGxhdGNoKSAgIHwgS2VlcHMgdGhlIGxpZCBmbGFwIHNodXQgaW4gdHJhbnNpdCAgICAgICAgfAp8IEhhbmRsZSBlZGdlIHJlaW5mb3JjZW1lbnQgICAgICAgICAgfCBUaHJvdWdoIHRoZSBoYW5kbGUgY3V0ICAgICAgICAgICAgICAgICAgICB8CgpFc3RpbWF0ZWQgbWF0ZXJpYWxzIGNvc3QgcGVyIGJveDogWyRYWF0g4oCUIGNvbmZpcm0gY3VycmVudCBwcmljaW5nCmJlZm9yZSBvcmRlcmluZyBmb3IgYSBiYXRjaC4KCiMjIEFzc2VtYmx5LCBpbiBnZW5lcmFsIHRlcm1zCgoxLiBDdXQgdGhlIHNoZWV0IHRvIHRoZSBwYW5lbCBsYXlvdXQgc2hvd24gaW4gdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUuCjIuIEN1dCB0aGUgaGFuZGxlIG9wZW5pbmcgaW50byB0aGUgZmFjZSBwYW5lbDsgY3V0IHRoZSBzZW5zb3IgcG9ja2V0CiAgIGludG8gdGhlIGJhY2sgcGFuZWwuCjMuIEZvbGQgdGhlIGZhY2UgcGFuZWwsIGJhY2sgcGFuZWwsIGFuZCByZW1haW5pbmcgc2lkZSBwYW5lbHMgdXAgZnJvbQogICB0aGUgYmFzZSB0byBmb3JtIHRoZSBib3gncyB3YWxscy4KNC4gU2VhbSB0aGUgdmVydGljYWwgZWRnZXMgd2hlcmUgYWRqb2luaW5nIHBhbmVscyBtZWV0Lgo1LiBGb2xkIHRoZSBsaWQgZmxhcCBkb3duIHRvIGNsb3NlIHRoZSBvcGVuIHRvcC4KNi4gTGluZSB0aGUgaW50ZXJpb3Igd2l0aCB0aGUgcmVmbGVjdGl2ZSBsaW5lci4KNy4gRml0IHRoZSBzZW5zb3IgcG9ja2V0IHNvIHRoZSBsb2dnZXIgc2l0cyBhZ2FpbnN0IHRoZSBpbnRlcmlvciB3YWxsCiAgIHdpdGggdGhlIHByb2JlIHJlYWNoaW5nIGludG8gdGhlIG1haW4gY2F2aXR5LgoKW0luc2VydCBleGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCBmb2xkIHNlcXVlbmNlLCB2ZXJpZmllZCBhZ2FpbnN0IHRoZQpkaWFncmFtIG9uIHRoZSBzaXRlIGFuZCB5b3VyIGNob3NlbiBzaGVldCBtYXRlcmlhbCwgb25jZSB5b3VyIGJ1aWxkCnRlYW0gZmluYWxpemVzIHRoZW0g4oCUIHRoaXMgdGVtcGxhdGUgaW50ZW50aW9uYWxseSBkb2Vzbid0IGludmVudAptZWFzdXJlbWVudHMgdGhhdCBkZXBlbmQgb24gbWF0ZXJpYWwgeW91IGhhdmVuJ3QgcGlja2VkIHlldC5dCg==" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
       </div>
       <div class="card">
         <p class="kicker">03 · partner agreement</p>
         <p class="body">One page between a school and a receiving site, signed before the first run.</p>
         <p class="meta">School administrators and pantry directors.</p>
+        <button type="button" class="doc-toggle" aria-expanded="false">Read the agreement <span class="doc-caret" aria-hidden="true">+</span></button>
+        <div class="doc-panel"><div class="doc-inner">
+          <pre class="doc-text mono" id="docAgreement">STOCK THE BLOCK — PARTNER AGREEMENT (TEMPLATE)
+One page, signed before the first run.
+
+This agreement is between:
+
+  School / releasing site:  [Insert school name]
+  Receiving site:           [Insert partner organization name]
+
+Effective date: [Insert start date]
+
+WHAT IS BEING DONATED
+Sealed, unopened surplus food from the school's cafeteria share table
+only. Nothing served, nothing plated, nothing opened. Every box carries
+a temperature record covering pack-out to hand-off (see the health code
+memo, document 01).
+
+PICKUP / DELIVERY CADENCE
+Cadence is negotiated per-partner and is not fixed by this template — a
+new route may start at once or twice a week and increase from there as
+it proves reliable (see the "getting started" page's cadence guidance
+for why starting slow and consistent beats starting ambitious and
+unreliable). The agreed cadence for this partnership:
+
+  Day(s) of week: [Insert]
+  Time: [Insert]
+  Route / drop-off point: [Insert]
+
+LIABILITY
+This donation is made under the protection of the federal Bill Emerson
+Good Samaritan Food Donation Act, which shields good-faith donors and
+receiving organizations from liability for food donated in good faith,
+except in cases of gross negligence or intentional misconduct. Both
+parties acknowledge this protection applies to the donations covered by
+this agreement.
+
+WHAT EACH SIDE COMMITS TO
+  The school commits to: releasing only sealed, unopened, temperature-
+  logged surplus, and notifying the receiving site if a scheduled
+  pickup will be missed or delayed.
+
+  The receiving site commits to: confirming receipt on the manifest for
+  every delivery (see the intake workflow, document 05), and notifying
+  the school if it can't take a delivery on a given date.
+
+Either party may end this agreement with [Insert notice period] written
+notice to the other party.
+
+SIGNATURES
+
+  School representative:                   Date:
+  ______________________________           ____________
+
+  Name / title: [Insert]
+
+  Receiving site representative:           Date:
+  ______________________________           ____________
+
+  Name / title: [Insert]
+
+[Insert any additional local requirements your health department or
+school district requires for this agreement, if any.]</pre>
+          <button type="button" class="doc-copy" data-copy-target="docAgreement">Copy to clipboard</button>
+        </div></div>
       </div>
       <div class="card">
         <p class="kicker">04 · firmware repo</p>
         <p class="body">Logger sketch, probe calibration notes and wiring for the unit in section 04.</p>
         <p class="meta">The student build team.</p>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCBvbiB0aGUgc2l0ZSAoc2VjdGlvbiAwNCkuIEl0IGlzIGEKZGVzY3JpcHRpb24gb2YgaW50ZW5kZWQgYmVoYXZpb3IsIG5vdCBzb3VyY2UgY29kZSDigJQgdGhlIGFjdHVhbCBmaXJtd2FyZQpzb3VyY2UgbGl2ZXMgaW4gdGhlIHN0dWRlbnQgYnVpbGQgdGVhbSdzIG93biByZXBvc2l0b3J5LgoKW0xpbmsgdG8gZmlybXdhcmUgcmVwbyDigJQgaW5zZXJ0IG9uY2UgY3JlYXRlZF0KCiMjIEhhcmR3YXJlIChhcyBkZXNjcmliZWQgaW4gc2VjdGlvbiAwNCkKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKVGhyZWUgbG9nZ2VyIHVuaXRzIHJvdGF0ZSBhY3Jvc3MgYWxsIHJvdXRlczsgYSBydW4gd2l0aG91dCBhbiBhdmFpbGFibGUKdW5pdCBpcyB2YWxpZGF0ZWQgYWdhaW5zdCBhIHRoZXJtYWwgbW9kZWwgYnVpbHQgZnJvbSBsb2dnZWQgcnVucyBvbiB0aGUKc2FtZSByb3V0ZSAoc2VlIHNlY3Rpb24gMDQgb24gdGhlIHNpdGUpLiBXaGVuIHRoZSBtb2RlbCBjYXJyaWVzIHRoZQpyZWNvcmQgaW5zdGVhZCBvZiBhIHNlbnNvciwgdGhlIG1hbmlmZXN0IGxpbmUgc2F5cyBzby4KCiMjIFN0YXRlIG1hY2hpbmUKCioqQk9PVCoqIOKAlCBQb3dlci1vbiAvIHJlc2V0LiBSdW5zIGEgc2VsZi1jaGVjaywgdGhlbiBtb3ZlcyB0byBJRExFLgoKKipJRExFKiog4oCUIFBvd2VyZWQgYW5kIHJlYWR5LCBub3QgeWV0IGF0dGFjaGVkIHRvIGEgYm94LiBXYWl0aW5nIGZvciBhCnBhY2stb3V0IGV2ZW50IHRvIGJlZ2luIGxvZ2dpbmcuCgoqKkFSTUVEKiog4oCUIEF0dGFjaGVkIHRvIGEgcGFja2VkIGJveCwgd2FpdGluZyBmb3IgdGhlIHJvdXRlIHRvIGJlZ2luLgpUaGlzIGlzIHRoZSAicGFja2VkLCBhYm91dCB0byBsZWF2ZSB0aGUgYnVpbGRpbmciIHN0YXRlLgoKKipMT0dHSU5HKiog4oCUIEFjdGl2ZWx5IHJlY29yZGluZyB0ZW1wZXJhdHVyZSByZWFkaW5ncyBhZ2FpbnN0IHRoZQpkYW5nZXItem9uZSB0aHJlc2hvbGQgKHNhZmUgYXQgb3IgYmVsb3cgNDHCsEYsIHBlciBzZWN0aW9uIDA0KSBmb3IgdGhlCmR1cmF0aW9uIG9mIHRoZSByb3V0ZSwgZnJvbSBwYWNrLW91dCB0byBoYW5kLW9mZi4KCioqQ0xPU0VEKiog4oCUIFJvdXRlIGNvbXBsZXRlLCBkZWxpdmVyeSBjb25maXJtZWQgYnkgdGhlIHJlY2VpdmluZyBzaXRlLgpUaGUgbG9nIGZvciB0aGlzIHJ1biBpcyBmaW5hbGl6ZWQgYW5kIGRvZXMgbm90IGNoYW5nZSBhZnRlciB0aGlzIHBvaW50CuKAlCBjb3JyZWN0aW9ucyBhcHBlbmQgYXMgbmV3IG1hbmlmZXN0IGxpbmVzIHJhdGhlciB0aGFuIGVkaXRpbmcgaGlzdG9yeSwKY29uc2lzdGVudCB3aXRoIGhvdyBUcmFjayB0aGUgQm94IGhhbmRsZXMgdGhlIHB1YmxpYyBsb2cuCgoqKkZBVUxUKiog4oCUIFNvbWV0aGluZyBpbiB0aGUgYWJvdmUgZmFpbGVkOiBwcm9iZSBkaXNjb25uZWN0ZWQsIGJhdHRlcnkKY3JpdGljYWwsIG9yIGEgcmVhZGluZyBvdXRzaWRlIGEgcGxhdXNpYmxlIHJhbmdlLiBBIEZBVUxUIHJ1biBpcwpmbGFnZ2VkIHJhdGhlciB0aGFuIHRydXN0ZWQsIGFuZCBmYWxscyBiYWNrIHRvIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZS4KCiMjIFdoYXQgdGhpcyBkb2N1bWVudCBpcyBub3QKClRoaXMgaXMgbm90IHRoZSBmaXJtd2FyZSBzb3VyY2UuIEl0IGRlc2NyaWJlcyB0aGUgaW50ZW5kZWQgc3RhdGVzIGFuZAp0aGUgcmVhc29uaW5nIGJlaGluZCB0aGVtIHNvIGEgbmV3IGNvbnRyaWJ1dG9yIHVuZGVyc3RhbmRzIHdoYXQgdGhlCnVuaXQgaXMgc3VwcG9zZWQgdG8gZG8gYmVmb3JlIHJlYWRpbmcgdGhlIGFjdHVhbCBjb2RlLiBDYWxpYnJhdGlvbgpjb25zdGFudHMsIGV4YWN0IHRpbWluZywgYW5kIHRoZSByZWFsIC5pbm8gLyBDKysgc291cmNlIGFyZSBtYWludGFpbmVkCmluIHRoZSBmaXJtd2FyZSByZXBvIGxpbmtlZCBhYm92ZSBvbmNlIGl0IGV4aXN0cyDigJQgZG8gbm90IHRyZWF0IHRoaXMKZG9jdW1lbnQgYXMgYXV0aG9yaXRhdGl2ZSBmb3IgaW1wbGVtZW50YXRpb24gZGV0YWlscy4K" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
       </div>
       <div class="card">
         <p class="kicker">05 · intake workflow</p>
         <p class="body">How a receiving site confirms a delivery and closes out the manifest line.</p>
         <p class="meta">Pantry staff and volunteers.</p>
+        <button type="button" class="doc-toggle" aria-expanded="false">Read the checklist <span class="doc-caret" aria-hidden="true">+</span></button>
+        <div class="doc-panel"><div class="doc-inner">
+          <pre class="doc-text mono" id="docIntake">STOCK THE BLOCK — INTAKE WORKFLOW
+For pantry staff and volunteers, at delivery
+
+When a delivery arrives, work through this checklist before signing
+off. Do not close out the manifest line until all four are confirmed.
+
+  1. CONFIRM THE BOX ID
+     Match the box ID on the delivery to the corresponding line on the
+     delivery manifest. If there's no matching line, don't accept the
+     box as a normal delivery — flag it instead.
+
+  2. CONFIRM THE COLD-CHAIN LOG
+     Check the box's temperature log (or route model, if no sensor unit
+     was available for this run). The load needs to have stayed at or
+     below 41°F throughout — the same "in range" threshold used on the
+     site's live cold-chain readout. If any reading is above 41°F, the
+     box is "danger zone," not "in range" — flag it and use your own
+     judgment (and your health department's guidance) before
+     distributing that food.
+
+  3. CONFIRM THE COUNT / WEIGHT
+     Check that the item count or weight in front of you matches what
+     was logged before the box left the school. Note any discrepancy —
+     don't silently correct the manifest number to match what arrived.
+
+  4. SIGN TO CLOSE OUT THE MANIFEST LINE
+     Once 1–3 are confirmed, sign to close out the line. This is what
+     moves the delivery from "en route" to "received" on the public
+     log. Corrections after this point append as new lines rather than
+     editing the closed entry — the record doesn't get quietly changed
+     after the fact.
+
+If something doesn't check out — box ID doesn't match, temperature log
+shows a danger-zone reading, count is off — don't sign it off as a
+clean delivery. Flag it. The whole point of the public log is that it's
+checkable; a flagged delivery is more useful than a clean-looking one
+that wasn't actually clean.</pre>
+          <button type="button" class="doc-copy" data-copy-target="docIntake">Copy to clipboard</button>
+        </div></div>
       </div>
     </div>
     <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
@@ -1067,14 +1246,37 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       var frame = document.createElement("div");
       frame.className = "video-frame";
       var iframe = document.createElement("iframe");
-      iframe.src = "https://www.youtube-nocookie.com/embed/DrIi1CPKnz8?autoplay=1";
-      iframe.title = "PBS NewsHour: Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in";
+      iframe.src = "https://www.youtube-nocookie.com/embed/DrIi1CPKnz8?autoplay=1&start=0&end=30";
+      iframe.title = "PBS NewsHour clip: Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in (opening 30 seconds)";
       iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
       iframe.allowFullscreen = true;
       frame.appendChild(iframe);
       $("#videoSlot").replaceChild(frame, videoThumb);
     });
   }
+
+  /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
+  $$(".doc-toggle").forEach(function (btn) {
+    var card = btn.closest(".card");
+    btn.addEventListener("click", function () {
+      var open = card.classList.toggle("doc-open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      var caret = btn.querySelector(".doc-caret");
+      if (caret) caret.textContent = open ? "−" : "+";
+    });
+  });
+  $$(".doc-copy").forEach(function (btn) {
+    var pre = document.getElementById(btn.getAttribute("data-copy-target"));
+    if (!pre) return;
+    btn.addEventListener("click", function () {
+      if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var orig = btn.textContent;
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = orig; }, 1600);
+      }, function () {});
+    });
+  });
 
   /* ---------- scroll FX ---------- */
   var shots = [];
@@ -1105,6 +1307,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         el.style.transition = "opacity 600ms " + EXP + " " + i * 90 + "ms, transform 600ms " + EXP + " " + i * 90 + "ms";
         el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
       });
+    });
+  })();
+  (function () {
+    var pieces = $$(".collage-piece");
+    if (!reduced) pieces.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
+    shot($(".collage-wrap"), function () {
+      pieces.forEach(function (el, i) {
+        el.style.transition = "opacity 600ms " + EXP + " " + i * 100 + "ms, transform 600ms " + EXP + " " + i * 100 + "ms";
+        el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
+      });
+      var billionEl = $("#collageBillion");
+      if (billionEl) count(186, function (v) { billionEl.textContent = v; });
     });
   })();
   $$("[data-prow]").forEach(function (row) {
