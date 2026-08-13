@@ -292,6 +292,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   </h2>
   <div class="collage-wrap">
     <div style="display:grid; gap:20px;">
+      <!-- Third-party video: PBS NewsHour via youtube-nocookie.com embed. Verify video is still live before each deploy. -->
+      <div class="collage-piece" style="width:100%; max-width:50%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
+        <div style="position:relative; padding:24px 28px;">
+          <div id="videoSlot">
+            <button type="button" class="video-thumb" id="videoThumb" aria-label="Play 30-second clip: PBS NewsHour, Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in">
+              <svg viewBox="0 0 64 64" aria-hidden="true" style="position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%);">
+                <circle cx="32" cy="32" r="30" style="fill:var(--brand);"></circle>
+                <path d="M26 20 L46 32 L26 44 Z" style="fill:var(--on-brand);"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="collage-copy" style="margin-top:12px;">Millions lose SNAP benefits as stricter work requirements take effect nationally.</p>
+          <p class="collage-src">PBS NewsHour · 30-second clip</p>
+        </div>
+      </div>
       <div class="collage-piece" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-a);"></rect></svg>
         <div style="position:relative; padding:44px 48px;">
@@ -322,22 +338,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
           <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026</p>
           <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
           <p class="collage-src">Federal Register</p>
-        </div>
-      </div>
-      <!-- Third-party video: PBS NewsHour via youtube-nocookie.com embed. Verify video is still live before each deploy. -->
-      <div class="collage-piece" style="width:100%; max-width:50%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
-        <div style="position:relative; padding:24px 28px;">
-          <div id="videoSlot">
-            <button type="button" class="video-thumb" id="videoThumb" aria-label="Play 30-second clip: PBS NewsHour, Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in">
-              <svg viewBox="0 0 64 64" aria-hidden="true" style="position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%);">
-                <circle cx="32" cy="32" r="30" style="fill:var(--brand);"></circle>
-                <path d="M26 20 L46 32 L26 44 Z" style="fill:var(--on-brand);"></path>
-              </svg>
-            </button>
-          </div>
-          <p class="collage-copy" style="margin-top:12px;">Millions lose SNAP benefits as stricter work requirements take effect nationally.</p>
-          <p class="collage-src">PBS NewsHour · 30-second clip</p>
         </div>
       </div>
       <div class="collage-piece" style="width:190px; justify-self:start;">
@@ -1312,13 +1312,13 @@ that wasn't actually clean.</pre>
   (function () {
     var pieces = $$(".collage-piece");
     if (!reduced) pieces.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
-    shot($(".collage-wrap"), function () {
-      pieces.forEach(function (el, i) {
-        el.style.transition = "opacity 600ms " + EXP + " " + i * 100 + "ms, transform 600ms " + EXP + " " + i * 100 + "ms";
+    pieces.forEach(function (el) {
+      shot(el, function () {
+        el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
         el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
+        var billionEl = el.querySelector("#collageBillion");
+        if (billionEl) count(186, function (v) { billionEl.textContent = v; });
       });
-      var billionEl = $("#collageBillion");
-      if (billionEl) count(186, function (v) { billionEl.textContent = v; });
     });
   })();
   $$("[data-prow]").forEach(function (row) {
