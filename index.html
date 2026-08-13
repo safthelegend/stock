@@ -160,6 +160,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .collage-wrap { position:relative; }
   .collage-piece { position:relative; }
   .collage-piece .tear { position:absolute; filter:drop-shadow(0 var(--paper-y) var(--paper-blur) var(--paper-shadow)); }
+  .video-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--tint); border-radius:6px; overflow:hidden; cursor:pointer; border:none; padding:0; display:block; transition:transform 200ms ease; }
+  .video-thumb:hover { transform:scale(1.015); }
+  .video-thumb:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+  .video-frame { position:relative; width:100%; aspect-ratio:16/9; border-radius:6px; overflow:hidden; }
+  .video-frame iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
   .collage-fig { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
   .collage-copy { font-size:17px; line-height:1.55; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
@@ -215,6 +220,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <a href="#tracker">Tracker</a>
       <a href="#how">How it works</a>
       <a href="#story">Story</a>
+      <a href="getting-started.html">Getting started</a>
       <a href="#join" class="cta">Partner with us</a>
       <button id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
         <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -263,6 +269,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <filter id="torn-c" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="41" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-d" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.044" numOctaves="3" seed="67" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-f" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.036" numOctaves="3" seed="53" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
     </defs>
   </svg>
@@ -297,7 +304,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         <div style="position:relative; padding:28px 32px;">
           <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026</p>
           <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
-          <p class="collage-src" style="color:var(--accent);">[CITATION NEEDED]</p>
+          <p class="collage-src">NY OTDA</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
@@ -305,7 +312,23 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         <div style="position:relative; padding:24px 28px;">
           <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026</p>
           <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
-          <p class="collage-src" style="color:var(--accent);">[CITATION NEEDED]</p>
+          <p class="collage-src">Federal Register</p>
+        </div>
+      </div>
+      <!-- Third-party video: PBS NewsHour via youtube-nocookie.com embed. Verify video is still live before each deploy. -->
+      <div class="collage-piece" style="width:100%; max-width:50%; justify-self:start;">
+        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
+        <div style="position:relative; padding:24px 28px;">
+          <div id="videoSlot">
+            <button type="button" class="video-thumb" id="videoThumb" aria-label="Play video: PBS NewsHour, Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in">
+              <svg viewBox="0 0 64 64" aria-hidden="true" style="position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%);">
+                <circle cx="32" cy="32" r="30" style="fill:var(--brand);"></circle>
+                <path d="M26 20 L46 32 L26 44 Z" style="fill:var(--on-brand);"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="collage-copy" style="margin-top:12px;">Millions lose SNAP benefits as stricter work requirements take effect nationally.</p>
+          <p class="collage-src">PBS NewsHour, 2026</p>
         </div>
       </div>
       <div class="collage-piece" style="width:190px; justify-self:start;">
@@ -391,7 +414,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
-  <p class="body-p" style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off <span style="color:var(--accent);">[CITATION NEEDED — NYC Health Code / DOHMH guidance]</span>. That record is the reason the box carries an instrument at all.</p>
+  <p class="body-p" style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off <span>NYC Health Code § 81.10, DOHMH</span>. That record is the reason the box carries an instrument at all.</p>
   <p class="body-p" style="margin:16px 0 0;">There are three logger units in the fleet, not one per box. They rotate across routes. A run without a unit is validated against a thermal model built from the logged runs on the same route <span style="color:var(--accent);">[CITATION NEEDED — model and validation method]</span>; when the model carries the record rather than a sensor, the manifest line says so. There is no location sensor, and the log makes no claim about where a box was.</p>
   <div class="sensor-row cold-panel" style="margin-top:40px;">
     <div>
@@ -850,7 +873,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   /* ---------- torn-paper responsive scale ---------- */
   function tornResize() {
     var narrow = innerWidth < 480;
-    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6 };
+    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6, "torn-f": 7 };
     Object.keys(base).forEach(function (id) {
       var filt = document.getElementById(id);
       if (!filt) return;
@@ -1036,6 +1059,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     paintMascot($("#mascotJoin svg"), "confirmed");
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
   });
+
+  /* ---------- whynow video: click-to-play, never autoplay on load/scroll ---------- */
+  var videoThumb = $("#videoThumb");
+  if (videoThumb) {
+    videoThumb.addEventListener("click", function () {
+      var frame = document.createElement("div");
+      frame.className = "video-frame";
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://www.youtube-nocookie.com/embed/DrIi1CPKnz8?autoplay=1";
+      iframe.title = "PBS NewsHour: Millions lose SNAP benefits as One Big Beautiful Bill's stricter requirements kick in";
+      iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+      iframe.allowFullscreen = true;
+      frame.appendChild(iframe);
+      $("#videoSlot").replaceChild(frame, videoThumb);
+    });
+  }
 
   /* ---------- scroll FX ---------- */
   var shots = [];
