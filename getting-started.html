@@ -86,13 +86,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   nav.bar .links a { color:var(--text); }
   nav.bar .links a.cta { color:var(--brand); font-weight:600; }
   #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
-  .marker { position:relative; height:18px; }
-  .marker .rule { position:absolute; left:0; right:0; top:9px; height:1px; background:var(--rule); transform-origin:left center; }
-  .marker p { position:relative; display:inline-block; margin:0; padding-right:14px; font-size:13px; line-height:18px; background:var(--bg); }
-  .marker p .ix { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; color:var(--text-secondary); }
-  .marker p .lb { font-family:'Archivo',sans-serif; font-weight:500; color:var(--text); }
-  .marker.on-pale p { background:var(--tint); }
-  .marker.on-pale .rule { background:var(--brand-line); }
+  .eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
   h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
   h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
   .mask-l { display:block; overflow:hidden; }
@@ -105,7 +99,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .prow { border-bottom:1px solid var(--line); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 1fr 24px; grid-template-areas:"num ttl caret" "num bdy bdy"; gap:6px 20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
-  .prow .ttl { grid-area:ttl; font-size:19px; font-weight:600; color:var(--text); }
+  .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
   .prow .bdy { grid-area:bdy; font-size:17px; line-height:1.6; color:var(--text-secondary); max-width:60ch; }
   .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
   .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
@@ -113,9 +107,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .prow .pdetail > div { overflow:hidden; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 56px; max-width:60ch; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
-  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:24px; }
-  .cards-grid .card .kicker { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--brand); margin:0 0 10px; }
-  .cards-grid .card p.body { font-size:16px; line-height:1.6; color:var(--text); margin:0; }
+  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; padding:28px; box-shadow:0 3px 14px var(--paper-shadow); }
+  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; color:var(--brand); margin:0 0 10px; }
+  .step-icon { flex:none; color:var(--brand); }
+  .cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
   form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
   form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
@@ -177,10 +172,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </section>
 
 <section id="sequence" class="wrap" style="padding-top:88px; padding-bottom:64px;">
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">01 — </span><span class="lb">the sequence</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>The sequence</p>
   <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
     <span class="mask-l"><span data-line>Six things, roughly</span></span>
     <span class="mask-l"><span data-line>in this order.</span></span>
@@ -191,10 +183,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <section id="cadence" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
-    <div class="marker" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">02 — </span><span class="lb">pickup cadence</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>Pickup cadence</p>
     <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
       <span class="mask-l"><span data-line>Start at whatever cadence</span></span>
       <span class="mask-l"><span data-line>you can actually keep.</span></span>
@@ -206,33 +195,30 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </section>
 
 <section id="needs" class="wrap" style="padding-top:88px; padding-bottom:88px;">
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">03 — </span><span class="lb">what you'll need</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>What you'll need</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
     <span class="mask-l"><span data-line>Five things, before</span></span>
     <span class="mask-l"><span data-line>the first pickup.</span></span>
   </h2>
   <div class="cards-grid">
     <div class="card">
-      <p class="kicker">people</p>
+      <p class="kicker" data-icon="users">People</p>
       <p class="body">Two or three students who can commit to the same time slot every week, not whoever happens to be free that day.</p>
     </div>
     <div class="card">
-      <p class="kicker">a route</p>
+      <p class="kicker" data-icon="map-pin">A route</p>
       <p class="body">A walk under thirty minutes, out and back, so the team can run it same-day and still make their bus.</p>
     </div>
     <div class="card">
-      <p class="kicker">a partner site</p>
+      <p class="kicker" data-icon="handshake">A partner site</p>
       <p class="body">A food pantry or food bank within that walk, with capacity to take same-day perishable food.</p>
     </div>
     <div class="card">
-      <p class="kicker">the logger</p>
+      <p class="kicker" data-icon="cpu">The logger</p>
       <p class="body">Borrowed time on an existing fleet if you're joining a running route, or the firmware repo if you're building your own.</p>
     </div>
     <div class="card">
-      <p class="kicker">the agreement</p>
+      <p class="kicker" data-icon="file-text">The agreement</p>
       <p class="body">One page, signed by the school and the receiving site, before the first box leaves the building.</p>
     </div>
   </div>
@@ -240,10 +226,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <section id="join-cta" style="background:var(--tint); border-top:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
-    <div class="marker on-pale" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">04 — </span><span class="lb">get involved</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>Get involved</p>
     <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
       <span class="mask-l"><span data-line>Ready to bring this</span></span>
       <span class="mask-l"><span data-line>to your building?</span></span>
@@ -288,13 +271,36 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
 
   var STEPS = [
-    { num: "01", title: "Confirm your building has a share table", body: "Sealed items only, nothing served or opened — the same standard as every other Stock the Block box.", detail: "Walk your cafeteria's share table at the end of a lunch period and see what's actually left: unopened milk, sealed snack packs, whole fruit that never got picked up. If nothing's landing there in usable form, there's nothing yet to build a route around." },
-    { num: "02", title: "Read the health code memo", body: "Understand what your school can legally release, and the records it has to keep to release it, before you plan anything else.", detail: "The memo — document 01 in the “run this yourself” section — is written for food service directors and school administrators. It's the one document that decides whether your building can run this at all; the agreement, the firmware, and the intake workflow all follow from it." },
-    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-day delivery only works on foot. Look for a pantry close enough that a student team can walk the route and still make their bus. The partner agreement — document 03 — is short by design: one page, signed once, before the first box leaves the building." },
-    { num: "04", title: "Get a temperature logger", body: "Most schools don't build this themselves — they coordinate with an existing fleet and route.", detail: "Stock the Block runs three logger units across all its routes, not one per box; the units rotate, and a run without one is validated against a thermal model built from logged runs on the same route. Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own." },
-    { num: "05", title: "Recruit a small student team", body: "Two or three students who can commit to walking the route on a fixed day, every time it's scheduled.", detail: "Routes are walked in pairs and take under thirty minutes. The team doesn't need to be large — it needs to be reliable. One missed pickup teaches a partner site not to count on you." },
-    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery." }
+    { num: "01", title: "Confirm your building has a share table", body: "Sealed items only, nothing served or opened — the same standard as every other Stock the Block box.", detail: "Walk your cafeteria's share table at the end of a lunch period and see what's actually left: unopened milk, sealed snack packs, whole fruit that never got picked up. If nothing's landing there in usable form, there's nothing yet to build a route around.", icon: "package" },
+    { num: "02", title: "Read the health code memo", body: "Understand what your school can legally release, and the records it has to keep to release it, before you plan anything else.", detail: "The memo — the first document in the “run this yourself” section — is written for food service directors and school administrators. It's the one document that decides whether your building can run this at all; the agreement, the firmware, and the intake workflow all follow from it.", icon: "file-text" },
+    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-day delivery only works on foot. Look for a pantry close enough that a student team can walk the route and still make their bus. The partner agreement is short by design: one page, signed once, before the first box leaves the building.", icon: "handshake" },
+    { num: "04", title: "Get a temperature logger", body: "Most schools don't build this themselves — they coordinate with an existing fleet and route.", detail: "Stock the Block runs three logger units across all its routes, not one per box; the units rotate, and a run without one is validated against a thermal model built from logged runs on the same route. Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own.", icon: "cpu" },
+    { num: "05", title: "Recruit a small student team", body: "Two or three students who can commit to walking the route on a fixed day, every time it's scheduled.", detail: "Routes are walked in pairs and take under thirty minutes. The team doesn't need to be large — it needs to be reliable. One missed pickup teaches a partner site not to count on you.", icon: "users" },
+    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery.", icon: "clipboard-check" }
   ];
+  /* Icon set: redrawn from Lucide (ISC-licensed, lucide.dev) at 24x24, stroke-based, inlined
+     rather than loaded from a CDN so the site keeps its zero-external-script footprint. */
+  var ICONS = {
+    package: '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
+    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
+    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path>',
+    cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+    "clipboard-check": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
+    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle>'
+  };
+  function iconSVG(name, size) {
+    size = size || 20;
+    return '<svg class="step-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
+  }
+  function initIcons(root) {
+    $$("[data-icon]", root).forEach(function (el) {
+      if (el.dataset.iconInit) return;
+      el.dataset.iconInit = "1";
+      el.insertAdjacentHTML("afterbegin", iconSVG(el.getAttribute("data-icon")));
+    });
+  }
+  initIcons();
 
   /* ---------- mascot component (copied verbatim from index.html) ---------- */
   var MASCOT_EYES = {
@@ -407,7 +413,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     var d = document.createElement("div");
     d.className = "prow";
     d.setAttribute("data-prow", "");
-    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + s.title + '</span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
+    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
     var btn = d.querySelector("button");
     btn.addEventListener("click", function () {
       var open = d.classList.toggle("open");
@@ -420,12 +426,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   /* ---------- scroll reveal (same shot pattern as index.html) ---------- */
   var shots = [];
   function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
-  $$("[data-fxm]").forEach(function (m) {
-    var rule = m.querySelector("[data-rule]"), lbl = m.querySelector("[data-lbl]");
-    if (!reduced) { rule.style.transform = "scaleX(0)"; lbl.style.opacity = "0"; }
-    shot(m, function () {
-      rule.style.transition = "transform 600ms " + PRO; rule.style.transform = "scaleX(1)";
-      lbl.style.transition = "opacity 400ms " + PRO + " 300ms"; lbl.style.opacity = "1";
+  $$("[data-reveal]").forEach(function (el) {
+    if (!reduced) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
+    shot(el, function () {
+      el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
+      el.style.opacity = "1"; el.style.transform = "translateY(0)";
     });
   });
   $$("[data-mask]").forEach(function (mk) {

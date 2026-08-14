@@ -61,6 +61,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior:smooth; }
+  .sources-list li, #sources { scroll-margin-top:64px; }
   body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
   html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
   a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
@@ -92,13 +94,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
-  .marker { position:relative; height:18px; }
-  .marker .rule { position:absolute; left:0; right:0; top:9px; height:1px; background:var(--rule); transform-origin:left center; }
-  .marker p { position:relative; display:inline-block; margin:0; padding-right:14px; font-size:13px; line-height:18px; background:var(--bg); }
-  .marker p .ix { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; color:var(--text-secondary); }
-  .marker p .lb { font-family:'Archivo',sans-serif; font-weight:500; color:var(--text); }
-  .marker.on-pale p { background:var(--tint); }
-  .marker.on-pale .rule { background:var(--brand-line); }
+  .eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
   h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
   h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
   .mask-l { display:block; overflow:hidden; }
@@ -121,7 +117,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
-  .prow .ttl { grid-area:ttl; font-size:19px; font-weight:600; color:var(--text); }
+  .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
+  .step-icon { flex:none; color:var(--brand); }
   .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
   .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
   .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
@@ -131,7 +128,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
   .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
   .divider .mascot-slot { width:140px; transform-origin:center bottom; }
-  .chip { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.05em; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
+  .chip { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
   .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
   .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
@@ -163,37 +160,38 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .video-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--tint); border-radius:6px; overflow:hidden; cursor:pointer; border:none; padding:0; display:block; transition:transform 200ms ease; }
   .video-thumb:hover { transform:scale(1.015); }
   .video-thumb:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
-  .collage-fig { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
+  .collage-fig { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
   .collage-copy { font-size:18px; line-height:1.6; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
-  .scale-note-link { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:0.62em; color:var(--text-secondary); text-decoration:none; }
-  .scale-note-link:hover { color:var(--accent); }
+  .src-link { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
+  .src-link:hover { color:var(--accent); text-decoration:underline; }
   .scale-bar-track { position:relative; height:14px; border-radius:7px; background:var(--line-soft); overflow:hidden; margin:16px 0 8px; max-width:520px; }
   .scale-bar-fill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--brand); border-radius:7px; transition:width 900ms cubic-bezier(0.4,0.14,0.3,1); }
   .scale-bar-mark { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); left:64%; }
   .scale-facts { display:grid; gap:10px; margin:22px 0 0; max-width:560px; }
   .scale-facts p { font-size:17px; line-height:1.6; color:var(--text); margin:0; text-wrap:pretty; }
   .scale-facts .scale-standout { font-size:18px; font-weight:600; color:var(--brand); }
-  .scale-notes { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.7; color:var(--text-secondary); margin:24px 0 0; padding:16px 0 0 0; border-top:1px solid var(--line-soft); list-style:none; display:grid; gap:4px; }
-  .scale-notes li { padding-left:1.6em; text-indent:-1.6em; }
-  .scale-notes a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
-  .scale-notes a:hover { color:var(--accent); }
+  .sources-list { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
+  .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
+  .sources-list a:hover { color:var(--accent); }
   .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
-  .limits-grid .lbl { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:13px; color:var(--text-secondary); margin:0 0 8px; }
+  .limits-grid .lbl { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
   .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:24px; }
-  .cards-grid .card .kicker { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--brand); margin:0 0 10px; }
+  .cards-grid .card, .done-card { border-radius:14px; box-shadow:0 3px 14px var(--paper-shadow); }
+  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
+  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
   .cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
-  .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:13px; color:var(--brand); cursor:pointer; }
+  .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
   .cards-grid .card .doc-toggle:hover { color:var(--accent); }
   .cards-grid .card .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
   .cards-grid .card.doc-open .doc-panel { grid-template-rows:1fr; }
   .cards-grid .card .doc-panel > div { overflow:hidden; }
   .cards-grid .card .doc-inner { padding-top:14px; }
   .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:420px; overflow-y:auto; margin:0 0 10px; }
-  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.04em; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
+  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
   .cards-grid .card .doc-copy:hover, .cards-grid .card .doc-download:hover { border-color:var(--brand); color:var(--brand); }
   form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
@@ -202,7 +200,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   form.join textarea { resize:none; }
   form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
   form.join button:hover { background:var(--brand-press); }
-  .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; border-radius:12px; }
+  .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
   footer { background:var(--bg); border-top:1px solid var(--line); }
   footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
   footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
@@ -214,7 +212,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     .prow > button { grid-template-columns:32px 36px 1fr 24px; grid-template-areas:"num pmasc ttl caret" "bdy bdy bdy bdy"; row-gap:8px; }
     .prow .pdetail p { padding-left:24px; }
   }
-  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
     nav.bar, .skip-link, .divider, #fridgeWrap, #hero3d, #formWrap, .paper-grain { display:none !important; }
     #heropin { height:auto !important; }
@@ -252,10 +250,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 <div id="heropin">
 <header id="top" class="wrap hero-grid">
   <div>
-    <div class="marker" data-fxm style="margin-bottom:28px; animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0ms both;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">01 — </span><span class="lb">live manifest</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>Live manifest</p>
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 120ms both;">
       <p class="figure" id="heroFig" style="font-size:clamp(56px,9vw,96px); line-height:1; margin:0; color:var(--brand);"><span class="lbs-live" id="heroNum">8,000</span><span style="font-size:0.38em; font-weight:600; letter-spacing:-0.02em; margin-left:10px;">lbs</span></p>
       <div id="glyphs" style="display:flex; gap:6px; margin-top:14px;" aria-hidden="true"></div>
@@ -293,10 +288,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
     </defs>
   </svg>
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">02 — </span><span class="lb">why now</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>Why now</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
     <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
     <span class="mask-l"><span data-line>This is the scale of it.</span></span>
@@ -324,68 +316,55 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <div class="collage-piece" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-g);"></rect></svg>
         <div style="position:relative; padding:40px 44px;">
-          <p class="mono" style="font-weight:500; font-size:13px; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 4px;">the shape of the cut</p>
-          <p class="collage-fig" style="font-size:clamp(34px,5vw,54px);">$<span id="scaleBillion">187</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="scale-note-link" href="#note-1">1</a></sup></p>
+          <p class="eyebrow">The shape of the cut</p>
+          <p class="collage-fig" style="font-size:clamp(34px,5vw,54px);">$<span id="scaleBillion">187</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="src-link" href="#src-1">1</a></sup></p>
           <p class="collage-copy">Cut to SNAP over ten years, FY2025–FY2034 — H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
           <div class="scale-bar-track" role="img" aria-label="SNAP funding shrinking to roughly 64 percent of its current level by 2034">
             <div class="scale-bar-mark"></div>
             <div class="scale-bar-fill" id="scaleBarFill"></div>
           </div>
-          <p class="collage-copy" style="margin-top:0;">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="scale-note-link" href="#note-2">2</a></sup></p>
+          <p class="collage-copy" style="margin-top:0;">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="src-link" href="#src-2">2</a></sup></p>
           <div class="scale-facts">
-            <p>SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="scale-note-link" href="#note-3">3</a></sup></p>
-            <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="scale-note-link" href="#note-4">4</a></sup></p>
-            <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="scale-note-link" href="#note-5">5</a></sup></p>
-            <p>Participation has dropped in every state except Alaska and Guam<sup><a class="scale-note-link" href="#note-6">6</a></sup></p>
-            <p class="scale-standout">Arizona: a 51% year-over-year drop — 449,478 people<sup><a class="scale-note-link" href="#note-7">7</a></sup></p>
+            <p>SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="src-link" href="#src-3">3</a></sup></p>
+            <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
+            <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
+            <p>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></p>
+            <p class="scale-standout">Arizona: a 51% year-over-year drop — 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></p>
           </div>
-          <ol class="scale-notes">
-            <li id="note-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
-            <li id="note-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
-            <li id="note-3">3. Pew Charitable Trusts, "As SNAP Changes Shift Food Assistance Costs, States Face New Choices," January 2026</li>
-            <li id="note-4">4. Center on Budget and Policy Priorities, "States' First-Ever Bill for SNAP Benefits Could Cost Billions," June 2026</li>
-            <li id="note-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
-            <li id="note-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
-            <li id="note-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
-          </ol>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-a);"></rect></svg>
         <div style="position:relative; padding:44px 48px;">
-          <p class="collage-fig" style="font-size:clamp(40px,6.4vw,64px);">$<span id="collageBillion">186</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span></p>
+          <p class="collage-fig" style="font-size:clamp(40px,6.4vw,64px);">$<span id="collageBillion">186</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="src-link" href="#src-8">8</a></sup></p>
           <p class="collage-copy">Federal SNAP cut over ten years, One Big Beautiful Bill Act, signed July 4, 2025.</p>
-          <p class="collage-src">Congressional Budget Office</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
         <div style="position:relative; padding:34px 38px;">
-          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million</p>
+          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-9">9</a></sup></p>
           <p class="collage-copy">People off SNAP nationally between enactment and April 2026 — about 11 percent.</p>
-          <p class="collage-src">CBPP, USDA data</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
         <div style="position:relative; padding:28px 32px;">
-          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026</p>
+          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
           <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
-          <p class="collage-src">NY OTDA</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
         <div style="position:relative; padding:24px 28px;">
-          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026</p>
+          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-11">11</a></sup></p>
           <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
-          <p class="collage-src">Federal Register</p>
         </div>
       </div>
       <div class="collage-piece" style="width:190px; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:6px; top:6px; width:calc(100% - 12px); height:calc(100% - 12px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--brand); filter:url(#torn-e);"></rect></svg>
         <div style="position:relative; padding:14px 18px;">
-          <p class="mono" style="font-weight:500; font-size:15px; margin:0; color:var(--on-brand); font-variant-numeric:tabular-nums;"><span class="lbs-live">8,000</span> lbs recovered</p>
+          <p style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:16px; margin:0; color:var(--on-brand); font-variant-numeric:tabular-nums;"><span class="lbs-live">8,000</span> lbs recovered</p>
         </div>
       </div>
     </div>
@@ -415,10 +394,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </section>
 
 <section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">03 — </span><span class="lb">standard operating procedure</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>Standard operating procedure</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
     <span class="mask-l"><span data-line>Four steps, same every day,</span></span>
     <span class="mask-l"><span data-line>all on the record.</span></span>
@@ -457,15 +433,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </div>
 
 <section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">04 — </span><span class="lb">the instruments</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>The instruments</p>
   <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
-  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off <span>NYC Health Code § 81.10, DOHMH</span>. That record is the reason the box carries an instrument at all.</p>
+  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off.<sup><a class="src-link" href="#src-12">12</a></sup> That record is the reason the box carries an instrument at all.</p>
   <p class="body-p" data-reveal style="margin:16px 0 0;">There are three logger units in the fleet, not one per box. They rotate across routes. A run without a unit is validated against a thermal model built from the logged runs on the same route <span style="color:var(--accent);">[CITATION NEEDED — model and validation method]</span>; when the model carries the record rather than a sensor, the manifest line says so. There is no location sensor, and the log makes no claim about where a box was.</p>
   <div class="sensor-row cold-panel" style="margin-top:40px;">
     <div>
@@ -516,15 +489,36 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
-    <div class="marker on-pale" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">05 — </span><span class="lb">the delivery log</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>The delivery log</p>
     <h2 class="hd" data-mask style="max-width:620px;">
       <span class="mask-l"><span data-line>The delivery log</span></span>
       <span class="mask-l"><span data-line>is the whole pitch.</span></span>
     </h2>
     <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A live public record of every box that moved — sort it, filter it, add it up yourself.</p>
+    <div data-reveal style="margin-top:32px; max-width:700px;">
+      <svg viewBox="0 0 700 220" role="img" aria-label="Stylized route map: Stuyvesant HS, IS 289, and Millennium HS each connect to Green Garden NYC" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <g fill="none" stroke-dasharray="2 8" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2">
+          <path d="M96 40 C 320 40, 420 100, 560 108"></path>
+          <path d="M96 110 C 320 110, 420 110, 560 112"></path>
+          <path d="M96 180 C 320 180, 420 120, 560 116"></path>
+        </g>
+        <g>
+          <circle cx="88" cy="40" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
+          <circle cx="88" cy="110" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
+          <circle cx="88" cy="180" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+          <text x="72" y="24" text-anchor="middle">Stuyvesant HS</text>
+          <text x="72" y="102" text-anchor="middle">IS 289</text>
+          <text x="72" y="204" text-anchor="middle">Millennium HS</text>
+        </g>
+        <g transform="translate(578, 112)">
+          <path d="M0 -20c-11 0-20 9-20 20 0 15 20 34 20 34s20-19 20-34c0-11-9-20-20-20Z" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></path>
+          <circle cx="0" cy="0" r="6" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle>
+        </g>
+        <text x="578" y="176" font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" font-weight="500" text-anchor="middle" style="fill:var(--brand);">Green Garden NYC</text>
+      </svg>
+    </div>
     <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
     <div class="manifest" id="manifest">
       <div class="mhead">
@@ -557,10 +551,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </section>
 
 <section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
-  <div class="marker" data-fxm style="margin-bottom:32px;">
-    <div class="rule" data-rule></div>
-    <p data-lbl><span class="ix">06 — </span><span class="lb">why we exist</span></p>
-  </div>
+  <p class="eyebrow" data-reveal>Why we exist</p>
   <div class="two-grid">
     <h2 class="hd" data-mask>
       <span class="mask-l"><span data-line>Run by the students who watched</span></span>
@@ -575,10 +566,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <section id="limits" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
-    <div class="marker" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">07 — </span><span class="lb">the limits</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>The limits</p>
     <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
       <span class="mask-l"><span data-line>What this does not do.</span></span>
       <span class="mask-l"><span data-line>Plainly.</span></span>
@@ -608,20 +596,23 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   </div>
 </section>
 
+<section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
+  <div class="wrap" style="padding:96px 24px;">
+    <p data-reveal style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
+  </div>
+</section>
+
 <section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
-    <div class="marker on-pale" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">08 — </span><span class="lb">run this yourself</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>Run this yourself</p>
     <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
       <span class="mask-l"><span data-line>Everything we use</span></span>
       <span class="mask-l"><span data-line>is yours to copy.</span></span>
     </h2>
     <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Start here: read the health code memo, then the box spec. Those two decide whether your building can run this at all. The agreement, the firmware and the intake workflow follow from them.</p>
     <div class="cards-grid">
-      <div class="card" data-reveal style="grid-column:span 2; background:var(--tint); border-color:var(--brand-line-mid); padding:28px;">
-        <p class="kicker" style="font-size:13px;">01 · health code memo — start here</p>
+      <div class="card" data-reveal style="grid-column:span 2; background:var(--tint); border-color:var(--brand-line-mid);">
+        <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo — start here</p>
         <p class="body" style="font-size:19px;">What a school may release, and the records it has to keep to release it.</p>
         <p class="meta">Food service directors and school administrators.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the memo <span class="doc-caret" aria-hidden="true">+</span></button>
@@ -688,13 +679,13 @@ department — do not treat it as a substitute for their guidance.</pre>
         </div></div>
       </div>
       <div class="card" data-reveal>
-        <p class="kicker">02 · box spec</p>
+        <p class="kicker" data-icon="ruler">Box spec</p>
         <p class="body">Cut sheet, materials list and fold order for one insulated transport box.</p>
         <p class="meta">Whoever builds the first three boxes.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQppbiBzZWN0aW9uIDA4IG9mIHRoZSBzaXRlOiBzaXggbGFiZWxlZCBlbGVtZW50cyDigJQgbGlkIGZsYXAsIGZhY2UgcGFuZWwsCmJhc2UsIGhhbmRsZSBjdXQsIHNlbnNvciBwb2NrZXQsIGFuZCBiYWNrIHBhbmVsLgoKVGhpcyBpcyBhIHN0YXJ0aW5nIHRlbXBsYXRlIGZvciBhIGJ1aWxkIHRlYW0sIG5vdCBhIGZpbmlzaGVkCmVuZ2luZWVyaW5nIGRyYXdpbmcuIEV4YWN0IHBhbmVsIGRpbWVuc2lvbnMgYW5kIHRoZSBwcmVjaXNlIGZvbGQKc2VxdWVuY2UgZGVwZW5kIG9uIHRoZSBzaGVldCBtYXRlcmlhbCB5b3UgY2hvb3NlIGFuZCBhcmVuJ3QgaW52ZW50ZWQKaGVyZSDigJQgdmVyaWZ5IHRoZW0gYWdhaW5zdCB0aGUgZGlhZ3JhbSBvbiB0aGUgc2l0ZSBhbmQgeW91ciBhY3R1YWwKbWF0ZXJpYWwgYmVmb3JlIGN1dHRpbmcuCgojIyBUaGUgc2l4IGxhYmVsZWQgZWxlbWVudHMKCi0gKipMaWQgZmxhcCoqIOKAlCBmb2xkcyBkb3duIG92ZXIgdGhlIG9wZW4gdG9wIHRvIGNsb3NlIHRoZSBib3guCi0gKipGYWNlIHBhbmVsKiog4oCUIHRoZSBmcm9udCB3YWxsOyBjYXJyaWVzIHRoZSBoYW5kbGUgY3V0LgotICoqQmFzZSoqIOKAlCB0aGUgYm90dG9tIHBhbmVsLgotICoqSGFuZGxlIGN1dCoqIOKAlCBhbiBvcGVuaW5nIGluIHRoZSBmYWNlIHBhbmVsIHNpemVkIGZvciBhIGdsb3ZlZAogIGhhbmQsIHJlaW5mb3JjZWQgYXQgdGhlIGVkZ2UuCi0gKipTZW5zb3IgcG9ja2V0Kiog4oCUIGEgcG9ja2V0IGluIHRoZSBiYWNrIHBhbmVsIHRoYXQgaG9sZHMgdGhlIGxvZ2dlcgogIHVuaXQgZGVzY3JpYmVkIGluIHNlY3Rpb24gMDQgb2YgdGhlIHNpdGUgKEVTUDMyLUMzIFN1cGVyTWluaSArCiAgRFMxOEIyMCBwcm9iZSksIG9wZW4gZW5vdWdoIGZvciB0aGUgcHJvYmUgdG8gcmVhY2ggdGhlIGludGVyaW9yLgotICoqQmFjayBwYW5lbCoqIOKAlCB0aGUgcmVhciB3YWxsOyBjYXJyaWVzIHRoZSBzZW5zb3IgcG9ja2V0LgoKIyMgTWF0ZXJpYWxzIChnZW5lcmljIOKAlCBjb25maXJtIHF1YW50aXRpZXMgYWdhaW5zdCB5b3VyIGFjdHVhbCBzaGVldCBzaXplKQoKfCBJdGVtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCBOb3RlcyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwKfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfAp8IFJpZ2lkIGluc3VsYXRpb24gYm9hcmQgICAgICAgICAgICAgfCBTaXplZCB0byB0aGUgcGFuZWwgbGF5b3V0IGluIHRoZSBkaWFncmFtIOKAlCBhcHByb3guIGNvc3QgWyRYWF0gfAp8IFJlZmxlY3RpdmUgbGluZXIgb3IgZm9pbCB0YXBlICAgICAgfCBJbnRlcmlvciBmYWNlLCBhbGwgcGFuZWxzICAgICAgICAgICAgICAgICB8CnwgU2VhbSB0YXBlICAgICAgICAgICAgICAgICAgICAgICAgICB8IEZvbGQgbGluZXMgYW5kIGpvaW50cyAgICAgICAgICAgICAgICAgICAgIHwKfCBDbG9zdXJlIChob29rLWFuZC1sb29wIG9yIGxhdGNoKSAgIHwgS2VlcHMgdGhlIGxpZCBmbGFwIHNodXQgaW4gdHJhbnNpdCAgICAgICAgfAp8IEhhbmRsZSBlZGdlIHJlaW5mb3JjZW1lbnQgICAgICAgICAgfCBUaHJvdWdoIHRoZSBoYW5kbGUgY3V0ICAgICAgICAgICAgICAgICAgICB8CgpFc3RpbWF0ZWQgbWF0ZXJpYWxzIGNvc3QgcGVyIGJveDogWyRYWF0g4oCUIGNvbmZpcm0gY3VycmVudCBwcmljaW5nCmJlZm9yZSBvcmRlcmluZyBmb3IgYSBiYXRjaC4KCiMjIEFzc2VtYmx5LCBpbiBnZW5lcmFsIHRlcm1zCgoxLiBDdXQgdGhlIHNoZWV0IHRvIHRoZSBwYW5lbCBsYXlvdXQgc2hvd24gaW4gdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUuCjIuIEN1dCB0aGUgaGFuZGxlIG9wZW5pbmcgaW50byB0aGUgZmFjZSBwYW5lbDsgY3V0IHRoZSBzZW5zb3IgcG9ja2V0CiAgIGludG8gdGhlIGJhY2sgcGFuZWwuCjMuIEZvbGQgdGhlIGZhY2UgcGFuZWwsIGJhY2sgcGFuZWwsIGFuZCByZW1haW5pbmcgc2lkZSBwYW5lbHMgdXAgZnJvbQogICB0aGUgYmFzZSB0byBmb3JtIHRoZSBib3gncyB3YWxscy4KNC4gU2VhbSB0aGUgdmVydGljYWwgZWRnZXMgd2hlcmUgYWRqb2luaW5nIHBhbmVscyBtZWV0Lgo1LiBGb2xkIHRoZSBsaWQgZmxhcCBkb3duIHRvIGNsb3NlIHRoZSBvcGVuIHRvcC4KNi4gTGluZSB0aGUgaW50ZXJpb3Igd2l0aCB0aGUgcmVmbGVjdGl2ZSBsaW5lci4KNy4gRml0IHRoZSBzZW5zb3IgcG9ja2V0IHNvIHRoZSBsb2dnZXIgc2l0cyBhZ2FpbnN0IHRoZSBpbnRlcmlvciB3YWxsCiAgIHdpdGggdGhlIHByb2JlIHJlYWNoaW5nIGludG8gdGhlIG1haW4gY2F2aXR5LgoKW0luc2VydCBleGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCBmb2xkIHNlcXVlbmNlLCB2ZXJpZmllZCBhZ2FpbnN0IHRoZQpkaWFncmFtIG9uIHRoZSBzaXRlIGFuZCB5b3VyIGNob3NlbiBzaGVldCBtYXRlcmlhbCwgb25jZSB5b3VyIGJ1aWxkCnRlYW0gZmluYWxpemVzIHRoZW0g4oCUIHRoaXMgdGVtcGxhdGUgaW50ZW50aW9uYWxseSBkb2Vzbid0IGludmVudAptZWFzdXJlbWVudHMgdGhhdCBkZXBlbmQgb24gbWF0ZXJpYWwgeW91IGhhdmVuJ3QgcGlja2VkIHlldC5dCg==" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMg4oCUIGxpZCBmbGFwLCBmYWNlIHBhbmVsLApiYXNlLCBoYW5kbGUgY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUg4oCUIHZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKiDigJQgZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqIOKAlCB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKiDigJQgdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKiDigJQgYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqIOKAlCBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKiog4oCUIHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWMg4oCUIGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0g4oCUIGFwcHJveC4gY29zdCBbJFhYXSB8CnwgUmVmbGVjdGl2ZSBsaW5lciBvciBmb2lsIHRhcGUgICAgICB8IEludGVyaW9yIGZhY2UsIGFsbCBwYW5lbHMgICAgICAgICAgICAgICAgIHwKfCBTZWFtIHRhcGUgICAgICAgICAgICAgICAgICAgICAgICAgIHwgRm9sZCBsaW5lcyBhbmQgam9pbnRzICAgICAgICAgICAgICAgICAgICAgfAp8IENsb3N1cmUgKGhvb2stYW5kLWxvb3Agb3IgbGF0Y2gpICAgfCBLZWVwcyB0aGUgbGlkIGZsYXAgc2h1dCBpbiB0cmFuc2l0ICAgICAgICB8CnwgSGFuZGxlIGVkZ2UgcmVpbmZvcmNlbWVudCAgICAgICAgICB8IFRocm91Z2ggdGhlIGhhbmRsZSBjdXQgICAgICAgICAgICAgICAgICAgIHwKCkVzdGltYXRlZCBtYXRlcmlhbHMgY29zdCBwZXIgYm94OiBbJFhYXSDigJQgY29uZmlybSBjdXJyZW50IHByaWNpbmcKYmVmb3JlIG9yZGVyaW5nIGZvciBhIGJhdGNoLgoKIyMgQXNzZW1ibHksIGluIGdlbmVyYWwgdGVybXMKCjEuIEN1dCB0aGUgc2hlZXQgdG8gdGhlIHBhbmVsIGxheW91dCBzaG93biBpbiB0aGUgZGlhZ3JhbSBvbiB0aGUgc2l0ZS4KMi4gQ3V0IHRoZSBoYW5kbGUgb3BlbmluZyBpbnRvIHRoZSBmYWNlIHBhbmVsOyBjdXQgdGhlIHNlbnNvciBwb2NrZXQKICAgaW50byB0aGUgYmFjayBwYW5lbC4KMy4gRm9sZCB0aGUgZmFjZSBwYW5lbCwgYmFjayBwYW5lbCwgYW5kIHJlbWFpbmluZyBzaWRlIHBhbmVscyB1cCBmcm9tCiAgIHRoZSBiYXNlIHRvIGZvcm0gdGhlIGJveCdzIHdhbGxzLgo0LiBTZWFtIHRoZSB2ZXJ0aWNhbCBlZGdlcyB3aGVyZSBhZGpvaW5pbmcgcGFuZWxzIG1lZXQuCjUuIEZvbGQgdGhlIGxpZCBmbGFwIGRvd24gdG8gY2xvc2UgdGhlIG9wZW4gdG9wLgo2LiBMaW5lIHRoZSBpbnRlcmlvciB3aXRoIHRoZSByZWZsZWN0aXZlIGxpbmVyLgo3LiBGaXQgdGhlIHNlbnNvciBwb2NrZXQgc28gdGhlIGxvZ2dlciBzaXRzIGFnYWluc3QgdGhlIGludGVyaW9yIHdhbGwKICAgd2l0aCB0aGUgcHJvYmUgcmVhY2hpbmcgaW50byB0aGUgbWFpbiBjYXZpdHkuCgpbSW5zZXJ0IGV4YWN0IHBhbmVsIGRpbWVuc2lvbnMgYW5kIGZvbGQgc2VxdWVuY2UsIHZlcmlmaWVkIGFnYWluc3QgdGhlCmRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgY2hvc2VuIHNoZWV0IG1hdGVyaWFsLCBvbmNlIHlvdXIgYnVpbGQKdGVhbSBmaW5hbGl6ZXMgdGhlbSDigJQgdGhpcyB0ZW1wbGF0ZSBpbnRlbnRpb25hbGx5IGRvZXNuJ3QgaW52ZW50Cm1lYXN1cmVtZW50cyB0aGF0IGRlcGVuZCBvbiBtYXRlcmlhbCB5b3UgaGF2ZW4ndCBwaWNrZWQgeWV0Ll0K" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
       </div>
       <div class="card" data-reveal>
-        <p class="kicker">03 · partner agreement</p>
+        <p class="kicker" data-icon="handshake">Partner agreement</p>
         <p class="body">One page between a school and a receiving site, signed before the first run.</p>
         <p class="meta">School administrators and pantry directors.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the agreement <span class="doc-caret" aria-hidden="true">+</span></button>
@@ -712,8 +703,8 @@ Effective date: [Insert start date]
 WHAT IS BEING DONATED
 Sealed, unopened surplus food from the school's cafeteria share table
 only. Nothing served, nothing plated, nothing opened. Every box carries
-a temperature record covering pack-out to hand-off (see the health code
-memo, document 01).
+a temperature record covering pack-out to hand-off (see the accompanying
+health code memo).
 
 PICKUP / DELIVERY CADENCE
 Cadence is negotiated per-partner and is not fixed by this template — a
@@ -740,7 +731,7 @@ WHAT EACH SIDE COMMITS TO
   pickup will be missed or delayed.
 
   The receiving site commits to: confirming receipt on the manifest for
-  every delivery (see the intake workflow, document 05), and notifying
+  every delivery (see the accompanying intake workflow), and notifying
   the school if it can't take a delivery on a given date.
 
 Either party may end this agreement with [Insert notice period] written
@@ -764,13 +755,13 @@ school district requires for this agreement, if any.]</pre>
         </div></div>
       </div>
       <div class="card" data-reveal>
-        <p class="kicker">04 · firmware repo</p>
-        <p class="body">Logger sketch, probe calibration notes and wiring for the unit in section 04.</p>
+        <p class="kicker" data-icon="cpu">Firmware repo</p>
+        <p class="body">Logger sketch, probe calibration notes and wiring for the unit described under "the instruments."</p>
         <p class="meta">The student build team.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCBvbiB0aGUgc2l0ZSAoc2VjdGlvbiAwNCkuIEl0IGlzIGEKZGVzY3JpcHRpb24gb2YgaW50ZW5kZWQgYmVoYXZpb3IsIG5vdCBzb3VyY2UgY29kZSDigJQgdGhlIGFjdHVhbCBmaXJtd2FyZQpzb3VyY2UgbGl2ZXMgaW4gdGhlIHN0dWRlbnQgYnVpbGQgdGVhbSdzIG93biByZXBvc2l0b3J5LgoKW0xpbmsgdG8gZmlybXdhcmUgcmVwbyDigJQgaW5zZXJ0IG9uY2UgY3JlYXRlZF0KCiMjIEhhcmR3YXJlIChhcyBkZXNjcmliZWQgaW4gc2VjdGlvbiAwNCkKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKVGhyZWUgbG9nZ2VyIHVuaXRzIHJvdGF0ZSBhY3Jvc3MgYWxsIHJvdXRlczsgYSBydW4gd2l0aG91dCBhbiBhdmFpbGFibGUKdW5pdCBpcyB2YWxpZGF0ZWQgYWdhaW5zdCBhIHRoZXJtYWwgbW9kZWwgYnVpbHQgZnJvbSBsb2dnZWQgcnVucyBvbiB0aGUKc2FtZSByb3V0ZSAoc2VlIHNlY3Rpb24gMDQgb24gdGhlIHNpdGUpLiBXaGVuIHRoZSBtb2RlbCBjYXJyaWVzIHRoZQpyZWNvcmQgaW5zdGVhZCBvZiBhIHNlbnNvciwgdGhlIG1hbmlmZXN0IGxpbmUgc2F5cyBzby4KCiMjIFN0YXRlIG1hY2hpbmUKCioqQk9PVCoqIOKAlCBQb3dlci1vbiAvIHJlc2V0LiBSdW5zIGEgc2VsZi1jaGVjaywgdGhlbiBtb3ZlcyB0byBJRExFLgoKKipJRExFKiog4oCUIFBvd2VyZWQgYW5kIHJlYWR5LCBub3QgeWV0IGF0dGFjaGVkIHRvIGEgYm94LiBXYWl0aW5nIGZvciBhCnBhY2stb3V0IGV2ZW50IHRvIGJlZ2luIGxvZ2dpbmcuCgoqKkFSTUVEKiog4oCUIEF0dGFjaGVkIHRvIGEgcGFja2VkIGJveCwgd2FpdGluZyBmb3IgdGhlIHJvdXRlIHRvIGJlZ2luLgpUaGlzIGlzIHRoZSAicGFja2VkLCBhYm91dCB0byBsZWF2ZSB0aGUgYnVpbGRpbmciIHN0YXRlLgoKKipMT0dHSU5HKiog4oCUIEFjdGl2ZWx5IHJlY29yZGluZyB0ZW1wZXJhdHVyZSByZWFkaW5ncyBhZ2FpbnN0IHRoZQpkYW5nZXItem9uZSB0aHJlc2hvbGQgKHNhZmUgYXQgb3IgYmVsb3cgNDHCsEYsIHBlciBzZWN0aW9uIDA0KSBmb3IgdGhlCmR1cmF0aW9uIG9mIHRoZSByb3V0ZSwgZnJvbSBwYWNrLW91dCB0byBoYW5kLW9mZi4KCioqQ0xPU0VEKiog4oCUIFJvdXRlIGNvbXBsZXRlLCBkZWxpdmVyeSBjb25maXJtZWQgYnkgdGhlIHJlY2VpdmluZyBzaXRlLgpUaGUgbG9nIGZvciB0aGlzIHJ1biBpcyBmaW5hbGl6ZWQgYW5kIGRvZXMgbm90IGNoYW5nZSBhZnRlciB0aGlzIHBvaW50CuKAlCBjb3JyZWN0aW9ucyBhcHBlbmQgYXMgbmV3IG1hbmlmZXN0IGxpbmVzIHJhdGhlciB0aGFuIGVkaXRpbmcgaGlzdG9yeSwKY29uc2lzdGVudCB3aXRoIGhvdyBUcmFjayB0aGUgQm94IGhhbmRsZXMgdGhlIHB1YmxpYyBsb2cuCgoqKkZBVUxUKiog4oCUIFNvbWV0aGluZyBpbiB0aGUgYWJvdmUgZmFpbGVkOiBwcm9iZSBkaXNjb25uZWN0ZWQsIGJhdHRlcnkKY3JpdGljYWwsIG9yIGEgcmVhZGluZyBvdXRzaWRlIGEgcGxhdXNpYmxlIHJhbmdlLiBBIEZBVUxUIHJ1biBpcwpmbGFnZ2VkIHJhdGhlciB0aGFuIHRydXN0ZWQsIGFuZCBmYWxscyBiYWNrIHRvIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZS4KCiMjIFdoYXQgdGhpcyBkb2N1bWVudCBpcyBub3QKClRoaXMgaXMgbm90IHRoZSBmaXJtd2FyZSBzb3VyY2UuIEl0IGRlc2NyaWJlcyB0aGUgaW50ZW5kZWQgc3RhdGVzIGFuZAp0aGUgcmVhc29uaW5nIGJlaGluZCB0aGVtIHNvIGEgbmV3IGNvbnRyaWJ1dG9yIHVuZGVyc3RhbmRzIHdoYXQgdGhlCnVuaXQgaXMgc3VwcG9zZWQgdG8gZG8gYmVmb3JlIHJlYWRpbmcgdGhlIGFjdHVhbCBjb2RlLiBDYWxpYnJhdGlvbgpjb25zdGFudHMsIGV4YWN0IHRpbWluZywgYW5kIHRoZSByZWFsIC5pbm8gLyBDKysgc291cmNlIGFyZSBtYWludGFpbmVkCmluIHRoZSBmaXJtd2FyZSByZXBvIGxpbmtlZCBhYm92ZSBvbmNlIGl0IGV4aXN0cyDigJQgZG8gbm90IHRyZWF0IHRoaXMKZG9jdW1lbnQgYXMgYXV0aG9yaXRhdGl2ZSBmb3IgaW1wbGVtZW50YXRpb24gZGV0YWlscy4K" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlIOKAlCB0aGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvIOKAlCBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKVGhyZWUgbG9nZ2VyIHVuaXRzIHJvdGF0ZSBhY3Jvc3MgYWxsIHJvdXRlczsgYSBydW4gd2l0aG91dCBhbiBhdmFpbGFibGUKdW5pdCBpcyB2YWxpZGF0ZWQgYWdhaW5zdCBhIHRoZXJtYWwgbW9kZWwgYnVpbHQgZnJvbSBsb2dnZWQgcnVucyBvbiB0aGUKc2FtZSByb3V0ZSAoc2VlICJ0aGUgaW5zdHJ1bWVudHMiIG9uIHRoZSBzaXRlKS4gV2hlbiB0aGUgbW9kZWwgY2FycmllcyB0aGUKcmVjb3JkIGluc3RlYWQgb2YgYSBzZW5zb3IsIHRoZSBtYW5pZmVzdCBsaW5lIHNheXMgc28uCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKiDigJQgUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqIOKAlCBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqIOKAlCBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqIOKAlCBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKiDigJQgUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQK4oCUIGNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKiDigJQgU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzCmZsYWdnZWQgcmF0aGVyIHRoYW4gdHJ1c3RlZCwgYW5kIGZhbGxzIGJhY2sgdG8gdGhlIHJvdXRlLWxldmVsIHRoZXJtYWwKbW9kZWwgZGVzY3JpYmVkIGFib3ZlLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzIOKAlCBkbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
       </div>
       <div class="card" data-reveal>
-        <p class="kicker">05 · intake workflow</p>
+        <p class="kicker" data-icon="clipboard-list">Intake workflow</p>
         <p class="body">How a receiving site confirms a delivery and closes out the manifest line.</p>
         <p class="meta">Pantry staff and volunteers.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the checklist <span class="doc-caret" aria-hidden="true">+</span></button>
@@ -817,7 +808,7 @@ that wasn't actually clean.</pre>
       </div>
     </div>
     <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
-      <p class="mono" style="font-weight:500; font-size:13px; color:var(--text-secondary); margin:0 0 8px;">the kit, flat</p>
+      <p class="eyebrow">The kit, flat</p>
       <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, the route sheet, and the log template are yours to copy.</p>
       <div style="position:relative; max-width:760px;">
         <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
@@ -868,10 +859,7 @@ that wasn't actually clean.</pre>
 
 <section id="join" style="background:var(--surface);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
-    <div class="marker" data-fxm style="margin-bottom:32px;">
-      <div class="rule" data-rule></div>
-      <p data-lbl><span class="ix">09 — </span><span class="lb">get involved</span></p>
-    </div>
+    <p class="eyebrow" data-reveal>Get involved</p>
     <div class="join-grid">
       <div>
         <h2 class="hd" data-mask>
@@ -921,6 +909,23 @@ that wasn't actually clean.</pre>
     </span>
     <span class="mono" style="font-weight:500;">8,000 lbs recovered · Track the Box</span>
   </div>
+  <div class="wrap" id="sources" style="padding:8px 24px 28px;">
+    <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
+    <ol class="sources-list">
+      <li id="src-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
+      <li id="src-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
+      <li id="src-3">3. Pew Charitable Trusts, "As SNAP Changes Shift Food Assistance Costs, States Face New Choices," January 2026</li>
+      <li id="src-4">4. Center on Budget and Policy Priorities, "States' First-Ever Bill for SNAP Benefits Could Cost Billions," June 2026</li>
+      <li id="src-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
+      <li id="src-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
+      <li id="src-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
+      <li id="src-8">8. Congressional Budget Office — "$186 billion" figure, ten-year SNAP cut estimate</li>
+      <li id="src-9">9. CBPP, USDA data — "4.5 million" figure, national SNAP enrollment change</li>
+      <li id="src-10">10. NY OTDA — "March 1, 2026" ABAWD work requirement effective date</li>
+      <li id="src-11">11. Federal Register — "October 1, 2026" SNAP administrative cost-share change</li>
+      <li id="src-12">12. NYC Health Code § 81.10, DOHMH — time as a public health control</li>
+    </ol>
+  </div>
   <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
 </footer>
 
@@ -954,11 +959,39 @@ that wasn't actually clean.</pre>
     { date: "2026-07-15", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 44, status: "RECEIVED" }
   ];
   var STEPS = [
-    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from cafeteria share tables at the end of lunch.", detail: "Sealed items only, nothing served or opened. Share-table collection follows DOE wellness policy: items must be commercially packaged, unopened, and temperature-safe before they leave the cafeteria.", state: "collect" },
-    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated transport boxes before it leaves the building.", detail: "Each box carries a number; weight, contents category, and packing time are recorded against the box ID so every pound is traceable. The weight goes into the manifest before the box leaves.", state: "pack" },
-    { num: "03", title: "Deliver after school", body: "Student teams walk fixed routes to partner food banks, and recipients confirm receipt on the spot.", detail: "Routes are walked in pairs and take under thirty minutes; a recipient signature closes out each box before it counts. Green Garden NYC anchors the downtown route.", state: "deliver" },
-    { num: "04", title: "Log it publicly", body: "Every delivery posts to Track the Box in real time — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time.", state: "record" }
+    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from cafeteria share tables at the end of lunch.", detail: "Sealed items only, nothing served or opened. Share-table collection follows DOE wellness policy: items must be commercially packaged, unopened, and temperature-safe before they leave the cafeteria.", state: "collect", icon: "package" },
+    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated transport boxes before it leaves the building.", detail: "Each box carries a number; weight, contents category, and packing time are recorded against the box ID so every pound is traceable. The weight goes into the manifest before the box leaves.", state: "pack", icon: "archive" },
+    { num: "03", title: "Deliver after school", body: "Student teams walk fixed routes to partner food banks, and recipients confirm receipt on the spot.", detail: "Routes are walked in pairs and take under thirty minutes; a recipient signature closes out each box before it counts. Green Garden NYC anchors the downtown route.", state: "deliver", icon: "truck" },
+    { num: "04", title: "Log it publicly", body: "Every delivery posts to Track the Box in real time — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time.", state: "record", icon: "clipboard-check" }
   ];
+  /* Icon set: redrawn from Lucide (ISC-licensed, lucide.dev) at 24x24, stroke-based, inlined
+     rather than loaded from a CDN so the site keeps its zero-external-script footprint. */
+  var ICONS = {
+    package: '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
+    archive: '<rect width="20" height="5" x="2" y="3" rx="1"></rect><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"></path><path d="M10 12h4"></path>',
+    truck: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>',
+    "clipboard-check": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
+    "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path>',
+    ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"></path><path d="m14.5 12.5 2-2"></path><path d="m11.5 9.5 2-2"></path><path d="m8.5 6.5 2-2"></path><path d="m17.5 15.5 2-2"></path>',
+    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
+    cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path>',
+    "clipboard-list": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle>',
+    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path>'
+  };
+  function iconSVG(name, size) {
+    size = size || 20;
+    return '<svg class="step-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
+  }
+  function initIcons(root) {
+    $$("[data-icon]", root).forEach(function (el) {
+      if (el.dataset.iconInit) return;
+      el.dataset.iconInit = "1";
+      el.insertAdjacentHTML("afterbegin", iconSVG(el.getAttribute("data-icon")));
+    });
+  }
+  initIcons();
   var COLD = [
     { t: "13:42", note: "packed", temp: 36 },
     { t: "14:05", note: "in transit", temp: 38 },
@@ -1163,7 +1196,7 @@ that wasn't actually clean.</pre>
     var d = document.createElement("div");
     d.className = "prow";
     d.setAttribute("data-prow", "");
-    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + s.title + '</span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
+    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
     var maskHost = d.querySelector(".pmasc");
     maskHost.innerHTML = mascotSVG("idle", {});
     var btn = d.querySelector("button");
@@ -1316,14 +1349,6 @@ that wasn't actually clean.</pre>
   /* ---------- scroll FX ---------- */
   var shots = [];
   function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
-  $$("[data-fxm]").forEach(function (m) {
-    var rule = m.querySelector("[data-rule]"), lbl = m.querySelector("[data-lbl]");
-    if (!reduced) { rule.style.transform = "scaleX(0)"; lbl.style.opacity = "0"; }
-    shot(m, function () {
-      rule.style.transition = "transform 600ms " + PRO; rule.style.transform = "scaleX(1)";
-      lbl.style.transition = "opacity 400ms " + PRO + " 300ms"; lbl.style.opacity = "1";
-    });
-  });
   $$("[data-mask]").forEach(function (mk) {
     var lines = $$("[data-line]", mk);
     if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
