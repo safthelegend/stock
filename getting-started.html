@@ -18,109 +18,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  :root {
-    --bg:#F5F5F7; --surface:#FFFFFF; --tint:#EAF2DE; --text:#1D1D1F; --text-secondary:#86868B;
-    --rule:#DDDDDD; --brand:#2E5A22; --accent:#E8871E; --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22;
-    --on-brand:#FFFFFF; --brand-press:#234618;
-    --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
-    --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
-    --nav-bg:rgba(245,245,247,0.72);
-    --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
-    --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-      --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-      --on-brand:#14170F; --brand-press:#A5D186;
-      --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-      --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-      --nav-bg:rgba(20,23,15,0.72);
-      --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-      --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-    --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-    --on-brand:#14170F; --brand-press:#A5D186;
-    --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-    --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-    --nav-bg:rgba(20,23,15,0.72);
-    --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-  }
-  @media (prefers-contrast: more) {
-    :root {
-      --rule:#55565A; --line:rgba(29,29,31,0.55); --line-soft:rgba(29,29,31,0.32);
-      --text-secondary:#4A4A4F; --tint:#FFFFFF;
-      --brand-line:rgba(46,90,34,0.75); --brand-line-soft:rgba(46,90,34,0.42); --brand-line-mid:rgba(46,90,34,0.85);
-      --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
-    }
-    :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
-  html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
-  a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
-  a:hover { color:var(--accent); }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
-  ::selection { background:var(--tint); color:var(--brand); }
-  .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
-  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
-  .body-p { font-size:20px; line-height:1.65; max-width:60ch; color:var(--text); text-wrap:pretty; }
-  .skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
-  .skip-link:focus { transform:translateY(0); color:var(--on-brand); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes riseIn { from{transform:translateY(110%)} to{transform:translateY(0)} }
-  @keyframes blinkL { 0%,95.5%,100%{transform:scaleY(1)} 97%{transform:scaleY(0.1)} 98.5%{transform:scaleY(1)} }
-  @keyframes blinkR { 0%,96%,100%{transform:scaleY(1)} 97.5%{transform:scaleY(0.1)} 99%{transform:scaleY(1)} }
-  @keyframes lidBreathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
-  @keyframes squashIn { from{transform:scale(0.94,1.06)} to{transform:scale(1,1)} }
-  nav.bar { position:fixed; top:0; left:0; right:0; z-index:50; height:48px; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); opacity:0; pointer-events:none; transition:opacity 200ms ease; }
-  nav.bar.on { opacity:1; pointer-events:auto; }
-  nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-  nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
-  nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
-  nav.bar .links a { color:var(--text); }
-  nav.bar .links a.cta { color:var(--brand); font-weight:600; }
-  #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
-  .eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
-  h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
-  h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
-  .mask-l { display:block; overflow:hidden; }
-  .mask-l > span { display:block; }
-  .btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
-  .btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
-  .btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
-  .btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
-  .btn.line:hover { border-color:var(--brand); color:var(--brand); }
-  .prow { border-bottom:1px solid var(--line); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 1fr 24px; grid-template-areas:"num ttl caret" "num bdy bdy"; gap:6px 20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
-  .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
-  .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
   .prow .bdy { grid-area:bdy; font-size:17px; line-height:1.6; color:var(--text-secondary); max-width:60ch; }
-  .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
-  .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .prow.open .pdetail { grid-template-rows:1fr; }
-  .prow .pdetail > div { overflow:hidden; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 56px; max-width:60ch; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; padding:28px; box-shadow:0 3px 14px var(--paper-shadow); }
   .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; color:var(--brand); margin:0 0 10px; }
-  .step-icon { flex:none; color:var(--brand); }
-  .cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
-  form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
-  form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
-  form.join .span2 { grid-column:span 2; }
-  form.join textarea { resize:none; }
-  form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
-  form.join button:hover { background:var(--brand-press); }
-  footer { background:var(--bg); border-top:1px solid var(--line); }
-  footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
-  footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
   @media (max-width:760px) {
     .prow > button { grid-template-columns:32px 1fr 24px; }
     .prow .pdetail p { padding-left:24px; }
@@ -133,14 +38,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <nav class="bar" id="nav">
   <div class="wrap">
-    <a href="index.html" class="brand">
+    <a href="index.html#top" class="brand">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
       Stock the Block
     </a>
     <div class="links">
       <a href="index.html#tracker">Tracker</a>
       <a href="index.html#how">How it works</a>
-      <a href="getting-started.html">Getting started</a>
+      <a href="index.html#story">Story</a>
+      <a href="getting-started.html" aria-current="page">Getting started</a>
       <a href="index.html#join" class="cta">Partner with us</a>
       <button id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
         <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -260,15 +166,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
 </footer>
 
+<script src="assets/site.js"></script>
 <script>
 (function () {
   "use strict";
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var mob = innerWidth < 768;
-  var f = mob ? 0.5 : 1;
-  var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
 
   var STEPS = [
     { num: "01", title: "Confirm your building has a share table", body: "Sealed items only, nothing served or opened — the same standard as every other Stock the Block box.", detail: "Walk your cafeteria's share table at the end of a lunch period and see what's actually left: unopened milk, sealed snack packs, whole fruit that never got picked up. If nothing's landing there in usable form, there's nothing yet to build a route around.", icon: "package" },
@@ -278,134 +181,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     { num: "05", title: "Recruit a small student team", body: "Two or three students who can commit to walking the route on a fixed day, every time it's scheduled.", detail: "Routes are walked in pairs and take under thirty minutes. The team doesn't need to be large — it needs to be reliable. One missed pickup teaches a partner site not to count on you.", icon: "users" },
     { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery.", icon: "clipboard-check" }
   ];
-  /* Icon set: redrawn from Lucide (ISC-licensed, lucide.dev) at 24x24, stroke-based, inlined
-     rather than loaded from a CDN so the site keeps its zero-external-script footprint. */
-  var ICONS = {
-    package: '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
-    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
-    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path>',
-    cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path>',
-    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
-    "clipboard-check": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
-    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle>'
-  };
-  function iconSVG(name, size) {
-    size = size || 20;
-    return '<svg class="step-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
-  }
-  function initIcons(root) {
-    $$("[data-icon]", root).forEach(function (el) {
-      if (el.dataset.iconInit) return;
-      el.dataset.iconInit = "1";
-      el.insertAdjacentHTML("afterbegin", iconSVG(el.getAttribute("data-icon")));
-    });
-  }
-  initIcons();
+  /* ---------- icon set (shared — assets/site.js) ---------- */
+  var iconSVG = STB.iconSVG;
+  STB.initIcons();
 
-  /* ---------- mascot component (copied verbatim from index.html) ---------- */
-  var MASCOT_EYES = {
-    idle:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    warm:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    record:    { l: "M95 146 L96 147 L97 146", r: "M214 146 L215 147 L216 146", w: 38 },
-    confirmed: { l: "M63 158 L96 126 L128 158", r: "M182 158 L215 126 L247 158", w: 14 },
-    empty:     { l: "M63 150 L96 150 L128 150", r: "M182 150 L215 150 L247 150", w: 14 },
-    active:    { l: "M63 141 L96 148 L128 156", r: "M182 156 L215 148 L247 141", w: 14 },
-    collect:   { l: "M63 150 L96 122 L128 150", r: "M182 150 L215 122 L247 150", w: 14 },
-    pack:      { l: "M63 138 L96 166 L128 138", r: "M182 138 L215 166 L247 138", w: 14 },
-    deliver:   { l: "M63 160 L96 134 L128 160", r: "M182 160 L215 134 L247 160", w: 14 },
-    neutral:   { l: "M63 158 L96 138 L128 158", r: "M182 158 L215 138 L247 158", w: 14 },
-    inrange:   { l: "M74 152 L96 136 L118 152", r: "M193 152 L215 136 L237 152", w: 13 },
-    danger:    { l: "M74 146 L96 158 L118 146", r: "M193 146 L215 158 L237 146", w: 13 }
-  };
-  var MASCOT_SMILE = {
-    idle: "M110 184 Q151 212 193 184", warm: "M110 180 Q151 226 193 180",
-    record: "M125 190 L177 190", confirmed: "M110 184 Q151 212 193 184",
-    empty: "M130 186 Q151 196 172 186", active: "M125 190 L177 190",
-    collect: "M120 186 Q151 208 182 186", pack: "M124 190 L178 190",
-    deliver: "M112 184 Q151 210 190 184", neutral: "M118 188 L184 188",
-    inrange: "M118 202 Q151 222 184 202", danger: "M124 205 L178 205"
-  };
-  var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
-  var MASCOT_LEAN = { deliver: "rotate(5deg)" };
+  /* ---------- mascot component (shared — assets/site.js) ---------- */
+  STB.initMascotSlots();
 
-  function mascotSVG(state, opts) {
-    opts = opts || {};
-    state = MASCOT_EYES[state] ? state : "idle";
-    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
-    var bare = !!opts.bare, faceless = !!opts.faceless, glasses = !!opts.glasses && !faceless;
-    var fill = opts.fill || "var(--mascot-fill)";
-    var lidT = MASCOT_LID[state] || "rotate(0deg)";
-    var leanT = MASCOT_LEAN[state] || "rotate(0deg)";
-    var breatheAnim = opts.breathe ? "lidBreathe 4s ease-in-out infinite" : "none";
-    var blinkLAnim = opts.blink ? "blinkL 6s ease-in-out infinite" : "none";
-    var blinkRAnim = opts.blink ? "blinkR 6.4s ease-in-out infinite" : "none";
-    var informative = !!opts.informative;
-    var label = opts.label || "Stock the Block mascot";
-    var isRecord = state === "record", isConfirmed = state === "confirmed";
-    var bodyMk = bare ? "" : (
-      '<rect x="20" y="20" width="260" height="200" rx="28" fill="' + fill + '" style="stroke:var(--mascot-stroke);" stroke-width="12"></rect>' +
-      '<g data-lid-g style="transform:' + lidT + ';transform-origin:150px 93px;transition:transform 340ms cubic-bezier(0.16,1,0.3,1);">' +
-        '<path d="M26 93 L274 93" fill="none" stroke-width="12" style="stroke:var(--mascot-stroke); animation:' + breatheAnim + ';"></path>' +
-      '</g>'
-    );
-    var glassesMk = glasses ? (
-      '<circle cx="96" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<circle cx="215" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<path d="M132 152 L179 152" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></path>'
-    ) : "";
-    var faceMk = faceless ? "" : (
-      '<path data-eye-l d="' + e.l + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkLAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-eye-r d="' + e.r + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkRAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-mouth-stroke d="' + smile + '" fill="none" stroke-width="14" stroke-linecap="round" style="stroke:var(--accent); opacity:' + (isRecord || isConfirmed ? 0 : 1) + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease;"></path>' +
-      '<path data-mouth-o d="M151 170 Q127 170 127 192 Q127 214 151 214 Q175 214 175 192 Q175 170 151 170 Z" style="fill:var(--accent); opacity:' + (isRecord ? 1 : 0) + '; transition:opacity 220ms ease;"></path>' +
-      '<path data-mouth-grin d="M112 176 Q151 224 190 176 Q151 198 112 176 Z" style="fill:var(--accent); opacity:' + (isConfirmed ? 1 : 0) + '; transition:opacity 220ms ease;"></path>'
-    );
-    return '<svg data-mascot data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + label + '"' : '') + ' style="width:100%;height:auto;display:block;">' +
-      '<g data-lean-g style="transform:' + leanT + ';transform-origin:150px 230px;transition:transform 320ms cubic-bezier(0.16,1,0.3,1);">' + bodyMk + glassesMk + faceMk + '</g></svg>';
-  }
-  function initMascotSlots(root) {
-    $$(".mascot-slot", root).forEach(function (el) {
-      if (el.dataset.mascotInit) return;
-      el.dataset.mascotInit = "1";
-      var state = el.getAttribute("data-state") || "idle";
-      el.innerHTML = mascotSVG(state, {
-        glasses: el.hasAttribute("data-glasses"),
-        bare: el.hasAttribute("data-bare"),
-        faceless: el.hasAttribute("data-faceless"),
-        fill: el.getAttribute("data-fill"),
-        blink: el.hasAttribute("data-blink"),
-        breathe: el.hasAttribute("data-breathe"),
-        informative: el.hasAttribute("data-informative"),
-        label: el.getAttribute("data-label")
-      });
-    });
-  }
-  initMascotSlots();
-
-  /* ---------- theme (copied verbatim from index.html) ---------- */
-  var html = document.documentElement;
-  var sysDark = matchMedia("(prefers-color-scheme: dark)");
-  function currentTheme() { return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light"); }
-  var toggle = $("#themeToggle");
-  function reflectTheme() {
-    var dark = currentTheme() === "dark";
-    toggle.setAttribute("aria-pressed", dark ? "true" : "false");
-    $("#iconMoon").style.display = dark ? "none" : "block";
-    $("#iconSun").style.display = dark ? "block" : "none";
-  }
-  toggle.addEventListener("click", function () {
-    var next = currentTheme() === "dark" ? "light" : "dark";
-    html.setAttribute("data-theme-anim", "");
-    html.setAttribute("data-theme", next);
-    try { localStorage.setItem("stb-theme", next); } catch (e) {}
-    reflectTheme();
-  });
-  sysDark.addEventListener("change", function () { if (!html.getAttribute("data-theme")) reflectTheme(); });
-  reflectTheme();
+  /* ---------- theme (shared — assets/site.js) ---------- */
+  STB.initTheme();
 
   /* ---------- nav ---------- */
-  var nav = $("#nav");
-  addEventListener("scroll", function () { nav.classList.toggle("on", scrollY > 100); }, { passive: true });
+  STB.initNav();
 
   /* ---------- step accordion (same pattern as index.html section 03) ---------- */
   var stepsHost = $("#steps");
@@ -423,49 +210,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     stepsHost.appendChild(d);
   });
 
-  /* ---------- scroll reveal (same shot pattern as index.html) ---------- */
-  var shots = [];
-  function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
-  $$("[data-reveal]").forEach(function (el) {
-    if (!reduced) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
-    shot(el, function () {
-      el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
-      el.style.opacity = "1"; el.style.transform = "translateY(0)";
-    });
-  });
-  $$("[data-mask]").forEach(function (mk) {
-    var lines = $$("[data-line]", mk);
-    if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
-    shot(mk, function () {
-      lines.forEach(function (l, i) {
-        l.style.transition = "transform 700ms " + EXP + " " + (i * 80) + "ms";
-        l.style.transform = "translateY(0)";
-      });
-    });
-  });
-  $$("[data-prow]").forEach(function (row) {
-    var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
-    if (!reduced) {
-      num.style.opacity = "0";
-      ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
-      bdy.style.opacity = "0";
-    }
-    shot(row, function () {
-      num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1";
-      ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
-      ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
-      bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1";
-    });
-  });
+  /* ---------- scroll reveal (shared — assets/site.js) ----------
+     Registered after the step accordion above, so the JS-built .prow rows are
+     in the DOM by the time initReveals() looks for them. */
+  var FX = STB.initReveals();
   function fxLoop() {
     requestAnimationFrame(fxLoop);
-    var vh = innerHeight;
-    for (var i = 0; i < shots.length; i++) {
-      var s = shots[i];
-      if (s.done) continue;
-      var r = s.el.getBoundingClientRect();
-      if (r.top < vh * 0.85 && r.bottom > 0) { s.done = true; s.fire(); }
-    }
+    FX.tick();
   }
   requestAnimationFrame(fxLoop);
 })();
