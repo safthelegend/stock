@@ -28,7 +28,11 @@
   --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
   /* Interior of the hero box, revealed as the lid hinges open. A darker
      shade of --mascot-fill; never a new colour and never contents. */
-  --box-interior:#C6D9B0;
+  /* Front / side / interior, lightest to darkest, one light direction.
+     Three shades of one colour; never a new hue and never contents. */
+  --box-side:#D6E5C4; --box-interior:#C6D9B0;
+  /* The specular sweep. White at low alpha so it lifts whatever it crosses. */
+  --box-shine:rgba(255,255,255,0.72);
 }
 /* Three modes: light (above, untouched), dark, and stock. The system
    preference decides only when the reader has made no explicit choice — hence
@@ -44,7 +48,8 @@
     --nav-bg:rgba(20,23,15,0.72);
     --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
     --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-    --box-interior:#141810;
+    --box-side:#1D2216; --box-interior:#141810;
+    --box-shine:rgba(240,242,236,0.30);
   }
 }
 :root[data-theme="dark"] {
@@ -56,7 +61,8 @@
   --nav-bg:rgba(20,23,15,0.72);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
   --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-  --box-interior:#141810;
+  --box-side:#1D2216; --box-interior:#141810;
+  --box-shine:rgba(240,242,236,0.30);
 }
 /* Stock — brand mode. Forest-green ground, cream text, orange accent.
    The hues are the site's own two brand colours; nothing new is introduced.
@@ -76,7 +82,8 @@
   --nav-bg:rgba(27,53,17,0.74);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
   --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
-  --box-interior:#132608;
+  --box-side:#1B3612; --box-interior:#132608;
+  --box-shine:rgba(234,242,222,0.32);
 }
 @media (prefers-contrast: more) {
   :root {
@@ -301,7 +308,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
     --on-brand:#FFFFFF; --brand-press:#000000;
     --line:#000000; --line-soft:#BBBBBB;
     --brand-line:#000000; --brand-line-soft:#BBBBBB; --brand-line-mid:#000000;
-    --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-interior:#FFFFFF;
+    --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-side:#FFFFFF; --box-interior:#FFFFFF; --box-shine:rgba(255,255,255,0);
     --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0;
   }
   html, body { background:#FFFFFF !important; color:#000000 !important; }
@@ -309,7 +316,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
 
   /* Chrome, decoration and every interactive control. */
   nav.bar, .skip-link, #themeToggle, #themeStatus, #unitToggle, #progressBar,
-  #palette, #paletteBackdrop, #offlineBanner, .divider, #heroBoxWrap, #formWrap,
+  #palette, #paletteBackdrop, #offlineBanner, .divider, .box-band, #heroBoxWrap, #formWrap,
   .paper-grain, #chips, .anchor-link, .doc-copy, .doc-download, .doc-toggle,
   .video-thumb, .packet-form, .packet-actions, .mascot-slot, [data-mascot],
   .empty-state .mascot-slot { display:none !important; }
