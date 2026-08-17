@@ -144,34 +144,74 @@ function initMascotSlots(root) {
 }
 
   /* ---------- theme ----------
-     Verbatim apart from one addition: pages can pass an onChange callback, so
-     index.html can repaint its WebGL scenes when the theme flips and
-     getting-started.html — which has none — can simply omit it. */
+     Three modes cycling light -> dark -> stock. "light" and "dark" mirror the
+     system preference; "stock" is the brand mode and is opt-in only, never
+     reached by preference. The chosen mode persists in localStorage under
+     STORE_KEY and is applied by a tiny inline script in each page's <head>, so
+     the correct palette is on the element before first paint.
+
+     Pages pass an onChange callback; index.html uses it to repaint scenes that
+     read colours from the custom properties rather than from CSS. */
+  var THEMES = ["light", "dark", "stock"];
+  var THEME_LABEL = { light: "Light", dark: "Dark", stock: "Stock" };
+  var STORE_KEY = "stb-theme";
   var html = document.documentElement;
   var sysDark = matchMedia("(prefers-color-scheme: dark)");
-  function currentTheme() { return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light"); }
+
+  function storedTheme() {
+    try {
+      var t = localStorage.getItem(STORE_KEY);
+      return THEMES.indexOf(t) > -1 ? t : null;
+    } catch (e) { return null; }
+  }
+  /* The mode actually in force: an explicit choice if there is one, otherwise
+     whatever the system asks for. */
+  function currentTheme() {
+    return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light");
+  }
   function getVar(n) { return getComputedStyle(html).getPropertyValue(n).trim(); }
 
   function initTheme(onChange) {
     var toggle = $("#themeToggle");
     if (!toggle) return;
-    function fire() { if (typeof onChange === "function") onChange(); }
-    function reflectTheme() {
-      var dark = currentTheme() === "dark";
-      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
-      $("#iconMoon").style.display = dark ? "none" : "block";
-      $("#iconSun").style.display = dark ? "block" : "none";
+    var nameEl = toggle.querySelector(".theme-name");
+    var live = $("#themeStatus");
+    var iconFor = {
+      light: toggle.querySelector('[data-theme-icon="light"]'),
+      dark: toggle.querySelector('[data-theme-icon="dark"]'),
+      stock: toggle.querySelector('[data-theme-icon="stock"]')
+    };
+
+    function reflect() {
+      var cur = currentTheme();
+      var next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
+      if (nameEl) nameEl.textContent = THEME_LABEL[cur];
+      THEMES.forEach(function (t) {
+        if (iconFor[t]) iconFor[t].style.display = t === cur ? "block" : "none";
+      });
+      /* The label names the current mode; the accessible name has to say what
+         pressing it will do, or the control reads as a status, not an action. */
+      toggle.setAttribute("aria-label", "Colour theme: " + THEME_LABEL[cur] + ". Switch to " + THEME_LABEL[next] + ".");
     }
+
     toggle.addEventListener("click", function () {
-      var next = currentTheme() === "dark" ? "light" : "dark";
+      var next = THEMES[(THEMES.indexOf(currentTheme()) + 1) % THEMES.length];
       html.setAttribute("data-theme-anim", "");
       html.setAttribute("data-theme", next);
-      try { localStorage.setItem("stb-theme", next); } catch (e) {}
-      reflectTheme();
-      fire();
+      try { localStorage.setItem(STORE_KEY, next); } catch (e) {}
+      reflect();
+      if (live) live.textContent = THEME_LABEL[next] + " theme";
+      if (typeof onChange === "function") onChange();
     });
-    sysDark.addEventListener("change", function () { if (!html.getAttribute("data-theme")) { reflectTheme(); fire(); } });
-    reflectTheme();
+
+    /* Only follow the system when the reader has not chosen for themselves. */
+    sysDark.addEventListener("change", function () {
+      if (html.getAttribute("data-theme")) return;
+      reflect();
+      if (typeof onChange === "function") onChange();
+    });
+
+    reflect();
   }
 
   /* ---------- nav ---------- */
@@ -239,7 +279,8 @@ function initMascotSlots(root) {
     MASCOT_EYES: MASCOT_EYES, MASCOT_SMILE: MASCOT_SMILE,
     MASCOT_LID: MASCOT_LID, MASCOT_LEAN: MASCOT_LEAN,
     mascotSVG: mascotSVG, paintMascot: paintMascot, initMascotSlots: initMascotSlots,
-    currentTheme: currentTheme, getVar: getVar, initTheme: initTheme,
+    THEMES: THEMES, currentTheme: currentTheme, storedTheme: storedTheme,
+    getVar: getVar, initTheme: initTheme,
     initNav: initNav, initReveals: initReveals
   };
 })(window);
