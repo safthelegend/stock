@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Stock the Block — student-run food recovery, NYC</title>
+<title>Stock the Block: student-run food recovery, NYC</title>
 <meta name="description" content="Students move surplus cafeteria food from share tables to food banks. Every pound logged and public on Track the Box.">
-<meta property="og:title" content="Stock the Block — student-run food recovery, NYC">
+<meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
 <meta property="og:description" content="Students move surplus cafeteria food from share tables to food banks. Every pound logged and public.">
 <meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
 <meta property="og:type" content="website">
@@ -47,6 +47,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
   .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
   .divider .mascot-slot { width:140px; transform-origin:center bottom; }
+  /* Mid-page 3D container band. The section height and the sticky frame are
+     set from JS so the scroll length lives in one place. */
+  .box-band { background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft); overflow:hidden; }
+  .box-band-inner { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; width:100%; max-width:1100px; margin:0 auto; padding:0 24px; }
+  #midBox { display:block; width:100%; max-width:440px; height:auto; margin:0 auto; }
+  .box-band-copy [data-midcopy] { opacity:0; will-change:opacity, transform; }
+  @media (prefers-reduced-motion: reduce) { .box-band-copy [data-midcopy] { opacity:1 !important; transform:none !important; } }
+  @media (max-width:820px) {
+    .box-band-inner { grid-template-columns:minmax(0,1fr); gap:28px; text-align:center; }
+    .box-band-copy [data-midcopy] { margin-left:auto; margin-right:auto; }
+    #midBox { max-width:300px; }
+  }
   .chip { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
   .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
@@ -122,12 +134,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
-    nav.bar, .skip-link, .divider, #heroBoxWrap, #formWrap, .paper-grain { display:none !important; }
+    nav.bar, .skip-link, .divider, .box-band, #heroBoxWrap, #formWrap, .paper-grain { display:none !important; }
     #heropin { height:auto !important; }
     #top, .thead { position:static !important; min-height:0 !important; }
     * { animation:none !important; transition:none !important; box-shadow:none !important; }
     body { background:#fff; color:#000; }
-    a.verify::after { content:" — " attr(href); font-weight:400; }
+    a.verify::after { content:" (" attr(href) ")"; font-weight:400; }
     section { break-inside:avoid; }
   }
 </style>
@@ -169,11 +181,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <em>The tracker will prove it.</em>
     </h1>
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
-      <p class="body-p" style="margin:20px 0 0;">Stock the Block is a student-run food recovery system for NYC schools: insulated boxes, short local routes to a receiving site in the same borough, and a delivery log anyone can audit.</p>
+      <p class="body-p" style="margin:20px 0 0;">Insulated boxes, short local routes inside one borough, and a delivery log anyone can audit.</p>
       <div class="prelaunch">
         <p class="prelaunch-tag">Pre-launch</p>
         <p class="prelaunch-line" id="heroFig">The log opens with the first delivery.</p>
-        <p class="prelaunch-sub">The system is built. The record starts when the first box moves — and every pound after that is logged and public.</p>
+        <p class="prelaunch-sub">The system is built. The record starts with the first box, and every pound after that is logged and public.</p>
       </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
@@ -225,7 +237,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
             </svg>
           </button>
           <p class="collage-copy" style="margin-top:12px;">PBS NewsHour anchor introducing the "Cutting Food Aid" segment on SNAP eligibility changes.</p>
-          <p class="collage-src">PBS NewsHour — "Cutting Food Aid" segment intro</p>
+          <p class="collage-src">PBS NewsHour, "Cutting Food Aid" segment intro</p>
         </div>
       </div>
       <!-- Original diagram: our own synthesis of the SNAP cut's scale, not a recreation of the PBS on-screen graphic. -->
@@ -234,7 +246,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         <div style="position:relative; padding:40px 44px;">
           <p class="eyebrow">The shape of the cut</p>
           <p class="collage-fig" style="font-size:clamp(34px,5vw,54px);">$<span id="scaleBillion">187</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="src-link" href="#src-1">1</a></sup></p>
-          <p class="collage-copy">Cut to SNAP over ten years, FY2025–FY2034 — H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
+          <p class="collage-copy">Cut to SNAP over ten years, FY2025–FY2034. H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
           <div class="scale-bar-track" role="img" aria-label="SNAP funding shrinking to roughly 64 percent of its current level by 2034">
             <div class="scale-bar-mark"></div>
             <div class="scale-bar-fill" id="scaleBarFill"></div>
@@ -245,7 +257,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
             <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
             <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
             <p>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></p>
-            <p class="scale-standout">Arizona: a 51% year-over-year drop — 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></p>
+            <p class="scale-standout">Arizona: a 51% year-over-year drop, 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></p>
           </div>
         </div>
       </div>
@@ -253,7 +265,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
         <div style="position:relative; padding:34px 38px;">
           <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
-          <p class="collage-copy">People off SNAP nationally between enactment and April 2026 — about 11 percent.</p>
+          <p class="collage-copy">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
@@ -273,7 +285,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
     <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
   </div>
-  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">A benefit cut is measured in dollars of monthly income. Recovered food is measured in pounds handed across a pantry table. Those are not the same unit and not the same order of magnitude. Recovered food is meals a pantry can hand out this week; it is not income, and it does not replace a benefits program.</p>
+  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
 </section>
 
 <section class="statband" id="statband">
@@ -289,10 +301,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </div>
       <div class="cell" data-stat>
         <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">No deliveries yet</p>
-        <p class="cap">Stock the Block is pre-launch. The first logged delivery starts the record.</p>
+        <p class="cap">Pre-launch. The first logged delivery starts the record.</p>
       </div>
     </div>
-    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet — the public log opens with the first delivery.</p>
+    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet.</p>
   </div>
 </section>
 
@@ -311,8 +323,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
-  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off.<sup><a class="src-link" href="#src-11">11</a></sup> That record is the reason the box carries an instrument at all.</p>
-  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around a small number of shared logger units — on the order of three — rotating across routes rather than one permanently assigned to every box.</span> <span class="unverified">Where a run goes out without a unit, the intended fallback is to validate it against a thermal model built from logged runs on the same route; that model does not exist yet, because there are no logged runs to build it from.</span> Until it does, a run without a unit has no temperature record, and the manifest line will say exactly that rather than imply one. There is no location sensor, and the log makes no claim about where a box was.</p>
+  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The school needs a record showing the load stayed out of the danger zone, pack-out to hand-off.<sup><a class="src-link" href="#src-11">11</a></sup></p>
+  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
   <div class="sensor-row cold-panel" style="margin-top:40px;">
     <div>
       <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
@@ -353,9 +365,20 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section aria-hidden="true" class="divider">
-  <div class="inner" data-dpar>
-    <div class="mascot-slot" data-dsvg data-state="confirmed" data-breathe data-fill="var(--bg)"></div>
+<!-- The second instance of the hero's box, same renderer, different behaviour:
+     shut throughout, not draggable, and given the shine and the zoom instead.
+     Sizing and the sticky frame are set by initScrollScrub / initMidBox. -->
+<section id="boxpin" class="box-band">
+  <div id="boxpinSticky">
+    <div class="box-band-inner">
+      <canvas id="midBox" width="440" height="440" role="img"
+              aria-label="The insulated box, sealed and logged."></canvas>
+      <div class="box-band-copy">
+        <p class="eyebrow" data-midcopy>What actually moves</p>
+        <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
+        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -366,7 +389,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mask-l"><span data-line>The delivery log</span></span>
       <span class="mask-l"><span data-line>is the whole pitch.</span></span>
     </h2>
-    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — sortable, filterable, and addable-up by anyone who wants to check it. It is empty right now, and it will stay empty until a box actually moves.</p>
+    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates: a public record of every box that moves, sortable and filterable by anyone. It stays empty until a box moves.</p>
     <div data-reveal style="margin-top:32px; max-width:700px;">
       <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan is operating; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
         <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
@@ -387,7 +410,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
             <text x="8" y="222">Queens</text>
           </g>
           <g style="fill:var(--text-secondary);">
-            <text x="410" y="60">receiving site — operating</text>
+            <text x="410" y="60">receiving site (operating)</text>
             <text x="410" y="114">to be identified</text>
             <text x="410" y="168">to be identified</text>
             <text x="410" y="222">to be identified</text>
@@ -411,7 +434,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="manifest" id="manifest">
       <div class="mhead">
         <span class="left">
-          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST — <span id="filterLabel">RECENT</span></span>
+          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST · <span id="filterLabel">RECENT</span></span>
           <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
         </span>
         <span class="right">
@@ -430,10 +453,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <div id="mempty" class="empty-state" style="display:none;">
         <div class="mascot-slot" data-state="empty"></div>
         <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The log opens with the first delivery.</p>
-        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery will be recorded under. Nothing has moved yet, so there is nothing here to show.</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Nothing has moved yet.</p>
       </div>
       <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
-      <p class="manifest-foot"><span class="unverified">Track the Box — the planned public log this feeds — is not published yet.</span></p>
+      <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
     </div>
   </div>
 </section>
@@ -446,8 +469,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mask-l"><span data-line>the share table get thrown out.</span></span>
     </h2>
     <div>
-      <p class="body-p" data-reveal style="margin:0;">We started Stock the Block because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the logger and the tracker; students will walk the routes and keep the logs. That is the commitment, and the log is where we expect to be held to it.</p>
-      <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table and a receiving site within walking distance, this can run in your school too.</p>
+      <p class="body-p" data-reveal style="margin:0;">We started this because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the logger and the tracker, and will walk the routes and keep the logs.</p>
+      <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table and a receiving site within walking distance, it can run there too.</p>
     </div>
   </div>
 </section>
@@ -462,11 +485,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="limits-grid">
       <div data-reveal>
         <p class="lbl">the mechanism</p>
-        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items off a share table and into a receiving site in the same borough — a short local route, walked the same afternoon. Same-afternoon delivery is what a borough cluster buys you; it is not a claim about crossing the city. That is the whole operation.</p>
+        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items from a share table to a receiving site in the same borough, on foot, the same afternoon. That is what a borough cluster buys you; it is not a claim about crossing the city.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what it measurably changes</p>
-        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when someone asks what happened to the surplus. None of that is measurable yet — there is nothing in the log to measure.</p>
+        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus. None of it is measurable yet; the log is empty.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what it does not touch</p>
@@ -474,11 +497,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </div>
       <div data-reveal>
         <p class="lbl">what would have to be true</p>
-        <p class="body">Many more buildings than the one we run in. A receiving site identified and signed in every borough we claim a cluster in — three of the four have none yet. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Receiving sites with the capacity to take same-day perishable food.</p>
+        <p class="body">Many more buildings than the one we run in. A signed receiving site in every borough we claim a cluster in; three of the four have none. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Sites with capacity for same-day perishable food.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what would show it is not working</p>
-        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and quietly stays on the map anyway. We publish the log partly so this is checkable by someone other than us.</p>
+        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and stays on the map anyway. We publish the log so this is checkable by someone other than us.</p>
       </div>
     </div>
   </div>
@@ -497,36 +520,36 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mask-l"><span data-line>Everything we use</span></span>
       <span class="mask-l"><span data-line>is yours to copy.</span></span>
     </h2>
-    <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Start here: read the health code memo, then the box spec. Those two decide whether your building can run this at all. The agreement, the firmware and the intake workflow follow from them.</p>
+    <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Read the health code memo, then the box spec. Those two decide whether your building can run this; the rest follows from them.</p>
     <div class="cards-grid">
       <div class="card" data-reveal style="grid-column:span 2; background:var(--tint); border-color:var(--brand-line-mid);">
-        <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo — start here</p>
-        <p class="body" style="font-size:19px;">What a school may release, and the records it has to keep to release it.</p>
+        <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo: start here</p>
+        <p class="body" style="font-size:19px;">What a school may release, and the records it must keep to release it.</p>
         <p class="meta">Food service directors and school administrators.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the memo <span class="doc-caret" aria-hidden="true">+</span></button>
         <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docHealth">STOCK THE BLOCK — HEALTH CODE MEMO (TEMPLATE)
+          <pre class="doc-text mono" id="docHealth">STOCK THE BLOCK: HEALTH CODE MEMO (TEMPLATE)
 For food service directors and school administrators
 
 WHAT THIS COVERS
 This memo explains why unopened, sealed share-table surplus is generally
 lower-risk to release than prepared or served food, and what record a
 school should keep before releasing it. It is a starting template, not
-legal advice — read the bracketed sections and fill them in with your
+legal advice. Read the bracketed sections and fill them in with your
 own health department's guidance before relying on it.
 
 WHAT COUNTS AS TCS FOOD
 Time/Temperature Control for Safety (TCS) food is food that can support
-rapid bacterial growth if it sits at an unsafe temperature — milk and
+rapid bacterial growth if it sits at an unsafe temperature: milk and
 dairy, cut produce, anything that needs refrigeration. Most share-table
 surplus (sealed milk cartons, prepackaged snacks, whole fruit) is
 lower-risk than prepared or served food because it was never opened,
 plated, or handled after packaging. That does not mean it is exempt
-from time/temperature rules — it means the risk profile is different
+from time/temperature rules. It means the risk profile is different
 from a steam-table item that sat out during lunch service.
 
 WHY A TEMPERATURE RECORD IS WHAT LETS YOU RELEASE IT
-A school cannot show a box of surplus was safe by asserting it — it has
+A school cannot show a box of surplus was safe by asserting it. It has
 to show it. A written record of the load's temperature from pack-out to
 hand-off is the artifact a health department or a skeptical parent can
 actually check. No record, no defensible release.
@@ -541,44 +564,44 @@ release against a model that has not been built and validated with your
 health department.
 
 [Insert your local health department's specific guidance on TCS food
-donation and record-keeping — verify with your health department before
-relying on this memo. Requirements vary by jurisdiction.]
+donation and record-keeping. Verify it with your health department
+before relying on this memo. Requirements vary by jurisdiction.]
 
 LIABILITY: THE BILL EMERSON GOOD SAMARITAN FOOD DONATION ACT
 The federal Bill Emerson Good Samaritan Food Donation Act protects
 schools and other good-faith donors from civil and criminal liability
 if a food item donated in good faith later causes harm, except in cases
 of gross negligence or intentional misconduct. It does not replace
-local health code compliance — a school still has to follow its state
+local health code compliance; a school still has to follow its state
 and local food safety rules. What the Emerson Act does is remove the
 liability fear that keeps some schools from donating at all, once
 they're already following the rules above.
 
 BEFORE YOU RELEASE A BOX
-  1. Confirm every item is sealed and unopened — nothing served, nothing
+  1. Confirm every item is sealed and unopened: nothing served, nothing
      plated, nothing that touched an open steam table.
   2. Confirm the box has a temperature record covering pack-out to
      hand-off, from a logger unit. (The route-model fallback described
-     above is planned and not yet available — until it is built, a run
+     above is planned and not yet available. Until it is built, a run
      without a logger unit has no temperature record.)
   3. Confirm the record is attached to a box ID that appears on the
      delivery manifest.
-  4. Keep the record after the delivery — it's what you'd show if
+  4. Keep the record after the delivery. It's what you'd show if
      anyone ever asked what happened to the surplus.
 
 [Insert your school's contact for questions about this memo]
 [Insert local health department name and contact]
 
 This is a template. Read it, adapt it, verify it with your own health
-department — do not treat it as a substitute for their guidance.</pre>
+department. Do not treat it as a substitute for their guidance.</pre>
           <button type="button" class="doc-copy" data-copy-target="docHealth">Copy to clipboard</button>
         </div></div>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="ruler">Box spec</p>
-        <p class="body">Cut sheet, materials list and fold order for one insulated transport box.</p>
+        <p class="body">Cut sheet, materials list and fold order for one insulated box.</p>
         <p class="meta">Whoever builds the first three boxes.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMg4oCUIGxpZCBmbGFwLCBmYWNlIHBhbmVsLApiYXNlLCBoYW5kbGUgY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUg4oCUIHZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKiDigJQgZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqIOKAlCB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKiDigJQgdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKiDigJQgYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqIOKAlCBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKiog4oCUIHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWMg4oCUIGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0gICAgICAgICAgICAgICAgICAgIHwKfCBSZWZsZWN0aXZlIGxpbmVyIG9yIGZvaWwgdGFwZSAgICAgIHwgSW50ZXJpb3IgZmFjZSwgYWxsIHBhbmVscyAgICAgICAgICAgICAgICAgfAp8IFNlYW0gdGFwZSAgICAgICAgICAgICAgICAgICAgICAgICAgfCBGb2xkIGxpbmVzIGFuZCBqb2ludHMgICAgICAgICAgICAgICAgICAgICB8CnwgQ2xvc3VyZSAoaG9vay1hbmQtbG9vcCBvciBsYXRjaCkgICB8IEtlZXBzIHRoZSBsaWQgZmxhcCBzaHV0IGluIHRyYW5zaXQgICAgICAgIHwKfCBIYW5kbGUgZWRnZSByZWluZm9yY2VtZW50ICAgICAgICAgIHwgVGhyb3VnaCB0aGUgaGFuZGxlIGN1dCAgICAgICAgICAgICAgICAgICAgfAoKUHJpY2UgdGhlIG1hdGVyaWFscyBhYm92ZSBmcm9tIHlvdXIgb3duIHN1cHBsaWVyIGJlZm9yZSBvcmRlcmluZyBmb3IgYQpiYXRjaCDigJQgcGVyLWJveCBjb3N0IGRlcGVuZHMgZW50aXJlbHkgb24gdGhlIHNoZWV0IG1hdGVyaWFsIHlvdSBwaWNrLCBzbwpubyBmaWd1cmUgaXMgcXVvdGVkIGhlcmUuCgojIyBBc3NlbWJseSwgaW4gZ2VuZXJhbCB0ZXJtcwoKMS4gQ3V0IHRoZSBzaGVldCB0byB0aGUgcGFuZWwgbGF5b3V0IHNob3duIGluIHRoZSBkaWFncmFtIG9uIHRoZSBzaXRlLgoyLiBDdXQgdGhlIGhhbmRsZSBvcGVuaW5nIGludG8gdGhlIGZhY2UgcGFuZWw7IGN1dCB0aGUgc2Vuc29yIHBvY2tldAogICBpbnRvIHRoZSBiYWNrIHBhbmVsLgozLiBGb2xkIHRoZSBmYWNlIHBhbmVsLCBiYWNrIHBhbmVsLCBhbmQgcmVtYWluaW5nIHNpZGUgcGFuZWxzIHVwIGZyb20KICAgdGhlIGJhc2UgdG8gZm9ybSB0aGUgYm94J3Mgd2FsbHMuCjQuIFNlYW0gdGhlIHZlcnRpY2FsIGVkZ2VzIHdoZXJlIGFkam9pbmluZyBwYW5lbHMgbWVldC4KNS4gRm9sZCB0aGUgbGlkIGZsYXAgZG93biB0byBjbG9zZSB0aGUgb3BlbiB0b3AuCjYuIExpbmUgdGhlIGludGVyaW9yIHdpdGggdGhlIHJlZmxlY3RpdmUgbGluZXIuCjcuIEZpdCB0aGUgc2Vuc29yIHBvY2tldCBzbyB0aGUgbG9nZ2VyIHNpdHMgYWdhaW5zdCB0aGUgaW50ZXJpb3Igd2FsbAogICB3aXRoIHRoZSBwcm9iZSByZWFjaGluZyBpbnRvIHRoZSBtYWluIGNhdml0eS4KCltJbnNlcnQgZXhhY3QgcGFuZWwgZGltZW5zaW9ucyBhbmQgZm9sZCBzZXF1ZW5jZSwgdmVyaWZpZWQgYWdhaW5zdCB0aGUKZGlhZ3JhbSBvbiB0aGUgc2l0ZSBhbmQgeW91ciBjaG9zZW4gc2hlZXQgbWF0ZXJpYWwsIG9uY2UgeW91ciBidWlsZAp0ZWFtIGZpbmFsaXplcyB0aGVtIOKAlCB0aGlzIHRlbXBsYXRlIGludGVudGlvbmFsbHkgZG9lc24ndCBpbnZlbnQKbWVhc3VyZW1lbnRzIHRoYXQgZGVwZW5kIG9uIG1hdGVyaWFsIHlvdSBoYXZlbid0IHBpY2tlZCB5ZXQuXQo=" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2s6IEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMuIExpZCBmbGFwLCBmYWNlIHBhbmVsLCBiYXNlLCBoYW5kbGUKY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUuIFZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKjogZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqOiB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKjogdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKjogYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqOiBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKio6IHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWM7IGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0gICAgICAgICAgICAgICAgICAgIHwKfCBSZWZsZWN0aXZlIGxpbmVyIG9yIGZvaWwgdGFwZSAgICAgIHwgSW50ZXJpb3IgZmFjZSwgYWxsIHBhbmVscyAgICAgICAgICAgICAgICAgfAp8IFNlYW0gdGFwZSAgICAgICAgICAgICAgICAgICAgICAgICAgfCBGb2xkIGxpbmVzIGFuZCBqb2ludHMgICAgICAgICAgICAgICAgICAgICB8CnwgQ2xvc3VyZSAoaG9vay1hbmQtbG9vcCBvciBsYXRjaCkgICB8IEtlZXBzIHRoZSBsaWQgZmxhcCBzaHV0IGluIHRyYW5zaXQgICAgICAgIHwKfCBIYW5kbGUgZWRnZSByZWluZm9yY2VtZW50ICAgICAgICAgIHwgVGhyb3VnaCB0aGUgaGFuZGxlIGN1dCAgICAgICAgICAgICAgICAgICAgfAoKUHJpY2UgdGhlIG1hdGVyaWFscyBhYm92ZSBmcm9tIHlvdXIgb3duIHN1cHBsaWVyIGJlZm9yZSBvcmRlcmluZyBhCmJhdGNoLiBQZXItYm94IGNvc3QgZGVwZW5kcyBlbnRpcmVseSBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IHBpY2ssIHNvCm5vIGZpZ3VyZSBpcyBxdW90ZWQgaGVyZS4KCiMjIEFzc2VtYmx5LCBpbiBnZW5lcmFsIHRlcm1zCgoxLiBDdXQgdGhlIHNoZWV0IHRvIHRoZSBwYW5lbCBsYXlvdXQgc2hvd24gaW4gdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUuCjIuIEN1dCB0aGUgaGFuZGxlIG9wZW5pbmcgaW50byB0aGUgZmFjZSBwYW5lbDsgY3V0IHRoZSBzZW5zb3IgcG9ja2V0CiAgIGludG8gdGhlIGJhY2sgcGFuZWwuCjMuIEZvbGQgdGhlIGZhY2UgcGFuZWwsIGJhY2sgcGFuZWwsIGFuZCByZW1haW5pbmcgc2lkZSBwYW5lbHMgdXAgZnJvbQogICB0aGUgYmFzZSB0byBmb3JtIHRoZSBib3gncyB3YWxscy4KNC4gU2VhbSB0aGUgdmVydGljYWwgZWRnZXMgd2hlcmUgYWRqb2luaW5nIHBhbmVscyBtZWV0Lgo1LiBGb2xkIHRoZSBsaWQgZmxhcCBkb3duIHRvIGNsb3NlIHRoZSBvcGVuIHRvcC4KNi4gTGluZSB0aGUgaW50ZXJpb3Igd2l0aCB0aGUgcmVmbGVjdGl2ZSBsaW5lci4KNy4gRml0IHRoZSBzZW5zb3IgcG9ja2V0IHNvIHRoZSBsb2dnZXIgc2l0cyBhZ2FpbnN0IHRoZSBpbnRlcmlvciB3YWxsCiAgIHdpdGggdGhlIHByb2JlIHJlYWNoaW5nIGludG8gdGhlIG1haW4gY2F2aXR5LgoKW0luc2VydCBleGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCBmb2xkIHNlcXVlbmNlLCB2ZXJpZmllZCBhZ2FpbnN0IHRoZQpkaWFncmFtIG9uIHRoZSBzaXRlIGFuZCB5b3VyIGNob3NlbiBzaGVldCBtYXRlcmlhbCwgb25jZSB5b3VyIGJ1aWxkCnRlYW0gZmluYWxpemVzIHRoZW0uIFRoaXMgdGVtcGxhdGUgaW50ZW50aW9uYWxseSBkb2Vzbid0IGludmVudAptZWFzdXJlbWVudHMgdGhhdCBkZXBlbmQgb24gbWF0ZXJpYWwgeW91IGhhdmVuJ3QgcGlja2VkIHlldC5dCg==" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="handshake">Partner agreement</p>
@@ -586,7 +609,7 @@ department — do not treat it as a substitute for their guidance.</pre>
         <p class="meta">School administrators and pantry directors.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the agreement <span class="doc-caret" aria-hidden="true">+</span></button>
         <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docAgreement">STOCK THE BLOCK — PARTNER AGREEMENT (TEMPLATE)
+          <pre class="doc-text mono" id="docAgreement">STOCK THE BLOCK: PARTNER AGREEMENT (TEMPLATE)
 One page, signed before the first run.
 
 This agreement is between:
@@ -603,7 +626,7 @@ a temperature record covering pack-out to hand-off (see the accompanying
 health code memo).
 
 PICKUP / DELIVERY CADENCE
-Cadence is negotiated per-partner and is not fixed by this template — a
+Cadence is negotiated per-partner and is not fixed by this template. A
 new route may start at once or twice a week and increase from there as
 it proves reliable (see the "getting started" page's cadence guidance
 for why starting slow and consistent beats starting ambitious and
@@ -652,9 +675,9 @@ school district requires for this agreement, if any.]</pre>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="cpu">Firmware repo</p>
-        <p class="body">Logger sketch, probe calibration notes and wiring for the unit described under "the instruments."</p>
+        <p class="body">Logger sketch, probe calibration and wiring for the unit under "the instruments."</p>
         <p class="meta">The student build team.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlIOKAlCB0aGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvIOKAlCBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKUExBTk5FRCwgTk9UIFlFVCBJTiBQTEFDRS4gVGhlIGludGVuZGVkIGRlc2lnbiBpcyBhIHNtYWxsIHNoYXJlZCBzZXQgb2YKbG9nZ2VyIHVuaXRzIOKAlCBvbiB0aGUgb3JkZXIgb2YgdGhyZWUg4oCUIHJvdGF0aW5nIGFjcm9zcyByb3V0ZXMgcmF0aGVyIHRoYW4Kb25lIHBlcm1hbmVudGx5IGFzc2lnbmVkIHBlciBib3gsIHdpdGggYSBydW4gdGhhdCBnb2VzIG91dCB3aXRob3V0IGFuCmF2YWlsYWJsZSB1bml0IHZhbGlkYXRlZCBhZ2FpbnN0IGEgdGhlcm1hbCBtb2RlbCBidWlsdCBmcm9tIGxvZ2dlZCBydW5zCm9uIHRoZSBzYW1lIHJvdXRlIChzZWUgInRoZSBpbnN0cnVtZW50cyIgb24gdGhlIHNpdGUpLiBOZWl0aGVyIHRoZSBmbGVldApub3IgdGhhdCBtb2RlbCBleGlzdHMgeWV0OiB0aGVyZSBhcmUgbm8gbG9nZ2VkIHJ1bnMgdG8gYnVpbGQgYSBtb2RlbApmcm9tLiBVbnRpbCB0aGVyZSBhcmUsIGEgcnVuIHdpdGhvdXQgYSB1bml0IGhhcyBubyB0ZW1wZXJhdHVyZSByZWNvcmQsCmFuZCB0aGUgbWFuaWZlc3QgbGluZSBzYXlzIGV4YWN0bHkgdGhhdCByYXRoZXIgdGhhbiBpbXBseWluZyBvbmUuCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKiDigJQgUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqIOKAlCBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqIOKAlCBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqIOKAlCBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKiDigJQgUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQK4oCUIGNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKiDigJQgU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzIGZsYWdnZWQKcmF0aGVyIHRoYW4gdHJ1c3RlZC4gVGhlIGludGVuZGVkIGZhbGxiYWNrIGlzIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZTsgdW50aWwgdGhhdCBtb2RlbCBleGlzdHMsIGEgRkFVTFQgcnVuIHNpbXBseSBoYXMKbm8gdXNhYmxlIHRlbXBlcmF0dXJlIHJlY29yZCBhbmQgaXMgZmxhZ2dlZCBhcyBzdWNoLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzIOKAlCBkbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2s6IExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlLiBUaGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvOiBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3IuIFRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKUExBTk5FRCwgTk9UIFlFVCBJTiBQTEFDRS4gVGhlIGludGVuZGVkIGRlc2lnbiBpcyBhIHNtYWxsIHNoYXJlZCBzZXQgb2YKbG9nZ2VyIHVuaXRzLCBvbiB0aGUgb3JkZXIgb2YgdGhyZWUsIHJvdGF0aW5nIGFjcm9zcyByb3V0ZXMgcmF0aGVyIHRoYW4Kb25lIHBlcm1hbmVudGx5IGFzc2lnbmVkIHBlciBib3gsIHdpdGggYSBydW4gdGhhdCBnb2VzIG91dCB3aXRob3V0IGFuCmF2YWlsYWJsZSB1bml0IHZhbGlkYXRlZCBhZ2FpbnN0IGEgdGhlcm1hbCBtb2RlbCBidWlsdCBmcm9tIGxvZ2dlZCBydW5zCm9uIHRoZSBzYW1lIHJvdXRlIChzZWUgInRoZSBpbnN0cnVtZW50cyIgb24gdGhlIHNpdGUpLiBOZWl0aGVyIHRoZSBmbGVldApub3IgdGhhdCBtb2RlbCBleGlzdHMgeWV0OiB0aGVyZSBhcmUgbm8gbG9nZ2VkIHJ1bnMgdG8gYnVpbGQgYSBtb2RlbApmcm9tLiBVbnRpbCB0aGVyZSBhcmUsIGEgcnVuIHdpdGhvdXQgYSB1bml0IGhhcyBubyB0ZW1wZXJhdHVyZSByZWNvcmQsCmFuZCB0aGUgbWFuaWZlc3QgbGluZSBzYXlzIGV4YWN0bHkgdGhhdCByYXRoZXIgdGhhbiBpbXBseWluZyBvbmUuCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKjogUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqOiBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqOiBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqOiBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKjogUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQuCkNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKjogU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzIGZsYWdnZWQKcmF0aGVyIHRoYW4gdHJ1c3RlZC4gVGhlIGludGVuZGVkIGZhbGxiYWNrIGlzIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZTsgdW50aWwgdGhhdCBtb2RlbCBleGlzdHMsIGEgRkFVTFQgcnVuIHNpbXBseSBoYXMKbm8gdXNhYmxlIHRlbXBlcmF0dXJlIHJlY29yZCBhbmQgaXMgZmxhZ2dlZCBhcyBzdWNoLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzLiBEbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="clipboard-list">Intake workflow</p>
@@ -662,7 +685,7 @@ school district requires for this agreement, if any.]</pre>
         <p class="meta">Pantry staff and volunteers.</p>
         <button type="button" class="doc-toggle" aria-expanded="false">Read the checklist <span class="doc-caret" aria-hidden="true">+</span></button>
         <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docIntake">STOCK THE BLOCK — INTAKE WORKFLOW
+          <pre class="doc-text mono" id="docIntake">STOCK THE BLOCK: INTAKE WORKFLOW
 For pantry staff and volunteers, at delivery
 
 When a delivery arrives, work through this checklist before signing
@@ -671,36 +694,36 @@ off. Do not close out the manifest line until all four are confirmed.
   1. CONFIRM THE BOX ID
      Match the box ID on the delivery to the corresponding line on the
      delivery manifest. If there's no matching line, don't accept the
-     box as a normal delivery — flag it instead.
+     box as a normal delivery. Flag it instead.
 
   2. CONFIRM THE COLD-CHAIN LOG
      Check the box's temperature log from the logger unit. The load
-     needs to have stayed at or below 41°F throughout — the same "in
+     needs to have stayed at or below 41°F throughout, the same "in
      range" threshold used on the site's cold-chain readout. If any
-     reading is above 41°F, the box is "danger zone," not "in range" —
-     flag it and use your own judgment (and your health department's
+     reading is above 41°F, the box is "danger zone," not "in range."
+     Flag it and use your own judgment (and your health department's
      guidance) before distributing that food.
 
      If a run arrives with no logger unit, it arrives with no
      temperature record. The route-model fallback described elsewhere on
      the site is planned and not yet built, so there is currently
-     nothing to check against — treat the box as unverified and use your
+     nothing to check against. Treat the box as unverified and use your
      own judgment before distributing it.
 
   3. CONFIRM THE COUNT / WEIGHT
      Check that the item count or weight in front of you matches what
-     was logged before the box left the school. Note any discrepancy —
+     was logged before the box left the school. Note any discrepancy;
      don't silently correct the manifest number to match what arrived.
 
   4. SIGN TO CLOSE OUT THE MANIFEST LINE
      Once 1–3 are confirmed, sign to close out the line. This is what
      moves the delivery from "en route" to "received" on the public
      log. Corrections after this point append as new lines rather than
-     editing the closed entry — the record doesn't get quietly changed
+     editing the closed entry, so the record doesn't get quietly changed
      after the fact.
 
-If something doesn't check out — box ID doesn't match, temperature log
-shows a danger-zone reading, count is off — don't sign it off as a
+If something doesn't check out (box ID doesn't match, temperature log
+shows a danger-zone reading, count is off) don't sign it off as a
 clean delivery. Flag it. The whole point of the public log is that it's
 checkable; a flagged delivery is more useful than a clean-looking one
 that wasn't actually clean.</pre>
@@ -710,7 +733,7 @@ that wasn't actually clean.</pre>
     </div>
     <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
       <p class="eyebrow">The kit, flat</p>
-      <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, the route sheet, and the log template are yours to copy.</p>
+      <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, route sheet and log template are yours to copy.</p>
       <div style="position:relative; max-width:760px;">
         <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
           <g fill="none" style="stroke:var(--mascot-stroke);" stroke-width="2.5" stroke-linejoin="round">
@@ -751,8 +774,8 @@ that wasn't actually clean.</pre>
     </div>
     <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
       <h3 style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
-      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print the result: a delivery manifest and a temperature log, on paper, for the box that is about to leave the building.</p>
-      <p class="packet-note"><strong>Nothing here leaves your browser.</strong> There is no endpoint, no upload and no storage — the packet is assembled on this page from what you type and exists only until you reload. Close the tab and it is gone.</p>
+      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
+      <p class="packet-note"><strong>Nothing here leaves your browser.</strong> No endpoint, no upload, no storage. The packet is built on this page and is gone when you close the tab.</p>
       <form class="packet-form" id="packetForm" autocomplete="off">
         <label>Date<input type="date" name="date" required></label>
         <label>Origin school<input type="text" name="origin" placeholder="e.g. Stuyvesant High School" required></label>
@@ -786,7 +809,7 @@ that wasn't actually clean.</pre>
           <span class="mask-l"><span data-line>Bring Stock the Block</span></span>
           <span class="mask-l"><span data-line>to your building.</span></span>
         </h2>
-        <p class="body-p" data-reveal style="margin:16px 0 0;">Administrators, students, and partner organizations — tell us who you are and we'll follow up with the playbook for your role.</p>
+        <p class="body-p" data-reveal style="margin:16px 0 0;">Tell us who you are and we'll follow up with the playbook for your role.</p>
         <div style="margin-top:28px; display:flex; align-items:center; gap:14px;">
           <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
           <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
@@ -799,7 +822,7 @@ that wasn't actually clean.</pre>
           <select data-ff class="span2" aria-label="Your role">
             <option>School administrator</option>
             <option>Cafeteria staff</option>
-            <option>Student — I want to join</option>
+            <option>Student, I want to join</option>
             <option>Partner organization / food bank</option>
             <option>Press</option>
           </select>
@@ -815,7 +838,7 @@ that wasn't actually clean.</pre>
 <section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
     <p class="eyebrow">School sites</p>
-    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets, and are labelled as such. Nothing on this list is a commitment by a school that has not made one.</p>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets.</p>
     <div class="sites">
       <div class="tier">
         <p class="tier-label">Operating <span class="count">1</span></p>
@@ -849,7 +872,7 @@ that wasn't actually clean.</pre>
   <div class="wrap top">
     <span style="display:flex; align-items:center; gap:12px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-      <span>© 2026 Stock the Block — student-run food recovery, NYC</span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
     </span>
     <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
@@ -863,13 +886,13 @@ that wasn't actually clean.</pre>
       <li id="src-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
       <li id="src-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
       <li id="src-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
-      <li id="src-8">8. CBPP, USDA data — "4.5 million" figure, national SNAP enrollment change</li>
-      <li id="src-9">9. NY OTDA — "March 1, 2026" ABAWD work requirement effective date</li>
-      <li id="src-10">10. Federal Register — "October 1, 2026" SNAP administrative cost-share change</li>
-      <li id="src-11">11. NYC Health Code § 81.10, DOHMH — time as a public health control</li>
+      <li id="src-8">8. CBPP, USDA data. "4.5 million" figure, national SNAP enrollment change</li>
+      <li id="src-9">9. NY OTDA. "March 1, 2026" ABAWD work requirement effective date</li>
+      <li id="src-10">10. Federal Register. "October 1, 2026" SNAP administrative cost-share change</li>
+      <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
     </ol>
   </div>
-  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers. The one thing it does store is your colour-theme choice, kept in this browser’s localStorage so the page doesn’t forget it between visits. It never leaves your device and is not used to identify you.</div>
+  <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
 
 <script src="assets/site.js"></script>
@@ -887,10 +910,10 @@ that wasn't actually clean.</pre>
      array, so it stays fully functional the moment real rows land. */
   var ROWS = [];
   var STEPS = [
-    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from cafeteria share tables at the end of lunch.", detail: "Sealed items only, nothing served or opened. Share-table collection follows DOE wellness policy: items must be commercially packaged, unopened, and temperature-safe before they leave the cafeteria.", state: "collect", icon: "package" },
-    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated transport boxes before it leaves the building.", detail: "Each box carries a number; weight, contents category, and packing time are recorded against the box ID so every pound is traceable. The weight goes into the manifest before the box leaves.", state: "pack", icon: "archive" },
-    { num: "03", title: "Deliver within the borough", body: "Student teams walk a short local route to a receiving site in the same borough, and recipients confirm receipt on the spot.", detail: "Each borough runs as its own cluster: schools walk to a receiving site in that borough, not across the city. Routes are walked in pairs and are designed to take under thirty minutes, which is what makes same-afternoon delivery possible within a cluster — and why it is not promised between them. A recipient signature closes out each box before it counts.", state: "deliver", icon: "truck" },
-    { num: "04", title: "Log it publicly", body: "Every delivery posts to the log — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time. <span class=\"unverified\">Track the Box, the public log this feeds, is planned and not yet published.</span>", state: "record", icon: "clipboard-check" }
+    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from share tables at the end of lunch.", detail: "DOE wellness policy: items must be commercially packaged, unopened and temperature-safe before they leave the cafeteria.", state: "collect", icon: "package" },
+    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated boxes before it leaves the building.", detail: "Weight, contents category and packing time are recorded against the box ID, so every pound is traceable before the box leaves.", state: "pack", icon: "archive" },
+    { num: "03", title: "Deliver within the borough", body: "Student teams walk a short local route to a receiving site in the same borough, and recipients confirm receipt on the spot.", detail: "Each borough runs as its own cluster: schools walk to a site in that borough, not across the city. Routes are walked in pairs and take under thirty minutes, which is why same-afternoon delivery holds within a cluster and not between them. A recipient signature closes out each box.", state: "deliver", icon: "truck" },
+    { num: "04", title: "Log it publicly", body: "Every delivery posts to the log: date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited; corrections append as new lines. <span class=\"unverified\">Track the Box, the public log this feeds, is planned and not yet published.</span>", state: "record", icon: "clipboard-check" }
   ];
   /* ---------- icon set (shared — assets/site.js) ---------- */
   var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
@@ -910,7 +933,7 @@ that wasn't actually clean.</pre>
 
   /* ---------- theme ---------- */
   var getVar = STB.getVar;
-  STB.initTheme(function () { if (heroBox) heroBox.repaint(); });
+  STB.initTheme(function () { if (heroBox) heroBox.repaint(); if (midBox) midBox.repaint(); });
 
   /* ---------- nav ---------- */
   STB.initNav();
@@ -1110,7 +1133,7 @@ that wasn't actually clean.</pre>
        filter that happens to match nothing. Don't conflate them. */
     if (!ROWS.length) {
       $("#emptyMsg").textContent = "The log opens with the first delivery.";
-      $("#emptySub").textContent = "These are the columns every delivery will be recorded under. Nothing has moved yet, so there is nothing here to show.";
+      $("#emptySub").textContent = "These are the columns every delivery is recorded under. Nothing has moved yet.";
     } else {
       $("#emptyMsg").textContent = "no deliveries logged for " + label;
       $("#emptySub").textContent = "clear the filter to see the full record";
@@ -1128,7 +1151,7 @@ that wasn't actually clean.</pre>
       csv.disabled = !filtered.length;
       csv.title = filtered.length
         ? "Download these " + filtered.length + " row(s) as CSV"
-        : "Nothing to export yet — the log opens with the first delivery";
+        : "Nothing to export yet. The log opens with the first delivery";
     }
     syncHash();
     $("#filterLabel").textContent = label;
@@ -1163,7 +1186,7 @@ that wasn't actually clean.</pre>
   var form = $("#joinForm");
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    $("#formWrap").innerHTML = '<div class="done-card"><h3 style="font-size:19px;font-weight:600;margin:0;color:var(--brand);">Logged. We’ll be in touch.</h3><p style="font-size:14px;color:var(--text);margin:8px 0 0;line-height:1.6;">Thanks — expect a reply within a few school days.</p></div>';
+    $("#formWrap").innerHTML = '<div class="done-card"><h3 style="font-size:19px;font-weight:600;margin:0;color:var(--brand);">Logged. We’ll be in touch.</h3><p style="font-size:14px;color:var(--text);margin:8px 0 0;line-height:1.6;">Thanks, expect a reply within a few school days.</p></div>';
     paintMascot($("#mascotJoin svg"), "confirmed");
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
   });
@@ -1271,8 +1294,13 @@ that wasn't actually clean.</pre>
      Replaces the previous WebGL hero and the cafeteria-fridge transition. The
      box geometry, camera and rear-edge lid hinge are carried over unchanged;
      the renderer no longer needs Three.js from a CDN, which also means the box
-     now appears for everyone rather than only for readers who can reach it. */
+     now appears for everyone rather than only for readers who can reach it.
+
+     Two scroll-driven sections on this page, and only two: this one and the
+     mid-page container below it. Both call the same createMascotBox and the
+     same initScrollScrub; all that differs is the state each one feeds in. */
   var heroBox = STB.initHeroBox();
+  var midBox = STB.initMidBox();
 
 
   /* ---------- 4. run packet generator ----------
@@ -1316,8 +1344,8 @@ that wasn't actually clean.</pre>
             '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
             '<tr><th scope="row">Readings</th><td class="num">' + temps.length + '</td></tr>' +
           '</tbody></table>' +
-          '<div class="sign"><p>Released by (school) — name, signature, time</p>' +
-          '<p>Received by (site) — name, signature, time</p></div>' +
+          '<div class="sign"><p>Released by (school): name, signature, time</p>' +
+          '<p>Received by (site): name, signature, time</p></div>' +
         '</div>';
 
       var log =
@@ -1329,15 +1357,15 @@ that wasn't actually clean.</pre>
                 temps.map(function (r) {
                   var over = r.f !== null && r.f > SAFE;
                   return '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.note) + '</td>' +
-                    '<td class="num">' + (r.f === null ? "—" : '<span data-degf="' + r.f + '"></span>') + '</td>' +
+                    '<td class="num">' + (r.f === null ? "not logged" : '<span data-degf="' + r.f + '"></span>') + '</td>' +
                     '<td>' + (r.f === null ? "no reading" : (over ? "ABOVE THRESHOLD" : "in range")) + '</td></tr>';
                 }).join("") +
               '</tbody></table>'
-            : '<p class="packet-sub" style="margin:0;">No readings entered. A box released without a temperature record has no temperature record — say so on the paperwork rather than leaving the row blank.</p>') +
+            : '<p class="packet-sub" style="margin:0;">No readings entered. A box released without a temperature record has none; say so on the paperwork rather than leaving the row blank.</p>') +
           (breaches.length
             ? '<p class="packet-sub" style="margin:14px 0 0;">' + breaches.length + ' reading(s) above threshold. Flag this box at intake; do not close out the line until the receiving site has recorded a decision.</p>'
             : "") +
-          '<div class="sign"><p>Logged by — name, signature</p><p>Checked at intake by — name, signature</p></div>' +
+          '<div class="sign"><p>Logged by: name, signature</p><p>Checked at intake by: name, signature</p></div>' +
         '</div>';
 
       out.innerHTML = manifest + log;
@@ -1367,13 +1395,13 @@ that wasn't actually clean.</pre>
   STB.initPalette([
     { kind: "page", label: "Home", href: "index.html#top" },
     { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-    { kind: "section", label: "Why now — the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
+    { kind: "section", label: "Why now: the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
     { kind: "section", label: "Standard operating procedure", href: "#how", keywords: "sop steps how it works collect pack deliver log" },
-    { kind: "section", label: "The instruments — cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
+    { kind: "section", label: "The instruments: cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
     { kind: "section", label: "The delivery log", href: "#tracker", keywords: "tracker manifest track the box deliveries" },
     { kind: "section", label: "School sites and status", href: "#sites", keywords: "schools operating in conversation target stuyvesant midwood madison" },
     { kind: "section", label: "Why we exist", href: "#story" },
-    { kind: "section", label: "The limits — what this does not do", href: "#limits", keywords: "honest caveats limitations" },
+    { kind: "section", label: "The limits: what this does not do", href: "#limits", keywords: "honest caveats limitations" },
     { kind: "section", label: "Run this yourself", href: "#replicate", keywords: "templates documents copy replicate" },
     { kind: "section", label: "Partner with us", href: "#join", keywords: "contact signup form" },
     { kind: "template", label: "Health code memo", href: "#replicate", keywords: "tcs food safety release records health department" },

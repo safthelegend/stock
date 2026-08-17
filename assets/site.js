@@ -282,7 +282,16 @@ function initMascotSlots(root) {
 
      The scroll budget for the hero is declared once, here. Nothing else
      in the module may hardcode a scroll length. */
-  var SCRUB_LENGTH_VH = 150;
+  var SCRUB_LENGTH_VH = 150;      /* hero: lid, yaw and drag need the room */
+  var MID_SCRUB_LENGTH_VH = 120;  /* mid-page: shine and zoom only, so shorter */
+
+  /* Small scrubbing helpers. sub() remaps a slice of the 0..1 progress value
+     onto its own 0..1, so each beat of a sequence can be written as the
+     window it occupies. */
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function sub(p, a, b) { return clamp01((p - a) / (b - a)); }
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
   /* Two rules this obeys, deliberately:
        1. The scroll listener sets a flag and nothing else. All reading of
@@ -337,14 +346,17 @@ function initMascotSlots(root) {
   }
 
   /* ======================================================================
-     MASCOT BOX RENDERER
+     MASCOT BOX RENDERER  —  one geometry module, N configured instances
      ======================================================================
-     The same box the hero already had — an extruded cuboid 1.6 x 1.2 x 1.2
-     with a separate 0.08-deep lid hinged on its rear top edge, chevron eyes
-     and an orange smile on the front face, drawn in the site's greens. The
-     geometry, proportions, camera and hinge are carried over unchanged from
-     the previous WebGL version; only the rasteriser is different, because
-     the animation may not pull in an external library.
+     An extruded cuboid 1.6 x 1.2 x 1.2 with a separate 0.08-deep lid hinged
+     on its rear top edge, chevron eyes and an orange smile on the front face,
+     drawn in the site's greens.
+
+     This is the only place the vertex maths lives. Both the hero and the
+     mid-page container call createMascotBox and then drive render() with
+     different state; neither one owns any geometry of its own. render() takes
+     everything that can differ between instances as arguments — lid angle,
+     yaw, scale, specular sweep — and holds no animation state itself.
 
      Software projection onto a 2D canvas: pinhole camera, painter's
      algorithm, back-facing polygons filled as interior surfaces. No images,
@@ -408,6 +420,17 @@ function initMascotSlots(root) {
       focal = (Hpx / 2) / Math.tan((BOX.FOV * Math.PI / 180) / 2);
     }
 
+    /* scale is applied in screen space, about the canvas centre, so the zoom
+       is a true scale-from-centre and does not change the perspective or the
+       apparent camera distance.
+
+       frameY nudges the box vertically, in fractions of the canvas height,
+       BEFORE the scale is applied. The camera sits above the box and looks
+       down, so the box's own screen centre is below the canvas centre; an
+       instance that zooms needs those two centres to coincide or it grows off
+       the bottom edge. The hero, which never zooms, leaves it at 0. */
+    var scale = 1;
+    var frameY = typeof opts.frameY === "number" ? opts.frameY : 0;
     function project(p, yaw) {
       var cy = Math.cos(yaw), sy = Math.sin(yaw);
       var x = p[0] * cy + p[2] * sy;
@@ -417,7 +440,8 @@ function initMascotSlots(root) {
       var yv = y * cp - z * sp;
       var zv = y * sp + z * cp;
       var d = -zv; if (d < 0.05) d = 0.05;
-      return [W / 2 + focal * x / d, Hpx / 2 - focal * yv / d, d];
+      return [W / 2 + scale * focal * x / d,
+              Hpx / 2 + scale * (frameY * Hpx - focal * yv / d), d];
     }
 
     function rotYaw(n, yaw) {
@@ -485,13 +509,66 @@ function initMascotSlots(root) {
       return eased * BOX.MAX_LID_DEG * Math.PI / 180;
     }
 
-    function render(progress, yaw) {
+    /* Which of the three theme shades a face takes. One light direction for
+       every instance: from the front, and from above. A face's shade is picked
+       by which axis its world normal points down, so the ordering is fixed —
+       front and top lightest, the sides a step darker, anything back-facing
+       darkest, because a back-facing polygon is an inside surface (the
+       interior back wall and floor you see once the lid lifts).
+
+       Discrete shades rather than a computed Lambert term, so every colour on
+       the box is a named theme custom property and the whole thing re-paints
+       correctly on a theme switch. */
+    function shadeFor(n, front, fill, side, inner) {
+      if (!front) return inner;
+      var ax = Math.abs(n[0]), ay = Math.abs(n[1]), az = Math.abs(n[2]);
+      if (ax > az && ax > ay) return side;      /* a side face, turned away from the light */
+      if (ay >= ax && ay >= az) return n[1] > 0 ? fill : side;   /* lid top lit, underside not */
+      return fill;                              /* front face, straight into the light */
+    }
+
+    /* The specular sweep. A soft diagonal band travelling lower-left to
+       upper-right across the canvas, clipped to each lit face in turn, so one
+       highlight crosses the front and the top as a single continuous streak
+       rather than as two unrelated glints. `t` is 0..1 across the travel;
+       `width` is the band's own extent as a fraction of that travel. */
+    function paintShine(t, width, colour) {
+      var diag = Math.hypot(W, Hpx);
+      /* Travel far enough past both corners that the band enters and leaves
+         cleanly instead of popping on mid-face. */
+      var c = -0.35 + t * 1.7;
+      var ux = 0.7071, uy = -0.7071;                 /* lower-left -> upper-right */
+      var cx = W / 2, cy = Hpx / 2;
+      var px = cx + ux * (c - 0.5) * diag, py = cy + uy * (c - 0.5) * diag;
+      var half = width * diag / 2;
+      var g = ctx.createLinearGradient(px - ux * half, py - uy * half, px + ux * half, py + uy * half);
+      g.addColorStop(0, "transparent");
+      g.addColorStop(0.5, colour);
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+
+    /* state:
+         lid    lid angle in radians (0 = shut). Callers that scrub it from
+                progress use lidAngle() below; the mid-page instance passes 0.
+         yaw    radians, applied to every vertex from this one value.
+         scale  screen-space zoom about the canvas centre. Default 1.
+         shine  0..1 position of the specular sweep, or null for none.
+         shineWidth  band extent as a fraction of the sweep. */
+    function render(state) {
+      state = state || {};
       if (!W || !Hpx) resize();
-      var a = lidAngle(progress);
+      var a = state.lid || 0;
+      var yaw = state.yaw || 0;
+      scale = state.scale || 1;
       var fill = getVar("--mascot-fill") || "#EAF2DE";
       var edge = getVar("--mascot-stroke") || "#2E5A22";
+      var side = getVar("--box-side") || fill;
       var inner = getVar("--box-interior") || fill;
       var accent = getVar("--accent") || "#E8871E";
+      var shineCol = getVar("--box-shine") || "rgba(255,255,255,0.7)";
+      var hasShine = typeof state.shine === "number" && state.shine > 0 && state.shine < 1;
 
       ctx.clearRect(0, 0, W, Hpx);
       var polys = [], i, f, sv, n, k, depth, front;
@@ -502,31 +579,50 @@ function initMascotSlots(root) {
         n = rotYaw(f.n, yaw);
         depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
         front = facing(f.v, f.n, yaw);
-        polys.push({ sv: sv, depth: depth, front: front, isFace: !!f.face && front });
+        polys.push({ sv: sv, depth: depth, front: front, n: n, isFace: !!f.face && front });
       }
       for (i = 0; i < LID.length; i++) {
         f = LID[i];
         sv = f.v.map(function (p) { return project(lidPoint(p, a), yaw); });
+        n = rotYaw(lidNormal(f.n, a), yaw);
         depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
         front = facingPts(f.v.map(function (p) { return lidPoint(p, a); }), lidNormal(f.n, a), yaw);
-        polys.push({ sv: sv, depth: depth, front: front, lid: true });
+        polys.push({ sv: sv, depth: depth, front: front, n: n, lid: true });
       }
+      /* The hinge, drawn as a heavier line and depth-sorted with everything
+         else. It is the body's REAR top edge, and it is exactly the line the
+         lid pivots about: the lid's own rear edge lies along it at every
+         angle. Drawing the pivot rather than the top-front edge is what makes
+         the lid read as hinged, because the one line that never moves is the
+         one the lid is visibly attached to. Sorting it in rather than
+         stamping it last means the shut lid correctly hides it. */
+      var h1 = project([-hw, hh, -hd], yaw), h2 = project([hw, hh, -hd], yaw);
+      polys.push({ sv: [h1, h2], depth: (h1[2] + h2[2]) / 2, hinge: true });
+
       polys.sort(function (p, q) { return q.depth - p.depth; });   /* far to near */
 
       ctx.lineJoin = "round"; ctx.lineCap = "round";
-      var strokeW = Math.max(1, Hpx * 0.006);
+      var strokeW = Math.max(1, Hpx * 0.006 * scale);
       for (i = 0; i < polys.length; i++) {
         var pl = polys[i];
+        if (pl.hinge) {
+          ctx.beginPath();
+          ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
+          ctx.strokeStyle = edge; ctx.lineWidth = strokeW * 1.5; ctx.stroke();
+          continue;
+        }
         ctx.beginPath();
         ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
         for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
         ctx.closePath();
-        /* A back-facing polygon is an inside surface: the interior back wall
-           and floor you see once the lid lifts. Darker shade of the box
-           colour, straight from the theme. */
-        ctx.fillStyle = pl.front ? fill : inner;
+        ctx.fillStyle = shadeFor(pl.n, pl.front, fill, side, inner);
         ctx.fill();
         if (pl.front) {
+          if (hasShine) {
+            ctx.save(); ctx.clip();
+            paintShine(state.shine, state.shineWidth || 0.5, shineCol);
+            ctx.restore();
+          }
           ctx.strokeStyle = edge; ctx.lineWidth = strokeW; ctx.stroke();
           if (pl.isFace) {
             ctx.save(); ctx.clip();
@@ -536,12 +632,6 @@ function initMascotSlots(root) {
         }
       }
 
-      /* The seam. It is the body's top-front edge — the very line the lid
-         rests on when shut — so the lid always reads as lifting off it
-         rather than floating above an unrelated line. */
-      var s1 = project([-hw, hh, hd], yaw), s2 = project([hw, hh, hd], yaw);
-      ctx.beginPath(); ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]);
-      ctx.strokeStyle = edge; ctx.lineWidth = strokeW * 1.5; ctx.stroke();
     }
 
     function facing(v, n, yaw) { return facingPts(v, rotYaw(n, yaw), yaw); }
@@ -557,7 +647,7 @@ function initMascotSlots(root) {
 
     resize();
     addEventListener("resize", resize, { passive: true });
-    return { render: render, resize: resize };
+    return { render: render, resize: resize, lidAngle: lidAngle };
   }
 
   /* ======================================================================
@@ -578,7 +668,7 @@ function initMascotSlots(root) {
     if (reduced) {
       canvas.removeAttribute("tabindex");
       if (hint) hint.remove();
-      var paintStatic = function () { box.resize(); box.render(0, 0); };
+      var paintStatic = function () { box.resize(); box.render({ lid: 0, yaw: 0 }); };
       paintStatic();
       addEventListener("resize", paintStatic, { passive: true });
       return { repaint: paintStatic };
@@ -587,8 +677,20 @@ function initMascotSlots(root) {
     var MAX_YAW = 45 * Math.PI / 180;      /* clamped. no full spin. */
     var STEP = 9 * Math.PI / 180;          /* keyboard increment */
     var SETTLE_MS = 800;
-    var progress = 0, yaw = 0, target = 0;
-    var dragging = false, dragStartX = 0, dragStartYaw = 0;
+    /* Scroll drives yaw from -18 to +18 degrees across the whole scrub, off
+       the same progress value that opens the lid over 0.0 to 0.7. The two run
+       together: the box turns while the lid lifts, which is what makes the
+       hinge legible — at yaw 0 the side faces are edge-on and the pivot cannot
+       be seen at all. */
+    var SCROLL_YAW = 18 * Math.PI / 180;
+    function scrollYaw(p) { return (-1 + 2 * clamp01(p)) * SCROLL_YAW; }
+
+    /* Two contributions, kept separate: the scroll's yaw, and the reader's
+       drag offset on top of it. Drag is armed only at progress 1.0, where the
+       scroll term is pinned at +18 degrees, so the offset always starts from a
+       settled base. */
+    var progress = 0, yaw = 0, offset = 0, target = 0;
+    var dragging = false, dragStartX = 0, dragStartOffset = 0;
     var releasedAt = 0, releasedFrom = 0, settling = false;
     var armed = false, interacted = false;
 
@@ -611,20 +713,26 @@ function initMascotSlots(root) {
       interacted = true;
       if (hint) hint.classList.add("gone");
     }
-    function clampYaw(v) { return v < -MAX_YAW ? -MAX_YAW : v > MAX_YAW ? MAX_YAW : v; }
+    /* Clamps the drag offset so the TOTAL yaw stays inside MAX_YAW. The
+       scroll term is fixed at scrollYaw(1) whenever drag is armed. */
+    function clampOffset(v) {
+      var base = scrollYaw(1);
+      var lo = -MAX_YAW - base, hi = MAX_YAW - base;
+      return v < lo ? lo : v > hi ? hi : v;
+    }
 
     /* ---- mouse ---- */
     canvas.addEventListener("mousedown", function (e) {
       if (!armed) return;
       dragging = true; settling = false;
-      dragStartX = e.clientX; dragStartYaw = yaw;
+      dragStartX = e.clientX; dragStartOffset = offset;
       canvas.style.cursor = "grabbing";
       usedIt();
       e.preventDefault();          /* a mouse drag only; never a touch or wheel */
     });
     addEventListener("mousemove", function (e) {
       if (!dragging) return;
-      target = clampYaw(dragStartYaw + (e.clientX - dragStartX) * 0.006);
+      target = clampOffset(dragStartOffset + (e.clientX - dragStartX) * 0.006);
     }, { passive: true });
     addEventListener("mouseup", function () {
       if (!dragging) return;
@@ -642,7 +750,7 @@ function initMascotSlots(root) {
       if (!armed || e.touches.length !== 1) return;
       var t = e.touches[0];
       tId = t.identifier; tx0 = t.clientX; ty0 = t.clientY;
-      tClaimed = false; dragStartYaw = yaw; settling = false;
+      tClaimed = false; dragStartOffset = offset; settling = false;
       /* deliberately no preventDefault here */
     }, { passive: true });
 
@@ -662,7 +770,7 @@ function initMascotSlots(root) {
           tId = null; return;      /* vertical: hand it back to the page, permanently */
         } else return;
       }
-      target = clampYaw(dragStartYaw + dx * 0.006);
+      target = clampOffset(dragStartOffset + dx * 0.006);
       if (e.cancelable) e.preventDefault();   /* only once horizontal is proven */
     }, { passive: false });
 
@@ -680,8 +788,8 @@ function initMascotSlots(root) {
        the page everywhere else — and still do here unless the box has focus. */
     canvas.addEventListener("keydown", function (e) {
       if (!armed) return;
-      if (e.key === "ArrowLeft") target = clampYaw(target - STEP);
-      else if (e.key === "ArrowRight") target = clampYaw(target + STEP);
+      if (e.key === "ArrowLeft") target = clampOffset(target - STEP);
+      else if (e.key === "ArrowRight") target = clampOffset(target + STEP);
       else return;
       settling = false; usedIt();
       e.preventDefault();      /* the box has focus and is consuming the key */
@@ -705,9 +813,18 @@ function initMascotSlots(root) {
           if (t >= 1) { settling = false; target = 0; }
           else target = releasedFrom * (1 - (1 - Math.pow(1 - t, 3)));
         }
-        yaw += (target - yaw) * 0.18;             /* never snaps */
-        if (Math.abs(target - yaw) < 0.0002) yaw = target;
-        box.render(progress, yaw);
+        offset += (target - offset) * 0.18;       /* never snaps */
+        if (Math.abs(target - offset) < 0.0002) offset = target;
+        yaw = scrollYaw(progress) + offset;
+        box.render({
+          lid: box.lidAngle(progress),
+          yaw: yaw,
+          /* The hero's sweep: a broad band, crossing quickly over the middle
+             of the scrub. The mid-page container gets a tighter, slower one so
+             the two do not read as the same effect twice. */
+          shine: sub(progress, 0.15, 0.45),
+          shineWidth: 0.6
+        });
       }
     });
 
@@ -728,7 +845,91 @@ function initMascotSlots(root) {
        Left unbuilt: it would mean image downloads, which this phase forbids.
        ------------------------------------------------------------------ */
 
-    return { repaint: function () { box.render(progress, yaw); }, scrub: scrub };
+    return { repaint: function () { box.render({ lid: box.lidAngle(progress), yaw: yaw }); }, scrub: scrub };
+  }
+
+  /* ======================================================================
+     MID-PAGE CONTAINER — the second instance of the same box
+     ======================================================================
+     Same renderer, same geometry, different job. Where the hero opens and can
+     be turned by hand, this one stays shut for the whole scrub and is never
+     draggable: it gets the shine and the zoom instead, so the two instances
+     are obviously doing different things.
+
+       0.0 - 0.5   specular sweep, lower-left to upper-right, eased
+       0.3 - 1.0   scale 1.0 -> 1.5 from the centre
+       0.0 - 1.0   yaw drift, -8 to +8 degrees, a quarter of the hero's
+       0.7 - 1.0   supporting copy fades in, staggered
+
+     No drag, no keyboard, no pointer listeners of any kind. */
+  var MID = {
+    YAW: 8 * Math.PI / 180,
+    SCALE_MAX: 1.5,
+    FRAME_Y: -0.15,
+    /* Tighter and slower than the hero's: a narrower band, and it crosses
+       half of a 120vh scrub where the hero's crosses under a third of a
+       150vh one. Same mechanism, plainly not the same effect. */
+    SHINE_WIDTH: 0.2
+  };
+
+  function initMidBox() {
+    var canvas = $("#midBox");
+    var section = $("#boxpin");
+    var sticky = $("#boxpinSticky");
+    if (!canvas || !section || !sticky) return null;
+
+    var copy = $$("[data-midcopy]", sticky);
+    var box = createMascotBox(canvas, { reduced: reduced, frameY: MID.FRAME_Y });
+
+    function paintCopy(t) {
+      for (var i = 0; i < copy.length; i++) {
+        /* Staggered: each element starts a little after the one above it and
+           still finishes by 1.0. */
+        var k = copy.length > 1 ? i / (copy.length - 1) : 0;
+        var e = easeOut(clamp01((t - k * 0.35) / (1 - k * 0.35)));
+        copy[i].style.opacity = e;
+        copy[i].style.transform = "translateY(" + ((1 - e) * 14).toFixed(2) + "px)";
+      }
+    }
+
+    /* prefers-reduced-motion: the end of the sequence, drawn once. Full scale,
+       copy visible, no scroll listener attached and nothing animating. */
+    if (reduced) {
+      section.style.height = "auto";
+      var paintStatic = function () {
+        box.resize();
+        box.render({ lid: 0, yaw: 0, scale: MID.SCALE_MAX });
+      };
+      paintStatic();
+      paintCopy(1);
+      addEventListener("resize", paintStatic, { passive: true });
+      return { repaint: paintStatic };
+    }
+
+    var progress = 0;
+    var scrub = initScrollScrub({
+      section: section,
+      sticky: sticky,
+      scrollLength: MID_SCRUB_LENGTH_VH,
+      onProgress: function (p) {
+        progress = p;
+        var shine = sub(p, 0, 0.5);
+        box.render({
+          lid: 0,                                  /* shut, at every progress */
+          yaw: (-1 + 2 * p) * MID.YAW,
+          scale: 1 + easeOut(sub(p, 0.3, 1)) * (MID.SCALE_MAX - 1),
+          shine: shine > 0 && shine < 1 ? easeInOut(shine) : shine,
+          shineWidth: MID.SHINE_WIDTH
+        });
+        paintCopy(sub(p, 0.7, 1));
+      }
+    });
+
+    return {
+      repaint: function () { box.render({ lid: 0, yaw: (-1 + 2 * progress) * MID.YAW,
+        scale: 1 + easeOut(sub(progress, 0.3, 1)) * (MID.SCALE_MAX - 1) }); },
+      scrub: scrub
+    };
   }
 
   /* ======================================================================
@@ -1011,8 +1212,10 @@ function initMascotSlots(root) {
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,
     initOffline: initOffline,
-    SCRUB_LENGTH_VH: SCRUB_LENGTH_VH, initScrollScrub: initScrollScrub,
-    createMascotBox: createMascotBox, initHeroBox: initHeroBox,
+    SCRUB_LENGTH_VH: SCRUB_LENGTH_VH, MID_SCRUB_LENGTH_VH: MID_SCRUB_LENGTH_VH,
+    initScrollScrub: initScrollScrub,
+    createMascotBox: createMascotBox, initHeroBox: initHeroBox, initMidBox: initMidBox,
+    clamp01: clamp01, sub: sub, easeOut: easeOut, easeInOut: easeInOut,
     $: $, $$: $$,
     reduced: reduced, mob: mob, f: f, EXP: EXP, PRO: PRO,
     ICONS: ICONS, iconSVG: iconSVG, initIcons: initIcons,
