@@ -122,7 +122,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
-    nav.bar, .skip-link, .divider, #fridgeWrap, #hero3d, #formWrap, .paper-grain { display:none !important; }
+    nav.bar, .skip-link, .divider, #heroBoxWrap, #formWrap, .paper-grain { display:none !important; }
     #heropin { height:auto !important; }
     #top, .thead { position:static !important; min-height:0 !important; }
     * { animation:none !important; transition:none !important; box-shadow:none !important; }
@@ -179,8 +179,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
   </div>
   <div class="visual" style="display:flex; justify-content:center; align-items:center;">
-    <div id="hero3d" style="width:100%; max-width:420px; display:none;"></div>
-    <div id="mascotHero" class="mascot-slot" style="width:100%; max-width:420px; display:block;" data-state="idle" data-blink data-informative data-label="Stock the Block mascot — a smiling insulated box"></div>
+    <div id="heroBoxWrap">
+      <canvas id="heroBox" width="420" height="420" role="img"
+              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
+      <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
+    </div>
   </div>
 </header>
 </div>
@@ -298,36 +301,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </h2>
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
-
-<div id="fridgeWrap">
-<section id="fridgeSticky" aria-label="A delivery in motion: from the cafeteria fridge, into the box, to the food bank" class="wrap" style="padding-bottom:72px;">
-  <div id="fridge3d" style="width:100%; display:none; position:relative;">
-    <div id="fridgeLabels" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
-      <span id="flabelA" style="position:absolute; left:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary);">cafeteria fridge</span>
-      <span id="flabelB" style="position:absolute; right:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); opacity:0;">food bank</span>
-    </div>
-  </div>
-  <svg id="fridgeFallback" viewBox="0 0 1052 300" role="img" aria-label="From the cafeteria fridge, the box travels to the food bank and arrives confirmed" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-    <rect x="44" y="36" width="150" height="204" rx="6" style="fill:var(--surface); stroke:var(--mascot-stroke);" stroke-width="3"></rect>
-    <path d="M150 36 L150 240" style="stroke:var(--mascot-stroke);" stroke-width="2"></path>
-    <rect x="158" y="100" width="6" height="52" rx="3" style="fill:var(--mascot-stroke);"></rect>
-    <path d="M44 105 L150 105 M44 172 L150 172" style="stroke:var(--brand-line-mid);" stroke-width="2"></path>
-    <rect x="60" y="88" width="34" height="16" style="fill:var(--tint); stroke:var(--mascot-stroke);" stroke-width="2"></rect>
-    <rect x="102" y="156" width="34" height="16" style="fill:var(--accent);"></rect>
-    <text x="44" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">cafeteria fridge</text>
-    <path d="M210 160 C 400 80, 620 220, 880 156" fill="none" stroke-dasharray="2 9" stroke-linecap="round" style="stroke:var(--brand);" stroke-width="2.5"></path>
-    <g transform="translate(930, 152)">
-      <rect x="-40" y="-32" width="80" height="64" rx="9" style="fill:var(--mascot-fill); stroke:var(--mascot-stroke);" stroke-width="4"></rect>
-      <path d="M-38 -12 L38 -12" style="stroke:var(--mascot-stroke);" stroke-width="4"></path>
-      <path d="M-26 12 L-17 2 L-8 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M8 12 L17 2 L26 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M-12 18 Q0 32 12 18 Q0 24 -12 18 Z" style="fill:var(--accent);"></path>
-    </g>
-    <circle cx="1010" cy="176" r="9" fill="none" style="stroke:var(--brand);" stroke-width="3"></circle>
-    <text x="912" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">food bank</text>
-  </svg>
-</section>
-</div>
 
 <section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>The instruments</p>
@@ -882,10 +855,6 @@ that wasn't actually clean.</pre>
   "use strict";
   var $ = STB.$, $$ = STB.$$;
   var reduced = STB.reduced, mob = STB.mob, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
-  var cl = function (x) { return Math.max(0, Math.min(x, 1)); };
-  var eo = function (x) { return 1 - Math.pow(1 - x, 3); };
-  var ei = function (x) { return x * x * (3 - 2 * x); };
-  var mix = function (a, b, t) { return a + (b - a) * t; };
   var fmtN = function (n) { return n.toLocaleString("en-US"); };
 
   /* Derived, not hard-coded — a stale literal would silently mislabel rows. */
@@ -918,7 +887,7 @@ that wasn't actually clean.</pre>
 
   /* ---------- theme ---------- */
   var getVar = STB.getVar;
-  STB.initTheme(function () { updateThreeTheme(); });
+  STB.initTheme(function () { if (heroBox) heroBox.repaint(); });
 
   /* ---------- nav ---------- */
   STB.initNav();
@@ -1180,23 +1149,10 @@ that wasn't actually clean.</pre>
   })();
   shot($("#manifest"), function () { tableSeen = true; render(); });
 
-  var pinOn = false, heroP = 0, fridgePinOn = false, fridgeP = 0, dtick = 0;
   function fxLoop() {
     requestAnimationFrame(fxLoop);
     var vh = innerHeight;
     FX.tick();
-    heroP = reduced ? 1 : Math.max(0, Math.min(scrollY / (pinOn ? vh : 400), 1));
-    var fw = $("#fridgeWrap");
-    if (fw && fridgePinOn) {
-      var r2 = fw.getBoundingClientRect();
-      var range = r2.height - vh;
-      fridgeP = range > 0 ? cl(-r2.top / range) : 1;
-    } else fridgeP = 1;
-    var la = $("#flabelA"), lb = $("#flabelB");
-    if (la && fridgePinOn) {
-      la.style.opacity = (1 - ei(cl((fridgeP - 0.6) / 0.2))).toFixed(3);
-      lb.style.opacity = ei(cl((fridgeP - 0.72) / 0.18)).toFixed(3);
-    }
     checkCounters();
     if (!reduced && !mob) {
       $$("[data-dpar]").forEach(function (el) {
@@ -1212,425 +1168,16 @@ that wasn't actually clean.</pre>
       var mr = $("#manifest").getBoundingClientRect();
       th.style.boxShadow = (tr.top <= 49 && mr.bottom > tr.bottom + 40) ? "0 4px 12px rgba(0,0,0,0.14)" : "none";
     }
-    dtick++;
-    if (three && dtick % 120 === 0 && three.defs.fridge.built && three.active !== three.defs.fridge) {
-      var fr = three.defs.fridge.watch.getBoundingClientRect();
-      if (fr.bottom < -2.5 * vh || fr.top > 3.5 * vh) disposeDef(three.defs.fridge);
-    }
   }
   requestAnimationFrame(fxLoop);
 
-  /* ---------- shared 3D — one renderer, two scenes (hero + fridge) ---------- */
-  var three = null, faceCanvas, faceBlink = false, confirmCanvas;
-  function drawFace() {
-    var c = faceCanvas.getContext("2d");
-    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 512);
-    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 26; c.lineCap = "round"; c.lineJoin = "round";
-    c.beginPath();
-    if (faceBlink) { c.moveTo(110, 295); c.lineTo(220, 295); c.moveTo(292, 295); c.lineTo(402, 295); }
-    else { c.moveTo(110, 320); c.lineTo(165, 258); c.lineTo(220, 320); c.moveTo(292, 320); c.lineTo(347, 258); c.lineTo(402, 320); }
-    c.stroke();
-    c.strokeStyle = getVar("--accent") || "#E8871E"; c.beginPath();
-    c.moveTo(192, 372); c.quadraticCurveTo(256, 422, 320, 372); c.stroke();
-  }
-  function drawConfirmFace() {
-    if (!confirmCanvas) return;
-    var c = confirmCanvas.getContext("2d");
-    c.clearRect(0, 0, 512, 384);
-    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 384);
-    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 24; c.lineCap = "round"; c.lineJoin = "round";
-    c.beginPath();
-    c.moveTo(96, 200); c.lineTo(160, 132); c.lineTo(224, 200);
-    c.moveTo(288, 200); c.lineTo(352, 132); c.lineTo(416, 200);
-    c.stroke();
-    c.fillStyle = getVar("--accent") || "#E8871E"; c.beginPath();
-    c.moveTo(186, 246); c.quadraticCurveTo(256, 336, 326, 246); c.quadraticCurveTo(256, 288, 186, 246); c.closePath(); c.fill();
-  }
-  function updateThreeTheme() {
-    if (!three) return;
-    requestAnimationFrame(function () {
-      var tint = getVar("--tint"), brand = getVar("--brand"), surface = getVar("--surface"), accent = getVar("--accent");
-      var h = three.defs.hero;
-      if (h.built) {
-        h.plain.color.set(tint);
-        h.edgeMats.forEach(function (m) { m.color.set(brand); });
-        h.hemi.groundColor.set(tint);
-        drawFace(); h.tex.needsUpdate = true;
-      }
-      var fr = three.defs.fridge;
-      if (fr.built) {
-        fr.hemi.groundColor.set(tint);
-        fr.plainMats.forEach(function (m) { m.color.set(surface); });
-        fr.tintMats.forEach(function (m) { m.color.set(tint); });
-        fr.accentMats.forEach(function (m) { m.color.set(accent); });
-        fr.edgeMats.forEach(function (m) { m.color.set(brand); });
-        drawConfirmFace(); fr.faceTex.needsUpdate = true;
-      }
-    });
-  }
-  function mkOrbit(ambient) {
-    return { spin: 0, rotX: 0, spinVel: ambient, velX: 0, mode: "idle", resumeT: 0, resumeFrom: 0, resumeRotX: 0, idleAt: 0, ambient: ambient };
-  }
-  function stepOrbit(o, dt, now, amb) {
-    if (o.mode === "coast") {
-      var decay = Math.pow(0.94, dt * 60);
-      o.spinVel *= decay; o.velX *= decay;
-      o.spin += o.spinVel * dt;
-      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + o.velX * dt));
-      if (Math.abs(o.spinVel) <= amb && Math.abs(o.velX) < 0.05 && now >= o.idleAt) {
-        o.mode = "resume"; o.resumeT = now; o.resumeFrom = o.spinVel; o.resumeRotX = o.rotX;
-      }
-    } else if (o.mode === "resume") {
-      var t = Math.min((now - o.resumeT) / 1500, 1);
-      var e2 = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      o.spinVel = o.resumeFrom + (amb - o.resumeFrom) * e2;
-      o.rotX = o.resumeRotX * (1 - e2);
-      o.spin += o.spinVel * dt;
-      if (t >= 1) o.mode = "idle";
-    } else {
-      o.spinVel += (amb - o.spinVel) * 0.05;
-      o.spin += o.spinVel * dt;
-      o.rotX += (0 - o.rotX) * 0.08;
-    }
-  }
-  var threeTried = false;
-  function init3D() {
-    if (threeTried) return;
-    threeTried = true;
-    if (mob || reduced) return;
-    var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-    s.onload = function () { try { buildThree(); } catch (e) {} };
-    document.head.appendChild(s);
-  }
-  function buildHero(T) {
-    var d = three.defs.hero;
-    var brand = getVar("--brand") || "#2E5A22";
-    var tint = getVar("--tint") || "#EAF2DE";
-    var scene = new T.Scene();
-    var cam = new T.PerspectiveCamera(35, 1, 0.1, 100);
-    cam.position.set(0, 0.85, 4.6); cam.lookAt(0, 0, 0);
-    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.9);
-    scene.add(hemi);
-    var dl = new T.DirectionalLight(0xffffff, 0.5);
-    dl.position.set(-2, 3, 2); scene.add(dl);
-    var group = new T.Group();
-    faceCanvas = document.createElement("canvas");
-    faceCanvas.width = faceCanvas.height = 512;
-    drawFace();
-    var tex = new T.CanvasTexture(faceCanvas);
-    var plain = new T.MeshLambertMaterial({ color: new T.Color(tint) });
-    var faceMat = new T.MeshLambertMaterial({ map: tex });
-    var edgeMat = new T.LineBasicMaterial({ color: new T.Color(brand) });
-    var body = new T.Mesh(new T.BoxGeometry(1.6, 1.2, 1.2), [plain, plain, plain, plain, faceMat, plain]);
-    body.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.6, 1.2, 1.2)), edgeMat));
-    var lidGeo = new T.BoxGeometry(1.6, 0.08, 1.2); lidGeo.translate(0, 0.04, 0.6);
-    var lid = new T.Mesh(lidGeo, plain);
-    lid.add(new T.LineSegments(new T.EdgesGeometry(lidGeo), edgeMat));
-    lid.position.set(0, 0.6, -0.6);
-    group.add(body); group.add(lid);
-    group.position.y = -0.1;
-    scene.add(group);
-    d.scene = scene; d.cam = cam; d.group = group; d.lid = lid; d.plain = plain; d.tex = tex; d.hemi = hemi; d.edgeMats = [edgeMat]; d.built = true; d.lidCur = 0;
-    if (!three.blinkStarted) {
-      three.blinkStarted = true;
-      (function blinkLoop() {
-        setTimeout(function () {
-          faceBlink = true; drawFace(); tex.needsUpdate = true;
-          setTimeout(function () { faceBlink = false; drawFace(); tex.needsUpdate = true; }, 140);
-          blinkLoop();
-        }, 5000 + Math.random() * 2000);
-      })();
-    }
-  }
-  function buildFridge(T) {
-    var d = three.defs.fridge;
-    var brand = getVar("--brand") || "#2E5A22";
-    var tint = getVar("--tint") || "#EAF2DE";
-    var surface = getVar("--surface") || "#FFFFFF";
-    var accent = getVar("--accent") || "#E8871E";
-    function v(x, y, z) { return new T.Vector3(x, y, z); }
-    var scene = new T.Scene();
-    var cam = new T.PerspectiveCamera(38, 1, 0.1, 100);
-    cam.position.set(0, 0.4, 7.4); cam.lookAt(0, -0.2, 0);
-    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.95);
-    scene.add(hemi);
-    var dl = new T.DirectionalLight(0xffffff, 0.5);
-    dl.position.set(-2, 4, 3); scene.add(dl);
-    var plainMats = [], tintMats = [], accentMats = [], edgeMats = [];
-    function mkPlain() { var m = new T.MeshLambertMaterial({ color: new T.Color(surface), transparent: true }); plainMats.push(m); return m; }
-    function mkTint() { var m = new T.MeshLambertMaterial({ color: new T.Color(tint), transparent: true }); tintMats.push(m); return m; }
-    function mkAccent() { var m = new T.MeshLambertMaterial({ color: new T.Color(accent), transparent: true }); accentMats.push(m); return m; }
-    function mkEdge() { var m = new T.LineBasicMaterial({ color: new T.Color(brand), transparent: true }); edgeMats.push(m); return m; }
-    var fridge = new T.Group();
-    fridge.position.set(-1.7, 0.35, 0);
-    var fridgeMats = [];
-    var shellMat = mkPlain(); fridgeMats.push(shellMat);
-    function addBox(w, h, dep, x, y, z, mat) {
-      var m = new T.Mesh(new T.BoxGeometry(w, h, dep), mat);
-      m.position.set(x, y, z); fridge.add(m); return m;
-    }
-    addBox(1.5, 2.5, 0.08, 0, 0, -0.51, shellMat);
-    addBox(0.08, 2.5, 1.1, -0.71, 0, 0, shellMat);
-    addBox(0.08, 2.5, 1.1, 0.71, 0, 0, shellMat);
-    addBox(1.5, 0.08, 1.1, 0, 1.21, 0, shellMat);
-    addBox(1.5, 0.08, 1.1, 0, -1.21, 0, shellMat);
-    var fEdgeMat = mkEdge(); fridgeMats.push(fEdgeMat);
-    var outline = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.5, 2.5, 1.1)), fEdgeMat);
-    fridge.add(outline);
-    var shelfMat = mkTint(); fridgeMats.push(shelfMat);
-    [-0.5, 0.1, 0.7].forEach(function (y) { addBox(1.3, 0.04, 0.9, 0, y, 0, shelfMat); });
-    var doorPivot = new T.Group();
-    doorPivot.position.set(-0.75, 0, 0.56);
-    var doorMat = mkPlain(); fridgeMats.push(doorMat);
-    var door = new T.Mesh(new T.BoxGeometry(1.46, 2.42, 0.07), doorMat);
-    door.position.set(0.73, 0, 0);
-    var dEdgeMat = mkEdge(); fridgeMats.push(dEdgeMat);
-    door.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.46, 2.42, 0.07)), dEdgeMat));
-    var handleMat = mkEdge();
-    var handle = new T.Mesh(new T.BoxGeometry(0.05, 0.6, 0.05), handleMat);
-    handle.position.set(0.65, 0.3, 0.06);
-    door.add(handle);
-    doorPivot.add(door);
-    fridge.add(doorPivot);
-    var trayDefs = [
-      { x: -0.28, shelf: 0.7, w: 0.34, mat: mkTint() },
-      { x: 0.26, shelf: 0.7, w: 0.3, mat: mkAccent() },
-      { x: -0.24, shelf: 0.1, w: 0.32, mat: mkAccent() },
-      { x: 0.28, shelf: -0.5, w: 0.34, mat: mkTint() }
-    ];
-    var trays = [], trayCurves = [];
-    trayDefs.forEach(function (t) {
-      var mesh = new T.Mesh(new T.BoxGeometry(t.w, 0.14, 0.3), t.mat);
-      mesh.position.set(t.x, t.shelf + 0.1, 0.15);
-      fridge.add(mesh); trays.push(mesh);
-      var sy = t.shelf + 0.1;
-      trayCurves.push(new T.CatmullRomCurve3([
-        v(t.x, sy, 0.15), v(t.x, sy + 0.12, 0.85), v(mix(t.x, 1.2, 0.55), sy * 0.4 + 0.35, 1.05), v(1.2, -1.15, 0.9)
-      ]));
-    });
-    scene.add(fridge);
-    var box = new T.Group();
-    var boxTint = mkTint();
-    var bodyMesh = new T.Mesh(new T.BoxGeometry(1.0, 0.72, 0.72), boxTint);
-    var bEdge = mkEdge();
-    bodyMesh.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.0, 0.72, 0.72)), bEdge));
-    box.add(bodyMesh);
-    var boxLidGeo = new T.BoxGeometry(1.0, 0.05, 0.72); boxLidGeo.translate(0, 0.025, 0.36);
-    var lid = new T.Mesh(boxLidGeo, boxTint);
-    lid.add(new T.LineSegments(new T.EdgesGeometry(boxLidGeo), bEdge));
-    lid.position.set(0, 0.36, -0.36);
-    box.add(lid);
-    confirmCanvas = document.createElement("canvas");
-    confirmCanvas.width = 512; confirmCanvas.height = 384;
-    drawConfirmFace();
-    var faceTex = new T.CanvasTexture(confirmCanvas);
-    var face = new T.Mesh(new T.PlaneGeometry(0.62, 0.46), new T.MeshBasicMaterial({ map: faceTex, transparent: true, opacity: 0 }));
-    face.position.set(0, -0.02, 0.365);
-    box.add(face);
-    scene.add(box);
-    var travel = new T.CatmullRomCurve3([v(-0.5, -1.15, 0.9), v(0.35, -0.5, 0.5), v(1.35, -0.78, 0.1), v(2.35, -1.15, -0.35)]);
-    var marker = new T.Group();
-    var ring = new T.Mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), mkEdgeSolid());
-    function mkEdgeSolid() { var m = new T.MeshLambertMaterial({ color: new T.Color(brand) }); edgeMats.push(m); return m; }
-    marker.add(ring);
-    var post = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 0.6, 10), mkEdgeSolid());
-    post.position.y = -0.62;
-    marker.add(post);
-    marker.position.set(2.35, -0.35, -0.75);
-    marker.scale.set(0.001, 0.001, 0.001);
-    scene.add(marker);
-    d.scene = scene; d.cam = cam; d.fridge = fridge; d.fridgeMats = fridgeMats; d.doorPivot = doorPivot; d.trays = trays; d.trayCurves = trayCurves;
-    d.box = box; d.lid = lid; d.face = face; d.faceTex = faceTex; d.travel = travel; d.marker = marker;
-    d.plainMats = plainMats; d.tintMats = tintMats; d.accentMats = accentMats; d.edgeMats = edgeMats; d.hemi = hemi; d.built = true;
-  }
-  function disposeDef(d) {
-    if (!d || !d.built || !d.scene) return;
-    d.scene.traverse(function (o) {
-      if (o.geometry) o.geometry.dispose();
-      var m = o.material;
-      if (m) (Array.isArray(m) ? m : [m]).forEach(function (x) { if (x.map) x.map.dispose(); x.dispose(); });
-    });
-    if (d.scene.clear) d.scene.clear();
-    d.scene = null; d.cam = null; d.built = false;
-    ["fridge", "doorPivot", "trays", "trayCurves", "box", "lid", "face", "marker", "edgeMats", "plainMats", "tintMats", "accentMats", "fridgeMats", "hemi", "faceTex", "travel"].forEach(function (k) { delete d[k]; });
-  }
-  function tickHero(dt, now) {
-    var h = three.defs.hero;
-    h.lidCur += (-1.7 * heroP - h.lidCur) * 0.08;
-    h.lid.rotation.x = h.lidCur;
-    var sc = pinOn ? 0.92 + 0.08 * heroP : 1;
-    h.group.scale.set(sc, sc, sc);
-    var amb = 0.15;
-    stepOrbit(h.orbit, dt, now, amb);
-    h.group.rotation.y = h.orbit.spin;
-    h.group.rotation.x = h.orbit.rotX;
-  }
-  function tickFridge(dt, now) {
-    var fr = three.defs.fridge;
-    var p = fridgePinOn ? fridgeP : 1;
-    var e1 = eo(cl(p / 0.2));
-    var e2 = ei(cl((p - 0.2) / 0.25));
-    var tFill = cl((p - 0.45) / 0.15);
-    var e4 = ei(cl((p - 0.6) / 0.25));
-    var e5 = ei(cl((p - 0.85) / 0.15));
-    fr.fridge.position.y = 0.35 - 2.7 * (1 - e1);
-    fr.fridge.position.z = -1.7 * e4;
-    fr.fridge.rotation.y = -0.8 * (1 - e1);
-    fr.fridge.visible = e4 < 0.995;
-    fr.fridgeMats.forEach(function (m) { m.opacity = 1 - e4; });
-    fr.doorPivot.rotation.y = -1.9 * e2;
-    fr.trays.forEach(function (tr, i) {
-      var u = cl((tFill - i * 0.12) / 0.52);
-      var pos = fr.trayCurves[i].getPoint(eo(u));
-      tr.position.copy(pos);
-      tr.rotation.z = 0.5 * Math.sin(Math.PI * u) * (i % 2 ? -1 : 1);
-      tr.visible = u < 1 && e4 < 0.4;
-    });
-    var bp = fr.travel.getPoint(e4);
-    fr.box.position.copy(bp);
-    fr.box.rotation.y = -0.35 + 0.75 * e4 - 0.4 * e5 + 0.35 * Math.sin(e4 * Math.PI * 2) * (1 - e5);
-    var lastU = cl((tFill - 3 * 0.12) / 0.52);
-    var lidA;
-    if (p < 0.45) lidA = -1.5 * ei(cl((p - 0.36) / 0.09));
-    else lidA = -1.5 * (1 - ei(cl((lastU - 0.82) / 0.18)));
-    lidA += -1.35 * Math.sin(Math.PI * e5);
-    fr.lid.rotation.x = lidA;
-    fr.face.material.opacity = cl((e5 - 0.35) / 0.45);
-    var ms = Math.max(0.001, e4);
-    fr.marker.scale.set(ms, ms, ms);
-    var b = 1 + 0.05 * Math.sin(Math.PI * e5);
-    fr.box.scale.set(b, b, b);
-  }
-  function buildThree() {
-    var T = window.THREE;
-    var heroHost = $("#hero3d"), fridgeHost = $("#fridge3d");
-    if (!T || !heroHost || !fridgeHost) return;
-    var renderer;
-    try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return; }
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    var cv = renderer.domElement;
-    cv.tabIndex = 0;
-    cv.setAttribute("role", "img");
-    cv.setAttribute("aria-label", "3D scene — drag or use arrow keys to spin");
-    cv.style.touchAction = "none";
-    cv.style.cursor = "grab";
-    cv.style.display = "block";
-    var fridgeWatch = $("#fridgeWrap");
-    three = {
-      renderer: renderer, cv: cv, active: null, running: false, blinkStarted: false,
-      defs: {
-        hero: { name: "hero", host: heroHost, watch: heroHost.parentElement, aspect: 0.86, orbit: mkOrbit(0.15), built: false },
-        fridge: { name: "fridge", host: fridgeHost, watch: fridgeWatch, aspect: 0.52, orbit: null, built: false }
-      }
-    };
-    var samples = [];
-    cv.addEventListener("pointerdown", function (e) {
-      var o = three.active && three.active.orbit; if (!o) return;
-      cv.setPointerCapture(e.pointerId);
-      o.mode = "drag"; cv.style.cursor = "grabbing";
-      samples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
-    });
-    cv.addEventListener("pointermove", function (e) {
-      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
-      var s0 = samples[samples.length - 1];
-      o.spin += (e.clientX - s0.x) * 0.008;
-      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + (e.clientY - s0.y) * 0.008));
-      samples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
-      if (samples.length > 6) samples.shift();
-    });
-    function release() {
-      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
-      cv.style.cursor = "grab";
-      var now = performance.now();
-      var recent = samples.filter(function (s) { return now - s.t < 120; });
-      if (recent.length >= 2) {
-        var a = recent[0], b = recent[recent.length - 1];
-        var dt = Math.max((b.t - a.t) / 1000, 0.016);
-        o.spinVel = (b.x - a.x) * 0.008 / dt;
-        o.velX = (b.y - a.y) * 0.008 / dt;
-      } else { o.spinVel = 0; o.velX = 0; }
-      o.mode = "coast"; o.idleAt = now + 800;
-    }
-    cv.addEventListener("pointerup", release);
-    cv.addEventListener("pointercancel", release);
-    cv.addEventListener("keydown", function (e) {
-      var o = three.active && three.active.orbit; if (!o) return;
-      if (e.key === "ArrowLeft") o.spin -= 0.1;
-      else if (e.key === "ArrowRight") o.spin += 0.1;
-      else if (e.key === "ArrowUp") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX - 0.1));
-      else if (e.key === "ArrowDown") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + 0.1));
-      else return;
-      e.preventDefault();
-    });
-    var vis = { hero: false, fridge: false };
-    function attachThree(force) {
-      var want = null;
-      if (vis.hero) want = three.defs.hero; else if (vis.fridge) want = three.defs.fridge;
-      three.running = !!want;
-      if (!want) return;
-      if (!want.built) {
-        try { if (want.name === "hero") buildHero(T); else buildFridge(T); } catch (e) { return; }
-      }
-      if (want === three.active && !force) return;
-      three.active = want;
-      var host = want.host;
-      host.style.display = "block";
-      host.insertBefore(cv, host.firstChild);
-      var w = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || 420, h = Math.round(w * want.aspect);
-      renderer.setSize(w, h);
-      want.cam.aspect = w / h;
-      want.cam.updateProjectionMatrix();
-      cv.style.cursor = want.orbit ? "grab" : "default";
-      if (want.name === "hero") {
-        heroHost.style.display = "block"; $("#mascotHero").style.display = "none";
-        fridgeHost.style.display = "none"; $("#fridgeFallback").style.display = "block";
-      } else {
-        heroHost.style.display = "none"; $("#mascotHero").style.display = "block";
-        fridgeHost.style.display = "block"; $("#fridgeFallback").style.display = "none";
-      }
-    }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.target === three.defs.hero.watch) vis.hero = e.isIntersecting;
-        else if (e.target === fridgeWatch) vis.fridge = e.isIntersecting;
-      });
-      attachThree();
-    }, { rootMargin: "100px" });
-    io.observe(three.defs.hero.watch);
-    io.observe(fridgeWatch);
-    var last = performance.now();
-    function loop(now) {
-      requestAnimationFrame(loop);
-      if (!three.active || !three.running || !three.active.built) { last = now; return; }
-      var dt = Math.min((now - last) / 1000, 0.05); last = now;
-      if (three.active.name === "hero") tickHero(dt, now); else tickFridge(dt, now);
-      renderer.render(three.active.scene, three.active.cam);
-    }
-    requestAnimationFrame(loop);
-    if (!mob && !reduced) {
-      pinOn = true;
-      $("#heropin").style.height = "200vh";
-      var st = $("#top");
-      st.style.position = "sticky"; st.style.top = "0";
-      st.style.minHeight = "100vh"; st.style.alignContent = "center";
-    }
-    var fSticky = $("#fridgeSticky");
-    if (fridgeWatch && fSticky) {
-      fridgePinOn = true;
-      fridgeWatch.style.height = "300vh";
-      fSticky.style.position = "sticky"; fSticky.style.top = "15vh";
-    }
-    buildHero(T);
-    vis.hero = true;
-    attachThree(true);
-  }
-  setTimeout(init3D, 700);
+  /* ---------- hero box: scroll scrub + drag (shared — assets/site.js) ----------
+     Replaces the previous WebGL hero and the cafeteria-fridge transition. The
+     box geometry, camera and rear-edge lid hinge are carried over unchanged;
+     the renderer no longer needs Three.js from a CDN, which also means the box
+     now appears for everyone rather than only for readers who can reach it. */
+  var heroBox = STB.initHeroBox();
 
-  /* ---------- hero mascot mouth hover ---------- */
-  var heroSlot = $("#mascotHero");
-  heroSlot.addEventListener("mouseenter", function () { paintMascot(heroSlot.querySelector("svg"), "warm"); });
-  heroSlot.addEventListener("mouseleave", function () { paintMascot(heroSlot.querySelector("svg"), "idle"); });
 })();
 </script>
 </body>

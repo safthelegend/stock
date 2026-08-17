@@ -26,6 +26,9 @@
   --nav-bg:rgba(245,245,247,0.72);
   --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
   --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
+  /* Interior of the hero box, revealed as the lid hinges open. A darker
+     shade of --mascot-fill; never a new colour and never contents. */
+  --box-interior:#C6D9B0;
 }
 /* Three modes: light (above, untouched), dark, and stock. The system
    preference decides only when the reader has made no explicit choice — hence
@@ -41,6 +44,7 @@
     --nav-bg:rgba(20,23,15,0.72);
     --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
     --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+    --box-interior:#141810;
   }
 }
 :root[data-theme="dark"] {
@@ -52,6 +56,7 @@
   --nav-bg:rgba(20,23,15,0.72);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
   --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+  --box-interior:#141810;
 }
 /* Stock — brand mode. Forest-green ground, cream text, orange accent.
    The hues are the site's own two brand colours; nothing new is introduced.
@@ -71,6 +76,7 @@
   --nav-bg:rgba(27,53,17,0.74);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
   --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
+  --box-interior:#132608;
 }
 @media (prefers-contrast: more) {
   :root {
@@ -165,3 +171,15 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
 .sites li { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; font-size:17px; line-height:1.5; color:var(--text); }
 .sites li .boro { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; color:var(--text-secondary); }
 .sites li .tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+
+/* ---------------------------------------------------------------------------
+   Hero box. The canvas is sized by its container and never scroll-jacks:
+   no scroll-snap, no overscroll-behaviour, no touch-action override that
+   would stop the page moving under a vertical drag.
+   --------------------------------------------------------------------------- */
+#heroBoxWrap { position:relative; width:100%; max-width:420px; }
+#heroBox { display:block; width:100%; height:auto; outline-offset:6px; }
+#heroBox[tabindex]:focus-visible { outline:2px solid var(--brand); }
+#heroBoxHint { position:absolute; left:50%; bottom:-6px; transform:translate(-50%,8px); margin:0; padding:5px 11px; border:1px solid var(--brand-line-mid); border-radius:999px; background:var(--surface); color:var(--text-secondary); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 320ms ease, transform 320ms ease; }
+#heroBoxHint.on { opacity:1; transform:translate(-50%,0); }
+#heroBoxHint.gone { opacity:0 !important; transform:translate(-50%,8px) !important; }

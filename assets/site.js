@@ -272,7 +272,468 @@ function initMascotSlots(root) {
     return { shot: shot, tick: tick };
   }
 
+  /* ======================================================================
+     SCROLL SCRUB FRAMEWORK
+     ======================================================================
+     A sticky section of configurable height whose normalised progress
+     (0..1) is handed to a renderer. The renderer is a plain callback, so
+     the pipeline knows nothing about what is being drawn — swap
+     onProgress and the same machinery drives something else.
+
+     The scroll budget for the hero is declared once, here. Nothing else
+     in the module may hardcode a scroll length. */
+  var SCRUB_LENGTH_VH = 150;
+
+  /* Two rules this obeys, deliberately:
+       1. The scroll listener sets a flag and nothing else. All reading of
+          layout and all rendering happens in the rAF loop below, so a fast
+          scroll cannot queue up N synchronous renders.
+       2. Nothing here calls preventDefault, and nothing binds wheel, touch
+          or key events. The animation is a function of scroll position; it
+          never influences it. Scrolling straight past at full speed, by
+          wheel, trackpad, space, PgDn or arrow key, is untouched. */
+  function initScrollScrub(opts) {
+    var section = opts.section;
+    var sticky = opts.sticky;
+    var onProgress = opts.onProgress;
+    var lengthVh = opts.scrollLength || SCRUB_LENGTH_VH;
+    if (!section || !sticky || typeof onProgress !== "function") return null;
+
+    section.style.height = lengthVh + "vh";
+    sticky.style.position = "sticky";
+    sticky.style.top = "0";
+    sticky.style.minHeight = "100vh";
+    sticky.style.display = "grid";
+    sticky.style.alignContent = "center";
+
+    var dirty = true, progress = 0, raf = 0, stopped = false;
+    function mark() { dirty = true; }
+    addEventListener("scroll", mark, { passive: true });
+    addEventListener("resize", mark, { passive: true });
+
+    function measure() {
+      var r = section.getBoundingClientRect();
+      var range = r.height - innerHeight;
+      var p = range > 0 ? -r.top / range : (r.top <= 0 ? 1 : 0);
+      progress = p < 0 ? 0 : p > 1 ? 1 : p;
+    }
+
+    function frame() {
+      if (stopped) return;
+      raf = requestAnimationFrame(frame);
+      if (dirty) { dirty = false; measure(); }
+      onProgress(progress);
+    }
+    measure();
+    raf = requestAnimationFrame(frame);
+
+    return {
+      progress: function () { return progress; },
+      stop: function () {
+        stopped = true; cancelAnimationFrame(raf);
+        removeEventListener("scroll", mark); removeEventListener("resize", mark);
+      }
+    };
+  }
+
+  /* ======================================================================
+     MASCOT BOX RENDERER
+     ======================================================================
+     The same box the hero already had — an extruded cuboid 1.6 x 1.2 x 1.2
+     with a separate 0.08-deep lid hinged on its rear top edge, chevron eyes
+     and an orange smile on the front face, drawn in the site's greens. The
+     geometry, proportions, camera and hinge are carried over unchanged from
+     the previous WebGL version; only the rasteriser is different, because
+     the animation may not pull in an external library.
+
+     Software projection onto a 2D canvas: pinhole camera, painter's
+     algorithm, back-facing polygons filled as interior surfaces. No images,
+     no library, no WebGL context. */
+  var BOX = {
+    W: 1.6, H: 1.2, D: 1.2,        /* body, as before */
+    LID: 0.08,                     /* lid thickness, as before */
+    /* Group offset and camera distance are the one thing nudged from the
+       previous version, and only because the lid now opens: at 60 degrees the
+       lid's front edge swings up to y=1.68, which the old framing
+       (groupY -0.1, camera z 4.6) clipped off the top of the canvas. Pulled
+       back to 5.1 and dropped to -0.45, the whole swept volume fits with
+       headroom to spare at every progress value. */
+    Y: -0.45,
+    FOV: 35, CAM: [0, 0.85, 5.1],
+    MAX_LID_DEG: 60,               /* the box must still read as a box */
+    LID_DONE: 0.7                  /* fully open by 0.7 progress, then holds */
+  };
+
+  function createMascotBox(canvas, opts) {
+    opts = opts || {};
+    var ctx = canvas.getContext("2d");
+    var hw = BOX.W / 2, hh = BOX.H / 2, hd = BOX.D / 2;
+
+    /* Body without its top face — the lid is that face, and leaving the
+       hole means the interior back wall is genuinely visible through it
+       rather than faked. */
+    var BODY = [
+      { v: [[-hw, -hh, hd], [hw, -hh, hd], [hw, hh, hd], [-hw, hh, hd]], n: [0, 0, 1], face: true },
+      { v: [[hw, -hh, -hd], [-hw, -hh, -hd], [-hw, hh, -hd], [hw, hh, -hd]], n: [0, 0, -1] },
+      { v: [[-hw, -hh, -hd], [-hw, -hh, hd], [-hw, hh, hd], [-hw, hh, -hd]], n: [-1, 0, 0] },
+      { v: [[hw, -hh, hd], [hw, -hh, -hd], [hw, hh, -hd], [hw, hh, hd]], n: [1, 0, 0] },
+      { v: [[-hw, -hh, -hd], [hw, -hh, -hd], [hw, -hh, hd], [-hw, -hh, hd]], n: [0, -1, 0] }
+    ];
+    /* Lid, in hinge-local space: the hinge is the origin, running
+       left-to-right across the REAR of the box, so rotation about X lifts
+       the front edge off the seam. */
+    var L = BOX.LID;
+    var LID = [
+      { v: [[-hw, 0, BOX.D], [hw, 0, BOX.D], [hw, L, BOX.D], [-hw, L, BOX.D]], n: [0, 0, 1] },
+      { v: [[hw, 0, 0], [-hw, 0, 0], [-hw, L, 0], [hw, L, 0]], n: [0, 0, -1] },
+      { v: [[-hw, L, 0], [-hw, L, BOX.D], [hw, L, BOX.D], [hw, L, 0]], n: [0, 1, 0] },
+      { v: [[-hw, 0, BOX.D], [-hw, 0, 0], [hw, 0, 0], [hw, 0, BOX.D]], n: [0, -1, 0] },
+      { v: [[-hw, 0, 0], [-hw, 0, BOX.D], [-hw, L, BOX.D], [-hw, L, 0]], n: [-1, 0, 0] },
+      { v: [[hw, 0, BOX.D], [hw, 0, 0], [hw, L, 0], [hw, L, BOX.D]], n: [1, 0, 0] }
+    ];
+
+    var pitch = Math.atan2(BOX.CAM[1], BOX.CAM[2]);   /* camera tilts down at the box */
+    var cp = Math.cos(pitch), sp = Math.sin(pitch);
+    var W = 0, Hpx = 0, dpr = 1, focal = 1;
+
+    function resize() {
+      var box = canvas.getBoundingClientRect();
+      var cssW = Math.max(1, Math.round(box.width));
+      var cssH = Math.max(1, Math.round(box.width));   /* square */
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+      canvas.style.height = cssH + "px";
+      W = canvas.width; Hpx = canvas.height;
+      focal = (Hpx / 2) / Math.tan((BOX.FOV * Math.PI / 180) / 2);
+    }
+
+    function project(p, yaw) {
+      var cy = Math.cos(yaw), sy = Math.sin(yaw);
+      var x = p[0] * cy + p[2] * sy;
+      var z = -p[0] * sy + p[2] * cy;
+      var y = p[1] + BOX.Y;
+      x -= BOX.CAM[0]; y -= BOX.CAM[1]; z -= BOX.CAM[2];
+      var yv = y * cp - z * sp;
+      var zv = y * sp + z * cp;
+      var d = -zv; if (d < 0.05) d = 0.05;
+      return [W / 2 + focal * x / d, Hpx / 2 - focal * yv / d, d];
+    }
+
+    function rotYaw(n, yaw) {
+      var cy = Math.cos(yaw), sy = Math.sin(yaw);
+      return [n[0] * cy + n[2] * sy, n[1], -n[0] * sy + n[2] * cy];
+    }
+    function lidPoint(p, a) {
+      var ca = Math.cos(a), sa = Math.sin(a);
+      return [p[0], 0.6 + (p[1] * ca + p[2] * sa), -hd + (-p[1] * sa + p[2] * ca)];
+    }
+    function lidNormal(n, a) {
+      var ca = Math.cos(a), sa = Math.sin(a);
+      return [n[0], n[1] * ca + n[2] * sa, -n[1] * sa + n[2] * ca];
+    }
+
+    /* Chevron eyes and the orange smile, in the 512-unit space the previous
+       face texture used, so the drawing is identical. */
+    function drawFace(quad, blink, stroke, accent) {
+      function at(u, v) {
+        var tl = quad[3], tr = quad[2], bl = quad[0];
+        return [tl[0] + u * (tr[0] - tl[0]) + v * (bl[0] - tl[0]),
+                tl[1] + u * (tr[1] - tl[1]) + v * (bl[1] - tl[1])];
+      }
+      var k = 512;
+      function line(pts) {
+        ctx.beginPath();
+        for (var i = 0; i < pts.length; i++) {
+          var s = at(pts[i][0] / k, pts[i][1] / k);
+          if (i === 0) ctx.moveTo(s[0], s[1]); else ctx.lineTo(s[0], s[1]);
+        }
+        ctx.stroke();
+      }
+      var span = Math.hypot(quad[2][0] - quad[3][0], quad[2][1] - quad[3][1]);
+      ctx.lineWidth = Math.max(1, span * (26 / k));
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = stroke;
+      if (blink) { line([[110, 295], [220, 295]]); line([[292, 295], [402, 295]]); }
+      else { line([[110, 320], [165, 258], [220, 320]]); line([[292, 320], [347, 258], [402, 320]]); }
+      ctx.strokeStyle = accent;
+      var seg = [], i, t, mt;
+      for (i = 0; i <= 12; i++) {   /* the quadratic smile, subdivided */
+        t = i / 12; mt = 1 - t;
+        seg.push([mt * mt * 192 + 2 * mt * t * 256 + t * t * 320,
+                  mt * mt * 372 + 2 * mt * t * 422 + t * t * 372]);
+      }
+      line(seg);
+    }
+
+    var blink = false;
+    if (!opts.reduced) {
+      (function blinkLoop() {
+        setTimeout(function () {
+          blink = true;
+          setTimeout(function () { blink = false; }, 140);
+          blinkLoop();
+        }, 5000 + Math.random() * 2000);
+      })();
+    }
+
+    /* progress -> lid angle. Eases out to a hard stop at LID_DONE; past
+       that point further scrolling changes nothing. */
+    function lidAngle(p) {
+      var t = p / BOX.LID_DONE; if (t > 1) t = 1; if (t < 0) t = 0;
+      var eased = 1 - Math.pow(1 - t, 3);
+      return eased * BOX.MAX_LID_DEG * Math.PI / 180;
+    }
+
+    function render(progress, yaw) {
+      if (!W || !Hpx) resize();
+      var a = lidAngle(progress);
+      var fill = getVar("--mascot-fill") || "#EAF2DE";
+      var edge = getVar("--mascot-stroke") || "#2E5A22";
+      var inner = getVar("--box-interior") || fill;
+      var accent = getVar("--accent") || "#E8871E";
+
+      ctx.clearRect(0, 0, W, Hpx);
+      var polys = [], i, f, sv, n, k, depth, front;
+
+      for (i = 0; i < BODY.length; i++) {
+        f = BODY[i];
+        sv = [f.v[0], f.v[1], f.v[2], f.v[3]].map(function (p) { return project(p, yaw); });
+        n = rotYaw(f.n, yaw);
+        depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
+        front = facing(f.v, f.n, yaw);
+        polys.push({ sv: sv, depth: depth, front: front, isFace: !!f.face && front });
+      }
+      for (i = 0; i < LID.length; i++) {
+        f = LID[i];
+        sv = f.v.map(function (p) { return project(lidPoint(p, a), yaw); });
+        depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
+        front = facingPts(f.v.map(function (p) { return lidPoint(p, a); }), lidNormal(f.n, a), yaw);
+        polys.push({ sv: sv, depth: depth, front: front, lid: true });
+      }
+      polys.sort(function (p, q) { return q.depth - p.depth; });   /* far to near */
+
+      ctx.lineJoin = "round"; ctx.lineCap = "round";
+      var strokeW = Math.max(1, Hpx * 0.006);
+      for (i = 0; i < polys.length; i++) {
+        var pl = polys[i];
+        ctx.beginPath();
+        ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
+        for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
+        ctx.closePath();
+        /* A back-facing polygon is an inside surface: the interior back wall
+           and floor you see once the lid lifts. Darker shade of the box
+           colour, straight from the theme. */
+        ctx.fillStyle = pl.front ? fill : inner;
+        ctx.fill();
+        if (pl.front) {
+          ctx.strokeStyle = edge; ctx.lineWidth = strokeW; ctx.stroke();
+          if (pl.isFace) {
+            ctx.save(); ctx.clip();
+            drawFace(pl.sv, blink, edge, accent);
+            ctx.restore();
+          }
+        }
+      }
+
+      /* The seam. It is the body's top-front edge — the very line the lid
+         rests on when shut — so the lid always reads as lifting off it
+         rather than floating above an unrelated line. */
+      var s1 = project([-hw, hh, hd], yaw), s2 = project([hw, hh, hd], yaw);
+      ctx.beginPath(); ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]);
+      ctx.strokeStyle = edge; ctx.lineWidth = strokeW * 1.5; ctx.stroke();
+    }
+
+    function facing(v, n, yaw) { return facingPts(v, rotYaw(n, yaw), yaw); }
+    function facingPts(v, n, yaw) {
+      var c = [0, 0, 0], i;
+      for (i = 0; i < v.length; i++) { c[0] += v[i][0]; c[1] += v[i][1]; c[2] += v[i][2]; }
+      c = [c[0] / v.length, c[1] / v.length, c[2] / v.length];
+      var cy = Math.cos(yaw), sy = Math.sin(yaw);
+      var wx = c[0] * cy + c[2] * sy, wz = -c[0] * sy + c[2] * cy, wy = c[1] + BOX.Y;
+      var view = [wx - BOX.CAM[0], wy - BOX.CAM[1], wz - BOX.CAM[2]];
+      return (n[0] * view[0] + n[1] * view[1] + n[2] * view[2]) < 0;
+    }
+
+    resize();
+    addEventListener("resize", resize, { passive: true });
+    return { render: render, resize: resize };
+  }
+
+  /* ======================================================================
+     HERO BOX — scrub + drag, wired together
+     ====================================================================== */
+  function initHeroBox(cfg) {
+    cfg = cfg || {};
+    var canvas = $("#heroBox");
+    var section = $("#heropin");
+    var sticky = $("#top");
+    var hint = $("#heroBoxHint");
+    if (!canvas || !section || !sticky) return null;
+
+    var box = createMascotBox(canvas, { reduced: reduced });
+
+    /* prefers-reduced-motion: the resting state, drawn once. No scroll
+       listener is attached, no drag is armed, nothing animates. */
+    if (reduced) {
+      canvas.removeAttribute("tabindex");
+      if (hint) hint.remove();
+      var paintStatic = function () { box.resize(); box.render(0, 0); };
+      paintStatic();
+      addEventListener("resize", paintStatic, { passive: true });
+      return { repaint: paintStatic };
+    }
+
+    var MAX_YAW = 45 * Math.PI / 180;      /* clamped. no full spin. */
+    var STEP = 9 * Math.PI / 180;          /* keyboard increment */
+    var SETTLE_MS = 800;
+    var progress = 0, yaw = 0, target = 0;
+    var dragging = false, dragStartX = 0, dragStartYaw = 0;
+    var releasedAt = 0, releasedFrom = 0, settling = false;
+    var armed = false, interacted = false;
+
+    function arm() {
+      if (armed) return;
+      armed = true;
+      canvas.style.cursor = "grab";
+      canvas.setAttribute("tabindex", "0");
+      if (hint && !interacted) hint.classList.add("on");
+    }
+    function disarm() {
+      if (!armed) return;
+      armed = false;
+      canvas.style.cursor = "";
+      canvas.removeAttribute("tabindex");
+      if (hint) hint.classList.remove("on");
+    }
+    function usedIt() {
+      if (interacted) return;
+      interacted = true;
+      if (hint) hint.classList.add("gone");
+    }
+    function clampYaw(v) { return v < -MAX_YAW ? -MAX_YAW : v > MAX_YAW ? MAX_YAW : v; }
+
+    /* ---- mouse ---- */
+    canvas.addEventListener("mousedown", function (e) {
+      if (!armed) return;
+      dragging = true; settling = false;
+      dragStartX = e.clientX; dragStartYaw = yaw;
+      canvas.style.cursor = "grabbing";
+      usedIt();
+      e.preventDefault();          /* a mouse drag only; never a touch or wheel */
+    });
+    addEventListener("mousemove", function (e) {
+      if (!dragging) return;
+      target = clampYaw(dragStartYaw + (e.clientX - dragStartX) * 0.006);
+    }, { passive: true });
+    addEventListener("mouseup", function () {
+      if (!dragging) return;
+      dragging = false;
+      canvas.style.cursor = armed ? "grab" : "";
+      releasedFrom = target; releasedAt = performance.now(); settling = true;
+    }, { passive: true });
+
+    /* ---- touch ----
+       The gesture has to declare itself horizontal before it is captured.
+       touchstart never calls preventDefault, so a vertical or ambiguous
+       drag scrolls the page exactly as it would with no listener here. */
+    var tId = null, tx0 = 0, ty0 = 0, tClaimed = false;
+    canvas.addEventListener("touchstart", function (e) {
+      if (!armed || e.touches.length !== 1) return;
+      var t = e.touches[0];
+      tId = t.identifier; tx0 = t.clientX; ty0 = t.clientY;
+      tClaimed = false; dragStartYaw = yaw; settling = false;
+      /* deliberately no preventDefault here */
+    }, { passive: true });
+
+    canvas.addEventListener("touchmove", function (e) {
+      if (tId === null) return;
+      var t = null, i;
+      for (i = 0; i < e.touches.length; i++) if (e.touches[i].identifier === tId) t = e.touches[i];
+      if (!t) return;
+      var dx = t.clientX - tx0, dy = t.clientY - ty0;
+      if (!tClaimed) {
+        /* Only a clearly horizontal gesture becomes a rotate: past 12px AND
+           at least 1.5x the vertical travel. Anything else is left alone
+           for the rest of the gesture. */
+        if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          tClaimed = true; dragging = true; usedIt();
+        } else if (Math.abs(dy) > 8) {
+          tId = null; return;      /* vertical: hand it back to the page, permanently */
+        } else return;
+      }
+      target = clampYaw(dragStartYaw + dx * 0.006);
+      if (e.cancelable) e.preventDefault();   /* only once horizontal is proven */
+    }, { passive: false });
+
+    function endTouch() {
+      if (tId === null) return;
+      tId = null;
+      if (tClaimed) { dragging = false; releasedFrom = target; releasedAt = performance.now(); settling = true; }
+      tClaimed = false;
+    }
+    canvas.addEventListener("touchend", endTouch, { passive: true });
+    canvas.addEventListener("touchcancel", endTouch, { passive: true });
+
+    /* ---- keyboard ----
+       Bound to the canvas, not the document, so arrow keys keep scrolling
+       the page everywhere else — and still do here unless the box has focus. */
+    canvas.addEventListener("keydown", function (e) {
+      if (!armed) return;
+      if (e.key === "ArrowLeft") target = clampYaw(target - STEP);
+      else if (e.key === "ArrowRight") target = clampYaw(target + STEP);
+      else return;
+      settling = false; usedIt();
+      e.preventDefault();      /* the box has focus and is consuming the key */
+    });
+    canvas.addEventListener("blur", function () {
+      if (!dragging) { releasedFrom = target; releasedAt = performance.now(); settling = true; }
+    });
+
+    var scrub = initScrollScrub({
+      section: section,
+      sticky: sticky,
+      scrollLength: SCRUB_LENGTH_VH,
+      /* The renderer. Swap this callback and the same pipeline drives
+         something else — see the raster stub at the end of this function. */
+      onProgress: function (p) {
+        progress = p;
+        if (p >= 1) arm(); else { disarm(); target = 0; }
+
+        if (settling && !dragging) {
+          var t = (performance.now() - releasedAt) / SETTLE_MS;
+          if (t >= 1) { settling = false; target = 0; }
+          else target = releasedFrom * (1 - (1 - Math.pow(1 - t, 3)));
+        }
+        yaw += (target - yaw) * 0.18;             /* never snaps */
+        if (Math.abs(target - yaw) < 0.0002) yaw = target;
+        box.render(progress, yaw);
+      }
+    });
+
+    /* ------------------------------------------------------------------
+       ALTERNATE RENDERER STUB — not built, on purpose.
+       A pre-rendered raster frame sequence would attach here instead of
+       createMascotBox, with no change to initScrollScrub:
+
+         var frames = [];                       // decoded ImageBitmaps
+         initScrollScrub({
+           section: section, sticky: sticky, scrollLength: SCRUB_LENGTH_VH,
+           onProgress: function (p) {
+             var i = Math.min(frames.length - 1, Math.round(p * (frames.length - 1)));
+             ctx.drawImage(frames[i], 0, 0, canvas.width, canvas.height);
+           }
+         });
+
+       Left unbuilt: it would mean image downloads, which this phase forbids.
+       ------------------------------------------------------------------ */
+
+    return { repaint: function () { box.render(progress, yaw); }, scrub: scrub };
+  }
+
   global.STB = {
+    SCRUB_LENGTH_VH: SCRUB_LENGTH_VH, initScrollScrub: initScrollScrub,
+    createMascotBox: createMascotBox, initHeroBox: initHeroBox,
     $: $, $$: $$,
     reduced: reduced, mob: mob, f: f, EXP: EXP, PRO: PRO,
     ICONS: ICONS, iconSVG: iconSVG, initIcons: initIcons,
