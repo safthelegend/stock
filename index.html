@@ -163,17 +163,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <div id="heropin">
 <header id="top" class="wrap hero-grid">
   <div>
-    <p class="eyebrow" data-reveal>Pre-launch</p>
-    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 120ms both;">
-      <p class="figure" id="heroFig" style="font-size:clamp(34px,4.6vw,52px); line-height:1.1; margin:0; color:var(--brand); max-width:16ch;">The log opens with the first delivery.</p>
-      <p style="font-size:14px; color:var(--text-secondary); margin:14px 0 0; line-height:1.6;">The system is built. The record starts when the first box moves — and every pound after that is logged and public.</p>
-    </div>
-    <h1 style="font-size:clamp(30px,4.1vw,39px); margin:32px 0 0; color:var(--text);">
-      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 260ms both;">Students move surplus cafeteria food from share tables to food banks.</span></span>
-      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 380ms both;">The tracker will prove it.</span></span>
+    <p class="eyebrow" data-reveal>Student-run food recovery · NYC</p>
+    <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
+      Students move surplus cafeteria food from share tables to food banks.
+      <em>The tracker will prove it.</em>
     </h1>
-    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 420ms both;">
-      <p class="body-p" style="margin:16px 0 0;">Stock the Block is a student-run food recovery system for NYC schools: insulated boxes, short local routes to a receiving site in the same borough, and a delivery log anyone can audit.</p>
+    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
+      <p class="body-p" style="margin:20px 0 0;">Stock the Block is a student-run food recovery system for NYC schools: insulated boxes, short local routes to a receiving site in the same borough, and a delivery log anyone can audit.</p>
+      <div class="prelaunch">
+        <p class="prelaunch-tag">Pre-launch</p>
+        <p class="prelaunch-line" id="heroFig">The log opens with the first delivery.</p>
+        <p class="prelaunch-sub">The system is built. The record starts when the first box moves — and every pound after that is logged and public.</p>
+      </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
         <a href="#tracker" class="btn line">See the log</a>
@@ -411,7 +412,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <div class="mhead">
         <span class="left">
           <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST — <span id="filterLabel">RECENT</span></span>
-          <span class="unverified" style="font-family:inherit;">Track the Box — the planned public log — is not published yet</span>
           <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
         </span>
         <span class="right">
@@ -433,6 +433,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery will be recorded under. Nothing has moved yet, so there is nothing here to show.</p>
       </div>
       <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
+      <p class="manifest-foot"><span class="unverified">Track the Box — the planned public log this feeds — is not published yet.</span></p>
     </div>
   </div>
 </section>
@@ -1307,7 +1308,7 @@ that wasn't actually clean.</pre>
         '<div class="packet-doc">' +
           '<h3>Delivery manifest</h3>' +
           '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
-          '<table><tbody>' +
+          '<table class="kv"><tbody>' +
             '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
             '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
             '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +

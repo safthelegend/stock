@@ -345,3 +345,50 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
    the theme and unit controls while they were still at opacity 0 — a focus
    ring nobody can see. Reveal the bar whenever anything inside it has focus. */
 nav.bar:focus-within { opacity:1; pointer-events:auto; }
+
+/* ===========================================================================
+   Polish pass
+   =========================================================================== */
+
+/* Hero. The pre-launch statement used to be set larger than the h1 below it,
+   which inverted the hierarchy — two display headings competing, and the one
+   that won was not the heading. The h1 now leads and the pre-launch state
+   reads as what it is: a status panel, subordinate to the claim above it. */
+/* Wraps naturally and balances rather than being split into hand-authored
+   masked lines: at this size no fixed phrase fits the hero column across every
+   viewport, and a mask line that wraps breaks mid-phrase. */
+.hero-h1 { font-size:clamp(30px,3.6vw,42px); line-height:1.13; letter-spacing:-0.035em; margin:10px 0 0; color:var(--text); max-width:28ch; text-wrap:balance; }
+.hero-h1 em { display:block; margin-top:0.35em; }
+.hero-h1 em { font-style:normal; color:var(--brand); }
+#heroBoxWrap { max-width:460px; }
+.prelaunch { position:relative; margin:30px 0 0; padding:16px 20px 18px; background:var(--tint); border-left:3px solid var(--brand); border-radius:0 10px 10px 0; max-width:52ch; }
+.prelaunch-tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--brand); margin:0 0 7px; }
+.prelaunch-line { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(19px,1.9vw,23px); line-height:1.25; letter-spacing:-0.02em; color:var(--text); margin:0; }
+.prelaunch-sub { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:8px 0 0; }
+
+/* School tiers. Three short lists stacked down a narrow column left two
+   thirds of the row empty while the tier rules ran the full width — the rule
+   promised content that was not there. Side by side, the three statuses also
+   become comparable at a glance, which is the point of tiering them. */
+.sites { grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); align-items:start; gap:32px 40px; }
+.sites .tier-label { justify-content:space-between; }
+.sites li { font-size:16px; line-height:1.45; }
+.sites li .boro { display:block; width:100%; font-size:12px; }
+#sites .cite { max-width:62ch; }
+
+/* Manifest. The "not published yet" note sat inside the mono header strip,
+   where a full sentence with a dotted underline read as a broken link next to
+   the controls. It belongs under the table, as a footnote to the log. */
+.manifest-foot { margin:0; padding:12px 20px 14px; border-top:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.55; color:var(--text-secondary); }
+.mhead .right { gap:12px; }
+#mascotMood { width:44px; }
+
+/* Run packet. A two-column table splits 50/50 by default, stranding every
+   value in the middle of the page. */
+.packet-doc table.kv { table-layout:fixed; }
+.packet-doc table.kv th[scope="row"] { width:34%; }
+.packet-doc table.kv td { width:66%; }
+
+/* Section rhythm: the tier rules and the sources rule were the only hairlines
+   that ran wider than the text they belonged to. */
+#sites .tier-label { max-width:none; }
