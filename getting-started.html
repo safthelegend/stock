@@ -113,11 +113,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     </div>
     <div class="card">
       <p class="kicker" data-icon="map-pin">A route</p>
-      <p class="body">A walk under thirty minutes, out and back, so the team can run it same-day and still make their bus.</p>
+      <p class="body">A walk under thirty minutes, out and back, inside your own borough — so the team can run it the same afternoon and still make their bus.</p>
     </div>
     <div class="card">
       <p class="kicker" data-icon="handshake">A partner site</p>
-      <p class="body">A food pantry or food bank within that walk, with capacity to take same-day perishable food.</p>
+      <p class="body">A food pantry or food bank in the same borough, within that walk, with capacity to take same-day perishable food.</p>
     </div>
     <div class="card">
       <p class="kicker" data-icon="cpu">The logger</p>
@@ -140,18 +140,42 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <p class="body-p" style="margin:0 0 28px; max-width:60ch;">Tell us who you are on the sign-up form and we'll follow up with the playbook for your role — administrator, cafeteria staff, student, or partner organization.</p>
     <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="confirmed"></span>
-      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>In partnership with Green Garden NYC.</p>
+      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
     </div>
     <a href="index.html#join" class="btn solid" style="margin-top:20px;">Go to the sign-up form</a>
   </div>
 </section>
 
-<section aria-label="Partners" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding:20px 24px; display:flex; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-secondary);">
-    <span style="color:var(--text); font-weight:500;">In partnership with Green Garden NYC</span>
-    <span>Stuyvesant HS</span>
-    <span>IS 289</span>
-    <span>Millennium HS</span>
+<section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+    <p class="eyebrow">School sites</p>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets, and are labelled as such. Nothing on this list is a commitment by a school that has not made one.</p>
+    <div class="sites">
+      <div class="tier">
+        <p class="tier-label">Operating <span class="count">1</span></p>
+        <ul>
+          <li>Stuyvesant High School <span class="boro">Manhattan</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">In conversation <span class="count">2</span></p>
+        <ul>
+          <li>Midwood High School <span class="boro">Brooklyn</span></li>
+          <li>James Madison High School <span class="boro">Brooklyn</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">Target sites <span class="count">5</span></p>
+        <ul>
+          <li>Brooklyn Technical High School <span class="boro">Brooklyn</span></li>
+          <li>Rachel Carson High School <span class="boro">Brooklyn</span></li>
+          <li>Bronx High School of Science <span class="boro">Bronx</span></li>
+          <li>Townsend Harris High School <span class="boro">Queens</span></li>
+          <li>Queens High School for the Sciences at York College <span class="boro">Queens</span> <span class="tag">specialized</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="cite" style="font-size:13px; color:var(--text-secondary); margin:28px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Target sites are schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that it has.</p>
   </div>
 </section>
 
@@ -161,7 +185,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block — student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">8,000 lbs recovered · Track the Box</span>
+    <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
   <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
 </footer>
@@ -176,10 +200,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   var STEPS = [
     { num: "01", title: "Confirm your building has a share table", body: "Sealed items only, nothing served or opened — the same standard as every other Stock the Block box.", detail: "Walk your cafeteria's share table at the end of a lunch period and see what's actually left: unopened milk, sealed snack packs, whole fruit that never got picked up. If nothing's landing there in usable form, there's nothing yet to build a route around.", icon: "package" },
     { num: "02", title: "Read the health code memo", body: "Understand what your school can legally release, and the records it has to keep to release it, before you plan anything else.", detail: "The memo — the first document in the “run this yourself” section — is written for food service directors and school administrators. It's the one document that decides whether your building can run this at all; the agreement, the firmware, and the intake workflow all follow from it.", icon: "file-text" },
-    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-day delivery only works on foot. Look for a pantry close enough that a student team can walk the route and still make their bus. The partner agreement is short by design: one page, signed once, before the first box leaves the building.", icon: "handshake" },
-    { num: "04", title: "Get a temperature logger", body: "Most schools don't build this themselves — they coordinate with an existing fleet and route.", detail: "Stock the Block runs three logger units across all its routes, not one per box; the units rotate, and a run without one is validated against a thermal model built from logged runs on the same route. Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own.", icon: "cpu" },
+    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank in your borough, within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-afternoon delivery only works on foot, and only inside one borough — look for a pantry in your own borough, close enough that a student team can walk the route and still make their bus. Stock the Block runs as borough clusters for exactly this reason; there is no cross-borough transport. The partner agreement is short by design: one page, signed once, before the first box leaves the building.", icon: "handshake" },
+    { num: "04", title: "Get a temperature logger", body: "Most schools won't build this themselves — the intent is that they coordinate with a shared fleet and an existing route.", detail: "<span class=\"unverified\">The fleet is designed around a small shared set of logger units — on the order of three — rotating across routes rather than one per box, with runs that go out without a unit to be validated against a thermal model built from logged runs on the same route.</span> <span class=\"unverified\">That model does not exist yet; there are no logged runs to build it from.</span> Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own.", icon: "cpu" },
     { num: "05", title: "Recruit a small student team", body: "Two or three students who can commit to walking the route on a fixed day, every time it's scheduled.", detail: "Routes are walked in pairs and take under thirty minutes. The team doesn't need to be large — it needs to be reliable. One missed pickup teaches a partner site not to count on you.", icon: "users" },
-    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery.", icon: "clipboard-check" }
+    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery. <span class=\"unverified\">Track the Box, the public log, is planned and not yet published.</span>", icon: "clipboard-check" }
   ];
   /* ---------- icon set (shared — assets/site.js) ---------- */
   var iconSVG = STB.iconSVG;
