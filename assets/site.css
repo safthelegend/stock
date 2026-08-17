@@ -183,3 +183,165 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
 #heroBoxHint { position:absolute; left:50%; bottom:-6px; transform:translate(-50%,8px); margin:0; padding:5px 11px; border:1px solid var(--brand-line-mid); border-radius:999px; background:var(--surface); color:var(--text-secondary); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 320ms ease, transform 320ms ease; }
 #heroBoxHint.on { opacity:1; transform:translate(-50%,0); }
 #heroBoxHint.gone { opacity:0 !important; transform:translate(-50%,8px) !important; }
+
+/* ===========================================================================
+   PHASE 5 — quality of life
+   =========================================================================== */
+
+/* --- 10. Focus. Every interactive element, every theme. --------------------
+   The original rule listed five element types by name, which missed anything
+   made focusable with tabindex (the hero box), <summary>, and [role=button].
+   --brand is AA-contrasting against every surface in all three themes, so one
+   ring colour serves all of them. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+[role="button"]:focus-visible, [contenteditable]:focus-visible {
+  outline:2px solid var(--brand); outline-offset:2px; border-radius:3px;
+}
+/* Windows high-contrast mode paints its own ring but drops colour, so keep a
+   visible outline there rather than relying on the token. */
+@media (forced-colors: active) {
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [tabindex]:focus-visible { outline:2px solid Highlight; }
+}
+
+/* --- 8. Reading progress ------------------------------------------------- */
+#progressBar { position:fixed; top:0; left:0; height:2px; width:100%; z-index:60; transform-origin:0 50%; transform:scaleX(0); background:var(--brand); pointer-events:none; }
+nav.bar .links a[aria-current="true"] { color:var(--brand); box-shadow:inset 0 -2px 0 var(--brand); }
+
+/* --- 8. Heading anchors -------------------------------------------------- */
+.anchor-link { display:inline-flex; align-items:center; justify-content:center; width:1.6em; height:1.6em; margin-left:0.3em; padding:0; border:none; background:none; border-radius:6px; cursor:pointer; color:var(--text-secondary); opacity:0; transition:opacity 160ms ease, color 160ms ease; vertical-align:middle; }
+h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { opacity:1; }
+.anchor-link:hover { color:var(--brand); }
+.anchor-link[data-copied="1"] { opacity:1; color:var(--brand); }
+
+/* --- 1. Command palette -------------------------------------------------- */
+#paletteBackdrop { position:fixed; inset:0; z-index:190; background:rgba(0,0,0,0.42); opacity:0; pointer-events:none; transition:opacity 140ms ease; }
+#paletteBackdrop.on { opacity:1; pointer-events:auto; }
+#palette { position:fixed; z-index:191; top:12vh; left:50%; transform:translate(-50%,-8px); width:min(560px, calc(100vw - 32px)); background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; box-shadow:0 18px 50px var(--paper-shadow); opacity:0; pointer-events:none; transition:opacity 140ms ease, transform 140ms ease; overflow:hidden; }
+#palette.on { opacity:1; pointer-events:auto; transform:translate(-50%,0); }
+#paletteInput { width:100%; border:none; border-bottom:1px solid var(--line); background:none; color:var(--text); font-family:inherit; font-size:17px; padding:16px 18px; }
+#paletteInput:focus { outline:none; }
+#paletteList { list-style:none; margin:0; padding:6px; max-height:52vh; overflow-y:auto; }
+#paletteList li { margin:0; }
+#paletteList button { display:flex; align-items:baseline; gap:10px; width:100%; text-align:left; background:none; border:none; border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); font-family:inherit; font-size:15px; }
+#paletteList button .kind { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-secondary); flex:none; }
+#paletteList button mark { background:none; color:var(--brand); font-weight:600; }
+#paletteList li[aria-selected="true"] button { background:var(--tint); }
+#paletteList li[aria-selected="true"] button .kind { color:var(--brand); }
+#paletteEmpty { padding:18px; margin:0; color:var(--text-secondary); font-size:14px; }
+#paletteHint { display:flex; gap:14px; padding:9px 14px; border-top:1px solid var(--line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); }
+
+/* --- 2. Offline banner --------------------------------------------------- */
+#offlineBanner { position:fixed; left:0; right:0; bottom:0; z-index:70; display:none; padding:9px 16px; background:var(--brand); color:var(--on-brand); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; text-align:center; }
+#offlineBanner.on { display:block; }
+
+/* --- 7. Unit toggle ------------------------------------------------------ */
+#unitToggle { display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 10px; background:none; border:1px solid var(--line); border-radius:999px; cursor:pointer; color:var(--text); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:0.04em; transition:border-color 180ms ease, color 180ms ease; }
+#unitToggle:hover { border-color:var(--brand-line-mid); color:var(--brand); }
+#unitToggle[hidden] { display:none; }
+
+/* --- 4/6. Run packet + CSV ---------------------------------------------- */
+.packet-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:18px; }
+.packet-form label { display:grid; gap:6px; font-size:13px; color:var(--text-secondary); }
+.packet-form input, .packet-form textarea { border:1px solid var(--line); background:var(--bg); color:var(--text); font-family:inherit; font-size:14px; padding:10px 12px; border-radius:10px; }
+.packet-form .span-all { grid-column:1/-1; }
+.packet-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+.btn-sm { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; padding:9px 15px; border-radius:10px; border:1px solid var(--brand-line-mid); background:var(--surface); color:var(--brand); cursor:pointer; }
+.btn-sm:hover:not(:disabled) { border-color:var(--brand); }
+.btn-sm.solid { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+.btn-sm:disabled { opacity:0.5; cursor:not-allowed; }
+.packet-note { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:14px 0 0; max-width:62ch; }
+#runPacketOut { display:none; margin-top:26px; }
+#runPacketOut.on { display:block; }
+.packet-doc { border:1px solid var(--rule); border-radius:10px; padding:22px; background:var(--surface); margin-top:16px; }
+.packet-doc h3 { font-family:'Archivo',-apple-system,sans-serif; font-size:16px; margin:0 0 4px; color:var(--text); }
+.packet-doc .packet-sub { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); margin:0 0 16px; }
+.packet-doc table { width:100%; border-collapse:collapse; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; }
+.packet-doc th, .packet-doc td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line-soft); color:var(--text); }
+.packet-doc th { font-size:11px; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-secondary); }
+.packet-doc td.num { font-variant-numeric:tabular-nums; }
+.packet-doc .sign { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:22px; margin-top:24px; }
+.packet-doc .sign p { margin:0; font-size:12px; color:var(--text-secondary); border-top:1px solid var(--rule); padding-top:7px; }
+/* Program rule: operational paperwork carries no mascot. Every theme, screen
+   and print alike — a generated manifest or temperature log is a record, not
+   a brand surface. */
+.packet-doc .mascot-slot, .packet-doc [data-mascot] { display:none !important; }
+
+/* --- 9. Reduced motion, audited -----------------------------------------
+   Not just the scrub: every animation and transition declared anywhere in
+   this stylesheet, plus the inline ones the pages set on reveal elements.
+   Animations are cancelled rather than merely stopped so elements land on
+   their final frame instead of freezing mid-reveal. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:0.001ms !important;
+    animation-delay:0ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    transition-delay:0ms !important;
+    scroll-behavior:auto !important;
+  }
+  html { scroll-behavior:auto !important; }
+  .prow .pdetail, .cards-grid .card .doc-panel { transition:none !important; }
+  #progressBar { transition:none !important; }
+  #palette, #paletteBackdrop { transition:none !important; }
+  .anchor-link { transition:none !important; }
+}
+
+/* --- 3. Print. Black on white regardless of the active theme. ------------ */
+@media print {
+  /* Repoint the tokens rather than overriding hundreds of rules. Because
+     these are the same custom properties every rule already reads, the whole
+     page turns monochrome in one move — and it does so from dark and stock
+     just as thoroughly as from light. */
+  :root, :root[data-theme="light"], :root[data-theme="dark"], :root[data-theme="stock"] {
+    --bg:#FFFFFF; --surface:#FFFFFF; --tint:#FFFFFF; --text:#000000; --text-secondary:#333333;
+    --rule:#000000; --brand:#000000; --accent:#000000; --accent-text:#000000;
+    --on-brand:#FFFFFF; --brand-press:#000000;
+    --line:#000000; --line-soft:#BBBBBB;
+    --brand-line:#000000; --brand-line-soft:#BBBBBB; --brand-line-mid:#000000;
+    --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-interior:#FFFFFF;
+    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0;
+  }
+  html, body { background:#FFFFFF !important; color:#000000 !important; }
+  @page { margin:16mm; }
+
+  /* Chrome, decoration and every interactive control. */
+  nav.bar, .skip-link, #themeToggle, #themeStatus, #unitToggle, #progressBar,
+  #palette, #paletteBackdrop, #offlineBanner, .divider, #heroBoxWrap, #formWrap,
+  .paper-grain, #chips, .anchor-link, .doc-copy, .doc-download, .doc-toggle,
+  .video-thumb, .packet-form, .packet-actions, .mascot-slot, [data-mascot],
+  .empty-state .mascot-slot { display:none !important; }
+  * { animation:none !important; transition:none !important; box-shadow:none !important; }
+  #heropin { height:auto !important; }
+  #top, .thead { position:static !important; min-height:0 !important; }
+
+  /* Every collapsed template prints at full content. */
+  .prow .pdetail, .cards-grid .card .doc-panel { display:block !important; grid-template-rows:1fr !important; }
+  .prow .pdetail > div, .cards-grid .card .doc-panel > div { overflow:visible !important; height:auto !important; }
+  .prow.open .pdetail, .cards-grid .card .doc-panel { visibility:visible !important; }
+  .doc-text { max-height:none !important; overflow:visible !important; white-space:pre-wrap !important; border:1px solid #000 !important; font-size:10.5pt !important; }
+
+  /* Link targets, since a printed page cannot be clicked. */
+  a[href^="http"]::after, a[href^="mailto"]::after { content:" <" attr(href) ">"; font-weight:400; font-size:0.82em; word-break:break-all; }
+
+  section, .limits-grid > div, .sites .tier { break-inside:avoid; page-break-inside:avoid; }
+  h1, h2, h3 { break-after:avoid; page-break-after:avoid; }
+  /* The memo and the agreement have to stand alone, so each document card
+     starts a fresh page. They are too long to forbid internal breaks, so the
+     rule is "own page, may continue" rather than "never split". */
+  .cards-grid .card:has(.doc-text) { break-before:page; page-break-before:always; break-inside:auto; }
+  .packet-doc { break-inside:avoid; page-break-inside:avoid; border:1px solid #000 !important; }
+
+  /* Printing a generated run packet prints the packet, not the website. */
+  body.print-packet > *:not(#replicate) { display:none !important; }
+  body.print-packet #replicate > .wrap > *:not(#runPacketOut) { display:none !important; }
+  body.print-packet #replicate, body.print-packet #runPacketOut { display:block !important; background:#fff !important; border:none !important; padding:0 !important; }
+  body.print-packet .packet-doc:first-of-type { break-before:auto; page-break-before:auto; }
+}
+
+/* 10. The nav fades in on scroll, which meant a keyboard user could tab into
+   the theme and unit controls while they were still at opacity 0 — a focus
+   ring nobody can see. Reveal the bar whenever anything inside it has focus. */
+nav.bar:focus-within { opacity:1; pointer-events:auto; }

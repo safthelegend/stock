@@ -731,7 +731,286 @@ function initMascotSlots(root) {
     return { repaint: function () { box.render(progress, yaw); }, scrub: scrub };
   }
 
+  /* ======================================================================
+     1. COMMAND PALETTE  (Cmd/Ctrl+K)
+     ======================================================================
+     Fuzzy subsequence match over a hand-authored index. No library. Focus is
+     trapped while open and restored to whatever had it when it closes. */
+  function fuzzy(needle, hay) {
+    /* Subsequence scoring: every needle character must appear in order.
+       Consecutive hits and word-start hits score higher, so "hcm" ranks
+       "Health code memo" above an incidental h..c..m elsewhere. */
+    var n = needle.toLowerCase(), h = hay.toLowerCase();
+    if (!n) return { score: 0, hits: [] };
+    var hits = [], score = 0, hi = 0, streak = 0;
+    for (var ni = 0; ni < n.length; ni++) {
+      var found = -1;
+      for (; hi < h.length; hi++) if (h[hi] === n[ni]) { found = hi; break; }
+      if (found < 0) return null;
+      var wordStart = found === 0 || /[^a-z0-9]/.test(h[found - 1]);
+      streak = (hits.length && found === hits[hits.length - 1] + 1) ? streak + 1 : 0;
+      score += 1 + streak * 2 + (wordStart ? 3 : 0);
+      hits.push(found); hi = found + 1;
+    }
+    score -= hits[0] * 0.05;                 /* earlier matches win ties */
+    return { score: score, hits: hits };
+  }
+  function markUp(text, hits) {
+    var out = "", set = {}, i;
+    for (i = 0; i < hits.length; i++) set[hits[i]] = 1;
+    for (i = 0; i < text.length; i++) {
+      var c = text.charAt(i).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      out += set[i] ? "<mark>" + c + "</mark>" : c;
+    }
+    return out;
+  }
+
+  function initPalette(items) {
+    if (!items || !items.length) return null;
+    var backdrop = document.createElement("div"); backdrop.id = "paletteBackdrop";
+    var box = document.createElement("div");
+    box.id = "palette"; box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Search this site");
+    box.innerHTML =
+      '<input id="paletteInput" type="text" autocomplete="off" spellcheck="false" ' +
+        'placeholder="Jump to a section, template or page…" role="combobox" ' +
+        'aria-expanded="true" aria-controls="paletteList" aria-autocomplete="list">' +
+      '<ul id="paletteList" role="listbox" aria-label="Results"></ul>' +
+      '<p id="paletteEmpty" hidden>Nothing matches that.</p>' +
+      '<div id="paletteHint"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>';
+    document.body.appendChild(backdrop); document.body.appendChild(box);
+
+    var input = $("#paletteInput", box), list = $("#paletteList", box), empty = $("#paletteEmpty", box);
+    var shown = [], sel = 0, open = false, lastFocus = null;
+
+    function score(q) {
+      if (!q) return items.map(function (it) { return { it: it, hits: [] }; });
+      var out = [];
+      items.forEach(function (it) {
+        var best = null;
+        [it.label, it.kind + " " + it.label, it.keywords || ""].forEach(function (field, idx) {
+          var r = fuzzy(q, field);
+          if (r && (!best || r.score > best.score)) best = { score: r.score, hits: idx === 0 ? r.hits : [] };
+        });
+        if (best) out.push({ it: it, hits: best.hits, score: best.score });
+      });
+      out.sort(function (a, b) { return b.score - a.score; });
+      return out;
+    }
+
+    function draw() {
+      list.innerHTML = shown.map(function (r, i) {
+        return '<li role="option" id="pal-' + i + '" aria-selected="' + (i === sel) + '">' +
+          '<button type="button" tabindex="-1"><span class="kind">' + r.it.kind + '</span>' +
+          '<span>' + (r.hits.length ? markUp(r.it.label, r.hits) : r.it.label) + '</span></button></li>';
+      }).join("");
+      empty.hidden = shown.length > 0;
+      input.setAttribute("aria-activedescendant", shown.length ? "pal-" + sel : "");
+      var node = list.children[sel];
+      if (node && node.scrollIntoView) node.scrollIntoView({ block: "nearest" });
+    }
+    function refresh() { shown = score(input.value.trim()); sel = 0; draw(); }
+
+    function show() {
+      if (open) return;
+      open = true; lastFocus = document.activeElement;
+      backdrop.classList.add("on"); box.classList.add("on");
+      input.value = ""; refresh(); input.focus();
+    }
+    function hide() {
+      if (!open) return;
+      open = false;
+      backdrop.classList.remove("on"); box.classList.remove("on");
+      /* Focus goes back where it came from, not to the top of the page. */
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function go(r) {
+      if (!r) return;
+      hide();
+      if (r.it.href) location.href = r.it.href;
+      else if (r.it.run) r.it.run();
+    }
+
+    list.addEventListener("click", function (e) {
+      var li = e.target.closest("li"); if (!li) return;
+      go(shown[[].indexOf.call(list.children, li)]);
+    });
+    list.addEventListener("mousemove", function (e) {
+      var li = e.target.closest("li"); if (!li) return;
+      var i = [].indexOf.call(list.children, li);
+      if (i !== sel) { sel = i; draw(); }
+    });
+    input.addEventListener("input", refresh);
+    backdrop.addEventListener("click", hide);
+
+    box.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { e.preventDefault(); hide(); return; }
+      if (e.key === "ArrowDown") { e.preventDefault(); if (shown.length) { sel = (sel + 1) % shown.length; draw(); } return; }
+      if (e.key === "ArrowUp") { e.preventDefault(); if (shown.length) { sel = (sel - 1 + shown.length) % shown.length; draw(); } return; }
+      if (e.key === "Enter") { e.preventDefault(); go(shown[sel]); return; }
+      /* Focus trap: the dialog holds exactly one tabbable node, so Tab has
+         nowhere to go and must not escape to the page behind. */
+      if (e.key === "Tab") e.preventDefault();
+    });
+
+    addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) { e.preventDefault(); open ? hide() : show(); }
+    });
+    return { show: show, hide: hide };
+  }
+
+  /* ======================================================================
+     8. READING PROGRESS, CURRENT SECTION, HEADING ANCHORS
+     ====================================================================== */
+  function initProgress() {
+    var bar = document.createElement("div");
+    bar.id = "progressBar"; bar.setAttribute("aria-hidden", "true");
+    document.body.appendChild(bar);
+    var dirty = true;
+    addEventListener("scroll", function () { dirty = true; }, { passive: true });
+    addEventListener("resize", function () { dirty = true; }, { passive: true });
+    (function frame() {
+      requestAnimationFrame(frame);
+      if (!dirty) return;
+      dirty = false;
+      var max = document.documentElement.scrollHeight - innerHeight;
+      var p = max > 0 ? scrollY / max : 0;
+      bar.style.transform = "scaleX(" + (p < 0 ? 0 : p > 1 ? 1 : p).toFixed(4) + ")";
+    })();
+  }
+
+  function initSectionHighlight() {
+    var links = $$('nav.bar .links a[href*="#"]');
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var byId = {};
+    links.forEach(function (a) {
+      var id = a.getAttribute("href").split("#")[1];
+      var el = id && document.getElementById(id);
+      if (el) byId[id] = a;
+    });
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting ? en.intersectionRatio : 0; });
+      var best = null, bestV = 0;
+      Object.keys(visible).forEach(function (id) { if (visible[id] > bestV) { bestV = visible[id]; best = id; } });
+      links.forEach(function (a) { a.removeAttribute("aria-current"); });
+      if (best && byId[best]) byId[best].setAttribute("aria-current", "true");
+    }, { threshold: [0, 0.15, 0.4, 0.75], rootMargin: "-48px 0px -40% 0px" });
+    Object.keys(byId).forEach(function (id) { io.observe(document.getElementById(id)); });
+  }
+
+  /* Every h2 and h3 gets a stable id and a copy-link control that is
+     keyboard reachable and labelled for a screen reader. */
+  function initAnchors() {
+    var used = {};
+    $$("h2, h3").forEach(function (h) {
+      if (h.closest("#palette, .packet-doc")) return;
+      var id = h.id;
+      if (!id) {
+        id = (h.textContent || "").trim().toLowerCase()
+          .replace(/[’']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48);
+        if (!id) return;
+        while (used[id] || document.getElementById(id)) id = id.replace(/-\d+$/, "") + "-" + ((used[id] || 1) + 1);
+        h.id = id;
+      }
+      used[id] = 1;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "anchor-link";
+      var name = (h.textContent || "section").trim().replace(/\s+/g, " ").slice(0, 60);
+      b.setAttribute("aria-label", "Copy link to “" + name + "”");
+      b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>';
+      b.addEventListener("click", function () {
+        var url = location.origin + location.pathname + "#" + h.id;
+        var done = function () {
+          b.setAttribute("data-copied", "1");
+          b.setAttribute("aria-label", "Link copied");
+          setTimeout(function () {
+            b.removeAttribute("data-copied");
+            b.setAttribute("aria-label", "Copy link to “" + name + "”");
+          }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, done);
+        else { location.hash = h.id; done(); }
+      });
+      h.appendChild(b);
+    });
+  }
+
+  /* ======================================================================
+     7. UNIT TOGGLE — lbs/kg and degF/degC, one control, site-wide
+     ======================================================================
+     Every convertible number keeps its raw value in a data attribute and the
+     text is re-rendered from that on each switch, so flipping back and forth
+     any number of times cannot compound a rounding error. */
+  var UNIT_KEY = "stb-units";
+  function unitMode() {
+    try { return localStorage.getItem(UNIT_KEY) === "metric" ? "metric" : "imperial"; } catch (e) { return "imperial"; }
+  }
+  function renderUnits(root) {
+    var metric = unitMode() === "metric";
+    $$("[data-lbs]", root).forEach(function (el) {
+      var raw = parseFloat(el.getAttribute("data-lbs"));
+      if (isNaN(raw)) return;
+      el.textContent = metric ? (raw * 0.45359237).toFixed(1) + " kg" : raw.toLocaleString("en-US") + " lbs";
+    });
+    $$("[data-degf]", root).forEach(function (el) {
+      var raw = parseFloat(el.getAttribute("data-degf"));
+      if (isNaN(raw)) return;
+      el.textContent = metric ? ((raw - 32) * 5 / 9).toFixed(1) + "°C" : raw + "°F";
+    });
+  }
+  function initUnits() {
+    var btn = $("#unitToggle");
+    if (!btn) return;
+    /* The control is site-wide, but a page with nothing convertible on it
+       gets no control rather than a dead one. */
+    if (!$("[data-lbs]") && !$("[data-degf]")) { btn.hidden = true; return; }
+    var live = $("#unitStatus");
+    function reflect() {
+      var metric = unitMode() === "metric";
+      btn.textContent = metric ? "kg · °C" : "lbs · °F";
+      btn.setAttribute("aria-label", "Units: " + (metric ? "kilograms and Celsius" : "pounds and Fahrenheit") +
+        ". Switch to " + (metric ? "pounds and Fahrenheit" : "kilograms and Celsius") + ".");
+    }
+    btn.addEventListener("click", function () {
+      var next = unitMode() === "metric" ? "imperial" : "metric";
+      try { localStorage.setItem(UNIT_KEY, next); } catch (e) {}
+      reflect(); renderUnits();
+      if (live) live.textContent = next === "metric" ? "Kilograms and Celsius" : "Pounds and Fahrenheit";
+    });
+    reflect(); renderUnits();
+  }
+
+  /* ======================================================================
+     2. SERVICE WORKER + OFFLINE BANNER
+     ====================================================================== */
+  function initOffline() {
+    var banner = document.createElement("div");
+    banner.id = "offlineBanner"; banner.setAttribute("role", "status"); banner.setAttribute("aria-live", "polite");
+    banner.textContent = "Offline — showing cached version";
+    document.body.appendChild(banner);
+    function sync() { banner.classList.toggle("on", navigator.onLine === false); }
+    addEventListener("online", sync); addEventListener("offline", sync);
+    sync();
+
+    /* Registered on https only. A service worker is not available over
+       plain http anyway (localhost aside), and silently failing is worse
+       than not trying. */
+    if (!("serviceWorker" in navigator)) return;
+    if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") return;
+    /* Registered from the site root, not assets/, because a worker can only
+       claim a scope at or below its own directory and Pages cannot send
+       Service-Worker-Allowed. sw.js is a one-line shim that importScripts()
+       the real logic in assets/sw.js. Path stays relative so this works under
+       /stock/ without a root-absolute path. */
+    navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function () {});
+  }
+
   global.STB = {
+    initPalette: initPalette, initProgress: initProgress,
+    initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
+    initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,
+    initOffline: initOffline,
     SCRUB_LENGTH_VH: SCRUB_LENGTH_VH, initScrollScrub: initScrollScrub,
     createMascotBox: createMascotBox, initHeroBox: initHeroBox,
     $: $, $$: $$,
