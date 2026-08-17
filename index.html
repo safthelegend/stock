@@ -14,97 +14,24 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 260'><rect x='26' y='26' width='248' height='188' rx='28' fill='%23EAF2DE' stroke='%232E5A22' stroke-width='24'/><path d='M32 93 L268 93' stroke='%232E5A22' stroke-width='24'/><path d='M68 168 L100 130 L132 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M178 168 L210 130 L242 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M106 188 Q151 220 196 188' fill='none' stroke='%23E8871E' stroke-width='26' stroke-linecap='round'/></svg>">
 <script>
-try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  :root {
-    --bg:#F5F5F7; --surface:#FFFFFF; --tint:#EAF2DE; --text:#1D1D1F; --text-secondary:#86868B;
-    --rule:#DDDDDD; --brand:#2E5A22; --accent:#E8871E; --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22;
-    --on-brand:#FFFFFF; --brand-press:#234618;
-    --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
-    --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
-    --nav-bg:rgba(245,245,247,0.72);
-    --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
-    --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-      --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-      --on-brand:#14170F; --brand-press:#A5D186;
-      --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-      --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-      --nav-bg:rgba(20,23,15,0.72);
-      --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-      --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-    --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-    --on-brand:#14170F; --brand-press:#A5D186;
-    --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-    --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-    --nav-bg:rgba(20,23,15,0.72);
-    --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-  }
-  @media (prefers-contrast: more) {
-    :root {
-      --rule:#55565A; --line:rgba(29,29,31,0.55); --line-soft:rgba(29,29,31,0.32);
-      --text-secondary:#4A4A4F; --tint:#FFFFFF;
-      --brand-line:rgba(46,90,34,0.75); --brand-line-soft:rgba(46,90,34,0.42); --brand-line-mid:rgba(46,90,34,0.85);
-      --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
-    }
-    :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
-  }
-  * { box-sizing: border-box; }
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
-  html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
-  a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
-  a:hover { color:var(--accent); }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
   canvas:focus-visible { outline:2px solid var(--brand); outline-offset:4px; }
-  ::selection { background:var(--tint); color:var(--brand); }
-  .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
-  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
-  .body-p { font-size:20px; line-height:1.65; max-width:60ch; color:var(--text); text-wrap:pretty; }
-  .skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
-  .skip-link:focus { transform:translateY(0); color:var(--on-brand); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
   @keyframes rowUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes riseIn { from{transform:translateY(110%)} to{transform:translateY(0)} }
-  @keyframes blinkL { 0%,95.5%,100%{transform:scaleY(1)} 97%{transform:scaleY(0.1)} 98.5%{transform:scaleY(1)} }
-  @keyframes blinkR { 0%,96%,100%{transform:scaleY(1)} 97.5%{transform:scaleY(0.1)} 99%{transform:scaleY(1)} }
-  @keyframes lidBreathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
-  @keyframes squashIn { from{transform:scale(0.94,1.06)} to{transform:scale(1,1)} }
-  nav.bar { position:fixed; top:0; left:0; right:0; z-index:50; height:48px; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); opacity:0; pointer-events:none; transition:opacity 200ms ease; }
-  nav.bar.on { opacity:1; pointer-events:auto; }
-  nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-  nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
-  nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
-  nav.bar .links a { color:var(--text); }
-  nav.bar .links a.cta { color:var(--brand); font-weight:600; }
-  #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
   .hero-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(240px,0.95fr); gap:48px; align-items:center; padding-top:88px; padding-bottom:72px; }
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
-  .eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
-  h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
-  h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
-  .mask-l { display:block; overflow:hidden; }
-  .mask-l > span { display:block; }
   .figure { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
-  .btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
-  .btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
-  .btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
-  .btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
-  .btn.line:hover { border-color:var(--brand); color:var(--brand); }
   .statband { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); }
   .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
   .statband .cell { padding:32px 24px 24px 0; }
@@ -113,17 +40,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .statband .fig { font-size:clamp(30px,3vw,40px); letter-spacing:-0.03em; margin:0; color:var(--text); }
   .statband .cap { font-size:14px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
   .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; border-top:1px solid var(--line-soft); }
-  .prow { border-bottom:1px solid var(--line); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
-  .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
-  .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
-  .step-icon { flex:none; color:var(--brand); }
   .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
-  .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
-  .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .prow.open .pdetail { grid-template-rows:1fr; }
-  .prow .pdetail > div { overflow:hidden; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
   .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
   .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
@@ -164,7 +83,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .collage-copy { font-size:18px; line-height:1.6; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
   .src-link { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
-  .src-link:hover { color:var(--accent); text-decoration:underline; }
+  .src-link:hover { color:var(--accent-text); text-decoration:underline; }
   .scale-bar-track { position:relative; height:14px; border-radius:7px; background:var(--line-soft); overflow:hidden; margin:16px 0 8px; max-width:520px; }
   .scale-bar-fill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--brand); border-radius:7px; transition:width 900ms cubic-bezier(0.4,0.14,0.3,1); }
   .scale-bar-mark { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); left:64%; }
@@ -174,7 +93,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .sources-list { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
   .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
   .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
-  .sources-list a:hover { color:var(--accent); }
+  .sources-list a:hover { color:var(--accent-text); }
   .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
   .limits-grid .lbl { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
   .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
@@ -182,10 +101,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .cards-grid .card, .done-card { border-radius:14px; box-shadow:0 3px 14px var(--paper-shadow); }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
   .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
-  .cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
   .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
-  .cards-grid .card .doc-toggle:hover { color:var(--accent); }
+  .cards-grid .card .doc-toggle:hover { color:var(--accent-text); }
   .cards-grid .card .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
   .cards-grid .card.doc-open .doc-panel { grid-template-rows:1fr; }
   .cards-grid .card .doc-panel > div { overflow:hidden; }
@@ -193,17 +111,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:420px; overflow-y:auto; margin:0 0 10px; }
   .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
   .cards-grid .card .doc-copy:hover, .cards-grid .card .doc-download:hover { border-color:var(--brand); color:var(--brand); }
-  form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
-  form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
-  form.join .span2 { grid-column:span 2; }
-  form.join textarea { resize:none; }
-  form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
-  form.join button:hover { background:var(--brand-press); }
   .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
-  footer { background:var(--bg); border-top:1px solid var(--line); }
-  footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
-  footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
   @media (max-width:760px) {
     .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
     .hero-grid > .visual { order:-1; max-width:240px; margin:0 auto; }
@@ -214,7 +122,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
-    nav.bar, .skip-link, .divider, #fridgeWrap, #hero3d, #formWrap, .paper-grain { display:none !important; }
+    nav.bar, .skip-link, .divider, #heroBoxWrap, #formWrap, .paper-grain { display:none !important; }
     #heropin { height:auto !important; }
     #top, .thead { position:static !important; min-height:0 !important; }
     * { animation:none !important; transition:none !important; box-shadow:none !important; }
@@ -229,39 +137,44 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <nav class="bar" id="nav">
   <div class="wrap">
-    <a href="#top" class="brand">
+    <a href="index.html#top" class="brand" aria-current="page">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
       Stock the Block
     </a>
     <div class="links">
-      <a href="#tracker">Tracker</a>
-      <a href="#how">How it works</a>
-      <a href="#story">Story</a>
+      <a href="index.html#tracker">Tracker</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#story">Story</a>
       <a href="getting-started.html">Getting started</a>
-      <a href="#join" class="cta">Partner with us</a>
-      <button id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
-        <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <a href="index.html#join" class="cta">Partner with us</a>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
       </button>
+      <button id="unitToggle" type="button" aria-label="Units">lbs · °F</button>
     </div>
   </div>
 </nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+<p id="unitStatus" class="vh" role="status" aria-live="polite"></p>
 
 <div id="heropin">
 <header id="top" class="wrap hero-grid">
   <div>
-    <p class="eyebrow" data-reveal>Live manifest</p>
-    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 120ms both;">
-      <p class="figure" id="heroFig" style="font-size:clamp(56px,9vw,96px); line-height:1; margin:0; color:var(--brand);"><span class="lbs-live" id="heroNum">8,000</span><span style="font-size:0.38em; font-weight:600; letter-spacing:-0.02em; margin-left:10px;">lbs</span></p>
-      <div id="glyphs" style="display:flex; gap:6px; margin-top:14px;" aria-hidden="true"></div>
-      <p style="font-size:14px; color:var(--text-secondary); margin:10px 0 0; line-height:1.6;">of food recovered — every pound logged and public · one box per 500 lbs</p>
-    </div>
-    <h1 style="font-size:clamp(30px,4.1vw,39px); margin:32px 0 0; color:var(--text);">
-      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 260ms both;">Students move surplus cafeteria food from share tables to food banks.</span></span>
-      <span class="mask-l"><span style="animation:riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 380ms both;">The tracker proves it.</span></span>
+    <p class="eyebrow" data-reveal>Student-run food recovery · NYC</p>
+    <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
+      Students move surplus cafeteria food from share tables to food banks.
+      <em>The tracker will prove it.</em>
     </h1>
-    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 420ms both;">
-      <p class="body-p" style="margin:16px 0 0;">Stock the Block is a student-run food recovery operation across NYC schools, in partnership with Green Garden NYC. Insulated boxes, fixed routes, and a delivery log anyone can audit.</p>
+    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
+      <p class="body-p" style="margin:20px 0 0;">Stock the Block is a student-run food recovery system for NYC schools: insulated boxes, short local routes to a receiving site in the same borough, and a delivery log anyone can audit.</p>
+      <div class="prelaunch">
+        <p class="prelaunch-tag">Pre-launch</p>
+        <p class="prelaunch-line" id="heroFig">The log opens with the first delivery.</p>
+        <p class="prelaunch-sub">The system is built. The record starts when the first box moves — and every pound after that is logged and public.</p>
+      </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
         <a href="#tracker" class="btn line">See the log</a>
@@ -269,8 +182,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     </div>
   </div>
   <div class="visual" style="display:flex; justify-content:center; align-items:center;">
-    <div id="hero3d" style="width:100%; max-width:420px; display:none;"></div>
-    <div id="mascotHero" class="mascot-slot" style="width:100%; max-width:420px; display:block;" data-state="idle" data-blink data-informative data-label="Stock the Block mascot — a smiling insulated box"></div>
+    <div id="heroBoxWrap">
+      <canvas id="heroBox" width="420" height="420" role="img"
+              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
+      <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
+    </div>
   </div>
 </header>
 </div>
@@ -333,44 +249,31 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
           </div>
         </div>
       </div>
-      <div class="collage-piece" style="width:100%; max-width:100%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-a);"></rect></svg>
-        <div style="position:relative; padding:44px 48px;">
-          <p class="collage-fig" style="font-size:clamp(40px,6.4vw,64px);">$<span id="collageBillion">186</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="src-link" href="#src-8">8</a></sup></p>
-          <p class="collage-copy">Federal SNAP cut over ten years, One Big Beautiful Bill Act, signed July 4, 2025.</p>
-        </div>
-      </div>
       <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
         <div style="position:relative; padding:34px 38px;">
-          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-9">9</a></sup></p>
+          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
           <p class="collage-copy">People off SNAP nationally between enactment and April 2026 — about 11 percent.</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
         <div style="position:relative; padding:28px 32px;">
-          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
+          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
           <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
         </div>
       </div>
       <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
         <div style="position:relative; padding:24px 28px;">
-          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-11">11</a></sup></p>
+          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
           <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
-        </div>
-      </div>
-      <div class="collage-piece" style="width:190px; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:6px; top:6px; width:calc(100% - 12px); height:calc(100% - 12px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--brand); filter:url(#torn-e);"></rect></svg>
-        <div style="position:relative; padding:14px 18px;">
-          <p style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:16px; margin:0; color:var(--on-brand); font-variant-numeric:tabular-nums;"><span class="lbs-live">8,000</span> lbs recovered</p>
         </div>
       </div>
     </div>
     <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
   </div>
-  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">SNAP runs to roughly $298 per person per month in NYC <span style="color:var(--accent);">[CITATION NEEDED]</span>. Stock the Block has recovered <span class="lbs-live">8,000</span> lbs. Those are not the same unit and not the same order of magnitude. Recovered food is meals a pantry can hand out this week; it is not income, and it does not replace a benefits program.</p>
+  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">A benefit cut is measured in dollars of monthly income. Recovered food is measured in pounds handed across a pantry table. Those are not the same unit and not the same order of magnitude. Recovered food is meals a pantry can hand out this week; it is not income, and it does not replace a benefits program.</p>
 </section>
 
 <section class="statband" id="statband">
@@ -385,52 +288,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
         <p class="cap">of school buildings donate surplus food</p>
       </div>
       <div class="cell" data-stat>
-        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(34px,3.6vw,46px);">8,000 lbs</p>
-        <p class="cap">recovered by Stock the Block, verified on Track the Box</p>
+        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">No deliveries yet</p>
+        <p class="cap">Stock the Block is pre-launch. The first logged delivery starts the record.</p>
       </div>
     </div>
-    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: Track the Box, updated live.</p>
+    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet — the public log opens with the first delivery.</p>
   </div>
 </section>
 
 <section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
   <p class="eyebrow" data-reveal>Standard operating procedure</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four steps, same every day,</span></span>
+    <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
     <span class="mask-l"><span data-line>all on the record.</span></span>
   </h2>
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
-
-<div id="fridgeWrap">
-<section id="fridgeSticky" aria-label="A delivery in motion: from the cafeteria fridge, into the box, to the food bank" class="wrap" style="padding-bottom:72px;">
-  <div id="fridge3d" style="width:100%; display:none; position:relative;">
-    <div id="fridgeLabels" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
-      <span id="flabelA" style="position:absolute; left:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary);">cafeteria fridge</span>
-      <span id="flabelB" style="position:absolute; right:5%; bottom:6%; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); opacity:0;">food bank</span>
-    </div>
-  </div>
-  <svg id="fridgeFallback" viewBox="0 0 1052 300" role="img" aria-label="From the cafeteria fridge, the box travels to the food bank and arrives confirmed" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-    <rect x="44" y="36" width="150" height="204" rx="6" style="fill:var(--surface); stroke:var(--mascot-stroke);" stroke-width="3"></rect>
-    <path d="M150 36 L150 240" style="stroke:var(--mascot-stroke);" stroke-width="2"></path>
-    <rect x="158" y="100" width="6" height="52" rx="3" style="fill:var(--mascot-stroke);"></rect>
-    <path d="M44 105 L150 105 M44 172 L150 172" style="stroke:var(--brand-line-mid);" stroke-width="2"></path>
-    <rect x="60" y="88" width="34" height="16" style="fill:var(--tint); stroke:var(--mascot-stroke);" stroke-width="2"></rect>
-    <rect x="102" y="156" width="34" height="16" style="fill:var(--accent);"></rect>
-    <text x="44" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">cafeteria fridge</text>
-    <path d="M210 160 C 400 80, 620 220, 880 156" fill="none" stroke-dasharray="2 9" stroke-linecap="round" style="stroke:var(--brand);" stroke-width="2.5"></path>
-    <g transform="translate(930, 152)">
-      <rect x="-40" y="-32" width="80" height="64" rx="9" style="fill:var(--mascot-fill); stroke:var(--mascot-stroke);" stroke-width="4"></rect>
-      <path d="M-38 -12 L38 -12" style="stroke:var(--mascot-stroke);" stroke-width="4"></path>
-      <path d="M-26 12 L-17 2 L-8 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M8 12 L17 2 L26 12" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="M-12 18 Q0 32 12 18 Q0 24 -12 18 Z" style="fill:var(--accent);"></path>
-    </g>
-    <circle cx="1010" cy="176" r="9" fill="none" style="stroke:var(--brand);" stroke-width="3"></circle>
-    <text x="912" y="276" font-family="DM Mono, monospace" font-size="13" style="fill:var(--text-secondary);">food bank</text>
-  </svg>
-</section>
-</div>
 
 <section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>The instruments</p>
@@ -438,13 +311,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
-  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off.<sup><a class="src-link" href="#src-12">12</a></sup> That record is the reason the box carries an instrument at all.</p>
-  <p class="body-p" data-reveal style="margin:16px 0 0;">There are three logger units in the fleet, not one per box. They rotate across routes. A run without a unit is validated against a thermal model built from the logged runs on the same route <span style="color:var(--accent);">[CITATION NEEDED — model and validation method]</span>; when the model carries the record rather than a sensor, the manifest line says so. There is no location sensor, and the log makes no claim about where a box was.</p>
+  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The releasing school needs a record showing the load stayed out of the danger zone from pack-out to hand-off.<sup><a class="src-link" href="#src-11">11</a></sup> That record is the reason the box carries an instrument at all.</p>
+  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around a small number of shared logger units — on the order of three — rotating across routes rather than one permanently assigned to every box.</span> <span class="unverified">Where a run goes out without a unit, the intended fallback is to validate it against a thermal model built from logged runs on the same route; that model does not exist yet, because there are no logged runs to build it from.</span> Until it does, a run without a unit has no temperature record, and the manifest line will say exactly that rather than imply one. There is no location sensor, and the log makes no claim about where a box was.</p>
   <div class="sensor-row cold-panel" style="margin-top:40px;">
     <div>
       <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
       <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:500; font-size:13px; margin:12px 0 0; color:var(--brand);">in range</p>
-      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · sample data · safe ≤ 41°F</p>
+      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
       <div id="coldRows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);"></div>
     </div>
     <div>
@@ -476,7 +349,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
           <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
         </g>
       </svg>
-      <p class="mono" style="font-weight:400; font-size:12px; color:var(--text-secondary); margin:14px 0 0;">reading interval <span style="color:var(--accent);">[XX s]</span> · unit cost <span style="color:var(--accent);">[$XX]</span></p>
     </div>
   </div>
 </section>
@@ -494,29 +366,45 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <span class="mask-l"><span data-line>The delivery log</span></span>
       <span class="mask-l"><span data-line>is the whole pitch.</span></span>
     </h2>
-    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A live public record of every box that moved — sort it, filter it, add it up yourself.</p>
+    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — sortable, filterable, and addable-up by anyone who wants to check it. It is empty right now, and it will stay empty until a box actually moves.</p>
     <div data-reveal style="margin-top:32px; max-width:700px;">
-      <svg viewBox="0 0 700 220" role="img" aria-label="Stylized route map: Stuyvesant HS, IS 289, and Millennium HS each connect to Green Garden NYC" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-        <g fill="none" stroke-dasharray="2 8" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2">
-          <path d="M96 40 C 320 40, 420 100, 560 108"></path>
-          <path d="M96 110 C 320 110, 420 110, 560 112"></path>
-          <path d="M96 180 C 320 180, 420 120, 560 116"></path>
+      <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan is operating; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
+          <text x="8" y="16">borough cluster</text>
+          <text x="410" y="16">receiving site in that borough</text>
         </g>
-        <g>
-          <circle cx="88" cy="40" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
-          <circle cx="88" cy="110" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
-          <circle cx="88" cy="180" r="7" fill="none" style="stroke:var(--brand);" stroke-width="2.5"></circle>
+        <g fill="none" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="2 8">
+          <path d="M170 56 L392 56"></path>
+          <path d="M170 110 L392 110"></path>
+          <path d="M170 164 L392 164"></path>
+          <path d="M170 218 L392 218"></path>
         </g>
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
-          <text x="72" y="24" text-anchor="middle">Stuyvesant HS</text>
-          <text x="72" y="102" text-anchor="middle">IS 289</text>
-          <text x="72" y="204" text-anchor="middle">Millennium HS</text>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13">
+          <g style="fill:var(--brand);" font-weight="500">
+            <text x="8" y="60">Manhattan</text>
+            <text x="8" y="114">Brooklyn</text>
+            <text x="8" y="168">Bronx</text>
+            <text x="8" y="222">Queens</text>
+          </g>
+          <g style="fill:var(--text-secondary);">
+            <text x="410" y="60">receiving site — operating</text>
+            <text x="410" y="114">to be identified</text>
+            <text x="410" y="168">to be identified</text>
+            <text x="410" y="222">to be identified</text>
+          </g>
         </g>
-        <g transform="translate(578, 112)">
-          <path d="M0 -20c-11 0-20 9-20 20 0 15 20 34 20 34s20-19 20-34c0-11-9-20-20-20Z" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></path>
-          <circle cx="0" cy="0" r="6" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle>
+        <g fill="none" stroke-width="2.5">
+          <circle cx="150" cy="52" r="7" style="stroke:var(--brand);"></circle>
+          <circle cx="150" cy="106" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="160" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="214" r="7" style="stroke:var(--brand-line-mid);"></circle>
         </g>
-        <text x="578" y="176" font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" font-weight="500" text-anchor="middle" style="fill:var(--brand);">Green Garden NYC</text>
+        <g transform="translate(400, 52)"><circle cx="0" cy="0" r="7" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle></g>
+        <g fill="none" stroke-width="2.5" stroke-dasharray="3 5" style="stroke:var(--brand-line-mid);">
+          <circle cx="400" cy="106" r="7"></circle>
+          <circle cx="400" cy="160" r="7"></circle>
+          <circle cx="400" cy="214" r="7"></circle>
+        </g>
       </svg>
     </div>
     <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
@@ -524,13 +412,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <div class="mhead">
         <span class="left">
           <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST — <span id="filterLabel">RECENT</span></span>
-          <a class="verify" href="https://trackthebox.nyc" target="_blank" rel="noopener">verify on Track the Box ↗</a>
+          <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
         </span>
         <span class="right">
-          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal">392</span> lbs shown</span>
-          <span style="color:var(--text-secondary);">sample data</span>
-          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">en route</span>
-          <span id="mascotMood" class="mascot-slot" data-state="idle"></span>
+          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
+          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">pre-launch</span>
+          <span id="mascotMood" class="mascot-slot" data-state="empty"></span>
         </span>
       </div>
       <div class="thead" id="thead">
@@ -542,10 +429,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       </div>
       <div id="mempty" class="empty-state" style="display:none;">
         <div class="mascot-slot" data-state="empty"></div>
-        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">no deliveries logged</p>
-        <p style="font-weight:400; font-size:12px; color:var(--text-secondary);">clear the filter to see the full record</p>
+        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The log opens with the first delivery.</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery will be recorded under. Nothing has moved yet, so there is nothing here to show.</p>
       </div>
       <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
+      <p class="manifest-foot"><span class="unverified">Track the Box — the planned public log this feeds — is not published yet.</span></p>
     </div>
   </div>
 </section>
@@ -554,12 +442,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
   <p class="eyebrow" data-reveal>Why we exist</p>
   <div class="two-grid">
     <h2 class="hd" data-mask>
-      <span class="mask-l"><span data-line>Run by the students who watched</span></span>
+      <span class="mask-l"><span data-line>Built by the students who watched</span></span>
       <span class="mask-l"><span data-line>the share table get thrown out.</span></span>
     </h2>
     <div>
-      <p class="body-p" data-reveal style="margin:0;">We started Stock the Block because the food on our share tables was sealed, safe, and three blocks from people who needed it. Students run the routes, keep the logs, and built the tracker.</p>
-      <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table, we can run this in your school too.</p>
+      <p class="body-p" data-reveal style="margin:0;">We started Stock the Block because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the logger and the tracker; students will walk the routes and keep the logs. That is the commitment, and the log is where we expect to be held to it.</p>
+      <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table and a receiving site within walking distance, this can run in your school too.</p>
     </div>
   </div>
 </section>
@@ -574,11 +462,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <div class="limits-grid">
       <div data-reveal>
         <p class="lbl">the mechanism</p>
-        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. We move sealed, unserved items off share tables and into a partner food bank the same afternoon. That is the whole operation.</p>
+        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items off a share table and into a receiving site in the same borough — a short local route, walked the same afternoon. Same-afternoon delivery is what a borough cluster buys you; it is not a claim about crossing the city. That is the whole operation.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what it measurably changes</p>
-        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when someone asks what happened to the surplus.</p>
+        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when someone asks what happened to the surplus. None of that is measurable yet — there is nothing in the log to measure.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what it does not touch</p>
@@ -586,11 +474,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       </div>
       <div data-reveal>
         <p class="lbl">what would have to be true</p>
-        <p class="body">Many more buildings than the three we run in. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Receiving sites with the capacity to take same-day perishable food.</p>
+        <p class="body">Many more buildings than the one we run in. A receiving site identified and signed in every borough we claim a cluster in — three of the four have none yet. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Receiving sites with the capacity to take same-day perishable food.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what would show it is not working</p>
-        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. We publish the log partly so this is checkable by someone other than us.</p>
+        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and quietly stays on the map anyway. We publish the log partly so this is checkable by someone other than us.</p>
       </div>
     </div>
   </div>
@@ -640,10 +528,17 @@ from a steam-table item that sat out during lunch service.
 WHY A TEMPERATURE RECORD IS WHAT LETS YOU RELEASE IT
 A school cannot show a box of surplus was safe by asserting it — it has
 to show it. A written record of the load's temperature from pack-out to
-hand-off (or, when a logger unit wasn't available for that run, a
-documented model of the same route's typical time-and-temperature
-profile) is the artifact a health department or a skeptical parent can
+hand-off is the artifact a health department or a skeptical parent can
 actually check. No record, no defensible release.
+
+PLANNED, NOT YET IN PLACE: the intended fallback for a run that goes out
+without a logger unit is a documented model of that route's typical
+time-and-temperature profile, built from previous logged runs on the
+same route. No such model exists yet, and it cannot exist until a route
+has accumulated logged runs to build it from. Until then, treat a run
+without a logger unit as having no temperature record at all, and do not
+release against a model that has not been built and validated with your
+health department.
 
 [Insert your local health department's specific guidance on TCS food
 donation and record-keeping — verify with your health department before
@@ -663,8 +558,9 @@ BEFORE YOU RELEASE A BOX
   1. Confirm every item is sealed and unopened — nothing served, nothing
      plated, nothing that touched an open steam table.
   2. Confirm the box has a temperature record covering pack-out to
-     hand-off (sensor log, or a documented route model per the note
-     above).
+     hand-off, from a logger unit. (The route-model fallback described
+     above is planned and not yet available — until it is built, a run
+     without a logger unit has no temperature record.)
   3. Confirm the record is attached to a box ID that appears on the
      delivery manifest.
   4. Keep the record after the delivery — it's what you'd show if
@@ -682,7 +578,7 @@ department — do not treat it as a substitute for their guidance.</pre>
         <p class="kicker" data-icon="ruler">Box spec</p>
         <p class="body">Cut sheet, materials list and fold order for one insulated transport box.</p>
         <p class="meta">Whoever builds the first three boxes.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMg4oCUIGxpZCBmbGFwLCBmYWNlIHBhbmVsLApiYXNlLCBoYW5kbGUgY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUg4oCUIHZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKiDigJQgZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqIOKAlCB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKiDigJQgdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKiDigJQgYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqIOKAlCBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKiog4oCUIHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWMg4oCUIGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0g4oCUIGFwcHJveC4gY29zdCBbJFhYXSB8CnwgUmVmbGVjdGl2ZSBsaW5lciBvciBmb2lsIHRhcGUgICAgICB8IEludGVyaW9yIGZhY2UsIGFsbCBwYW5lbHMgICAgICAgICAgICAgICAgIHwKfCBTZWFtIHRhcGUgICAgICAgICAgICAgICAgICAgICAgICAgIHwgRm9sZCBsaW5lcyBhbmQgam9pbnRzICAgICAgICAgICAgICAgICAgICAgfAp8IENsb3N1cmUgKGhvb2stYW5kLWxvb3Agb3IgbGF0Y2gpICAgfCBLZWVwcyB0aGUgbGlkIGZsYXAgc2h1dCBpbiB0cmFuc2l0ICAgICAgICB8CnwgSGFuZGxlIGVkZ2UgcmVpbmZvcmNlbWVudCAgICAgICAgICB8IFRocm91Z2ggdGhlIGhhbmRsZSBjdXQgICAgICAgICAgICAgICAgICAgIHwKCkVzdGltYXRlZCBtYXRlcmlhbHMgY29zdCBwZXIgYm94OiBbJFhYXSDigJQgY29uZmlybSBjdXJyZW50IHByaWNpbmcKYmVmb3JlIG9yZGVyaW5nIGZvciBhIGJhdGNoLgoKIyMgQXNzZW1ibHksIGluIGdlbmVyYWwgdGVybXMKCjEuIEN1dCB0aGUgc2hlZXQgdG8gdGhlIHBhbmVsIGxheW91dCBzaG93biBpbiB0aGUgZGlhZ3JhbSBvbiB0aGUgc2l0ZS4KMi4gQ3V0IHRoZSBoYW5kbGUgb3BlbmluZyBpbnRvIHRoZSBmYWNlIHBhbmVsOyBjdXQgdGhlIHNlbnNvciBwb2NrZXQKICAgaW50byB0aGUgYmFjayBwYW5lbC4KMy4gRm9sZCB0aGUgZmFjZSBwYW5lbCwgYmFjayBwYW5lbCwgYW5kIHJlbWFpbmluZyBzaWRlIHBhbmVscyB1cCBmcm9tCiAgIHRoZSBiYXNlIHRvIGZvcm0gdGhlIGJveCdzIHdhbGxzLgo0LiBTZWFtIHRoZSB2ZXJ0aWNhbCBlZGdlcyB3aGVyZSBhZGpvaW5pbmcgcGFuZWxzIG1lZXQuCjUuIEZvbGQgdGhlIGxpZCBmbGFwIGRvd24gdG8gY2xvc2UgdGhlIG9wZW4gdG9wLgo2LiBMaW5lIHRoZSBpbnRlcmlvciB3aXRoIHRoZSByZWZsZWN0aXZlIGxpbmVyLgo3LiBGaXQgdGhlIHNlbnNvciBwb2NrZXQgc28gdGhlIGxvZ2dlciBzaXRzIGFnYWluc3QgdGhlIGludGVyaW9yIHdhbGwKICAgd2l0aCB0aGUgcHJvYmUgcmVhY2hpbmcgaW50byB0aGUgbWFpbiBjYXZpdHkuCgpbSW5zZXJ0IGV4YWN0IHBhbmVsIGRpbWVuc2lvbnMgYW5kIGZvbGQgc2VxdWVuY2UsIHZlcmlmaWVkIGFnYWluc3QgdGhlCmRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgY2hvc2VuIHNoZWV0IG1hdGVyaWFsLCBvbmNlIHlvdXIgYnVpbGQKdGVhbSBmaW5hbGl6ZXMgdGhlbSDigJQgdGhpcyB0ZW1wbGF0ZSBpbnRlbnRpb25hbGx5IGRvZXNuJ3QgaW52ZW50Cm1lYXN1cmVtZW50cyB0aGF0IGRlcGVuZCBvbiBtYXRlcmlhbCB5b3UgaGF2ZW4ndCBwaWNrZWQgeWV0Ll0K" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMg4oCUIGxpZCBmbGFwLCBmYWNlIHBhbmVsLApiYXNlLCBoYW5kbGUgY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUg4oCUIHZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKiDigJQgZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqIOKAlCB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKiDigJQgdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKiDigJQgYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqIOKAlCBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKiog4oCUIHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWMg4oCUIGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0gICAgICAgICAgICAgICAgICAgIHwKfCBSZWZsZWN0aXZlIGxpbmVyIG9yIGZvaWwgdGFwZSAgICAgIHwgSW50ZXJpb3IgZmFjZSwgYWxsIHBhbmVscyAgICAgICAgICAgICAgICAgfAp8IFNlYW0gdGFwZSAgICAgICAgICAgICAgICAgICAgICAgICAgfCBGb2xkIGxpbmVzIGFuZCBqb2ludHMgICAgICAgICAgICAgICAgICAgICB8CnwgQ2xvc3VyZSAoaG9vay1hbmQtbG9vcCBvciBsYXRjaCkgICB8IEtlZXBzIHRoZSBsaWQgZmxhcCBzaHV0IGluIHRyYW5zaXQgICAgICAgIHwKfCBIYW5kbGUgZWRnZSByZWluZm9yY2VtZW50ICAgICAgICAgIHwgVGhyb3VnaCB0aGUgaGFuZGxlIGN1dCAgICAgICAgICAgICAgICAgICAgfAoKUHJpY2UgdGhlIG1hdGVyaWFscyBhYm92ZSBmcm9tIHlvdXIgb3duIHN1cHBsaWVyIGJlZm9yZSBvcmRlcmluZyBmb3IgYQpiYXRjaCDigJQgcGVyLWJveCBjb3N0IGRlcGVuZHMgZW50aXJlbHkgb24gdGhlIHNoZWV0IG1hdGVyaWFsIHlvdSBwaWNrLCBzbwpubyBmaWd1cmUgaXMgcXVvdGVkIGhlcmUuCgojIyBBc3NlbWJseSwgaW4gZ2VuZXJhbCB0ZXJtcwoKMS4gQ3V0IHRoZSBzaGVldCB0byB0aGUgcGFuZWwgbGF5b3V0IHNob3duIGluIHRoZSBkaWFncmFtIG9uIHRoZSBzaXRlLgoyLiBDdXQgdGhlIGhhbmRsZSBvcGVuaW5nIGludG8gdGhlIGZhY2UgcGFuZWw7IGN1dCB0aGUgc2Vuc29yIHBvY2tldAogICBpbnRvIHRoZSBiYWNrIHBhbmVsLgozLiBGb2xkIHRoZSBmYWNlIHBhbmVsLCBiYWNrIHBhbmVsLCBhbmQgcmVtYWluaW5nIHNpZGUgcGFuZWxzIHVwIGZyb20KICAgdGhlIGJhc2UgdG8gZm9ybSB0aGUgYm94J3Mgd2FsbHMuCjQuIFNlYW0gdGhlIHZlcnRpY2FsIGVkZ2VzIHdoZXJlIGFkam9pbmluZyBwYW5lbHMgbWVldC4KNS4gRm9sZCB0aGUgbGlkIGZsYXAgZG93biB0byBjbG9zZSB0aGUgb3BlbiB0b3AuCjYuIExpbmUgdGhlIGludGVyaW9yIHdpdGggdGhlIHJlZmxlY3RpdmUgbGluZXIuCjcuIEZpdCB0aGUgc2Vuc29yIHBvY2tldCBzbyB0aGUgbG9nZ2VyIHNpdHMgYWdhaW5zdCB0aGUgaW50ZXJpb3Igd2FsbAogICB3aXRoIHRoZSBwcm9iZSByZWFjaGluZyBpbnRvIHRoZSBtYWluIGNhdml0eS4KCltJbnNlcnQgZXhhY3QgcGFuZWwgZGltZW5zaW9ucyBhbmQgZm9sZCBzZXF1ZW5jZSwgdmVyaWZpZWQgYWdhaW5zdCB0aGUKZGlhZ3JhbSBvbiB0aGUgc2l0ZSBhbmQgeW91ciBjaG9zZW4gc2hlZXQgbWF0ZXJpYWwsIG9uY2UgeW91ciBidWlsZAp0ZWFtIGZpbmFsaXplcyB0aGVtIOKAlCB0aGlzIHRlbXBsYXRlIGludGVudGlvbmFsbHkgZG9lc24ndCBpbnZlbnQKbWVhc3VyZW1lbnRzIHRoYXQgZGVwZW5kIG9uIG1hdGVyaWFsIHlvdSBoYXZlbid0IHBpY2tlZCB5ZXQuXQo=" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="handshake">Partner agreement</p>
@@ -758,7 +654,7 @@ school district requires for this agreement, if any.]</pre>
         <p class="kicker" data-icon="cpu">Firmware repo</p>
         <p class="body">Logger sketch, probe calibration notes and wiring for the unit described under "the instruments."</p>
         <p class="meta">The student build team.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlIOKAlCB0aGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvIOKAlCBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKVGhyZWUgbG9nZ2VyIHVuaXRzIHJvdGF0ZSBhY3Jvc3MgYWxsIHJvdXRlczsgYSBydW4gd2l0aG91dCBhbiBhdmFpbGFibGUKdW5pdCBpcyB2YWxpZGF0ZWQgYWdhaW5zdCBhIHRoZXJtYWwgbW9kZWwgYnVpbHQgZnJvbSBsb2dnZWQgcnVucyBvbiB0aGUKc2FtZSByb3V0ZSAoc2VlICJ0aGUgaW5zdHJ1bWVudHMiIG9uIHRoZSBzaXRlKS4gV2hlbiB0aGUgbW9kZWwgY2FycmllcyB0aGUKcmVjb3JkIGluc3RlYWQgb2YgYSBzZW5zb3IsIHRoZSBtYW5pZmVzdCBsaW5lIHNheXMgc28uCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKiDigJQgUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqIOKAlCBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqIOKAlCBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqIOKAlCBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKiDigJQgUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQK4oCUIGNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKiDigJQgU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzCmZsYWdnZWQgcmF0aGVyIHRoYW4gdHJ1c3RlZCwgYW5kIGZhbGxzIGJhY2sgdG8gdGhlIHJvdXRlLWxldmVsIHRoZXJtYWwKbW9kZWwgZGVzY3JpYmVkIGFib3ZlLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzIOKAlCBkbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
+        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2sg4oCUIExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlIOKAlCB0aGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvIOKAlCBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3Ig4oCUIHRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKUExBTk5FRCwgTk9UIFlFVCBJTiBQTEFDRS4gVGhlIGludGVuZGVkIGRlc2lnbiBpcyBhIHNtYWxsIHNoYXJlZCBzZXQgb2YKbG9nZ2VyIHVuaXRzIOKAlCBvbiB0aGUgb3JkZXIgb2YgdGhyZWUg4oCUIHJvdGF0aW5nIGFjcm9zcyByb3V0ZXMgcmF0aGVyIHRoYW4Kb25lIHBlcm1hbmVudGx5IGFzc2lnbmVkIHBlciBib3gsIHdpdGggYSBydW4gdGhhdCBnb2VzIG91dCB3aXRob3V0IGFuCmF2YWlsYWJsZSB1bml0IHZhbGlkYXRlZCBhZ2FpbnN0IGEgdGhlcm1hbCBtb2RlbCBidWlsdCBmcm9tIGxvZ2dlZCBydW5zCm9uIHRoZSBzYW1lIHJvdXRlIChzZWUgInRoZSBpbnN0cnVtZW50cyIgb24gdGhlIHNpdGUpLiBOZWl0aGVyIHRoZSBmbGVldApub3IgdGhhdCBtb2RlbCBleGlzdHMgeWV0OiB0aGVyZSBhcmUgbm8gbG9nZ2VkIHJ1bnMgdG8gYnVpbGQgYSBtb2RlbApmcm9tLiBVbnRpbCB0aGVyZSBhcmUsIGEgcnVuIHdpdGhvdXQgYSB1bml0IGhhcyBubyB0ZW1wZXJhdHVyZSByZWNvcmQsCmFuZCB0aGUgbWFuaWZlc3QgbGluZSBzYXlzIGV4YWN0bHkgdGhhdCByYXRoZXIgdGhhbiBpbXBseWluZyBvbmUuCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKiDigJQgUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqIOKAlCBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqIOKAlCBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqIOKAlCBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKiDigJQgUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQK4oCUIGNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKiDigJQgU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzIGZsYWdnZWQKcmF0aGVyIHRoYW4gdHJ1c3RlZC4gVGhlIGludGVuZGVkIGZhbGxiYWNrIGlzIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZTsgdW50aWwgdGhhdCBtb2RlbCBleGlzdHMsIGEgRkFVTFQgcnVuIHNpbXBseSBoYXMKbm8gdXNhYmxlIHRlbXBlcmF0dXJlIHJlY29yZCBhbmQgaXMgZmxhZ2dlZCBhcyBzdWNoLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzIOKAlCBkbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="clipboard-list">Intake workflow</p>
@@ -778,13 +674,18 @@ off. Do not close out the manifest line until all four are confirmed.
      box as a normal delivery — flag it instead.
 
   2. CONFIRM THE COLD-CHAIN LOG
-     Check the box's temperature log (or route model, if no sensor unit
-     was available for this run). The load needs to have stayed at or
-     below 41°F throughout — the same "in range" threshold used on the
-     site's live cold-chain readout. If any reading is above 41°F, the
-     box is "danger zone," not "in range" — flag it and use your own
-     judgment (and your health department's guidance) before
-     distributing that food.
+     Check the box's temperature log from the logger unit. The load
+     needs to have stayed at or below 41°F throughout — the same "in
+     range" threshold used on the site's cold-chain readout. If any
+     reading is above 41°F, the box is "danger zone," not "in range" —
+     flag it and use your own judgment (and your health department's
+     guidance) before distributing that food.
+
+     If a run arrives with no logger unit, it arrives with no
+     temperature record. The route-model fallback described elsewhere on
+     the site is planned and not yet built, so there is currently
+     nothing to check against — treat the box as unverified and use your
+     own judgment before distributing it.
 
   3. CONFIRM THE COUNT / WEIGHT
      Check that the item count or weight in front of you matches what
@@ -848,6 +749,25 @@ that wasn't actually clean.</pre>
         <div class="mascot-slot" aria-hidden="true" style="position:absolute; left:35.5%; top:33.5%; width:17.5%;" data-state="neutral" data-bare></div>
       </div>
     </div>
+    <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
+      <h3 style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
+      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print the result: a delivery manifest and a temperature log, on paper, for the box that is about to leave the building.</p>
+      <p class="packet-note"><strong>Nothing here leaves your browser.</strong> There is no endpoint, no upload and no storage — the packet is assembled on this page from what you type and exists only until you reload. Close the tab and it is gone.</p>
+      <form class="packet-form" id="packetForm" autocomplete="off">
+        <label>Date<input type="date" name="date" required></label>
+        <label>Origin school<input type="text" name="origin" placeholder="e.g. Stuyvesant High School" required></label>
+        <label>Destination site<input type="text" name="destination" placeholder="receiving site" required></label>
+        <label>Box ID<input type="text" name="boxid" placeholder="e.g. 0447" required></label>
+        <label>Weight (lbs)<input type="number" name="weight" min="0" step="0.1" placeholder="e.g. 42" required></label>
+        <label class="span-all">Temperature readings<textarea name="temps" rows="4" placeholder="One per line: time, note, °F&#10;13:42, packed, 36&#10;14:05, in transit, 38&#10;14:28, street handoff, 43&#10;14:51, received, 39"></textarea></label>
+      </form>
+      <div class="packet-actions">
+        <button type="button" id="packetBuild" class="btn-sm solid">Generate packet</button>
+        <button type="button" id="packetPrint" class="btn-sm" disabled>Print packet</button>
+      </div>
+      <div id="runPacketOut" aria-live="polite"></div>
+    </div>
+
   </div>
 </section>
 
@@ -869,7 +789,7 @@ that wasn't actually clean.</pre>
         <p class="body-p" data-reveal style="margin:16px 0 0;">Administrators, students, and partner organizations — tell us who you are and we'll follow up with the playbook for your role.</p>
         <div style="margin-top:28px; display:flex; align-items:center; gap:14px;">
           <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>In partnership with Green Garden NYC.</p>
+          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
         </div>
       </div>
       <div id="formWrap">
@@ -892,12 +812,36 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
-<section aria-label="Partners" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding:20px 24px; display:flex; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-secondary);">
-    <span style="color:var(--text); font-weight:500;">In partnership with Green Garden NYC</span>
-    <span>Stuyvesant HS</span>
-    <span>IS 289</span>
-    <span>Millennium HS</span>
+<section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+    <p class="eyebrow">School sites</p>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets, and are labelled as such. Nothing on this list is a commitment by a school that has not made one.</p>
+    <div class="sites">
+      <div class="tier">
+        <p class="tier-label">Operating <span class="count">1</span></p>
+        <ul>
+          <li>Stuyvesant High School <span class="boro">Manhattan</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">In conversation <span class="count">2</span></p>
+        <ul>
+          <li>Midwood High School <span class="boro">Brooklyn</span></li>
+          <li>James Madison High School <span class="boro">Brooklyn</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">Target sites <span class="count">5</span></p>
+        <ul>
+          <li>Brooklyn Technical High School <span class="boro">Brooklyn</span></li>
+          <li>Rachel Carson High School <span class="boro">Brooklyn</span></li>
+          <li>Bronx High School of Science <span class="boro">Bronx</span></li>
+          <li>Townsend Harris High School <span class="boro">Queens</span></li>
+          <li>Queens High School for the Sciences at York College <span class="boro">Queens</span> <span class="tag">specialized</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="cite" style="font-size:13px; color:var(--text-secondary); margin:28px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Target sites are schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that it has.</p>
   </div>
 </section>
 
@@ -907,7 +851,7 @@ that wasn't actually clean.</pre>
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block — student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">8,000 lbs recovered · Track the Box</span>
+    <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
   <div class="wrap" id="sources" style="padding:8px 24px 28px;">
     <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
@@ -919,78 +863,37 @@ that wasn't actually clean.</pre>
       <li id="src-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
       <li id="src-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
       <li id="src-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
-      <li id="src-8">8. Congressional Budget Office — "$186 billion" figure, ten-year SNAP cut estimate</li>
-      <li id="src-9">9. CBPP, USDA data — "4.5 million" figure, national SNAP enrollment change</li>
-      <li id="src-10">10. NY OTDA — "March 1, 2026" ABAWD work requirement effective date</li>
-      <li id="src-11">11. Federal Register — "October 1, 2026" SNAP administrative cost-share change</li>
-      <li id="src-12">12. NYC Health Code § 81.10, DOHMH — time as a public health control</li>
+      <li id="src-8">8. CBPP, USDA data — "4.5 million" figure, national SNAP enrollment change</li>
+      <li id="src-9">9. NY OTDA — "March 1, 2026" ABAWD work requirement effective date</li>
+      <li id="src-10">10. Federal Register — "October 1, 2026" SNAP administrative cost-share change</li>
+      <li id="src-11">11. NYC Health Code § 81.10, DOHMH — time as a public health control</li>
     </ol>
   </div>
-  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
+  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers. The one thing it does store is your colour-theme choice, kept in this browser’s localStorage so the page doesn’t forget it between visits. It never leaves your device and is not used to identify you.</div>
 </footer>
 
+<script src="assets/site.js"></script>
 <script>
 (function () {
   "use strict";
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var mob = innerWidth < 768;
-  var f = mob ? 0.5 : 1;
-  var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
-  var cl = function (x) { return Math.max(0, Math.min(x, 1)); };
-  var eo = function (x) { return 1 - Math.pow(1 - x, 3); };
-  var ei = function (x) { return x * x * (3 - 2 * x); };
-  var mix = function (a, b, t) { return a + (b - a) * t; };
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, mob = STB.mob, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
   var fmtN = function (n) { return n.toLocaleString("en-US"); };
 
-  var TODAY = "2026-07-29";
-  var ROWS = [
-    { date: "2026-07-29", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 18, status: "EN ROUTE" },
-    { date: "2026-07-24", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 42, status: "RECEIVED" },
-    { date: "2026-07-23", from: "IS 289", to: "Green Garden NYC", lbs: 31, status: "RECEIVED" },
-    { date: "2026-07-23", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 56, status: "RECEIVED" },
-    { date: "2026-07-22", from: "Millennium HS", to: "Green Garden NYC", lbs: 27, status: "RECEIVED" },
-    { date: "2026-07-21", from: "IS 289", to: "Green Garden NYC", lbs: 38, status: "RECEIVED" },
-    { date: "2026-07-21", from: "Millennium HS", to: "Green Garden NYC", lbs: 22, status: "RECEIVED" },
-    { date: "2026-07-20", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 49, status: "RECEIVED" },
-    { date: "2026-07-17", from: "IS 289", to: "Green Garden NYC", lbs: 35, status: "RECEIVED" },
-    { date: "2026-07-16", from: "Millennium HS", to: "Green Garden NYC", lbs: 30, status: "RECEIVED" },
-    { date: "2026-07-15", from: "Stuyvesant HS", to: "Green Garden NYC", lbs: 44, status: "RECEIVED" }
-  ];
+  /* Derived, not hard-coded — a stale literal would silently mislabel rows. */
+  var TODAY = new Date().toISOString().slice(0, 10);
+  /* Pre-launch: there is no delivery record yet, and none is invented here.
+     The manifest machinery below (sort, filter, empty state) runs off this
+     array, so it stays fully functional the moment real rows land. */
+  var ROWS = [];
   var STEPS = [
     { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from cafeteria share tables at the end of lunch.", detail: "Sealed items only, nothing served or opened. Share-table collection follows DOE wellness policy: items must be commercially packaged, unopened, and temperature-safe before they leave the cafeteria.", state: "collect", icon: "package" },
     { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated transport boxes before it leaves the building.", detail: "Each box carries a number; weight, contents category, and packing time are recorded against the box ID so every pound is traceable. The weight goes into the manifest before the box leaves.", state: "pack", icon: "archive" },
-    { num: "03", title: "Deliver after school", body: "Student teams walk fixed routes to partner food banks, and recipients confirm receipt on the spot.", detail: "Routes are walked in pairs and take under thirty minutes; a recipient signature closes out each box before it counts. Green Garden NYC anchors the downtown route.", state: "deliver", icon: "truck" },
-    { num: "04", title: "Log it publicly", body: "Every delivery posts to Track the Box in real time — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time.", state: "record", icon: "clipboard-check" }
+    { num: "03", title: "Deliver within the borough", body: "Student teams walk a short local route to a receiving site in the same borough, and recipients confirm receipt on the spot.", detail: "Each borough runs as its own cluster: schools walk to a receiving site in that borough, not across the city. Routes are walked in pairs and are designed to take under thirty minutes, which is what makes same-afternoon delivery possible within a cluster — and why it is not promised between them. A recipient signature closes out each box before it counts.", state: "deliver", icon: "truck" },
+    { num: "04", title: "Log it publicly", body: "Every delivery posts to the log — date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines, so the record stays honest. Anyone can audit the numbers, any time. <span class=\"unverified\">Track the Box, the public log this feeds, is planned and not yet published.</span>", state: "record", icon: "clipboard-check" }
   ];
-  /* Icon set: redrawn from Lucide (ISC-licensed, lucide.dev) at 24x24, stroke-based, inlined
-     rather than loaded from a CDN so the site keeps its zero-external-script footprint. */
-  var ICONS = {
-    package: '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
-    archive: '<rect width="20" height="5" x="2" y="3" rx="1"></rect><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"></path><path d="M10 12h4"></path>',
-    truck: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>',
-    "clipboard-check": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
-    "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path>',
-    ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"></path><path d="m14.5 12.5 2-2"></path><path d="m11.5 9.5 2-2"></path><path d="m8.5 6.5 2-2"></path><path d="m17.5 15.5 2-2"></path>',
-    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
-    cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path>',
-    "clipboard-list": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path>',
-    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
-    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle>',
-    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path>'
-  };
-  function iconSVG(name, size) {
-    size = size || 20;
-    return '<svg class="step-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
-  }
-  function initIcons(root) {
-    $$("[data-icon]", root).forEach(function (el) {
-      if (el.dataset.iconInit) return;
-      el.dataset.iconInit = "1";
-      el.insertAdjacentHTML("afterbegin", iconSVG(el.getAttribute("data-icon")));
-    });
-  }
+  /* ---------- icon set (shared — assets/site.js) ---------- */
+  var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
   initIcons();
   var COLD = [
     { t: "13:42", note: "packed", temp: 36 },
@@ -999,130 +902,18 @@ that wasn't actually clean.</pre>
     { t: "14:51", note: "received", temp: 39 }
   ];
   var SAFE_MAX = 41;
-  var MOOD_LABEL = { idle: "all quiet", record: "record haul", confirmed: "all confirmed", empty: "no runs today", active: "en route" };
+  var MOOD_LABEL = { idle: "all quiet", record: "record haul", confirmed: "all confirmed", empty: "pre-launch", active: "en route" };
 
-  /* ---------- mascot component ---------- */
-  var MASCOT_EYES = {
-    idle:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    warm:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    record:    { l: "M95 146 L96 147 L97 146", r: "M214 146 L215 147 L216 146", w: 38 },
-    confirmed: { l: "M63 158 L96 126 L128 158", r: "M182 158 L215 126 L247 158", w: 14 },
-    empty:     { l: "M63 150 L96 150 L128 150", r: "M182 150 L215 150 L247 150", w: 14 },
-    active:    { l: "M63 141 L96 148 L128 156", r: "M182 156 L215 148 L247 141", w: 14 },
-    collect:   { l: "M63 150 L96 122 L128 150", r: "M182 150 L215 122 L247 150", w: 14 },
-    pack:      { l: "M63 138 L96 166 L128 138", r: "M182 138 L215 166 L247 138", w: 14 },
-    deliver:   { l: "M63 160 L96 134 L128 160", r: "M182 160 L215 134 L247 160", w: 14 },
-    neutral:   { l: "M63 158 L96 138 L128 158", r: "M182 158 L215 138 L247 158", w: 14 },
-    inrange:   { l: "M74 152 L96 136 L118 152", r: "M193 152 L215 136 L237 152", w: 13 },
-    danger:    { l: "M74 146 L96 158 L118 146", r: "M193 146 L215 158 L237 146", w: 13 }
-  };
-  var MASCOT_SMILE = {
-    idle: "M110 184 Q151 212 193 184", warm: "M110 180 Q151 226 193 180",
-    record: "M125 190 L177 190", confirmed: "M110 184 Q151 212 193 184",
-    empty: "M130 186 Q151 196 172 186", active: "M125 190 L177 190",
-    collect: "M120 186 Q151 208 182 186", pack: "M124 190 L178 190",
-    deliver: "M112 184 Q151 210 190 184", neutral: "M118 188 L184 188",
-    inrange: "M118 202 Q151 222 184 202", danger: "M124 205 L178 205"
-  };
-  var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
-  var MASCOT_LEAN = { deliver: "rotate(5deg)" };
-
-  function mascotSVG(state, opts) {
-    opts = opts || {};
-    state = MASCOT_EYES[state] ? state : "idle";
-    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
-    var bare = !!opts.bare, faceless = !!opts.faceless, glasses = !!opts.glasses && !faceless;
-    var fill = opts.fill || "var(--mascot-fill)";
-    var lidT = MASCOT_LID[state] || "rotate(0deg)";
-    var leanT = MASCOT_LEAN[state] || "rotate(0deg)";
-    var breatheAnim = opts.breathe ? "lidBreathe 4s ease-in-out infinite" : "none";
-    var blinkLAnim = opts.blink ? "blinkL 6s ease-in-out infinite" : "none";
-    var blinkRAnim = opts.blink ? "blinkR 6.4s ease-in-out infinite" : "none";
-    var informative = !!opts.informative;
-    var label = opts.label || "Stock the Block mascot";
-    var isRecord = state === "record", isConfirmed = state === "confirmed";
-    var bodyMk = bare ? "" : (
-      '<rect x="20" y="20" width="260" height="200" rx="28" fill="' + fill + '" style="stroke:var(--mascot-stroke);" stroke-width="12"></rect>' +
-      '<g data-lid-g style="transform:' + lidT + ';transform-origin:150px 93px;transition:transform 340ms cubic-bezier(0.16,1,0.3,1);">' +
-        '<path d="M26 93 L274 93" fill="none" stroke-width="12" style="stroke:var(--mascot-stroke); animation:' + breatheAnim + ';"></path>' +
-      '</g>'
-    );
-    var glassesMk = glasses ? (
-      '<circle cx="96" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<circle cx="215" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<path d="M132 152 L179 152" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></path>'
-    ) : "";
-    var faceMk = faceless ? "" : (
-      '<path data-eye-l d="' + e.l + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkLAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-eye-r d="' + e.r + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkRAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-mouth-stroke d="' + smile + '" fill="none" stroke-width="14" stroke-linecap="round" style="stroke:var(--accent); opacity:' + (isRecord || isConfirmed ? 0 : 1) + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease;"></path>' +
-      '<path data-mouth-o d="M151 170 Q127 170 127 192 Q127 214 151 214 Q175 214 175 192 Q175 170 151 170 Z" style="fill:var(--accent); opacity:' + (isRecord ? 1 : 0) + '; transition:opacity 220ms ease;"></path>' +
-      '<path data-mouth-grin d="M112 176 Q151 224 190 176 Q151 198 112 176 Z" style="fill:var(--accent); opacity:' + (isConfirmed ? 1 : 0) + '; transition:opacity 220ms ease;"></path>'
-    );
-    return '<svg data-mascot data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + label + '"' : '') + ' style="width:100%;height:auto;display:block;">' +
-      '<g data-lean-g style="transform:' + leanT + ';transform-origin:150px 230px;transition:transform 320ms cubic-bezier(0.16,1,0.3,1);">' + bodyMk + glassesMk + faceMk + '</g></svg>';
-  }
-  function paintMascot(svg, state) {
-    if (!svg) return;
-    state = MASCOT_EYES[state] ? state : "idle";
-    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
-    var isRecord = state === "record", isConfirmed = state === "confirmed";
-    var eyeL = svg.querySelector("[data-eye-l]"), eyeR = svg.querySelector("[data-eye-r]");
-    if (eyeL) { eyeL.setAttribute("d", e.l); eyeL.setAttribute("stroke-width", e.w); }
-    if (eyeR) { eyeR.setAttribute("d", e.r); eyeR.setAttribute("stroke-width", e.w); }
-    var ms = svg.querySelector("[data-mouth-stroke]");
-    if (ms) { ms.setAttribute("d", smile); ms.style.opacity = (isRecord || isConfirmed) ? 0 : 1; }
-    var mo = svg.querySelector("[data-mouth-o]"); if (mo) mo.style.opacity = isRecord ? 1 : 0;
-    var mg = svg.querySelector("[data-mouth-grin]"); if (mg) mg.style.opacity = isConfirmed ? 1 : 0;
-    var lidG = svg.querySelector("[data-lid-g]"); if (lidG) lidG.style.transform = MASCOT_LID[state] || "rotate(0deg)";
-    var leanG = svg.querySelector("[data-lean-g]"); if (leanG) leanG.style.transform = MASCOT_LEAN[state] || "rotate(0deg)";
-    svg.setAttribute("data-state", state);
-  }
-  function initMascotSlots(root) {
-    $$(".mascot-slot", root).forEach(function (el) {
-      if (el.dataset.mascotInit) return;
-      el.dataset.mascotInit = "1";
-      var state = el.getAttribute("data-state") || "idle";
-      el.innerHTML = mascotSVG(state, {
-        glasses: el.hasAttribute("data-glasses"),
-        bare: el.hasAttribute("data-bare"),
-        faceless: el.hasAttribute("data-faceless"),
-        fill: el.getAttribute("data-fill"),
-        blink: el.hasAttribute("data-blink"),
-        breathe: el.hasAttribute("data-breathe"),
-        informative: el.hasAttribute("data-informative"),
-        label: el.getAttribute("data-label")
-      });
-    });
-  }
+  /* ---------- mascot component (shared — assets/site.js) ---------- */
+  var mascotSVG = STB.mascotSVG, paintMascot = STB.paintMascot, initMascotSlots = STB.initMascotSlots;
   initMascotSlots();
 
   /* ---------- theme ---------- */
-  var html = document.documentElement;
-  var sysDark = matchMedia("(prefers-color-scheme: dark)");
-  function currentTheme() { return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light"); }
-  var toggle = $("#themeToggle");
-  function reflectTheme() {
-    var dark = currentTheme() === "dark";
-    toggle.setAttribute("aria-pressed", dark ? "true" : "false");
-    $("#iconMoon").style.display = dark ? "none" : "block";
-    $("#iconSun").style.display = dark ? "block" : "none";
-  }
-  toggle.addEventListener("click", function () {
-    var next = currentTheme() === "dark" ? "light" : "dark";
-    html.setAttribute("data-theme-anim", "");
-    html.setAttribute("data-theme", next);
-    try { localStorage.setItem("stb-theme", next); } catch (e) {}
-    reflectTheme();
-    updateThreeTheme();
-  });
-  sysDark.addEventListener("change", function () { if (!html.getAttribute("data-theme")) { reflectTheme(); updateThreeTheme(); } });
-  reflectTheme();
-  function getVar(n) { return getComputedStyle(html).getPropertyValue(n).trim(); }
+  var getVar = STB.getVar;
+  STB.initTheme(function () { if (heroBox) heroBox.repaint(); });
 
   /* ---------- nav ---------- */
-  var nav = $("#nav");
-  addEventListener("scroll", function () { nav.classList.toggle("on", scrollY > 100); }, { passive: true });
+  STB.initNav();
 
   /* ---------- torn-paper responsive scale ---------- */
   function tornResize() {
@@ -1138,26 +929,7 @@ that wasn't actually clean.</pre>
   tornResize();
   addEventListener("resize", tornResize, { passive: true });
 
-  /* ---------- glyph row ---------- */
-  var glyphs = $("#glyphs");
-  for (var gi = 0; gi < 16; gi++) {
-    var gs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    gs.setAttribute("viewBox", "0 0 300 260");
-    gs.style.cssText = "width:18px;height:auto;opacity:0.18;transform:scale(0.6);transition:opacity 300ms cubic-bezier(0.34,1.56,0.64,1) " + (gi * 40) + "ms,transform 300ms cubic-bezier(0.34,1.56,0.64,1) " + (gi * 40) + "ms;";
-    gs.innerHTML = '<rect x="20" y="20" width="260" height="200" rx="28" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);" stroke-width="20"/><path d="M26 93 L274 93" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="20"/>';
-    glyphs.appendChild(gs);
-  }
-  function setGlyphs(lbs) {
-    var filled = Math.min(16, Math.round(lbs / 500));
-    $$("#glyphs svg").forEach(function (el, i) {
-      el.style.opacity = i < filled ? "1" : "0.18";
-      el.style.transform = i < filled ? "scale(1)" : "scale(0.6)";
-    });
-  }
-
   /* ---------- counters ---------- */
-  var spinBoost = false;
-  function setLbsText(v) { $$(".lbs-live").forEach(function (el) { el.textContent = fmtN(v); }); }
   function count(target, onTick, done) {
     if (reduced) { onTick(target); if (done) done(); return; }
     var t0 = performance.now(), dur = 1200;
@@ -1171,24 +943,18 @@ that wasn't actually clean.</pre>
   var heroDone = false, bandDone = false;
   function checkCounters() {
     var vh = innerHeight;
-    if (!heroDone) {
-      var r = $("#heroFig").getBoundingClientRect();
-      if (r.top < vh * 0.9 && r.bottom > 0) {
-        heroDone = true; spinBoost = true;
-        count(8000, function (v) { setLbsText(v); setGlyphs(v); }, function () { spinBoost = false; });
-      }
-    }
+    if (!heroDone) { heroDone = true; }
     if (!bandDone) {
       var r2 = $("#statband").getBoundingClientRect();
       if (r2.top < vh * 0.9 && r2.bottom > 0) {
         bandDone = true;
+        /* Only the two sourced NYC figures animate. The third cell is a
+           pre-launch statement, not a number, so there is nothing to count. */
         count(880000, function (v) { $("#statMeals").textContent = fmtN(v); });
         count(4, function (v) { $("#statPct").textContent = v + "%"; });
-        count(8000, function (v) { $("#statLbs").textContent = fmtN(v) + " lbs"; });
       }
     }
   }
-  if (reduced) setGlyphs(8000);
 
   /* ---------- procedure rows ---------- */
   var stepsHost = $("#steps");
@@ -1225,16 +991,21 @@ that wasn't actually clean.</pre>
       b.type = "button"; b.className = "row" + (i === coldIdx ? " active" : "");
       b.setAttribute("aria-pressed", i === coldIdx ? "true" : "false");
       var safe = c.temp <= SAFE_MAX;
-      b.innerHTML = '<span>' + c.t + ' ' + c.note + '</span><span class="temp" style="color:' + (safe ? "var(--brand)" : "var(--accent)") + ';">' + c.temp + '°F</span>';
+      b.innerHTML = '<span>' + c.t + ' ' + c.note + '</span><span class="temp" data-degf="' + c.temp + '" style="color:' + (safe ? "var(--brand)" : "var(--accent-text)") + ';"></span>';
       b.addEventListener("click", function () { coldIdx = i; renderCold(); });
       coldRowsHost.appendChild(b);
     });
+    STB.renderUnits(coldRowsHost);
   }
   renderCold();
 
   /* ---------- chips + manifest ---------- */
   var sortKey = "date", sortDir = "desc", filter = "All";
-  var schools = ["All", "Stuyvesant HS", "IS 289", "Millennium HS"];
+  /* Filter chips are derived from the log itself rather than hard-coded, so a
+     school only ever appears here once it actually has a delivery on record.
+     Empty log, no chips — and the control reappears on its own when rows exist. */
+  var origins = ROWS.map(function (r) { return r.from; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort();
+  var schools = origins.length ? ["All"].concat(origins) : [];
   var chipsHost = $("#chips");
   schools.forEach(function (label) {
     var b = document.createElement("button");
@@ -1263,6 +1034,63 @@ that wasn't actually clean.</pre>
     svg.classList.add("glance");
     glT = setTimeout(function () { svg.classList.remove("glance"); }, 400);
   }
+  /* ---------- 5. deep-linkable manifest ----------
+     Filter and sort live in the URL hash so a view can be linked to, and are
+     written with replaceState so scrubbing filters does not stack up a dozen
+     history entries the back button has to walk out of. */
+  var hashLock = false;
+  function syncHash() {
+    if (hashLock) return;
+    var parts = [];
+    if (filter !== "All") parts.push("school=" + encodeURIComponent(filter));
+    if (sortKey !== "date" || sortDir !== "desc") parts.push("sort=" + sortKey + ":" + sortDir);
+    var want = parts.length ? "#log?" + parts.join("&") : "";
+    var base = location.pathname + location.search;
+    if ((location.hash || "") !== want && !/^#(?!log)/.test(location.hash || "")) {
+      history.replaceState(null, "", base + want);
+    }
+  }
+  function readHash() {
+    var m = /^#log\?(.*)$/.exec(location.hash || "");
+    if (!m) return;
+    hashLock = true;
+    m[1].split("&").forEach(function (kv) {
+      var i = kv.indexOf("="); if (i < 0) return;
+      var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
+      if (k === "school") filter = v;
+      else if (k === "sort") {
+        var p = v.split(":");
+        if (["date", "from", "to", "lbs"].indexOf(p[0]) > -1) sortKey = p[0];
+        if (p[1] === "asc" || p[1] === "desc") sortDir = p[1];
+      }
+    });
+    /* A filter naming a school that has nothing logged would silently show an
+       empty table for the wrong reason. Fall back to All. */
+    if (filter !== "All" && ROWS.every(function (r) { return r.from !== filter; })) filter = "All";
+    $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === filter ? "true" : "false"); });
+    hashLock = false;
+  }
+
+  /* ---------- 6. CSV export of the current filtered view ---------- */
+  function exportCSV() {
+    var rows = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
+    if (!rows.length) return;
+    var metric = STB.unitMode() === "metric";
+    var head = ["date", "origin", "destination", metric ? "kg" : "lbs", "status"];
+    var q = function (v) { return /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v); };
+    var body = rows.map(function (r) {
+      return [r.date, r.from, r.to, metric ? (r.lbs * 0.45359237).toFixed(2) : r.lbs, r.status].map(q).join(",");
+    });
+    var blob = new Blob([head.join(",") + "\n" + body.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "stock-the-block-manifest" + (filter === "All" ? "" : "-" + filter.toLowerCase().replace(/\s+/g, "-")) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  if ($("#csvExport")) $("#csvExport").addEventListener("click", exportCSV);
+
   var tableSeen = false;
   function render() {
     var filtered = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
@@ -1271,14 +1099,38 @@ that wasn't actually clean.</pre>
       var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
       return sortDir === "asc" ? c : -c;
     });
-    var label = filter === "All" ? "RECENT" : filter.toUpperCase();
+    var label = !ROWS.length ? "PRE-LAUNCH" : (filter === "All" ? "RECENT" : filter.toUpperCase());
     $("#mbody").innerHTML = sorted.map(function (r) {
       var col = r.status === "RECEIVED" ? "var(--brand)" : "var(--accent)";
-      return '<div class="mrow"><span style="color:var(--text-secondary);">' + r.date + "</span><span>" + r.from + "</span><span>" + r.to + '</span><span class="lbs">' + r.lbs + '</span><span class="st" style="color:' + col + ';">' + r.status + "</span></div>";
+      return '<div class="mrow"><span style="color:var(--text-secondary);">' + r.date + "</span><span>" + r.from + "</span><span>" + r.to + '</span><span class="lbs" data-lbs="' + r.lbs + '"></span><span class="st" style="color:' + col + ';">' + r.status + "</span></div>";
     }).join("");
+    STB.renderUnits($("#mbody"));
     $("#mempty").style.display = sorted.length ? "none" : "flex";
-    $("#emptyMsg").textContent = "no deliveries logged for " + label;
-    $("#shownTotal").textContent = fmtN(filtered.reduce(function (t, r) { return t + r.lbs; }, 0));
+    /* Two different empty states: nothing logged at all (pre-launch) versus a
+       filter that happens to match nothing. Don't conflate them. */
+    if (!ROWS.length) {
+      $("#emptyMsg").textContent = "The log opens with the first delivery.";
+      $("#emptySub").textContent = "These are the columns every delivery will be recorded under. Nothing has moved yet, so there is nothing here to show.";
+    } else {
+      $("#emptyMsg").textContent = "no deliveries logged for " + label;
+      $("#emptySub").textContent = "clear the filter to see the full record";
+    }
+    /* No rows, no total. Never render a pounds figure the log cannot support. */
+    var total = filtered.reduce(function (t, r) { return t + r.lbs; }, 0);
+    var totalEl = $("#shownTotal");
+    if (filtered.length) { totalEl.setAttribute("data-lbs", total); STB.renderUnits(totalEl.parentNode); }
+    else { totalEl.removeAttribute("data-lbs"); totalEl.textContent = ""; }
+    /* 6. Export reflects the view on screen. With nothing logged there is
+       nothing to export, so the button says why rather than handing over an
+       empty file. */
+    var csv = $("#csvExport");
+    if (csv) {
+      csv.disabled = !filtered.length;
+      csv.title = filtered.length
+        ? "Download these " + filtered.length + " row(s) as CSV"
+        : "Nothing to export yet — the log opens with the first delivery";
+    }
+    syncHash();
     $("#filterLabel").textContent = label;
     $$("#thead button").forEach(function (b) {
       var k = b.getAttribute("data-key"), on = k === sortKey;
@@ -1303,7 +1155,9 @@ that wasn't actually clean.</pre>
       });
     }
   }
+  readHash();
   render();
+  addEventListener("hashchange", function () { readHash(); render(); });
 
   /* ---------- join form ---------- */
   var form = $("#joinForm");
@@ -1347,18 +1201,8 @@ that wasn't actually clean.</pre>
   });
 
   /* ---------- scroll FX ---------- */
-  var shots = [];
-  function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
-  $$("[data-mask]").forEach(function (mk) {
-    var lines = $$("[data-line]", mk);
-    if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
-    shot(mk, function () {
-      lines.forEach(function (l, i) {
-        l.style.transition = "transform 700ms " + EXP + " " + (i * 80) + "ms";
-        l.style.transform = "translateY(0)";
-      });
-    });
-  });
+  var FX = STB.initReveals();
+  var shot = FX.shot;
   (function () {
     var items = $$("[data-stat]");
     if (!reduced) items.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
@@ -1376,8 +1220,6 @@ that wasn't actually clean.</pre>
       shot(el, function () {
         el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
         el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
-        var billionEl = el.querySelector("#collageBillion");
-        if (billionEl) count(186, function (v) { billionEl.textContent = v; });
         var scaleBillionEl = el.querySelector("#scaleBillion"), scalePctEl = el.querySelector("#scalePct"), scaleBarEl = el.querySelector("#scaleBarFill");
         if (scaleBillionEl) count(187, function (v) { scaleBillionEl.textContent = v; });
         if (scalePctEl) count(36, function (v) { scalePctEl.textContent = v; });
@@ -1385,27 +1227,6 @@ that wasn't actually clean.</pre>
       });
     });
   })();
-  $$("[data-reveal]").forEach(function (el) {
-    if (!reduced) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
-    shot(el, function () {
-      el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
-      el.style.opacity = "1"; el.style.transform = "translateY(0)";
-    });
-  });
-  $$("[data-prow]").forEach(function (row) {
-    var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
-    if (!reduced) {
-      num.style.opacity = "0";
-      ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
-      bdy.style.opacity = "0";
-    }
-    shot(row, function () {
-      num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1";
-      ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
-      ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
-      bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1";
-    });
-  });
   $$("[data-dsvg]").forEach(function (svg) {
     shot(svg, function () { if (!reduced) svg.style.animation = "squashIn 500ms " + EXP + " both"; });
   });
@@ -1424,28 +1245,10 @@ that wasn't actually clean.</pre>
   })();
   shot($("#manifest"), function () { tableSeen = true; render(); });
 
-  var pinOn = false, heroP = 0, fridgePinOn = false, fridgeP = 0, dtick = 0;
   function fxLoop() {
     requestAnimationFrame(fxLoop);
     var vh = innerHeight;
-    for (var i = 0; i < shots.length; i++) {
-      var s = shots[i];
-      if (s.done) continue;
-      var r = s.el.getBoundingClientRect();
-      if (r.top < vh * 0.85 && r.bottom > 0) { s.done = true; s.fire(); }
-    }
-    heroP = reduced ? 1 : Math.max(0, Math.min(scrollY / (pinOn ? vh : 400), 1));
-    var fw = $("#fridgeWrap");
-    if (fw && fridgePinOn) {
-      var r2 = fw.getBoundingClientRect();
-      var range = r2.height - vh;
-      fridgeP = range > 0 ? cl(-r2.top / range) : 1;
-    } else fridgeP = 1;
-    var la = $("#flabelA"), lb = $("#flabelB");
-    if (la && fridgePinOn) {
-      la.style.opacity = (1 - ei(cl((fridgeP - 0.6) / 0.2))).toFixed(3);
-      lb.style.opacity = ei(cl((fridgeP - 0.72) / 0.18)).toFixed(3);
-    }
+    FX.tick();
     checkCounters();
     if (!reduced && !mob) {
       $$("[data-dpar]").forEach(function (el) {
@@ -1461,425 +1264,126 @@ that wasn't actually clean.</pre>
       var mr = $("#manifest").getBoundingClientRect();
       th.style.boxShadow = (tr.top <= 49 && mr.bottom > tr.bottom + 40) ? "0 4px 12px rgba(0,0,0,0.14)" : "none";
     }
-    dtick++;
-    if (three && dtick % 120 === 0 && three.defs.fridge.built && three.active !== three.defs.fridge) {
-      var fr = three.defs.fridge.watch.getBoundingClientRect();
-      if (fr.bottom < -2.5 * vh || fr.top > 3.5 * vh) disposeDef(three.defs.fridge);
-    }
   }
   requestAnimationFrame(fxLoop);
 
-  /* ---------- shared 3D — one renderer, two scenes (hero + fridge) ---------- */
-  var three = null, faceCanvas, faceBlink = false, confirmCanvas;
-  function drawFace() {
-    var c = faceCanvas.getContext("2d");
-    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 512);
-    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 26; c.lineCap = "round"; c.lineJoin = "round";
-    c.beginPath();
-    if (faceBlink) { c.moveTo(110, 295); c.lineTo(220, 295); c.moveTo(292, 295); c.lineTo(402, 295); }
-    else { c.moveTo(110, 320); c.lineTo(165, 258); c.lineTo(220, 320); c.moveTo(292, 320); c.lineTo(347, 258); c.lineTo(402, 320); }
-    c.stroke();
-    c.strokeStyle = getVar("--accent") || "#E8871E"; c.beginPath();
-    c.moveTo(192, 372); c.quadraticCurveTo(256, 422, 320, 372); c.stroke();
-  }
-  function drawConfirmFace() {
-    if (!confirmCanvas) return;
-    var c = confirmCanvas.getContext("2d");
-    c.clearRect(0, 0, 512, 384);
-    c.fillStyle = getVar("--mascot-fill") || "#EAF2DE"; c.fillRect(0, 0, 512, 384);
-    c.strokeStyle = getVar("--mascot-stroke") || "#2E5A22"; c.lineWidth = 24; c.lineCap = "round"; c.lineJoin = "round";
-    c.beginPath();
-    c.moveTo(96, 200); c.lineTo(160, 132); c.lineTo(224, 200);
-    c.moveTo(288, 200); c.lineTo(352, 132); c.lineTo(416, 200);
-    c.stroke();
-    c.fillStyle = getVar("--accent") || "#E8871E"; c.beginPath();
-    c.moveTo(186, 246); c.quadraticCurveTo(256, 336, 326, 246); c.quadraticCurveTo(256, 288, 186, 246); c.closePath(); c.fill();
-  }
-  function updateThreeTheme() {
-    if (!three) return;
-    requestAnimationFrame(function () {
-      var tint = getVar("--tint"), brand = getVar("--brand"), surface = getVar("--surface"), accent = getVar("--accent");
-      var h = three.defs.hero;
-      if (h.built) {
-        h.plain.color.set(tint);
-        h.edgeMats.forEach(function (m) { m.color.set(brand); });
-        h.hemi.groundColor.set(tint);
-        drawFace(); h.tex.needsUpdate = true;
-      }
-      var fr = three.defs.fridge;
-      if (fr.built) {
-        fr.hemi.groundColor.set(tint);
-        fr.plainMats.forEach(function (m) { m.color.set(surface); });
-        fr.tintMats.forEach(function (m) { m.color.set(tint); });
-        fr.accentMats.forEach(function (m) { m.color.set(accent); });
-        fr.edgeMats.forEach(function (m) { m.color.set(brand); });
-        drawConfirmFace(); fr.faceTex.needsUpdate = true;
-      }
-    });
-  }
-  function mkOrbit(ambient) {
-    return { spin: 0, rotX: 0, spinVel: ambient, velX: 0, mode: "idle", resumeT: 0, resumeFrom: 0, resumeRotX: 0, idleAt: 0, ambient: ambient };
-  }
-  function stepOrbit(o, dt, now, amb) {
-    if (o.mode === "coast") {
-      var decay = Math.pow(0.94, dt * 60);
-      o.spinVel *= decay; o.velX *= decay;
-      o.spin += o.spinVel * dt;
-      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + o.velX * dt));
-      if (Math.abs(o.spinVel) <= amb && Math.abs(o.velX) < 0.05 && now >= o.idleAt) {
-        o.mode = "resume"; o.resumeT = now; o.resumeFrom = o.spinVel; o.resumeRotX = o.rotX;
-      }
-    } else if (o.mode === "resume") {
-      var t = Math.min((now - o.resumeT) / 1500, 1);
-      var e2 = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      o.spinVel = o.resumeFrom + (amb - o.resumeFrom) * e2;
-      o.rotX = o.resumeRotX * (1 - e2);
-      o.spin += o.spinVel * dt;
-      if (t >= 1) o.mode = "idle";
-    } else {
-      o.spinVel += (amb - o.spinVel) * 0.05;
-      o.spin += o.spinVel * dt;
-      o.rotX += (0 - o.rotX) * 0.08;
-    }
-  }
-  var threeTried = false;
-  function init3D() {
-    if (threeTried) return;
-    threeTried = true;
-    if (mob || reduced) return;
-    var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-    s.onload = function () { try { buildThree(); } catch (e) {} };
-    document.head.appendChild(s);
-  }
-  function buildHero(T) {
-    var d = three.defs.hero;
-    var brand = getVar("--brand") || "#2E5A22";
-    var tint = getVar("--tint") || "#EAF2DE";
-    var scene = new T.Scene();
-    var cam = new T.PerspectiveCamera(35, 1, 0.1, 100);
-    cam.position.set(0, 0.85, 4.6); cam.lookAt(0, 0, 0);
-    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.9);
-    scene.add(hemi);
-    var dl = new T.DirectionalLight(0xffffff, 0.5);
-    dl.position.set(-2, 3, 2); scene.add(dl);
-    var group = new T.Group();
-    faceCanvas = document.createElement("canvas");
-    faceCanvas.width = faceCanvas.height = 512;
-    drawFace();
-    var tex = new T.CanvasTexture(faceCanvas);
-    var plain = new T.MeshLambertMaterial({ color: new T.Color(tint) });
-    var faceMat = new T.MeshLambertMaterial({ map: tex });
-    var edgeMat = new T.LineBasicMaterial({ color: new T.Color(brand) });
-    var body = new T.Mesh(new T.BoxGeometry(1.6, 1.2, 1.2), [plain, plain, plain, plain, faceMat, plain]);
-    body.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.6, 1.2, 1.2)), edgeMat));
-    var lidGeo = new T.BoxGeometry(1.6, 0.08, 1.2); lidGeo.translate(0, 0.04, 0.6);
-    var lid = new T.Mesh(lidGeo, plain);
-    lid.add(new T.LineSegments(new T.EdgesGeometry(lidGeo), edgeMat));
-    lid.position.set(0, 0.6, -0.6);
-    group.add(body); group.add(lid);
-    group.position.y = -0.1;
-    scene.add(group);
-    d.scene = scene; d.cam = cam; d.group = group; d.lid = lid; d.plain = plain; d.tex = tex; d.hemi = hemi; d.edgeMats = [edgeMat]; d.built = true; d.lidCur = 0;
-    if (!three.blinkStarted) {
-      three.blinkStarted = true;
-      (function blinkLoop() {
-        setTimeout(function () {
-          faceBlink = true; drawFace(); tex.needsUpdate = true;
-          setTimeout(function () { faceBlink = false; drawFace(); tex.needsUpdate = true; }, 140);
-          blinkLoop();
-        }, 5000 + Math.random() * 2000);
-      })();
-    }
-  }
-  function buildFridge(T) {
-    var d = three.defs.fridge;
-    var brand = getVar("--brand") || "#2E5A22";
-    var tint = getVar("--tint") || "#EAF2DE";
-    var surface = getVar("--surface") || "#FFFFFF";
-    var accent = getVar("--accent") || "#E8871E";
-    function v(x, y, z) { return new T.Vector3(x, y, z); }
-    var scene = new T.Scene();
-    var cam = new T.PerspectiveCamera(38, 1, 0.1, 100);
-    cam.position.set(0, 0.4, 7.4); cam.lookAt(0, -0.2, 0);
-    var hemi = new T.HemisphereLight(0xffffff, new T.Color(tint), 0.95);
-    scene.add(hemi);
-    var dl = new T.DirectionalLight(0xffffff, 0.5);
-    dl.position.set(-2, 4, 3); scene.add(dl);
-    var plainMats = [], tintMats = [], accentMats = [], edgeMats = [];
-    function mkPlain() { var m = new T.MeshLambertMaterial({ color: new T.Color(surface), transparent: true }); plainMats.push(m); return m; }
-    function mkTint() { var m = new T.MeshLambertMaterial({ color: new T.Color(tint), transparent: true }); tintMats.push(m); return m; }
-    function mkAccent() { var m = new T.MeshLambertMaterial({ color: new T.Color(accent), transparent: true }); accentMats.push(m); return m; }
-    function mkEdge() { var m = new T.LineBasicMaterial({ color: new T.Color(brand), transparent: true }); edgeMats.push(m); return m; }
-    var fridge = new T.Group();
-    fridge.position.set(-1.7, 0.35, 0);
-    var fridgeMats = [];
-    var shellMat = mkPlain(); fridgeMats.push(shellMat);
-    function addBox(w, h, dep, x, y, z, mat) {
-      var m = new T.Mesh(new T.BoxGeometry(w, h, dep), mat);
-      m.position.set(x, y, z); fridge.add(m); return m;
-    }
-    addBox(1.5, 2.5, 0.08, 0, 0, -0.51, shellMat);
-    addBox(0.08, 2.5, 1.1, -0.71, 0, 0, shellMat);
-    addBox(0.08, 2.5, 1.1, 0.71, 0, 0, shellMat);
-    addBox(1.5, 0.08, 1.1, 0, 1.21, 0, shellMat);
-    addBox(1.5, 0.08, 1.1, 0, -1.21, 0, shellMat);
-    var fEdgeMat = mkEdge(); fridgeMats.push(fEdgeMat);
-    var outline = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.5, 2.5, 1.1)), fEdgeMat);
-    fridge.add(outline);
-    var shelfMat = mkTint(); fridgeMats.push(shelfMat);
-    [-0.5, 0.1, 0.7].forEach(function (y) { addBox(1.3, 0.04, 0.9, 0, y, 0, shelfMat); });
-    var doorPivot = new T.Group();
-    doorPivot.position.set(-0.75, 0, 0.56);
-    var doorMat = mkPlain(); fridgeMats.push(doorMat);
-    var door = new T.Mesh(new T.BoxGeometry(1.46, 2.42, 0.07), doorMat);
-    door.position.set(0.73, 0, 0);
-    var dEdgeMat = mkEdge(); fridgeMats.push(dEdgeMat);
-    door.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.46, 2.42, 0.07)), dEdgeMat));
-    var handleMat = mkEdge();
-    var handle = new T.Mesh(new T.BoxGeometry(0.05, 0.6, 0.05), handleMat);
-    handle.position.set(0.65, 0.3, 0.06);
-    door.add(handle);
-    doorPivot.add(door);
-    fridge.add(doorPivot);
-    var trayDefs = [
-      { x: -0.28, shelf: 0.7, w: 0.34, mat: mkTint() },
-      { x: 0.26, shelf: 0.7, w: 0.3, mat: mkAccent() },
-      { x: -0.24, shelf: 0.1, w: 0.32, mat: mkAccent() },
-      { x: 0.28, shelf: -0.5, w: 0.34, mat: mkTint() }
-    ];
-    var trays = [], trayCurves = [];
-    trayDefs.forEach(function (t) {
-      var mesh = new T.Mesh(new T.BoxGeometry(t.w, 0.14, 0.3), t.mat);
-      mesh.position.set(t.x, t.shelf + 0.1, 0.15);
-      fridge.add(mesh); trays.push(mesh);
-      var sy = t.shelf + 0.1;
-      trayCurves.push(new T.CatmullRomCurve3([
-        v(t.x, sy, 0.15), v(t.x, sy + 0.12, 0.85), v(mix(t.x, 1.2, 0.55), sy * 0.4 + 0.35, 1.05), v(1.2, -1.15, 0.9)
-      ]));
-    });
-    scene.add(fridge);
-    var box = new T.Group();
-    var boxTint = mkTint();
-    var bodyMesh = new T.Mesh(new T.BoxGeometry(1.0, 0.72, 0.72), boxTint);
-    var bEdge = mkEdge();
-    bodyMesh.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1.0, 0.72, 0.72)), bEdge));
-    box.add(bodyMesh);
-    var boxLidGeo = new T.BoxGeometry(1.0, 0.05, 0.72); boxLidGeo.translate(0, 0.025, 0.36);
-    var lid = new T.Mesh(boxLidGeo, boxTint);
-    lid.add(new T.LineSegments(new T.EdgesGeometry(boxLidGeo), bEdge));
-    lid.position.set(0, 0.36, -0.36);
-    box.add(lid);
-    confirmCanvas = document.createElement("canvas");
-    confirmCanvas.width = 512; confirmCanvas.height = 384;
-    drawConfirmFace();
-    var faceTex = new T.CanvasTexture(confirmCanvas);
-    var face = new T.Mesh(new T.PlaneGeometry(0.62, 0.46), new T.MeshBasicMaterial({ map: faceTex, transparent: true, opacity: 0 }));
-    face.position.set(0, -0.02, 0.365);
-    box.add(face);
-    scene.add(box);
-    var travel = new T.CatmullRomCurve3([v(-0.5, -1.15, 0.9), v(0.35, -0.5, 0.5), v(1.35, -0.78, 0.1), v(2.35, -1.15, -0.35)]);
-    var marker = new T.Group();
-    var ring = new T.Mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), mkEdgeSolid());
-    function mkEdgeSolid() { var m = new T.MeshLambertMaterial({ color: new T.Color(brand) }); edgeMats.push(m); return m; }
-    marker.add(ring);
-    var post = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 0.6, 10), mkEdgeSolid());
-    post.position.y = -0.62;
-    marker.add(post);
-    marker.position.set(2.35, -0.35, -0.75);
-    marker.scale.set(0.001, 0.001, 0.001);
-    scene.add(marker);
-    d.scene = scene; d.cam = cam; d.fridge = fridge; d.fridgeMats = fridgeMats; d.doorPivot = doorPivot; d.trays = trays; d.trayCurves = trayCurves;
-    d.box = box; d.lid = lid; d.face = face; d.faceTex = faceTex; d.travel = travel; d.marker = marker;
-    d.plainMats = plainMats; d.tintMats = tintMats; d.accentMats = accentMats; d.edgeMats = edgeMats; d.hemi = hemi; d.built = true;
-  }
-  function disposeDef(d) {
-    if (!d || !d.built || !d.scene) return;
-    d.scene.traverse(function (o) {
-      if (o.geometry) o.geometry.dispose();
-      var m = o.material;
-      if (m) (Array.isArray(m) ? m : [m]).forEach(function (x) { if (x.map) x.map.dispose(); x.dispose(); });
-    });
-    if (d.scene.clear) d.scene.clear();
-    d.scene = null; d.cam = null; d.built = false;
-    ["fridge", "doorPivot", "trays", "trayCurves", "box", "lid", "face", "marker", "edgeMats", "plainMats", "tintMats", "accentMats", "fridgeMats", "hemi", "faceTex", "travel"].forEach(function (k) { delete d[k]; });
-  }
-  function tickHero(dt, now) {
-    var h = three.defs.hero;
-    h.lidCur += (-1.7 * heroP - h.lidCur) * 0.08;
-    h.lid.rotation.x = h.lidCur;
-    var sc = pinOn ? 0.92 + 0.08 * heroP : 1;
-    h.group.scale.set(sc, sc, sc);
-    var amb = spinBoost ? 0.4 : 0.15;
-    stepOrbit(h.orbit, dt, now, amb);
-    h.group.rotation.y = h.orbit.spin;
-    h.group.rotation.x = h.orbit.rotX;
-  }
-  function tickFridge(dt, now) {
-    var fr = three.defs.fridge;
-    var p = fridgePinOn ? fridgeP : 1;
-    var e1 = eo(cl(p / 0.2));
-    var e2 = ei(cl((p - 0.2) / 0.25));
-    var tFill = cl((p - 0.45) / 0.15);
-    var e4 = ei(cl((p - 0.6) / 0.25));
-    var e5 = ei(cl((p - 0.85) / 0.15));
-    fr.fridge.position.y = 0.35 - 2.7 * (1 - e1);
-    fr.fridge.position.z = -1.7 * e4;
-    fr.fridge.rotation.y = -0.8 * (1 - e1);
-    fr.fridge.visible = e4 < 0.995;
-    fr.fridgeMats.forEach(function (m) { m.opacity = 1 - e4; });
-    fr.doorPivot.rotation.y = -1.9 * e2;
-    fr.trays.forEach(function (tr, i) {
-      var u = cl((tFill - i * 0.12) / 0.52);
-      var pos = fr.trayCurves[i].getPoint(eo(u));
-      tr.position.copy(pos);
-      tr.rotation.z = 0.5 * Math.sin(Math.PI * u) * (i % 2 ? -1 : 1);
-      tr.visible = u < 1 && e4 < 0.4;
-    });
-    var bp = fr.travel.getPoint(e4);
-    fr.box.position.copy(bp);
-    fr.box.rotation.y = -0.35 + 0.75 * e4 - 0.4 * e5 + 0.35 * Math.sin(e4 * Math.PI * 2) * (1 - e5);
-    var lastU = cl((tFill - 3 * 0.12) / 0.52);
-    var lidA;
-    if (p < 0.45) lidA = -1.5 * ei(cl((p - 0.36) / 0.09));
-    else lidA = -1.5 * (1 - ei(cl((lastU - 0.82) / 0.18)));
-    lidA += -1.35 * Math.sin(Math.PI * e5);
-    fr.lid.rotation.x = lidA;
-    fr.face.material.opacity = cl((e5 - 0.35) / 0.45);
-    var ms = Math.max(0.001, e4);
-    fr.marker.scale.set(ms, ms, ms);
-    var b = 1 + 0.05 * Math.sin(Math.PI * e5);
-    fr.box.scale.set(b, b, b);
-  }
-  function buildThree() {
-    var T = window.THREE;
-    var heroHost = $("#hero3d"), fridgeHost = $("#fridge3d");
-    if (!T || !heroHost || !fridgeHost) return;
-    var renderer;
-    try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return; }
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    var cv = renderer.domElement;
-    cv.tabIndex = 0;
-    cv.setAttribute("role", "img");
-    cv.setAttribute("aria-label", "3D scene — drag or use arrow keys to spin");
-    cv.style.touchAction = "none";
-    cv.style.cursor = "grab";
-    cv.style.display = "block";
-    var fridgeWatch = $("#fridgeWrap");
-    three = {
-      renderer: renderer, cv: cv, active: null, running: false, blinkStarted: false,
-      defs: {
-        hero: { name: "hero", host: heroHost, watch: heroHost.parentElement, aspect: 0.86, orbit: mkOrbit(0.15), built: false },
-        fridge: { name: "fridge", host: fridgeHost, watch: fridgeWatch, aspect: 0.52, orbit: null, built: false }
-      }
-    };
-    var samples = [];
-    cv.addEventListener("pointerdown", function (e) {
-      var o = three.active && three.active.orbit; if (!o) return;
-      cv.setPointerCapture(e.pointerId);
-      o.mode = "drag"; cv.style.cursor = "grabbing";
-      samples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
-    });
-    cv.addEventListener("pointermove", function (e) {
-      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
-      var s0 = samples[samples.length - 1];
-      o.spin += (e.clientX - s0.x) * 0.008;
-      o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + (e.clientY - s0.y) * 0.008));
-      samples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
-      if (samples.length > 6) samples.shift();
-    });
-    function release() {
-      var o = three.active && three.active.orbit; if (!o || o.mode !== "drag") return;
-      cv.style.cursor = "grab";
-      var now = performance.now();
-      var recent = samples.filter(function (s) { return now - s.t < 120; });
-      if (recent.length >= 2) {
-        var a = recent[0], b = recent[recent.length - 1];
-        var dt = Math.max((b.t - a.t) / 1000, 0.016);
-        o.spinVel = (b.x - a.x) * 0.008 / dt;
-        o.velX = (b.y - a.y) * 0.008 / dt;
-      } else { o.spinVel = 0; o.velX = 0; }
-      o.mode = "coast"; o.idleAt = now + 800;
-    }
-    cv.addEventListener("pointerup", release);
-    cv.addEventListener("pointercancel", release);
-    cv.addEventListener("keydown", function (e) {
-      var o = three.active && three.active.orbit; if (!o) return;
-      if (e.key === "ArrowLeft") o.spin -= 0.1;
-      else if (e.key === "ArrowRight") o.spin += 0.1;
-      else if (e.key === "ArrowUp") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX - 0.1));
-      else if (e.key === "ArrowDown") o.rotX = Math.max(-0.6, Math.min(0.6, o.rotX + 0.1));
-      else return;
-      e.preventDefault();
-    });
-    var vis = { hero: false, fridge: false };
-    function attachThree(force) {
-      var want = null;
-      if (vis.hero) want = three.defs.hero; else if (vis.fridge) want = three.defs.fridge;
-      three.running = !!want;
-      if (!want) return;
-      if (!want.built) {
-        try { if (want.name === "hero") buildHero(T); else buildFridge(T); } catch (e) { return; }
-      }
-      if (want === three.active && !force) return;
-      three.active = want;
-      var host = want.host;
-      host.style.display = "block";
-      host.insertBefore(cv, host.firstChild);
-      var w = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || 420, h = Math.round(w * want.aspect);
-      renderer.setSize(w, h);
-      want.cam.aspect = w / h;
-      want.cam.updateProjectionMatrix();
-      cv.style.cursor = want.orbit ? "grab" : "default";
-      if (want.name === "hero") {
-        heroHost.style.display = "block"; $("#mascotHero").style.display = "none";
-        fridgeHost.style.display = "none"; $("#fridgeFallback").style.display = "block";
-      } else {
-        heroHost.style.display = "none"; $("#mascotHero").style.display = "block";
-        fridgeHost.style.display = "block"; $("#fridgeFallback").style.display = "none";
-      }
-    }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.target === three.defs.hero.watch) vis.hero = e.isIntersecting;
-        else if (e.target === fridgeWatch) vis.fridge = e.isIntersecting;
-      });
-      attachThree();
-    }, { rootMargin: "100px" });
-    io.observe(three.defs.hero.watch);
-    io.observe(fridgeWatch);
-    var last = performance.now();
-    function loop(now) {
-      requestAnimationFrame(loop);
-      if (!three.active || !three.running || !three.active.built) { last = now; return; }
-      var dt = Math.min((now - last) / 1000, 0.05); last = now;
-      if (three.active.name === "hero") tickHero(dt, now); else tickFridge(dt, now);
-      renderer.render(three.active.scene, three.active.cam);
-    }
-    requestAnimationFrame(loop);
-    if (!mob && !reduced) {
-      pinOn = true;
-      $("#heropin").style.height = "200vh";
-      var st = $("#top");
-      st.style.position = "sticky"; st.style.top = "0";
-      st.style.minHeight = "100vh"; st.style.alignContent = "center";
-    }
-    var fSticky = $("#fridgeSticky");
-    if (fridgeWatch && fSticky) {
-      fridgePinOn = true;
-      fridgeWatch.style.height = "300vh";
-      fSticky.style.position = "sticky"; fSticky.style.top = "15vh";
-    }
-    buildHero(T);
-    vis.hero = true;
-    attachThree(true);
-  }
-  setTimeout(init3D, 700);
+  /* ---------- hero box: scroll scrub + drag (shared — assets/site.js) ----------
+     Replaces the previous WebGL hero and the cafeteria-fridge transition. The
+     box geometry, camera and rear-edge lid hinge are carried over unchanged;
+     the renderer no longer needs Three.js from a CDN, which also means the box
+     now appears for everyone rather than only for readers who can reach it. */
+  var heroBox = STB.initHeroBox();
 
-  /* ---------- hero mascot mouth hover ---------- */
-  var heroSlot = $("#mascotHero");
-  heroSlot.addEventListener("mouseenter", function () { paintMascot(heroSlot.querySelector("svg"), "warm"); });
-  heroSlot.addEventListener("mouseleave", function () { paintMascot(heroSlot.querySelector("svg"), "idle"); });
+
+  /* ---------- 4. run packet generator ----------
+     Client-side only: no endpoint, no fetch, no storage. The generated
+     documents carry no mascot, in any theme and on paper — operational
+     paperwork is a record, not a brand surface. */
+  (function () {
+    var form = $("#packetForm"), out = $("#runPacketOut");
+    var buildBtn = $("#packetBuild"), printBtn = $("#packetPrint");
+    if (!form || !out) return;
+
+    function esc(v) {
+      return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function parseTemps(raw) {
+      return String(raw || "").split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean)
+        .map(function (l) {
+          var p = l.split(",").map(function (x) { return x.trim(); });
+          var f = parseFloat(p[p.length - 1]);
+          return { t: p[0] || "", note: p.length > 2 ? p.slice(1, -1).join(", ") : "", f: isNaN(f) ? null : f };
+        });
+    }
+
+    function build() {
+      if (!form.reportValidity()) return;
+      var d = {}; 
+      ["date", "origin", "destination", "boxid", "weight", "temps"].forEach(function (k) { d[k] = form.elements[k].value; });
+      var temps = parseTemps(d.temps);
+      var SAFE = 41;
+      var breaches = temps.filter(function (r) { return r.f !== null && r.f > SAFE; });
+
+      var manifest =
+        '<div class="packet-doc">' +
+          '<h3>Delivery manifest</h3>' +
+          '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
+          '<table class="kv"><tbody>' +
+            '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
+            '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
+            '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +
+            '<tr><th scope="row">Destination</th><td>' + esc(d.destination) + '</td></tr>' +
+            '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
+            '<tr><th scope="row">Readings</th><td class="num">' + temps.length + '</td></tr>' +
+          '</tbody></table>' +
+          '<div class="sign"><p>Released by (school) — name, signature, time</p>' +
+          '<p>Received by (site) — name, signature, time</p></div>' +
+        '</div>';
+
+      var log =
+        '<div class="packet-doc">' +
+          '<h3>Temperature log</h3>' +
+          '<p class="packet-sub">box ' + esc(d.boxid) + ' · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
+          (temps.length
+            ? '<table><thead><tr><th>Time</th><th>Note</th><th>Reading</th><th>Status</th></tr></thead><tbody>' +
+                temps.map(function (r) {
+                  var over = r.f !== null && r.f > SAFE;
+                  return '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.note) + '</td>' +
+                    '<td class="num">' + (r.f === null ? "—" : '<span data-degf="' + r.f + '"></span>') + '</td>' +
+                    '<td>' + (r.f === null ? "no reading" : (over ? "ABOVE THRESHOLD" : "in range")) + '</td></tr>';
+                }).join("") +
+              '</tbody></table>'
+            : '<p class="packet-sub" style="margin:0;">No readings entered. A box released without a temperature record has no temperature record — say so on the paperwork rather than leaving the row blank.</p>') +
+          (breaches.length
+            ? '<p class="packet-sub" style="margin:14px 0 0;">' + breaches.length + ' reading(s) above threshold. Flag this box at intake; do not close out the line until the receiving site has recorded a decision.</p>'
+            : "") +
+          '<div class="sign"><p>Logged by — name, signature</p><p>Checked at intake by — name, signature</p></div>' +
+        '</div>';
+
+      out.innerHTML = manifest + log;
+      STB.renderUnits(out);
+      out.classList.add("on");
+      printBtn.disabled = false;
+    }
+
+    buildBtn.addEventListener("click", build);
+    printBtn.addEventListener("click", function () {
+      /* Print the packet, not the website: the print stylesheet keys off this
+         class to hide everything except the generated documents. */
+      document.body.classList.add("print-packet");
+      var clear = function () { document.body.classList.remove("print-packet"); };
+      addEventListener("afterprint", clear, { once: true });
+      setTimeout(clear, 3000);          /* belt and braces where afterprint is unreliable */
+      print();
+    });
+  })();
+
+  /* ---------- Phase 5 shared features ---------- */
+  STB.initProgress();
+  STB.initAnchors();
+  STB.initSectionHighlight();
+  STB.initUnits();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "Why now — the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
+    { kind: "section", label: "Standard operating procedure", href: "#how", keywords: "sop steps how it works collect pack deliver log" },
+    { kind: "section", label: "The instruments — cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
+    { kind: "section", label: "The delivery log", href: "#tracker", keywords: "tracker manifest track the box deliveries" },
+    { kind: "section", label: "School sites and status", href: "#sites", keywords: "schools operating in conversation target stuyvesant midwood madison" },
+    { kind: "section", label: "Why we exist", href: "#story" },
+    { kind: "section", label: "The limits — what this does not do", href: "#limits", keywords: "honest caveats limitations" },
+    { kind: "section", label: "Run this yourself", href: "#replicate", keywords: "templates documents copy replicate" },
+    { kind: "section", label: "Partner with us", href: "#join", keywords: "contact signup form" },
+    { kind: "template", label: "Health code memo", href: "#replicate", keywords: "tcs food safety release records health department" },
+    { kind: "template", label: "Box spec", href: "#replicate", keywords: "insulated transport box cut sheet materials" },
+    { kind: "template", label: "Partner agreement", href: "#replicate", keywords: "one page signed school receiving site" },
+    { kind: "template", label: "Firmware repo", href: "#replicate", keywords: "logger sketch state machine calibration" },
+    { kind: "template", label: "Intake workflow", href: "#replicate", keywords: "pantry receive confirm close out manifest line" },
+    { kind: "tool", label: "Run packet generator", href: "#runPacket", keywords: "print manifest temperature log paperwork" },
+    { kind: "tool", label: "Sources", href: "#sources", keywords: "citations footnotes references" }
+  ]);
 })();
 </script>
 </body>

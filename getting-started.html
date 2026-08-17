@@ -14,113 +14,21 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 260'><rect x='26' y='26' width='248' height='188' rx='28' fill='%23EAF2DE' stroke='%232E5A22' stroke-width='24'/><path d='M32 93 L268 93' stroke='%232E5A22' stroke-width='24'/><path d='M68 168 L100 130 L132 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M178 168 L210 130 L242 168' fill='none' stroke='%232E5A22' stroke-width='26' stroke-linecap='round' stroke-linejoin='round'/><path d='M106 188 Q151 220 196 188' fill='none' stroke='%23E8871E' stroke-width='26' stroke-linecap='round'/></svg>">
 <script>
-try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-  :root {
-    --bg:#F5F5F7; --surface:#FFFFFF; --tint:#EAF2DE; --text:#1D1D1F; --text-secondary:#86868B;
-    --rule:#DDDDDD; --brand:#2E5A22; --accent:#E8871E; --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22;
-    --on-brand:#FFFFFF; --brand-press:#234618;
-    --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
-    --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
-    --nav-bg:rgba(245,245,247,0.72);
-    --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
-    --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-      --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-      --on-brand:#14170F; --brand-press:#A5D186;
-      --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-      --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-      --nav-bg:rgba(20,23,15,0.72);
-      --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-      --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
-    --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
-    --on-brand:#14170F; --brand-press:#A5D186;
-    --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
-    --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
-    --nav-bg:rgba(20,23,15,0.72);
-    --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
-  }
-  @media (prefers-contrast: more) {
-    :root {
-      --rule:#55565A; --line:rgba(29,29,31,0.55); --line-soft:rgba(29,29,31,0.32);
-      --text-secondary:#4A4A4F; --tint:#FFFFFF;
-      --brand-line:rgba(46,90,34,0.75); --brand-line-soft:rgba(46,90,34,0.42); --brand-line-mid:rgba(46,90,34,0.85);
-      --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
-    }
-    :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
-  html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
-  a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
-  a:hover { color:var(--accent); }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
-  ::selection { background:var(--tint); color:var(--brand); }
-  .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
-  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
-  .body-p { font-size:20px; line-height:1.65; max-width:60ch; color:var(--text); text-wrap:pretty; }
-  .skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
-  .skip-link:focus { transform:translateY(0); color:var(--on-brand); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes riseIn { from{transform:translateY(110%)} to{transform:translateY(0)} }
-  @keyframes blinkL { 0%,95.5%,100%{transform:scaleY(1)} 97%{transform:scaleY(0.1)} 98.5%{transform:scaleY(1)} }
-  @keyframes blinkR { 0%,96%,100%{transform:scaleY(1)} 97.5%{transform:scaleY(0.1)} 99%{transform:scaleY(1)} }
-  @keyframes lidBreathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
-  @keyframes squashIn { from{transform:scale(0.94,1.06)} to{transform:scale(1,1)} }
-  nav.bar { position:fixed; top:0; left:0; right:0; z-index:50; height:48px; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); opacity:0; pointer-events:none; transition:opacity 200ms ease; }
-  nav.bar.on { opacity:1; pointer-events:auto; }
-  nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-  nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
-  nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
-  nav.bar .links a { color:var(--text); }
-  nav.bar .links a.cta { color:var(--brand); font-weight:600; }
-  #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
-  .eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
-  h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
-  h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
-  .mask-l { display:block; overflow:hidden; }
-  .mask-l > span { display:block; }
-  .btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
-  .btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
-  .btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
-  .btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
-  .btn.line:hover { border-color:var(--brand); color:var(--brand); }
-  .prow { border-bottom:1px solid var(--line); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 1fr 24px; grid-template-areas:"num ttl caret" "num bdy bdy"; gap:6px 20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
-  .prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
-  .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
   .prow .bdy { grid-area:bdy; font-size:17px; line-height:1.6; color:var(--text-secondary); max-width:60ch; }
-  .prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
-  .prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .prow.open .pdetail { grid-template-rows:1fr; }
-  .prow .pdetail > div { overflow:hidden; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 56px; max-width:60ch; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; padding:28px; box-shadow:0 3px 14px var(--paper-shadow); }
   .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; color:var(--brand); margin:0 0 10px; }
-  .step-icon { flex:none; color:var(--brand); }
-  .cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
-  form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
-  form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
-  form.join .span2 { grid-column:span 2; }
-  form.join textarea { resize:none; }
-  form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
-  form.join button:hover { background:var(--brand-press); }
-  footer { background:var(--bg); border-top:1px solid var(--line); }
-  footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
-  footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
   @media (max-width:760px) {
     .prow > button { grid-template-columns:32px 1fr 24px; }
     .prow .pdetail p { padding-left:24px; }
@@ -133,22 +41,28 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
 
 <nav class="bar" id="nav">
   <div class="wrap">
-    <a href="index.html" class="brand">
+    <a href="index.html#top" class="brand">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
       Stock the Block
     </a>
     <div class="links">
       <a href="index.html#tracker">Tracker</a>
       <a href="index.html#how">How it works</a>
-      <a href="getting-started.html">Getting started</a>
+      <a href="index.html#story">Story</a>
+      <a href="getting-started.html" aria-current="page">Getting started</a>
       <a href="index.html#join" class="cta">Partner with us</a>
-      <button id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
-        <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
       </button>
+      <button id="unitToggle" type="button" aria-label="Units">lbs · °F</button>
     </div>
   </div>
 </nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+<p id="unitStatus" class="vh" role="status" aria-live="polite"></p>
 
 <header id="top" class="wrap" style="padding-top:88px; padding-bottom:64px; max-width:820px;">
   <p class="mono" style="font-size:13px; font-weight:500; color:var(--text-secondary); margin:0 0 18px; animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0ms both;">getting started</p>
@@ -207,11 +121,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     </div>
     <div class="card">
       <p class="kicker" data-icon="map-pin">A route</p>
-      <p class="body">A walk under thirty minutes, out and back, so the team can run it same-day and still make their bus.</p>
+      <p class="body">A walk under thirty minutes, out and back, inside your own borough — so the team can run it the same afternoon and still make their bus.</p>
     </div>
     <div class="card">
       <p class="kicker" data-icon="handshake">A partner site</p>
-      <p class="body">A food pantry or food bank within that walk, with capacity to take same-day perishable food.</p>
+      <p class="body">A food pantry or food bank in the same borough, within that walk, with capacity to take same-day perishable food.</p>
     </div>
     <div class="card">
       <p class="kicker" data-icon="cpu">The logger</p>
@@ -234,18 +148,42 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     <p class="body-p" style="margin:0 0 28px; max-width:60ch;">Tell us who you are on the sign-up form and we'll follow up with the playbook for your role — administrator, cafeteria staff, student, or partner organization.</p>
     <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="confirmed"></span>
-      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>In partnership with Green Garden NYC.</p>
+      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
     </div>
     <a href="index.html#join" class="btn solid" style="margin-top:20px;">Go to the sign-up form</a>
   </div>
 </section>
 
-<section aria-label="Partners" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding:20px 24px; display:flex; flex-wrap:wrap; gap:8px 28px; font-size:13px; color:var(--text-secondary);">
-    <span style="color:var(--text); font-weight:500;">In partnership with Green Garden NYC</span>
-    <span>Stuyvesant HS</span>
-    <span>IS 289</span>
-    <span>Millennium HS</span>
+<section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+    <p class="eyebrow">School sites</p>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets, and are labelled as such. Nothing on this list is a commitment by a school that has not made one.</p>
+    <div class="sites">
+      <div class="tier">
+        <p class="tier-label">Operating <span class="count">1</span></p>
+        <ul>
+          <li>Stuyvesant High School <span class="boro">Manhattan</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">In conversation <span class="count">2</span></p>
+        <ul>
+          <li>Midwood High School <span class="boro">Brooklyn</span></li>
+          <li>James Madison High School <span class="boro">Brooklyn</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-label">Target sites <span class="count">5</span></p>
+        <ul>
+          <li>Brooklyn Technical High School <span class="boro">Brooklyn</span></li>
+          <li>Rachel Carson High School <span class="boro">Brooklyn</span></li>
+          <li>Bronx High School of Science <span class="boro">Bronx</span></li>
+          <li>Townsend Harris High School <span class="boro">Queens</span></li>
+          <li>Queens High School for the Sciences at York College <span class="boro">Queens</span> <span class="tag">specialized</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="cite" style="font-size:13px; color:var(--text-secondary); margin:28px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Target sites are schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that it has.</p>
   </div>
 </section>
 
@@ -255,157 +193,38 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block — student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">8,000 lbs recovered · Track the Box</span>
+    <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
-  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers.</div>
+  <div class="privacy">This site collects nothing — no analytics, no cookies, no trackers. The one thing it does store is your colour-theme choice, kept in this browser’s localStorage so the page doesn’t forget it between visits. It never leaves your device and is not used to identify you.</div>
 </footer>
 
+<script src="assets/site.js"></script>
 <script>
 (function () {
   "use strict";
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var mob = innerWidth < 768;
-  var f = mob ? 0.5 : 1;
-  var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
 
   var STEPS = [
     { num: "01", title: "Confirm your building has a share table", body: "Sealed items only, nothing served or opened — the same standard as every other Stock the Block box.", detail: "Walk your cafeteria's share table at the end of a lunch period and see what's actually left: unopened milk, sealed snack packs, whole fruit that never got picked up. If nothing's landing there in usable form, there's nothing yet to build a route around.", icon: "package" },
     { num: "02", title: "Read the health code memo", body: "Understand what your school can legally release, and the records it has to keep to release it, before you plan anything else.", detail: "The memo — the first document in the “run this yourself” section — is written for food service directors and school administrators. It's the one document that decides whether your building can run this at all; the agreement, the firmware, and the intake workflow all follow from it.", icon: "file-text" },
-    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-day delivery only works on foot. Look for a pantry close enough that a student team can walk the route and still make their bus. The partner agreement is short by design: one page, signed once, before the first box leaves the building.", icon: "handshake" },
-    { num: "04", title: "Get a temperature logger", body: "Most schools don't build this themselves — they coordinate with an existing fleet and route.", detail: "Stock the Block runs three logger units across all its routes, not one per box; the units rotate, and a run without one is validated against a thermal model built from logged runs on the same route. Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own.", icon: "cpu" },
+    { num: "03", title: "Find a receiving partner", body: "A food pantry or food bank in your borough, within walking distance, willing to sign a one-page agreement before the first run.", detail: "Same-afternoon delivery only works on foot, and only inside one borough — look for a pantry in your own borough, close enough that a student team can walk the route and still make their bus. Stock the Block runs as borough clusters for exactly this reason; there is no cross-borough transport. The partner agreement is short by design: one page, signed once, before the first box leaves the building.", icon: "handshake" },
+    { num: "04", title: "Get a temperature logger", body: "Most schools won't build this themselves — the intent is that they coordinate with a shared fleet and an existing route.", detail: "<span class=\"unverified\">The fleet is designed around a small shared set of logger units — on the order of three — rotating across routes rather than one per box, with runs that go out without a unit to be validated against a thermal model built from logged runs on the same route.</span> <span class=\"unverified\">That model does not exist yet; there are no logged runs to build it from.</span> Requiring every new school to build hardware from scratch would be a real barrier — if you're joining an existing route, ask about borrowing fleet time before you build your own.", icon: "cpu" },
     { num: "05", title: "Recruit a small student team", body: "Two or three students who can commit to walking the route on a fixed day, every time it's scheduled.", detail: "Routes are walked in pairs and take under thirty minutes. The team doesn't need to be large — it needs to be reliable. One missed pickup teaches a partner site not to count on you.", icon: "users" },
-    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery.", icon: "clipboard-check" }
+    { num: "06", title: "Start logging on Track the Box", body: "Every delivery posts in real time — date, origin, destination, pounds. That log is what makes the rest of this checkable.", detail: "Entries post within minutes of drop-off and are never edited after the fact — corrections append as new lines. There's no separate reporting step to remember: logging the delivery is the delivery. <span class=\"unverified\">Track the Box, the public log, is planned and not yet published.</span>", icon: "clipboard-check" }
   ];
-  /* Icon set: redrawn from Lucide (ISC-licensed, lucide.dev) at 24x24, stroke-based, inlined
-     rather than loaded from a CDN so the site keeps its zero-external-script footprint. */
-  var ICONS = {
-    package: '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
-    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path>',
-    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path>',
-    cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path>',
-    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
-    "clipboard-check": '<rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
-    "map-pin": '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle>'
-  };
-  function iconSVG(name, size) {
-    size = size || 20;
-    return '<svg class="step-icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
-  }
-  function initIcons(root) {
-    $$("[data-icon]", root).forEach(function (el) {
-      if (el.dataset.iconInit) return;
-      el.dataset.iconInit = "1";
-      el.insertAdjacentHTML("afterbegin", iconSVG(el.getAttribute("data-icon")));
-    });
-  }
-  initIcons();
+  /* ---------- icon set (shared — assets/site.js) ---------- */
+  var iconSVG = STB.iconSVG;
+  STB.initIcons();
 
-  /* ---------- mascot component (copied verbatim from index.html) ---------- */
-  var MASCOT_EYES = {
-    idle:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    warm:      { l: "M63 163 L96 131 L128 163", r: "M182 163 L215 131 L247 163", w: 14 },
-    record:    { l: "M95 146 L96 147 L97 146", r: "M214 146 L215 147 L216 146", w: 38 },
-    confirmed: { l: "M63 158 L96 126 L128 158", r: "M182 158 L215 126 L247 158", w: 14 },
-    empty:     { l: "M63 150 L96 150 L128 150", r: "M182 150 L215 150 L247 150", w: 14 },
-    active:    { l: "M63 141 L96 148 L128 156", r: "M182 156 L215 148 L247 141", w: 14 },
-    collect:   { l: "M63 150 L96 122 L128 150", r: "M182 150 L215 122 L247 150", w: 14 },
-    pack:      { l: "M63 138 L96 166 L128 138", r: "M182 138 L215 166 L247 138", w: 14 },
-    deliver:   { l: "M63 160 L96 134 L128 160", r: "M182 160 L215 134 L247 160", w: 14 },
-    neutral:   { l: "M63 158 L96 138 L128 158", r: "M182 158 L215 138 L247 158", w: 14 },
-    inrange:   { l: "M74 152 L96 136 L118 152", r: "M193 152 L215 136 L237 152", w: 13 },
-    danger:    { l: "M74 146 L96 158 L118 146", r: "M193 146 L215 158 L237 146", w: 13 }
-  };
-  var MASCOT_SMILE = {
-    idle: "M110 184 Q151 212 193 184", warm: "M110 180 Q151 226 193 180",
-    record: "M125 190 L177 190", confirmed: "M110 184 Q151 212 193 184",
-    empty: "M130 186 Q151 196 172 186", active: "M125 190 L177 190",
-    collect: "M120 186 Q151 208 182 186", pack: "M124 190 L178 190",
-    deliver: "M112 184 Q151 210 190 184", neutral: "M118 188 L184 188",
-    inrange: "M118 202 Q151 222 184 202", danger: "M124 205 L178 205"
-  };
-  var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
-  var MASCOT_LEAN = { deliver: "rotate(5deg)" };
+  /* ---------- mascot component (shared — assets/site.js) ---------- */
+  STB.initMascotSlots();
 
-  function mascotSVG(state, opts) {
-    opts = opts || {};
-    state = MASCOT_EYES[state] ? state : "idle";
-    var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
-    var bare = !!opts.bare, faceless = !!opts.faceless, glasses = !!opts.glasses && !faceless;
-    var fill = opts.fill || "var(--mascot-fill)";
-    var lidT = MASCOT_LID[state] || "rotate(0deg)";
-    var leanT = MASCOT_LEAN[state] || "rotate(0deg)";
-    var breatheAnim = opts.breathe ? "lidBreathe 4s ease-in-out infinite" : "none";
-    var blinkLAnim = opts.blink ? "blinkL 6s ease-in-out infinite" : "none";
-    var blinkRAnim = opts.blink ? "blinkR 6.4s ease-in-out infinite" : "none";
-    var informative = !!opts.informative;
-    var label = opts.label || "Stock the Block mascot";
-    var isRecord = state === "record", isConfirmed = state === "confirmed";
-    var bodyMk = bare ? "" : (
-      '<rect x="20" y="20" width="260" height="200" rx="28" fill="' + fill + '" style="stroke:var(--mascot-stroke);" stroke-width="12"></rect>' +
-      '<g data-lid-g style="transform:' + lidT + ';transform-origin:150px 93px;transition:transform 340ms cubic-bezier(0.16,1,0.3,1);">' +
-        '<path d="M26 93 L274 93" fill="none" stroke-width="12" style="stroke:var(--mascot-stroke); animation:' + breatheAnim + ';"></path>' +
-      '</g>'
-    );
-    var glassesMk = glasses ? (
-      '<circle cx="96" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<circle cx="215" cy="152" r="36" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></circle>' +
-      '<path d="M132 152 L179 152" fill="none" style="stroke:var(--mascot-stroke);" stroke-width="9"></path>'
-    ) : "";
-    var faceMk = faceless ? "" : (
-      '<path data-eye-l d="' + e.l + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkLAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-eye-r d="' + e.r + '" fill="none" stroke-width="' + e.w + '" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke); transform-box:fill-box; transform-origin:center; animation:' + blinkRAnim + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), stroke-width 260ms cubic-bezier(0.16,1,0.3,1);"></path>' +
-      '<path data-mouth-stroke d="' + smile + '" fill="none" stroke-width="14" stroke-linecap="round" style="stroke:var(--accent); opacity:' + (isRecord || isConfirmed ? 0 : 1) + '; transition:d 260ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease;"></path>' +
-      '<path data-mouth-o d="M151 170 Q127 170 127 192 Q127 214 151 214 Q175 214 175 192 Q175 170 151 170 Z" style="fill:var(--accent); opacity:' + (isRecord ? 1 : 0) + '; transition:opacity 220ms ease;"></path>' +
-      '<path data-mouth-grin d="M112 176 Q151 224 190 176 Q151 198 112 176 Z" style="fill:var(--accent); opacity:' + (isConfirmed ? 1 : 0) + '; transition:opacity 220ms ease;"></path>'
-    );
-    return '<svg data-mascot data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + label + '"' : '') + ' style="width:100%;height:auto;display:block;">' +
-      '<g data-lean-g style="transform:' + leanT + ';transform-origin:150px 230px;transition:transform 320ms cubic-bezier(0.16,1,0.3,1);">' + bodyMk + glassesMk + faceMk + '</g></svg>';
-  }
-  function initMascotSlots(root) {
-    $$(".mascot-slot", root).forEach(function (el) {
-      if (el.dataset.mascotInit) return;
-      el.dataset.mascotInit = "1";
-      var state = el.getAttribute("data-state") || "idle";
-      el.innerHTML = mascotSVG(state, {
-        glasses: el.hasAttribute("data-glasses"),
-        bare: el.hasAttribute("data-bare"),
-        faceless: el.hasAttribute("data-faceless"),
-        fill: el.getAttribute("data-fill"),
-        blink: el.hasAttribute("data-blink"),
-        breathe: el.hasAttribute("data-breathe"),
-        informative: el.hasAttribute("data-informative"),
-        label: el.getAttribute("data-label")
-      });
-    });
-  }
-  initMascotSlots();
-
-  /* ---------- theme (copied verbatim from index.html) ---------- */
-  var html = document.documentElement;
-  var sysDark = matchMedia("(prefers-color-scheme: dark)");
-  function currentTheme() { return html.getAttribute("data-theme") || (sysDark.matches ? "dark" : "light"); }
-  var toggle = $("#themeToggle");
-  function reflectTheme() {
-    var dark = currentTheme() === "dark";
-    toggle.setAttribute("aria-pressed", dark ? "true" : "false");
-    $("#iconMoon").style.display = dark ? "none" : "block";
-    $("#iconSun").style.display = dark ? "block" : "none";
-  }
-  toggle.addEventListener("click", function () {
-    var next = currentTheme() === "dark" ? "light" : "dark";
-    html.setAttribute("data-theme-anim", "");
-    html.setAttribute("data-theme", next);
-    try { localStorage.setItem("stb-theme", next); } catch (e) {}
-    reflectTheme();
-  });
-  sysDark.addEventListener("change", function () { if (!html.getAttribute("data-theme")) reflectTheme(); });
-  reflectTheme();
+  /* ---------- theme (shared — assets/site.js) ---------- */
+  STB.initTheme();
 
   /* ---------- nav ---------- */
-  var nav = $("#nav");
-  addEventListener("scroll", function () { nav.classList.toggle("on", scrollY > 100); }, { passive: true });
+  STB.initNav();
 
   /* ---------- step accordion (same pattern as index.html section 03) ---------- */
   var stepsHost = $("#steps");
@@ -423,51 +242,35 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "dark" || t === "ligh
     stepsHost.appendChild(d);
   });
 
-  /* ---------- scroll reveal (same shot pattern as index.html) ---------- */
-  var shots = [];
-  function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
-  $$("[data-reveal]").forEach(function (el) {
-    if (!reduced) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
-    shot(el, function () {
-      el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
-      el.style.opacity = "1"; el.style.transform = "translateY(0)";
-    });
-  });
-  $$("[data-mask]").forEach(function (mk) {
-    var lines = $$("[data-line]", mk);
-    if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
-    shot(mk, function () {
-      lines.forEach(function (l, i) {
-        l.style.transition = "transform 700ms " + EXP + " " + (i * 80) + "ms";
-        l.style.transform = "translateY(0)";
-      });
-    });
-  });
-  $$("[data-prow]").forEach(function (row) {
-    var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
-    if (!reduced) {
-      num.style.opacity = "0";
-      ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
-      bdy.style.opacity = "0";
-    }
-    shot(row, function () {
-      num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1";
-      ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
-      ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
-      bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1";
-    });
-  });
+  /* ---------- scroll reveal (shared — assets/site.js) ----------
+     Registered after the step accordion above, so the JS-built .prow rows are
+     in the DOM by the time initReveals() looks for them. */
+  var FX = STB.initReveals();
   function fxLoop() {
     requestAnimationFrame(fxLoop);
-    var vh = innerHeight;
-    for (var i = 0; i < shots.length; i++) {
-      var s = shots[i];
-      if (s.done) continue;
-      var r = s.el.getBoundingClientRect();
-      if (r.top < vh * 0.85 && r.bottom > 0) { s.done = true; s.fire(); }
-    }
+    FX.tick();
   }
   requestAnimationFrame(fxLoop);
+
+  /* ---------- Phase 5 shared features ---------- */
+  STB.initProgress();
+  STB.initAnchors();
+  STB.initSectionHighlight();
+  STB.initUnits();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "Getting started", href: "getting-started.html" },
+    { kind: "section", label: "The sequence — six things in order", href: "#sequence", keywords: "steps order checklist" },
+    { kind: "section", label: "Pickup cadence", href: "#cadence", keywords: "weekly daily schedule frequency" },
+    { kind: "section", label: "What you'll need", href: "#needs", keywords: "people route partner logger agreement" },
+    { kind: "section", label: "Get involved", href: "#join-cta", keywords: "contact signup" },
+    { kind: "section", label: "School sites and status", href: "index.html#sites", keywords: "schools operating target" },
+    { kind: "section", label: "The delivery log", href: "index.html#tracker", keywords: "tracker manifest" },
+    { kind: "template", label: "Health code memo", href: "index.html#replicate", keywords: "food safety release records" },
+    { kind: "template", label: "Partner agreement", href: "index.html#replicate" },
+    { kind: "tool", label: "Run packet generator", href: "index.html#runPacket", keywords: "print manifest temperature log" }
+  ]);
 })();
 </script>
 </body>

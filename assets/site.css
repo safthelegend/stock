@@ -1,0 +1,394 @@
+/* ============================================================================
+   Stock the Block — shared design system
+   ----------------------------------------------------------------------------
+   Every rule in this file is byte-identical across index.html and
+   getting-started.html. Rules that differ between the two pages stay inline in
+   that page, in a <style> block that loads AFTER this file so the page-specific
+   version wins the cascade.
+
+   Custom property names and values are carried over verbatim. Do not rename,
+   consolidate or "tidy" them — page CSS and inline SVG both read them by name.
+   ============================================================================ */
+
+:root {
+  --bg:#F5F5F7; --surface:#FFFFFF; --tint:#EAF2DE; --text:#1D1D1F; --text-secondary:#6C6C70;
+  --rule:#DDDDDD; --brand:#2E5A22; --accent:#E8871E; --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22;
+  /* --accent is the brand orange and stays exactly as it was — it paints the
+     mascot's mouth and the chart marks. But at 2.31:1 on --tint it cannot
+     legally carry text, so accent-coloured TEXT uses --accent-text instead:
+     the same hue darkened to the minimum that clears AA on all three light
+     grounds. In dark and stock the accent already passes, so there the two
+     tokens are the same colour. */
+  --accent-text:#9F5D15;
+  --on-brand:#FFFFFF; --brand-press:#234618;
+  --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
+  --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
+  --nav-bg:rgba(245,245,247,0.72);
+  --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
+  --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
+  /* Interior of the hero box, revealed as the lid hinges open. A darker
+     shade of --mascot-fill; never a new colour and never contents. */
+  --box-interior:#C6D9B0;
+}
+/* Three modes: light (above, untouched), dark, and stock. The system
+   preference decides only when the reader has made no explicit choice — hence
+   :not([data-theme]) rather than :not([data-theme="light"]), which would also
+   have caught the opt-in stock mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
+    --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --accent-text:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
+    --on-brand:#14170F; --brand-press:#A5D186;
+    --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
+    --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
+    --nav-bg:rgba(20,23,15,0.72);
+    --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
+    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+    --box-interior:#141810;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#14170F; --surface:#1C2016; --tint:#252B1D; --text:#F0F2EC; --text-secondary:#9BA093;
+  --rule:#333A28; --brand:#8FBF6F; --accent:#F0A040; --accent-text:#F0A040; --mascot-fill:#252B1D; --mascot-stroke:#8FBF6F;
+  --on-brand:#14170F; --brand-press:#A5D186;
+  --line:rgba(240,242,236,0.14); --line-soft:rgba(240,242,236,0.08);
+  --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
+  --nav-bg:rgba(20,23,15,0.72);
+  --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
+  --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+  --box-interior:#141810;
+}
+/* Stock — brand mode. Forest-green ground, cream text, orange accent.
+   The hues are the site's own two brand colours; nothing new is introduced.
+
+   The exact --brand green (#2E5A22) cannot serve as the text-bearing ground:
+   against it the palette's oranges reach only 3.04:1 (#E8871E) and 3.77:1
+   (#F0A040), short of the 4.5:1 this mode has to clear. So the ground is the
+   palette's own darker forest, --brand-press #234618, over one darker shade of
+   the same hue for the page behind it — and the accent is #F0A040, the orange
+   the dark theme already uses. Every pair below clears WCAG AA. */
+:root[data-theme="stock"] {
+  --bg:#1B3511; --surface:#234618; --tint:#234618; --text:#EAF2DE; --text-secondary:#C4C9BC;
+  --rule:#3D6B2E; --brand:#8FBF6F; --accent:#F0A040; --accent-text:#F0A040; --mascot-fill:#234618; --mascot-stroke:#8FBF6F;
+  --on-brand:#1B3511; --brand-press:#A5D186;
+  --line:rgba(234,242,222,0.16); --line-soft:rgba(234,242,222,0.09);
+  --brand-line:rgba(143,191,111,0.34); --brand-line-soft:rgba(143,191,111,0.18); --brand-line-mid:rgba(143,191,111,0.46);
+  --nav-bg:rgba(27,53,17,0.74);
+  --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
+  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
+  --box-interior:#132608;
+}
+@media (prefers-contrast: more) {
+  :root {
+    --rule:#55565A; --line:rgba(29,29,31,0.55); --line-soft:rgba(29,29,31,0.32);
+    --text-secondary:#4A4A4F; --tint:#FFFFFF;
+    --brand-line:rgba(46,90,34,0.75); --brand-line-soft:rgba(46,90,34,0.42); --brand-line-mid:rgba(46,90,34,0.85);
+    --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
+  }
+  :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
+  :root[data-theme="stock"] { --rule:#7FA96C; --line:rgba(234,242,222,0.5); --line-soft:rgba(234,242,222,0.3); --text-secondary:#EAF2DE; --brand-line:rgba(143,191,111,0.75); --brand-line-soft:rgba(143,191,111,0.42); --brand-line-mid:rgba(143,191,111,0.85); --grain-op:0; }
+}
+
+/* Theme control. A labelled button showing the mode it will switch to next;
+   the change itself is announced through a visually hidden live region. */
+#themeToggle { display:inline-flex; align-items:center; gap:7px; min-height:36px; padding:0 10px; background:none; border:1px solid var(--line); border-radius:999px; cursor:pointer; color:var(--text); font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; transition:border-color 180ms ease, color 180ms ease; }
+#themeToggle:hover { border-color:var(--brand-line-mid); color:var(--brand); }
+#themeToggle .theme-name { line-height:1; }
+#themeToggle svg { flex:none; }
+.vh { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",sans-serif; -webkit-font-smoothing:antialiased; }
+html[data-theme-anim] body, html[data-theme-anim] nav, html[data-theme-anim] section, html[data-theme-anim] footer, html[data-theme-anim] .manifest, html[data-theme-anim] input, html[data-theme-anim] textarea, html[data-theme-anim] select { transition:background-color 200ms ease, color 200ms ease; }
+a { color:var(--brand); text-decoration:none; transition:color 200ms ease; }
+a:hover { color:var(--accent-text); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+::selection { background:var(--tint); color:var(--brand); }
+.mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+.wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
+.body-p { font-size:20px; line-height:1.65; max-width:60ch; color:var(--text); text-wrap:pretty; }
+.skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
+.skip-link:focus { transform:translateY(0); color:var(--on-brand); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes riseIn { from{transform:translateY(110%)} to{transform:translateY(0)} }
+@keyframes blinkL { 0%,95.5%,100%{transform:scaleY(1)} 97%{transform:scaleY(0.1)} 98.5%{transform:scaleY(1)} }
+@keyframes blinkR { 0%,96%,100%{transform:scaleY(1)} 97.5%{transform:scaleY(0.1)} 99%{transform:scaleY(1)} }
+@keyframes lidBreathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
+@keyframes squashIn { from{transform:scale(0.94,1.06)} to{transform:scale(1,1)} }
+nav.bar { position:fixed; top:0; left:0; right:0; z-index:50; height:48px; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); opacity:0; pointer-events:none; transition:opacity 200ms ease; }
+nav.bar.on { opacity:1; pointer-events:auto; }
+nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
+nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
+nav.bar .links a { color:var(--text); }
+nav.bar .links a.cta { color:var(--brand); font-weight:600; }
+#themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
+.eyebrow { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
+h1, h2 { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
+h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
+.mask-l { display:block; overflow:hidden; }
+.mask-l > span { display:block; }
+.btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
+.btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
+.btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
+.btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
+.btn.line:hover { border-color:var(--brand); color:var(--brand); }
+.prow { border-bottom:1px solid var(--line); }
+.prow .num { grid-area:num; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
+.prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
+.step-icon { flex:none; color:var(--brand); }
+.prow .caret { grid-area:caret; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); justify-self:end; }
+.prow .pdetail { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
+.prow.open .pdetail { grid-template-rows:1fr; }
+.prow .pdetail > div { overflow:hidden; }
+.cards-grid .card p.body { font-size:17px; line-height:1.6; color:var(--text); margin:0; }
+form.join { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+form.join input, form.join select, form.join textarea { border:1px solid var(--line); background:var(--bg); padding:12px 14px; font-size:14px; font-family:inherit; border-radius:10px; transition:border-color 200ms ease; color:var(--text); }
+form.join input:focus, form.join textarea:focus { border-color:var(--brand); }
+form.join .span2 { grid-column:span 2; }
+form.join textarea { resize:none; }
+form.join button { grid-column:span 2; justify-self:start; font-size:19px; font-weight:600; font-family:inherit; background:var(--brand); color:var(--on-brand); border:none; padding:12px 26px; border-radius:12px; cursor:pointer; transition:background-color 200ms ease; }
+form.join button:hover { background:var(--brand-press); }
+footer { background:var(--bg); border-top:1px solid var(--line); }
+footer .wrap.top { padding:32px 24px 12px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; font-size:14px; color:var(--text-secondary); }
+footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
+
+/* ---------------------------------------------------------------------------
+   Unverified-claim flag. Phase 2 rewrote four claims the project cannot yet
+   substantiate into explicit future/conditional voice. Each rewritten phrase
+   is wrapped in .unverified so it stays visible during review rather than
+   quietly reading as fact. Accent-orange, per the existing palette — no new
+   colour is introduced.
+   --------------------------------------------------------------------------- */
+.unverified { color:var(--accent-text); text-decoration:underline; text-decoration-style:dotted; text-underline-offset:3px; }
+
+/* School-site status tiers. Every school renders under an explicit status
+   label; none appears without one. */
+.sites { display:grid; gap:28px; margin:0; padding:0; }
+.sites .tier { margin:0; }
+.sites .tier-label { display:flex; align-items:baseline; gap:10px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand); margin:0 0 12px; padding-bottom:8px; border-bottom:1px solid var(--brand-line-soft); }
+.sites .tier-label .count { color:var(--text-secondary); letter-spacing:0; }
+.sites ul { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+.sites li { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; font-size:17px; line-height:1.5; color:var(--text); }
+.sites li .boro { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; color:var(--text-secondary); }
+.sites li .tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+
+/* ---------------------------------------------------------------------------
+   Hero box. The canvas is sized by its container and never scroll-jacks:
+   no scroll-snap, no overscroll-behaviour, no touch-action override that
+   would stop the page moving under a vertical drag.
+   --------------------------------------------------------------------------- */
+#heroBoxWrap { position:relative; width:100%; max-width:420px; }
+#heroBox { display:block; width:100%; height:auto; outline-offset:6px; }
+#heroBox[tabindex]:focus-visible { outline:2px solid var(--brand); }
+#heroBoxHint { position:absolute; left:50%; bottom:-6px; transform:translate(-50%,8px); margin:0; padding:5px 11px; border:1px solid var(--brand-line-mid); border-radius:999px; background:var(--surface); color:var(--text-secondary); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 320ms ease, transform 320ms ease; }
+#heroBoxHint.on { opacity:1; transform:translate(-50%,0); }
+#heroBoxHint.gone { opacity:0 !important; transform:translate(-50%,8px) !important; }
+
+/* ===========================================================================
+   PHASE 5 — quality of life
+   =========================================================================== */
+
+/* --- 10. Focus. Every interactive element, every theme. --------------------
+   The original rule listed five element types by name, which missed anything
+   made focusable with tabindex (the hero box), <summary>, and [role=button].
+   --brand is AA-contrasting against every surface in all three themes, so one
+   ring colour serves all of them. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+[role="button"]:focus-visible, [contenteditable]:focus-visible {
+  outline:2px solid var(--brand); outline-offset:2px; border-radius:3px;
+}
+/* Windows high-contrast mode paints its own ring but drops colour, so keep a
+   visible outline there rather than relying on the token. */
+@media (forced-colors: active) {
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [tabindex]:focus-visible { outline:2px solid Highlight; }
+}
+
+/* --- 8. Reading progress ------------------------------------------------- */
+#progressBar { position:fixed; top:0; left:0; height:2px; width:100%; z-index:60; transform-origin:0 50%; transform:scaleX(0); background:var(--brand); pointer-events:none; }
+nav.bar .links a[aria-current="true"] { color:var(--brand); box-shadow:inset 0 -2px 0 var(--brand); }
+
+/* --- 8. Heading anchors -------------------------------------------------- */
+.anchor-link { display:inline-flex; align-items:center; justify-content:center; width:1.6em; height:1.6em; margin-left:0.3em; padding:0; border:none; background:none; border-radius:6px; cursor:pointer; color:var(--text-secondary); opacity:0; transition:opacity 160ms ease, color 160ms ease; vertical-align:middle; }
+h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { opacity:1; }
+.anchor-link:hover { color:var(--brand); }
+.anchor-link[data-copied="1"] { opacity:1; color:var(--brand); }
+
+/* --- 1. Command palette -------------------------------------------------- */
+#paletteBackdrop { position:fixed; inset:0; z-index:190; background:rgba(0,0,0,0.42); opacity:0; pointer-events:none; transition:opacity 140ms ease; }
+#paletteBackdrop.on { opacity:1; pointer-events:auto; }
+#palette { position:fixed; z-index:191; top:12vh; left:50%; transform:translate(-50%,-8px); width:min(560px, calc(100vw - 32px)); background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; box-shadow:0 18px 50px var(--paper-shadow); opacity:0; pointer-events:none; transition:opacity 140ms ease, transform 140ms ease; overflow:hidden; }
+#palette.on { opacity:1; pointer-events:auto; transform:translate(-50%,0); }
+#paletteInput { width:100%; border:none; border-bottom:1px solid var(--line); background:none; color:var(--text); font-family:inherit; font-size:17px; padding:16px 18px; }
+#paletteInput:focus { outline:none; }
+#paletteList { list-style:none; margin:0; padding:6px; max-height:52vh; overflow-y:auto; }
+#paletteList li { margin:0; }
+#paletteList button { display:flex; align-items:baseline; gap:10px; width:100%; text-align:left; background:none; border:none; border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); font-family:inherit; font-size:15px; }
+#paletteList button .kind { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-secondary); flex:none; }
+#paletteList button mark { background:none; color:var(--brand); font-weight:600; }
+#paletteList li[aria-selected="true"] button { background:var(--tint); }
+#paletteList li[aria-selected="true"] button .kind { color:var(--brand); }
+#paletteEmpty { padding:18px; margin:0; color:var(--text-secondary); font-size:14px; }
+#paletteHint { display:flex; gap:14px; padding:9px 14px; border-top:1px solid var(--line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); }
+
+/* --- 2. Offline banner --------------------------------------------------- */
+#offlineBanner { position:fixed; left:0; right:0; bottom:0; z-index:70; display:none; padding:9px 16px; background:var(--brand); color:var(--on-brand); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; text-align:center; }
+#offlineBanner.on { display:block; }
+
+/* --- 7. Unit toggle ------------------------------------------------------ */
+#unitToggle { display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 10px; background:none; border:1px solid var(--line); border-radius:999px; cursor:pointer; color:var(--text); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:0.04em; transition:border-color 180ms ease, color 180ms ease; }
+#unitToggle:hover { border-color:var(--brand-line-mid); color:var(--brand); }
+#unitToggle[hidden] { display:none; }
+
+/* --- 4/6. Run packet + CSV ---------------------------------------------- */
+.packet-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:18px; }
+.packet-form label { display:grid; gap:6px; font-size:13px; color:var(--text-secondary); }
+.packet-form input, .packet-form textarea { border:1px solid var(--line); background:var(--bg); color:var(--text); font-family:inherit; font-size:14px; padding:10px 12px; border-radius:10px; }
+.packet-form .span-all { grid-column:1/-1; }
+.packet-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+.btn-sm { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; padding:9px 15px; border-radius:10px; border:1px solid var(--brand-line-mid); background:var(--surface); color:var(--brand); cursor:pointer; }
+.btn-sm:hover:not(:disabled) { border-color:var(--brand); }
+.btn-sm.solid { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+.btn-sm:disabled { opacity:0.5; cursor:not-allowed; }
+.packet-note { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:14px 0 0; max-width:62ch; }
+#runPacketOut { display:none; margin-top:26px; }
+#runPacketOut.on { display:block; }
+.packet-doc { border:1px solid var(--rule); border-radius:10px; padding:22px; background:var(--surface); margin-top:16px; }
+.packet-doc h3 { font-family:'Archivo',-apple-system,sans-serif; font-size:16px; margin:0 0 4px; color:var(--text); }
+.packet-doc .packet-sub { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); margin:0 0 16px; }
+.packet-doc table { width:100%; border-collapse:collapse; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; }
+.packet-doc th, .packet-doc td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line-soft); color:var(--text); }
+.packet-doc th { font-size:11px; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-secondary); }
+.packet-doc td.num { font-variant-numeric:tabular-nums; }
+.packet-doc .sign { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:22px; margin-top:24px; }
+.packet-doc .sign p { margin:0; font-size:12px; color:var(--text-secondary); border-top:1px solid var(--rule); padding-top:7px; }
+/* Program rule: operational paperwork carries no mascot. Every theme, screen
+   and print alike — a generated manifest or temperature log is a record, not
+   a brand surface. */
+.packet-doc .mascot-slot, .packet-doc [data-mascot] { display:none !important; }
+
+/* --- 9. Reduced motion, audited -----------------------------------------
+   Not just the scrub: every animation and transition declared anywhere in
+   this stylesheet, plus the inline ones the pages set on reveal elements.
+   Animations are cancelled rather than merely stopped so elements land on
+   their final frame instead of freezing mid-reveal. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:0.001ms !important;
+    animation-delay:0ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    transition-delay:0ms !important;
+    scroll-behavior:auto !important;
+  }
+  html { scroll-behavior:auto !important; }
+  .prow .pdetail, .cards-grid .card .doc-panel { transition:none !important; }
+  #progressBar { transition:none !important; }
+  #palette, #paletteBackdrop { transition:none !important; }
+  .anchor-link { transition:none !important; }
+}
+
+/* --- 3. Print. Black on white regardless of the active theme. ------------ */
+@media print {
+  /* Repoint the tokens rather than overriding hundreds of rules. Because
+     these are the same custom properties every rule already reads, the whole
+     page turns monochrome in one move — and it does so from dark and stock
+     just as thoroughly as from light. */
+  :root, :root[data-theme="light"], :root[data-theme="dark"], :root[data-theme="stock"] {
+    --bg:#FFFFFF; --surface:#FFFFFF; --tint:#FFFFFF; --text:#000000; --text-secondary:#333333;
+    --rule:#000000; --brand:#000000; --accent:#000000; --accent-text:#000000;
+    --on-brand:#FFFFFF; --brand-press:#000000;
+    --line:#000000; --line-soft:#BBBBBB;
+    --brand-line:#000000; --brand-line-soft:#BBBBBB; --brand-line-mid:#000000;
+    --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-interior:#FFFFFF;
+    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0;
+  }
+  html, body { background:#FFFFFF !important; color:#000000 !important; }
+  @page { margin:16mm; }
+
+  /* Chrome, decoration and every interactive control. */
+  nav.bar, .skip-link, #themeToggle, #themeStatus, #unitToggle, #progressBar,
+  #palette, #paletteBackdrop, #offlineBanner, .divider, #heroBoxWrap, #formWrap,
+  .paper-grain, #chips, .anchor-link, .doc-copy, .doc-download, .doc-toggle,
+  .video-thumb, .packet-form, .packet-actions, .mascot-slot, [data-mascot],
+  .empty-state .mascot-slot { display:none !important; }
+  * { animation:none !important; transition:none !important; box-shadow:none !important; }
+  #heropin { height:auto !important; }
+  #top, .thead { position:static !important; min-height:0 !important; }
+
+  /* Every collapsed template prints at full content. */
+  .prow .pdetail, .cards-grid .card .doc-panel { display:block !important; grid-template-rows:1fr !important; }
+  .prow .pdetail > div, .cards-grid .card .doc-panel > div { overflow:visible !important; height:auto !important; }
+  .prow.open .pdetail, .cards-grid .card .doc-panel { visibility:visible !important; }
+  .doc-text { max-height:none !important; overflow:visible !important; white-space:pre-wrap !important; border:1px solid #000 !important; font-size:10.5pt !important; }
+
+  /* Link targets, since a printed page cannot be clicked. */
+  a[href^="http"]::after, a[href^="mailto"]::after { content:" <" attr(href) ">"; font-weight:400; font-size:0.82em; word-break:break-all; }
+
+  section, .limits-grid > div, .sites .tier { break-inside:avoid; page-break-inside:avoid; }
+  h1, h2, h3 { break-after:avoid; page-break-after:avoid; }
+  /* The memo and the agreement have to stand alone, so each document card
+     starts a fresh page. They are too long to forbid internal breaks, so the
+     rule is "own page, may continue" rather than "never split". */
+  .cards-grid .card:has(.doc-text) { break-before:page; page-break-before:always; break-inside:auto; }
+  .packet-doc { break-inside:avoid; page-break-inside:avoid; border:1px solid #000 !important; }
+
+  /* Printing a generated run packet prints the packet, not the website. */
+  body.print-packet > *:not(#replicate) { display:none !important; }
+  body.print-packet #replicate > .wrap > *:not(#runPacketOut) { display:none !important; }
+  body.print-packet #replicate, body.print-packet #runPacketOut { display:block !important; background:#fff !important; border:none !important; padding:0 !important; }
+  body.print-packet .packet-doc:first-of-type { break-before:auto; page-break-before:auto; }
+}
+
+/* 10. The nav fades in on scroll, which meant a keyboard user could tab into
+   the theme and unit controls while they were still at opacity 0 — a focus
+   ring nobody can see. Reveal the bar whenever anything inside it has focus. */
+nav.bar:focus-within { opacity:1; pointer-events:auto; }
+
+/* ===========================================================================
+   Polish pass
+   =========================================================================== */
+
+/* Hero. The pre-launch statement used to be set larger than the h1 below it,
+   which inverted the hierarchy — two display headings competing, and the one
+   that won was not the heading. The h1 now leads and the pre-launch state
+   reads as what it is: a status panel, subordinate to the claim above it. */
+/* Wraps naturally and balances rather than being split into hand-authored
+   masked lines: at this size no fixed phrase fits the hero column across every
+   viewport, and a mask line that wraps breaks mid-phrase. */
+.hero-h1 { font-size:clamp(30px,3.6vw,42px); line-height:1.13; letter-spacing:-0.035em; margin:10px 0 0; color:var(--text); max-width:28ch; text-wrap:balance; }
+.hero-h1 em { display:block; margin-top:0.35em; }
+.hero-h1 em { font-style:normal; color:var(--brand); }
+#heroBoxWrap { max-width:460px; }
+.prelaunch { position:relative; margin:30px 0 0; padding:16px 20px 18px; background:var(--tint); border-left:3px solid var(--brand); border-radius:0 10px 10px 0; max-width:52ch; }
+.prelaunch-tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--brand); margin:0 0 7px; }
+.prelaunch-line { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(19px,1.9vw,23px); line-height:1.25; letter-spacing:-0.02em; color:var(--text); margin:0; }
+.prelaunch-sub { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:8px 0 0; }
+
+/* School tiers. Three short lists stacked down a narrow column left two
+   thirds of the row empty while the tier rules ran the full width — the rule
+   promised content that was not there. Side by side, the three statuses also
+   become comparable at a glance, which is the point of tiering them. */
+.sites { grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); align-items:start; gap:32px 40px; }
+.sites .tier-label { justify-content:space-between; }
+.sites li { font-size:16px; line-height:1.45; }
+.sites li .boro { display:block; width:100%; font-size:12px; }
+#sites .cite { max-width:62ch; }
+
+/* Manifest. The "not published yet" note sat inside the mono header strip,
+   where a full sentence with a dotted underline read as a broken link next to
+   the controls. It belongs under the table, as a footnote to the log. */
+.manifest-foot { margin:0; padding:12px 20px 14px; border-top:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.55; color:var(--text-secondary); }
+.mhead .right { gap:12px; }
+#mascotMood { width:44px; }
+
+/* Run packet. A two-column table splits 50/50 by default, stranding every
+   value in the middle of the page. */
+.packet-doc table.kv { table-layout:fixed; }
+.packet-doc table.kv th[scope="row"] { width:34%; }
+.packet-doc table.kv td { width:66%; }
+
+/* Section rhythm: the tier rules and the sources rule were the only hairlines
+   that ran wider than the text they belonged to. */
+#sites .tier-label { max-width:none; }
