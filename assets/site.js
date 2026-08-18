@@ -527,6 +527,40 @@ function initMascotSlots(root) {
       return fill;                              /* front face, straight into the light */
     }
 
+    /* The contact shadow. The box used to float: three flat shades and no
+       ground, so nothing said where it was sitting. This projects the four
+       corners of the base, takes their screen footprint and lays a soft
+       radial ellipse under it, squashed and nudged down so it reads as a
+       floor shadow rather than a halo. The colour is the same --paper-shadow
+       token the cards use, so it disappears correctly in the print palette
+       and in any theme that has no shadow. */
+    function paintContactShadow(yaw, colour) {
+      if (!colour || colour === "transparent") return;
+      var c = [[-hw, -hh, -hd], [hw, -hh, -hd], [hw, -hh, hd], [-hw, -hh, hd]]
+        .map(function (p) { return project(p, yaw); });
+      var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (var i = 0; i < 4; i++) {
+        if (c[i][0] < minX) minX = c[i][0];
+        if (c[i][0] > maxX) maxX = c[i][0];
+        if (c[i][1] < minY) minY = c[i][1];
+        if (c[i][1] > maxY) maxY = c[i][1];
+      }
+      var cx = (minX + maxX) / 2, cy = maxY - (maxY - minY) * 0.15;
+      var rx = (maxX - minX) * 0.62, ry = (maxY - minY) * 0.42;
+      if (!(rx > 0) || !(ry > 0)) return;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, ry / rx);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+      g.addColorStop(0, colour);
+      g.addColorStop(0.55, colour);
+      g.addColorStop(1, "transparent");
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
     /* The specular sweep. A soft diagonal band travelling lower-left to
        upper-right across the canvas, clipped to each lit face in turn, so one
        highlight crosses the front and the top as a single continuous streak
@@ -571,6 +605,7 @@ function initMascotSlots(root) {
       var hasShine = typeof state.shine === "number" && state.shine > 0 && state.shine < 1;
 
       ctx.clearRect(0, 0, W, Hpx);
+      paintContactShadow(yaw, getVar("--paper-shadow"));
       var polys = [], i, f, sv, n, k, depth, front;
 
       for (i = 0; i < BODY.length; i++) {
@@ -694,6 +729,25 @@ function initMascotSlots(root) {
     var releasedAt = 0, releasedFrom = 0, settling = false;
     var armed = false, interacted = false;
 
+    /* Idle auto-rotate. Once the scrub has pinned the box and the reader has
+       not touched it yet, it turns slowly on its own so the affordance is
+       visible without a hint being read. It is an oscillation, not a spin:
+       the same clamped yaw range the drag uses, so the box never presents a
+       face the geometry was not built to show. The first drag, arrow key or
+       touch cancels it for good (usedIt), and it is never armed under
+       prefers-reduced-motion because this whole branch is skipped there. */
+    var AUTO_AMP = 14 * Math.PI / 180;   /* peak swing either side of the base */
+    var AUTO_PERIOD = 9000;              /* ms for a full there-and-back */
+    var autoStart = 0;
+    function autoTarget(now) {
+      if (!autoStart) autoStart = now;
+      /* Eased in over the first half period so it starts from rest rather
+         than snapping to mid-swing. */
+      var t = (now - autoStart) / AUTO_PERIOD;
+      var ramp = clamp01(t * 2);
+      return clampOffset(Math.sin(t * Math.PI * 2) * AUTO_AMP * ramp);
+    }
+
     function arm() {
       if (armed) return;
       armed = true;
@@ -704,6 +758,7 @@ function initMascotSlots(root) {
     function disarm() {
       if (!armed) return;
       armed = false;
+      autoStart = 0;            /* a later re-arm starts the drift from rest */
       canvas.style.cursor = "";
       canvas.removeAttribute("tabindex");
       if (hint) hint.classList.remove("on");
@@ -711,6 +766,7 @@ function initMascotSlots(root) {
     function usedIt() {
       if (interacted) return;
       interacted = true;
+      autoStart = 0;
       if (hint) hint.classList.add("gone");
     }
     /* Clamps the drag offset so the TOTAL yaw stays inside MAX_YAW. The
@@ -812,6 +868,8 @@ function initMascotSlots(root) {
           var t = (performance.now() - releasedAt) / SETTLE_MS;
           if (t >= 1) { settling = false; target = 0; }
           else target = releasedFrom * (1 - (1 - Math.pow(1 - t, 3)));
+        } else if (armed && !interacted && !dragging) {
+          target = autoTarget(performance.now());
         }
         offset += (target - offset) * 0.18;       /* never snaps */
         if (Math.abs(target - offset) < 0.0002) offset = target;
@@ -1061,6 +1119,120 @@ function initMascotSlots(root) {
   }
 
   /* ======================================================================
+     9. SCHOOL SITES — one data array, one filter, one renderer
+     ======================================================================
+     The three status tiers used to be three hand-maintained <ul>s, which meant
+     the counts, the ordering and the caveat about targets all had to be kept
+     true by hand. They are one array now: status lives on the record, and the
+     view is derived. Adding a school is one line, and promoting one from
+     target to operating is one word.
+
+     The list renders from JS, so the markup in index.html carries the same
+     rows as a <noscript> fallback — a reader with JS off still gets every
+     school and its status, just without the filter. */
+  var SITES = [
+    { name: "Stuyvesant High School", borough: "Manhattan", status: "operating" },
+    { name: "Midwood High School", borough: "Brooklyn", status: "conversation" },
+    { name: "James Madison High School", borough: "Brooklyn", status: "conversation" },
+    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "target" },
+    { name: "Rachel Carson High School", borough: "Brooklyn", status: "target" },
+    { name: "Bronx High School of Science", borough: "Bronx", status: "target" },
+    { name: "Townsend Harris High School", borough: "Queens", status: "target" },
+    { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "target", tag: "specialized" }
+  ];
+
+  var SITE_STATUS = [
+    { key: "operating", label: "Operating", note: "Running now. Boxes have a route, a receiving site and a signed agreement." },
+    { key: "conversation", label: "In conversation", note: "Talking to staff or administration. Nothing agreed, nothing running." },
+    { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
+  ];
+
+  function initSites() {
+    var list = document.getElementById("sitesList");
+    var filter = document.getElementById("sitesFilter");
+    var note = document.getElementById("sitesNote");
+    if (!list || !filter) return null;
+
+    function count(key) {
+      return key === "all" ? SITES.length : SITES.filter(function (s) { return s.status === key; }).length;
+    }
+
+    /* Filter controls, built from the same status table the rows read, so a
+       new status cannot appear in one and not the other. Radios rather than
+       buttons: it is a single choice out of a named set, which is what a radio
+       group is, and it arrives with arrow-key navigation already working. */
+    var opts = [{ key: "all", label: "All sites" }].concat(SITE_STATUS);
+    filter.innerHTML = opts.map(function (o, i) {
+      return '<label class="site-filter-opt">' +
+        '<input type="radio" name="siteFilter" value="' + o.key + '"' + (i === 0 ? " checked" : "") + '>' +
+        '<span>' + o.label + ' <span class="count">' + count(o.key) + '</span></span>' +
+        '</label>';
+    }).join("");
+
+    function labelFor(key) {
+      for (var i = 0; i < SITE_STATUS.length; i++) if (SITE_STATUS[i].key === key) return SITE_STATUS[i];
+      return { label: key, note: "" };
+    }
+
+    function render(active) {
+      var rows = SITES.filter(function (s) { return active === "all" || s.status === active; });
+      if (!rows.length) {
+        list.innerHTML = '<p class="site-empty">No schools at this status yet.</p>';
+      } else {
+        list.innerHTML = '<ul class="site-rows">' + rows.map(function (s, i) {
+          var st = labelFor(s.status);
+          return '<li class="site-row" style="animation-delay:' + (reduced ? 0 : i * 35) + 'ms">' +
+            '<span class="nm">' + s.name + '</span>' +
+            '<span class="meta"><span class="boro">' + s.borough + '</span>' +
+            (s.tag ? '<span class="tag">' + s.tag + '</span>' : "") + '</span>' +
+            '<span class="status s-' + s.status + '">' + st.label + '</span>' +
+            '</li>';
+        }).join("") + '</ul>';
+      }
+      if (note) note.textContent = active === "all"
+        ? "Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have."
+        : labelFor(active).note;
+      list.setAttribute("data-filter", active);
+    }
+
+    filter.addEventListener("change", function (e) {
+      if (e.target && e.target.name === "siteFilter") render(e.target.value);
+    });
+    render("all");
+    return { render: render, data: SITES };
+  }
+
+  /* ======================================================================
+     10. SCROLL-IN UTILITY — IntersectionObserver, class-based
+     ======================================================================
+     The bespoke reveal machinery above (initReveals) drives elements whose
+     animation is written in JS. This is the cheap general case: put
+     .fade-in-up on anything, and it gets .visible the first time it enters
+     the viewport. One observer for the whole page, unobserving as it fires,
+     so nothing is still being watched after it has played.
+
+     No observer is created under prefers-reduced-motion, and none is needed
+     where IntersectionObserver is missing: in both cases every element is
+     marked visible immediately and the CSS resting state is the final one. */
+  function initScrollFx(root) {
+    var els = $$(".fade-in-up, .fade-in", root);
+    if (!els.length) return null;
+    if (reduced || !("IntersectionObserver" in window)) {
+      els.forEach(function (el) { el.classList.add("visible"); });
+      return null;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("visible");
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
+    return io;
+  }
+
+  /* ======================================================================
      8. READING PROGRESS, CURRENT SECTION, HEADING ANCHORS
      ====================================================================== */
   function initProgress() {
@@ -1224,6 +1396,8 @@ function initMascotSlots(root) {
     mascotSVG: mascotSVG, paintMascot: paintMascot, initMascotSlots: initMascotSlots,
     THEMES: THEMES, currentTheme: currentTheme, storedTheme: storedTheme,
     getVar: getVar, initTheme: initTheme,
-    initNav: initNav, initReveals: initReveals
+    initNav: initNav, initReveals: initReveals,
+    SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
+    initScrollFx: initScrollFx
   };
 })(window);

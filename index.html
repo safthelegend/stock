@@ -291,20 +291,20 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <section class="statband" id="statband">
   <div class="wrap">
     <div class="grid">
-      <div class="cell" data-stat>
+      <div class="cell fade-in-up" data-stat>
         <p class="figure fig" id="statMeals">880,000</p>
         <p class="cap">school meals served daily in NYC</p>
       </div>
-      <div class="cell" data-stat>
+      <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
         <p class="figure fig" id="statPct">4%</p>
         <p class="cap">of school buildings donate surplus food</p>
       </div>
-      <div class="cell" data-stat>
+      <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
         <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">No deliveries yet</p>
         <p class="cap">Pre-launch. The first logged delivery starts the record.</p>
       </div>
     </div>
-    <p class="cite">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet.</p>
+    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet.</p>
   </div>
 </section>
 
@@ -810,7 +810,7 @@ that wasn't actually clean.</pre>
           <span class="mask-l"><span data-line>to your building.</span></span>
         </h2>
         <p class="body-p" data-reveal style="margin:16px 0 0;">Tell us who you are and we'll follow up with the playbook for your role.</p>
-        <div style="margin-top:28px; display:flex; align-items:center; gap:14px;">
+        <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
           <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
           <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
         </div>
@@ -835,36 +835,31 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
-<section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
+<section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
-    <p class="eyebrow">School sites</p>
-    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets.</p>
-    <div class="sites">
-      <div class="tier">
-        <p class="tier-label">Operating <span class="count">1</span></p>
-        <ul>
-          <li>Stuyvesant High School <span class="boro">Manhattan</span></li>
+    <p class="eyebrow">Planned operations</p>
+    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">One list, one status per school. Filter it by where each building actually stands.</p>
+
+    <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+
+    <div id="sitesList" class="sites-list" aria-live="polite">
+      <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
+           are replaced on first render. -->
+      <noscript>
+        <ul class="site-rows">
+          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-operating">Operating</span></li>
+          <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
+          <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
+          <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Rachel Carson High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Bronx High School of Science</span> <span class="meta"><span class="boro">Bronx</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Townsend Harris High School</span> <span class="meta"><span class="boro">Queens</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Queens High School for the Sciences at York College</span> <span class="meta"><span class="boro">Queens</span><span class="tag">specialized</span></span> <span class="status s-target">Target</span></li>
         </ul>
-      </div>
-      <div class="tier">
-        <p class="tier-label">In conversation <span class="count">2</span></p>
-        <ul>
-          <li>Midwood High School <span class="boro">Brooklyn</span></li>
-          <li>James Madison High School <span class="boro">Brooklyn</span></li>
-        </ul>
-      </div>
-      <div class="tier">
-        <p class="tier-label">Target sites <span class="count">5</span></p>
-        <ul>
-          <li>Brooklyn Technical High School <span class="boro">Brooklyn</span></li>
-          <li>Rachel Carson High School <span class="boro">Brooklyn</span></li>
-          <li>Bronx High School of Science <span class="boro">Bronx</span></li>
-          <li>Townsend Harris High School <span class="boro">Queens</span></li>
-          <li>Queens High School for the Sciences at York College <span class="boro">Queens</span> <span class="tag">specialized</span></li>
-        </ul>
-      </div>
+      </noscript>
     </div>
-    <p class="cite" style="font-size:13px; color:var(--text-secondary); margin:28px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Target sites are schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that it has.</p>
+
+    <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
   </div>
 </section>
 
@@ -1387,6 +1382,8 @@ that wasn't actually clean.</pre>
   })();
 
   /* ---------- Phase 5 shared features ---------- */
+  STB.initSites();
+  STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();
   STB.initSectionHighlight();
@@ -1399,7 +1396,7 @@ that wasn't actually clean.</pre>
     { kind: "section", label: "Standard operating procedure", href: "#how", keywords: "sop steps how it works collect pack deliver log" },
     { kind: "section", label: "The instruments: cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
     { kind: "section", label: "The delivery log", href: "#tracker", keywords: "tracker manifest track the box deliveries" },
-    { kind: "section", label: "School sites and status", href: "#sites", keywords: "schools operating in conversation target stuyvesant midwood madison" },
+    { kind: "section", label: "Planned operations", href: "#sites", keywords: "schools sites operating in conversation target stuyvesant midwood madison filter" },
     { kind: "section", label: "Why we exist", href: "#story" },
     { kind: "section", label: "The limits: what this does not do", href: "#limits", keywords: "honest caveats limitations" },
     { kind: "section", label: "Run this yourself", href: "#replicate", keywords: "templates documents copy replicate" },

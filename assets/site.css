@@ -168,16 +168,64 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
    --------------------------------------------------------------------------- */
 .unverified { color:var(--accent-text); text-decoration:underline; text-decoration-style:dotted; text-underline-offset:3px; }
 
-/* School-site status tiers. Every school renders under an explicit status
-   label; none appears without one. */
-.sites { display:grid; gap:28px; margin:0; padding:0; }
-.sites .tier { margin:0; }
-.sites .tier-label { display:flex; align-items:baseline; gap:10px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand); margin:0 0 12px; padding-bottom:8px; border-bottom:1px solid var(--brand-line-soft); }
-.sites .tier-label .count { color:var(--text-secondary); letter-spacing:0; }
-.sites ul { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
-.sites li { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; font-size:17px; line-height:1.5; color:var(--text); }
-.sites li .boro { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; color:var(--text-secondary); }
-.sites li .tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+/* Planned operations. One list for every school, filtered by status, rather
+   than three hand-kept tiers. The status is on the row, so a school can never
+   appear without one — which is the promise the old tier headings made
+   structurally and this one makes per record. */
+.site-filter { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 24px; }
+.site-filter-opt { position:relative; display:inline-flex; }
+.site-filter-opt input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; }
+.site-filter-opt span { display:inline-flex; align-items:baseline; gap:7px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; padding:8px 14px; border-radius:999px; border:1px solid var(--brand-line-mid); color:var(--brand); background:var(--surface); transition:background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+.site-filter-opt span .count { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; opacity:0.75; font-variant-numeric:tabular-nums; }
+.site-filter-opt:hover span { border-color:var(--brand); }
+.site-filter-opt input:checked + span { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+.site-filter-opt input:focus-visible + span { outline:2px solid var(--brand); outline-offset:3px; }
+
+.site-rows { list-style:none; margin:0; padding:0; display:grid; gap:0; border-top:1px solid var(--brand-line-soft); }
+.site-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:baseline; gap:6px 14px; padding:13px 0; border-bottom:1px solid var(--brand-line-soft); font-size:17px; line-height:1.45; color:var(--text); animation:siteRowIn 420ms cubic-bezier(0.16,1,0.3,1) both; }
+.site-row .nm { min-width:0; }
+.site-row .meta { display:inline-flex; align-items:baseline; gap:10px; justify-self:end; }
+.site-row .boro, .site-row .tag { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; color:var(--text-secondary); }
+.site-row .status { justify-self:end; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:4px 9px; border-radius:999px; white-space:nowrap; }
+.site-row .status.s-operating { color:var(--on-brand); background:var(--brand); }
+.site-row .status.s-conversation { color:var(--brand); background:var(--tint); border:1px solid var(--brand-line-mid); }
+.site-row .status.s-target { color:var(--text-secondary); background:transparent; border:1px dashed var(--line); }
+.site-empty { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); margin:0; padding:22px 0; }
+@keyframes siteRowIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+@media (max-width:620px) {
+  .site-row { grid-template-columns:minmax(0,1fr) auto; }
+  .site-row .meta { grid-column:1; justify-self:start; font-size:12px; }
+  .site-row .status { grid-row:1; grid-column:2; }
+}
+
+/* Scroll-in utility. Paired with STB.initScrollFx: the resting state is the
+   finished one, so anything the observer never reaches (JS off, no
+   IntersectionObserver, reduced motion) still reads correctly. */
+.fade-in-up, .fade-in { will-change:opacity, transform; }
+.fade-in-up { opacity:0; transform:translateY(20px); transition:opacity 600ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1); }
+.fade-in { opacity:0; transition:opacity 600ms ease-out; }
+.fade-in-up.visible, .fade-in.visible { opacity:1; transform:none; }
+.fade-in-up.visible, .fade-in.visible { will-change:auto; }
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up, .fade-in { opacity:1 !important; transform:none !important; transition:none !important; }
+  .site-row { animation:none !important; }
+}
+html.no-js .fade-in-up, html.no-js .fade-in { opacity:1; transform:none; }
+
+/* Mascot micro-interactions. The face is the brand, so it reacts: a small
+   bounce when the reader is over the control it sits in, and a nod when a
+   process row opens. Transform only — no layout is touched, so a hover
+   cannot reflow the row under the pointer. */
+@keyframes mascotBounce { 0%,100% { transform:translateY(0); } 30% { transform:translateY(-5px); } 60% { transform:translateY(-1px); } }
+.prow .pmasc, footer .mascot-slot, #mascotJoin { transition:transform 240ms cubic-bezier(0.16,1,0.3,1); }
+.prow > button:hover .pmasc, .prow > button:focus-visible .pmasc,
+.mascot-hover:hover .mascot-slot, .mascot-hover:focus-visible .mascot-slot { animation:mascotBounce 620ms cubic-bezier(0.16,1,0.3,1); }
+.prow > button:hover .pmasc { transform:translateY(-2px); }
+footer .mascot-slot:hover, #mascotJoin:hover { transform:translateY(-3px); }
+@media (prefers-reduced-motion: reduce) {
+  .prow > button:hover .pmasc, .mascot-hover:hover .mascot-slot,
+  footer .mascot-slot:hover, #mascotJoin:hover { animation:none !important; transform:none !important; }
+}
 
 /* ---------------------------------------------------------------------------
    Hero box. The canvas is sized by its container and never scroll-jacks:
@@ -312,7 +360,10 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
     --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0;
   }
   html, body { background:#FFFFFF !important; color:#000000 !important; }
-  @page { margin:16mm; }
+  /* US Letter, portrait, with margins that keep the manifest inside every
+     printer's unprintable edge. Declared rather than left to the dialog so a
+     packet printed in one school matches a packet printed in another. */
+  @page { size:Letter portrait; margin:14mm 14mm 16mm; }
 
   /* Chrome, decoration and every interactive control. */
   nav.bar, .skip-link, #themeToggle, #themeStatus, #unitToggle, #progressBar,
@@ -333,18 +384,41 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
   /* Link targets, since a printed page cannot be clicked. */
   a[href^="http"]::after, a[href^="mailto"]::after { content:" <" attr(href) ">"; font-weight:400; font-size:0.82em; word-break:break-all; }
 
-  section, .limits-grid > div, .sites .tier { break-inside:avoid; page-break-inside:avoid; }
+  section, .limits-grid > div, .site-row { break-inside:avoid; page-break-inside:avoid; }
+  .site-filter, .site-rows { break-inside:auto; }
   h1, h2, h3 { break-after:avoid; page-break-after:avoid; }
   /* The memo and the agreement have to stand alone, so each document card
      starts a fresh page. They are too long to forbid internal breaks, so the
      rule is "own page, may continue" rather than "never split". */
   .cards-grid .card:has(.doc-text) { break-before:page; page-break-before:always; break-inside:auto; }
   .packet-doc { break-inside:avoid; page-break-inside:avoid; border:1px solid #000 !important; }
+  /* Nothing in a packet may be split across a page: a temperature row cut in
+     half is a record nobody can sign. Rows stay whole, the header repeats on
+     any continuation page, and a heading never lands as the last line. */
+  .packet-doc table { width:100% !important; border-collapse:collapse !important; }
+  .packet-doc thead { display:table-header-group; }
+  .packet-doc tfoot { display:table-footer-group; }
+  .packet-doc tr, .packet-doc .sign { break-inside:avoid; page-break-inside:avoid; }
+  .packet-doc th, .packet-doc td { border:1px solid #000 !important; padding:5pt 7pt !important; font-size:10.5pt !important; color:#000 !important; background:#fff !important; }
+  .packet-doc h3, .packet-doc .packet-sub, .packet-doc .sign p { color:#000 !important; }
+  .packet-doc h3 { break-after:avoid; page-break-after:avoid; }
+  /* A packet is paperwork: exact colours matter less than legibility, but the
+     threshold flags must survive a printer that drops backgrounds. */
+  .packet-doc, .packet-doc * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 
   /* Printing a generated run packet prints the packet, not the website. */
   body.print-packet > *:not(#replicate) { display:none !important; }
-  body.print-packet #replicate > .wrap > *:not(#runPacketOut) { display:none !important; }
-  body.print-packet #replicate, body.print-packet #runPacketOut { display:block !important; background:#fff !important; border:none !important; padding:0 !important; }
+  body.print-packet .fade-in-up, body.print-packet .fade-in,
+  .fade-in-up, .fade-in { opacity:1 !important; transform:none !important; }
+  canvas, #heroBox, #midBox { display:none !important; }
+  /* The output lives inside #runPacket, which lives inside the section's
+     .wrap — so the chain from body down to the documents has to stay visible
+     while every sibling along it is hidden. Hiding by "not the output" alone
+     hid the output's own parent and printed a blank sheet. */
+  body.print-packet #replicate > .wrap > *:not(#runPacket) { display:none !important; }
+  body.print-packet #runPacket > *:not(#runPacketOut) { display:none !important; }
+  body.print-packet #replicate, body.print-packet #runPacket, body.print-packet #runPacketOut {
+    display:block !important; background:#fff !important; border:none !important; padding:0 !important; margin:0 !important; }
   body.print-packet .packet-doc:first-of-type { break-before:auto; page-break-before:auto; }
 }
 
@@ -373,14 +447,10 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .prelaunch-line { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(19px,1.9vw,23px); line-height:1.25; letter-spacing:-0.02em; color:var(--text); margin:0; }
 .prelaunch-sub { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:8px 0 0; }
 
-/* School tiers. Three short lists stacked down a narrow column left two
-   thirds of the row empty while the tier rules ran the full width — the rule
-   promised content that was not there. Side by side, the three statuses also
-   become comparable at a glance, which is the point of tiering them. */
-.sites { grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); align-items:start; gap:32px 40px; }
-.sites .tier-label { justify-content:space-between; }
-.sites li { font-size:16px; line-height:1.45; }
-.sites li .boro { display:block; width:100%; font-size:12px; }
+/* Planned operations, wide viewports. The list is a single column of rows by
+   design: statuses are only comparable when they share an axis, and a row
+   that carries its own status badge does not need a column of its own. */
+.site-row { font-size:17px; padding:14px 0; }
 #sites .cite { max-width:62ch; }
 
 /* Manifest. The "not published yet" note sat inside the mono header strip,
@@ -398,4 +468,4 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 
 /* Section rhythm: the tier rules and the sources rule were the only hairlines
    that ran wider than the text they belonged to. */
-#sites .tier-label { max-width:none; }
+#sites .site-rows { max-width:none; }
