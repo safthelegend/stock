@@ -29,6 +29,12 @@
   /* Accent glow behind the two biggest readouts. Off in light, where the
      ground is already bright and a bloom would only muddy it. */
   --glow-op:0;
+  /* Spray stencil opacity, per theme. The ceiling in each theme is whatever
+     keeps the pull quote at full contrast over the mark, measured rather than
+     guessed: stock has the least headroom (brand on tint is only 5.02:1
+     before anything is laid behind it), so it takes the smallest value that
+     still reads. */
+  --spray-op:0.04;
   /* Interior of the hero box, revealed as the lid hinges open. A darker
      shade of --mascot-fill; never a new colour and never contents. */
   /* Front / side / interior, lightest to darkest, one light direction.
@@ -50,7 +56,7 @@
     --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
     --nav-bg:rgba(20,23,15,0.72);
     --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22;
+    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22; --spray-op:0.09;
     --box-side:#1D2216; --box-interior:#141810;
     --box-shine:rgba(240,242,236,0.30);
   }
@@ -63,7 +69,7 @@
   --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
   --nav-bg:rgba(20,23,15,0.72);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-  --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22;
+  --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22; --spray-op:0.09;
   --box-side:#1D2216; --box-interior:#141810;
   --box-shine:rgba(240,242,236,0.30);
 }
@@ -84,7 +90,7 @@
   --brand-line:rgba(143,191,111,0.34); --brand-line-soft:rgba(143,191,111,0.18); --brand-line-mid:rgba(143,191,111,0.46);
   --nav-bg:rgba(27,53,17,0.74);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07; --glow-op:0.18;
+  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07; --glow-op:0.18; --spray-op:0.06;
   --box-side:#1B3612; --box-interior:#132608;
   --box-shine:rgba(234,242,222,0.32);
 }
@@ -384,7 +390,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
   .prow .pdetail, .doc-panel { transition:none !important; }
   /* The pulse and the glow are decoration, so they go entirely rather than
      resting on a frozen frame. */
-  :root, :root[data-theme="light"], :root[data-theme="dark"], :root[data-theme="stock"] { --glow-op:0; }
+  :root, :root[data-theme="light"], :root[data-theme="dark"], :root[data-theme="stock"] { --glow-op:0; --spray-op:0; }
   .is-live::after { display:none !important; }
   #progressBar { transition:none !important; }
   #palette, #paletteBackdrop { transition:none !important; }
@@ -404,7 +410,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
     --line:#000000; --line-soft:#BBBBBB;
     --brand-line:#000000; --brand-line-soft:#BBBBBB; --brand-line-mid:#000000;
     --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-side:#FFFFFF; --box-interior:#FFFFFF; --box-shine:rgba(255,255,255,0);
-    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0; --glow-op:0;
+    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0; --glow-op:0; --spray-op:0;
   }
   html, body { background:#FFFFFF !important; color:#000000 !important; }
   /* US Letter, portrait, with margins that keep the manifest inside every
@@ -427,7 +433,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
      not, so the label prints and only the caret drops out. */
   .disclosure > h2 .doc-toggle { display:inline !important; }
   .doc-caret { display:none !important; }
-  .is-live::after, .has-glow::before, .map-pop { display:none !important; }
+  .is-live::after, .has-glow::before, .map-pop, .spray-mark { display:none !important; }
   .prow .pdetail, .doc-panel { display:block !important; grid-template-rows:1fr !important; }
   .prow .pdetail > div, .doc-panel > div { overflow:visible !important; height:auto !important; }
   .prow.open .pdetail, .doc-panel { visibility:visible !important; }

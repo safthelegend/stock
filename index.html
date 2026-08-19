@@ -106,6 +106,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .map-legend .lg-sw { width:14px; height:14px; border-radius:3px; border:1px solid var(--line); display:inline-block; }
   .map-legend .lg-nodata { background:var(--bg); border-style:dashed; }
   .map-caption { font-size:15px; line-height:1.6; color:var(--text); margin:16px 0 0; max-width:62ch; text-wrap:pretty; }
+  /* One spray mark, in the pull-quote band and nowhere else. Decorative:
+     aria-hidden, inert, unanimated, and behind the quote it sits under. */
+  .quote-band { position:relative; overflow:hidden; }
+  .spray-mark { position:absolute; z-index:0; left:-6%; top:50%; transform:translateY(-50%); width:94%; max-width:1180px; height:auto; opacity:var(--spray-op); pointer-events:none; }
+  @media (max-width:600px) { .spray-mark { display:none; } }
   .map-block .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:12px 0 0; max-width:62ch; text-wrap:pretty; }
   /* DM Mono is the site's record typeface: box identifiers, the fields that
      produce a packet and the packet's own tables all read as log entries. */
@@ -247,6 +252,29 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-f" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.036" numOctaves="3" seed="53" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <!-- Spray stencil (one instance, in the pull-quote band). Same
+           feTurbulence approach as the torn-* filters, at a much higher
+           baseFrequency: the first pass ragged-edges the letterforms, the
+           second knocks speckle out of the fill so it reads as overspray
+           rather than as flat colour. -->
+      <filter id="spray" x="-12%" y="-45%" width="124%" height="190%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" seed="13" result="edge"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="edge" scale="9" xChannelSelector="R" yChannelSelector="G" result="ragged"></feDisplacementMap>
+        <feTurbulence type="fractalNoise" baseFrequency="0.62" numOctaves="4" seed="29" result="speck"></feTurbulence>
+        <feComponentTransfer in="speck" result="speckmask">
+          <feFuncA type="discrete" tableValues="0 1 1 1 0 1 1 0 1 1"></feFuncA>
+        </feComponentTransfer>
+        <feComposite in="ragged" in2="speckmask" operator="in"></feComposite>
+      </filter>
+      <radialGradient id="spray-halo">
+        <stop offset="0" style="stop-color:var(--accent);" stop-opacity="0.55"></stop>
+        <stop offset="1" style="stop-color:var(--accent);" stop-opacity="0"></stop>
+      </radialGradient>
+      <mask id="spray-bridges">
+        <rect x="0" y="0" width="1500" height="300" fill="#fff"></rect>
+        <rect x="0" y="118" width="1500" height="10" fill="#000"></rect>
+        <rect x="0" y="192" width="1500" height="10" fill="#000"></rect>
+      </mask>
       <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
     </defs>
   </svg>
@@ -564,8 +592,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding:96px 24px;">
+<section aria-label="Pull quote" class="quote-band" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
+  <svg class="spray-mark" aria-hidden="true" focusable="false" viewBox="0 0 1500 300" preserveAspectRatio="xMinYMid meet">
+    <ellipse cx="620" cy="158" rx="700" ry="122" fill="url(#spray-halo)" opacity="0.3"></ellipse>
+    <g mask="url(#spray-bridges)" filter="url(#spray)">
+      <text x="-52" y="212" textLength="1440" lengthAdjust="spacingAndGlyphs" font-family="Archivo,-apple-system,sans-serif" font-weight="700" font-size="152" style="fill:var(--accent);">STOCK THE BLOCK</text>
+    </g>
+  </svg>
+  <div class="wrap" style="padding:96px 24px; position:relative; z-index:1;">
     <p data-reveal style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
   </div>
 </section>
