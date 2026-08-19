@@ -112,7 +112,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 ::selection { background:var(--tint); color:var(--brand); }
 .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
 .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
-.body-p { font-size:20px; line-height:1.65; max-width:60ch; color:var(--text); text-wrap:pretty; }
+.body-p { font-size:18px; line-height:1.7; max-width:62ch; color:var(--text); text-wrap:pretty; }
+/* Section rhythm. Mobile keeps the tighter 88px; wider viewports get the
+   extra breathing room, set here so the two values live in one place. */
+.pt-sec { padding-top:88px; }
+.pb-sec { padding-bottom:88px; }
+@media (min-width:900px) {
+  .pt-sec { padding-top:112px; }
+  .pb-sec { padding-bottom:112px; }
+}
 .skip-link { position:fixed; top:10px; left:10px; z-index:200; background:var(--brand); color:var(--on-brand); font-weight:600; font-size:14px; padding:12px 18px; border-radius:10px; transform:translateY(-80px); transition:transform 150ms ease; }
 .skip-link:focus { transform:translateY(0); color:var(--on-brand); }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -338,7 +346,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
     scroll-behavior:auto !important;
   }
   html { scroll-behavior:auto !important; }
-  .prow .pdetail, .cards-grid .card .doc-panel { transition:none !important; }
+  .prow .pdetail, .doc-panel { transition:none !important; }
   #progressBar { transition:none !important; }
   #palette, #paletteBackdrop { transition:none !important; }
   .anchor-link { transition:none !important; }
@@ -376,15 +384,19 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
   #top, .thead { position:static !important; min-height:0 !important; }
 
   /* Every collapsed template prints at full content. */
-  .prow .pdetail, .cards-grid .card .doc-panel { display:block !important; grid-template-rows:1fr !important; }
-  .prow .pdetail > div, .cards-grid .card .doc-panel > div { overflow:visible !important; height:auto !important; }
-  .prow.open .pdetail, .cards-grid .card .doc-panel { visibility:visible !important; }
+  /* A disclosure trigger is chrome, but the sources heading it carries is
+     not, so the label prints and only the caret drops out. */
+  .disclosure > h2 .doc-toggle { display:inline !important; }
+  .doc-caret { display:none !important; }
+  .prow .pdetail, .doc-panel { display:block !important; grid-template-rows:1fr !important; }
+  .prow .pdetail > div, .doc-panel > div { overflow:visible !important; height:auto !important; }
+  .prow.open .pdetail, .doc-panel { visibility:visible !important; }
   .doc-text { max-height:none !important; overflow:visible !important; white-space:pre-wrap !important; border:1px solid #000 !important; font-size:10.5pt !important; }
 
   /* Link targets, since a printed page cannot be clicked. */
   a[href^="http"]::after, a[href^="mailto"]::after { content:" <" attr(href) ">"; font-weight:400; font-size:0.82em; word-break:break-all; }
 
-  section, .limits-grid > div, .site-row { break-inside:avoid; page-break-inside:avoid; }
+  section, .prow, .site-row { break-inside:avoid; page-break-inside:avoid; }
   .site-filter, .site-rows { break-inside:auto; }
   h1, h2, h3 { break-after:avoid; page-break-after:avoid; }
   /* The memo and the agreement have to stand alone, so each document card
