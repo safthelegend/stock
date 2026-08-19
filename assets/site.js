@@ -246,18 +246,23 @@ function initMascotSlots(root) {
         el.style.opacity = "1"; el.style.transform = "translateY(0)";
       });
     });
+    /* A procedure row staggers its number, title and body. Not every .prow
+       carries all three — the limits rows are a label and a panel — so each
+       part is animated only if the row actually has it. */
     $$("[data-prow]").forEach(function (row) {
       var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
       if (!reduced) {
-        num.style.opacity = "0";
-        ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
-        bdy.style.opacity = "0";
+        if (num) num.style.opacity = "0";
+        if (ttl) { ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)"; }
+        if (bdy) bdy.style.opacity = "0";
       }
       shot(row, function () {
-        num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1";
-        ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
-        ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
-        bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1";
+        if (num) { num.style.transition = "opacity 300ms " + PRO; num.style.opacity = "1"; }
+        if (ttl) {
+          ttl.style.transition = "opacity 500ms " + PRO + " 80ms, transform 500ms " + PRO + " 80ms";
+          ttl.style.opacity = "1"; ttl.style.transform = "translateX(0)";
+        }
+        if (bdy) { bdy.style.transition = "opacity 500ms " + PRO + " 140ms"; bdy.style.opacity = "1"; }
       });
     });
     function tick() {
@@ -402,6 +407,28 @@ function initMascotSlots(root) {
       { v: [[-hw, 0, BOX.D], [-hw, 0, 0], [hw, 0, 0], [hw, 0, BOX.D]], n: [0, -1, 0] },
       { v: [[-hw, 0, 0], [-hw, 0, BOX.D], [-hw, L, BOX.D], [-hw, L, 0]], n: [-1, 0, 0] },
       { v: [[hw, 0, BOX.D], [hw, 0, 0], [hw, L, 0], [hw, L, BOX.D]], n: [1, 0, 0] }
+    ];
+
+    /* What is inside, once the lid is all the way up: the sensor pocket on
+       the inner rear wall and the logger unit standing in it. The same two
+       objects the flat kit diagram draws, in the same theme colours and with
+       the same relative stroke weights — a dashed --brand-line-mid outline for
+       the pocket, a --sensor-board face with a heavier --brand edge for the
+       unit. No insulation cutaway: the walls are not sectioned. */
+    /* Both sit high on the inner REAR wall rather than on the floor: the
+       camera looks only about ten degrees down, so the floor of a box this
+       deep is behind the front wall and nothing placed there would ever be
+       seen. A pocket on the wall is where a logger actually rides anyway. */
+    var PZ = -hd + 0.004;
+    var POCKET = [
+      [-0.44, 0.06, PZ], [0.44, 0.06, PZ], [0.44, hh - 0.015, PZ], [-0.44, hh - 0.015, PZ]
+    ];
+    var LG = { x: 0.26, y0: 0.30, y1: hh - 0.02, z0: -hd + 0.01, z1: -hd + 0.22 };
+    var LOGGER = [
+      { v: [[-LG.x, LG.y1, LG.z1], [LG.x, LG.y1, LG.z1], [LG.x, LG.y1, LG.z0], [-LG.x, LG.y1, LG.z0]], n: [0, 1, 0], top: true },
+      { v: [[-LG.x, LG.y0, LG.z1], [LG.x, LG.y0, LG.z1], [LG.x, LG.y1, LG.z1], [-LG.x, LG.y1, LG.z1]], n: [0, 0, 1], top: true },
+      { v: [[LG.x, LG.y0, LG.z1], [LG.x, LG.y0, LG.z0], [LG.x, LG.y1, LG.z0], [LG.x, LG.y1, LG.z1]], n: [1, 0, 0] },
+      { v: [[-LG.x, LG.y0, LG.z0], [-LG.x, LG.y0, LG.z1], [-LG.x, LG.y1, LG.z1], [-LG.x, LG.y1, LG.z0]], n: [-1, 0, 0] }
     ];
 
     var pitch = Math.atan2(BOX.CAM[1], BOX.CAM[2]);   /* camera tilts down at the box */
@@ -602,6 +629,10 @@ function initMascotSlots(root) {
       var inner = getVar("--box-interior") || fill;
       var accent = getVar("--accent") || "#E8871E";
       var shineCol = getVar("--box-shine") || "rgba(255,255,255,0.7)";
+      var pocketLine = getVar("--brand-line-mid") || edge;
+      var boardCol = getVar("--sensor-board") || side;
+      var deepCol = getVar("--sensor-deep") || inner;
+      var brandCol = getVar("--brand") || edge;
       var hasShine = typeof state.shine === "number" && state.shine > 0 && state.shine < 1;
 
       ctx.clearRect(0, 0, W, Hpx);
@@ -631,6 +662,24 @@ function initMascotSlots(root) {
          the lid read as hinged, because the one line that never moves is the
          one the lid is visibly attached to. Sorting it in rather than
          stamping it last means the shut lid correctly hides it. */
+      /* Only once the lid has actually finished travelling. Part-open, the
+         aperture is too shallow to see into and the contents would read as
+         painted on the rim. */
+      var lidFull = a >= (BOX.MAX_LID_DEG * Math.PI / 180) - 0.002;
+      if (lidFull) {
+        polys.push({
+          sv: POCKET.map(function (p) { return project(p, yaw); }),
+          depth: POCKET.reduce(function (t, p) { return t + project(p, yaw)[2]; }, 0) / 4,
+          pocket: true
+        });
+        for (i = 0; i < LOGGER.length; i++) {
+          f = LOGGER[i];
+          sv = f.v.map(function (p) { return project(p, yaw); });
+          depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
+          polys.push({ sv: sv, depth: depth, logger: true, top: !!f.top });
+        }
+      }
+
       var h1 = project([-hw, hh, -hd], yaw), h2 = project([hw, hh, -hd], yaw);
       polys.push({ sv: [h1, h2], depth: (h1[2] + h2[2]) / 2, hinge: true });
 
@@ -644,6 +693,21 @@ function initMascotSlots(root) {
           ctx.beginPath();
           ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
           ctx.strokeStyle = edge; ctx.lineWidth = strokeW * 1.5; ctx.stroke();
+          continue;
+        }
+        if (pl.pocket || pl.logger) {
+          ctx.beginPath();
+          ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
+          for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
+          ctx.closePath();
+          if (pl.pocket) {
+            ctx.setLineDash([strokeW * 3.5, strokeW * 3]);
+            ctx.strokeStyle = pocketLine; ctx.lineWidth = strokeW; ctx.stroke();
+            ctx.setLineDash([]);
+          } else {
+            ctx.fillStyle = pl.top ? boardCol : deepCol; ctx.fill();
+            ctx.strokeStyle = brandCol; ctx.lineWidth = strokeW * 1.25; ctx.stroke();
+          }
           continue;
         }
         ctx.beginPath();
@@ -1185,7 +1249,7 @@ function initMascotSlots(root) {
             '<span class="nm">' + s.name + '</span>' +
             '<span class="meta"><span class="boro">' + s.borough + '</span>' +
             (s.tag ? '<span class="tag">' + s.tag + '</span>' : "") + '</span>' +
-            '<span class="status s-' + s.status + '">' + st.label + '</span>' +
+            '<span class="status s-' + s.status + (s.status === "operating" ? " is-live live-brand" : "") + '">' + st.label + '</span>' +
             '</li>';
         }).join("") + '</ul>';
       }
@@ -1349,6 +1413,9 @@ function initMascotSlots(root) {
       var next = unitMode() === "metric" ? "imperial" : "metric";
       try { localStorage.setItem(UNIT_KEY, next); } catch (e) {}
       reflect(); renderUnits();
+      /* Some readouts compose their own strings (SVG labels, tooltips) and
+         cannot be rewritten by the [data-degf] pass, so they listen instead. */
+      document.dispatchEvent(new CustomEvent("stb:units"));
       if (live) live.textContent = next === "metric" ? "Kilograms and Celsius" : "Pounds and Fahrenheit";
     });
     reflect(); renderUnits();

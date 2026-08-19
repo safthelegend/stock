@@ -83,6 +83,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
   .cold-panel .row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:baseline; width:100%; padding:7px 8px; border:none; border-bottom:1px solid var(--line-soft); background:transparent; cursor:pointer; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); text-align:left; transition:background-color 160ms ease; }
   .cold-panel .row:hover { background:var(--tint); }
+  .cold-spark { width:100%; height:auto; display:block; overflow:visible; }
+  .cold-spark text { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10px; fill:var(--text-secondary); }
+  .cold-spark .pt { cursor:pointer; }
+  .cold-spark .pt .halo { fill:none; stroke:var(--brand); stroke-width:2; opacity:0; }
+  .cold-spark .pt:focus { outline:none; }
+  .cold-spark .pt:focus-visible .halo, .cold-spark .pt:hover .halo { opacity:1; }
+  .cold-spark .tip-box { fill:var(--surface); stroke:var(--rule); stroke-width:1; }
+  .cold-spark .tip-txt { fill:var(--text); font-size:10px; }
+  /* DM Mono is the site's record typeface: box identifiers, the fields that
+     produce a packet and the packet's own tables all read as log entries. */
+  .boxid, .packet-form label, .packet-doc th, .packet-doc td { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .packet-form input, .packet-form textarea { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
   .cold-panel .row.active { background:var(--tint); }
   .cold-panel .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
   .collage-wrap { position:relative; }
@@ -202,7 +214,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="visual" style="display:flex; justify-content:center; align-items:center;">
     <div id="heroBoxWrap">
       <canvas id="heroBox" width="420" height="420" role="img"
-              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
+              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll, revealing the sensor pocket and the logger unit inside. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
       <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
     </div>
   </div>
@@ -247,7 +259,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         </div>
       </div>
       <!-- Original diagram: our own synthesis of the SNAP cut's scale, not a recreation of the PBS on-screen graphic. -->
-      <div class="collage-piece" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
+      <div class="collage-piece has-glow" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-g);"></rect></svg>
         <div style="position:relative; padding:40px 44px;">
           <p class="eyebrow">The shape of the cut</p>
@@ -345,12 +357,20 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <p class="body-p" style="margin:14px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
     </div></div>
   </div>
-  <div class="sensor-row cold-panel" style="margin-top:40px;">
+  <div class="sensor-row cold-panel has-glow glow-accent" style="margin-top:40px;">
     <div>
       <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
       <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:500; font-size:13px; margin:12px 0 0; color:var(--brand);">in range</p>
-      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
-      <div id="coldRows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);"></div>
+      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box <span class="boxid">0447</span> · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
+      <div id="coldSpark" style="margin-top:12px;"></div>
+      <noscript>
+        <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);">
+          <div class="row"><span>13:42 packed</span><span class="temp">36°F</span></div>
+          <div class="row"><span>14:05 in transit</span><span class="temp">38°F</span></div>
+          <div class="row"><span>14:28 street handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
+          <div class="row"><span>14:51 received</span><span class="temp">39°F</span></div>
+        </div>
+      </noscript>
     </div>
     <div>
       <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
@@ -505,23 +525,23 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </h2>
     <div id="limitRows" style="border-top:1px solid var(--line); max-width:980px;">
       <div class="prow prow-plain open" data-prow data-prow-static>
-        <button type="button" aria-expanded="true" aria-controls="limit-1"><span class="ttl lbl">the mechanism</span><span class="caret" aria-hidden="true">−</span></button>
+        <button type="button" aria-expanded="true" aria-controls="limit-1"><span class="ttl lbl" data-ptitle>the mechanism</span><span class="caret" aria-hidden="true">−</span></button>
         <div class="pdetail" id="limit-1"><div><p>Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items from a share table to a receiving site in the same borough, on foot, the same afternoon. That is what a borough cluster buys you; it is not a claim about crossing the city.</p></div></div>
       </div>
       <div class="prow prow-plain" data-prow data-prow-static>
-        <button type="button" aria-expanded="false" aria-controls="limit-2"><span class="ttl lbl">what it measurably changes</span><span class="caret" aria-hidden="true">+</span></button>
+        <button type="button" aria-expanded="false" aria-controls="limit-2"><span class="ttl lbl" data-ptitle>what it measurably changes</span><span class="caret" aria-hidden="true">+</span></button>
         <div class="pdetail" id="limit-2"><div><p>Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus. None of it is measurable yet; the log is empty.</p></div></div>
       </div>
       <div class="prow prow-plain" data-prow data-prow-static>
-        <button type="button" aria-expanded="false" aria-controls="limit-3"><span class="ttl lbl">what it does not touch</span><span class="caret" aria-hidden="true">+</span></button>
+        <button type="button" aria-expanded="false" aria-controls="limit-3"><span class="ttl lbl" data-ptitle>what it does not touch</span><span class="caret" aria-hidden="true">+</span></button>
         <div class="pdetail" id="limit-3"><div><p>Income. SNAP enrollment. Rent, wages, or any of the reasons need exists in the first place. A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p></div></div>
       </div>
       <div class="prow prow-plain" data-prow data-prow-static>
-        <button type="button" aria-expanded="false" aria-controls="limit-4"><span class="ttl lbl">what would have to be true</span><span class="caret" aria-hidden="true">+</span></button>
+        <button type="button" aria-expanded="false" aria-controls="limit-4"><span class="ttl lbl" data-ptitle>what would have to be true</span><span class="caret" aria-hidden="true">+</span></button>
         <div class="pdetail" id="limit-4"><div><p>Many more buildings than the one we run in. A signed receiving site in every borough we claim a cluster in; three of the four have none. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Sites with capacity for same-day perishable food.</p></div></div>
       </div>
       <div class="prow prow-plain" data-prow data-prow-static>
-        <button type="button" aria-expanded="false" aria-controls="limit-5"><span class="ttl lbl">what would show it is not working</span><span class="caret" aria-hidden="true">+</span></button>
+        <button type="button" aria-expanded="false" aria-controls="limit-5"><span class="ttl lbl" data-ptitle>what would show it is not working</span><span class="caret" aria-hidden="true">+</span></button>
         <div class="pdetail" id="limit-5"><div><p>Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and stays on the map anyway. We publish the log so this is checkable by someone other than us.</p></div></div>
       </div>
     </div>
@@ -868,7 +888,7 @@ that wasn't actually clean.</pre>
            are replaced on first render. -->
       <noscript>
         <ul class="site-rows">
-          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-operating">Operating</span></li>
+          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-operating is-live live-brand">Operating</span></li>
           <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
           <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
           <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
@@ -1029,9 +1049,25 @@ that wasn't actually clean.</pre>
      built from data, so they share the binder instead of a second handler. */
   $$("[data-prow-static]").forEach(function (row) { bindProw(row, null); });
 
-  /* ---------- cold-chain readout ---------- */
+  /* ---------- cold-chain readout ----------
+     The same four readings the list showed, drawn as a line against time so
+     the one breach reads as a shape rather than as a row you have to find.
+     No data point is added, invented or interpolated: the only computed
+     coordinate is where a segment crosses the 41°F rule, which is drawn so
+     the colour change lands on the threshold instead of on the next reading.
+     The list survives verbatim in <noscript>. */
   var coldIdx = 3;
-  var coldRowsHost = $("#coldRows");
+  var coldSparkHost = $("#coldSpark");
+  var SPARK = { w: 340, h: 172, padL: 46, padR: 16, padT: 18, padB: 48 };
+
+  function degText(f) {
+    return STB.unitMode() === "metric" ? ((f - 32) * 5 / 9).toFixed(1) + "°C" : f + "°F";
+  }
+  function svgEl(name, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
+    return el;
+  }
   function renderCold() {
     var cur = COLD[coldIdx];
     var coldSafe = cur.temp <= SAFE_MAX;
@@ -1039,19 +1075,118 @@ that wasn't actually clean.</pre>
     var lbl = $("#coldLabel");
     lbl.textContent = coldSafe ? "in range" : "danger zone";
     lbl.style.color = coldSafe ? "var(--brand)" : "var(--accent)";
-    coldRowsHost.innerHTML = "";
-    COLD.forEach(function (c, i) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "row" + (i === coldIdx ? " active" : "");
-      b.setAttribute("aria-pressed", i === coldIdx ? "true" : "false");
-      var safe = c.temp <= SAFE_MAX;
-      b.innerHTML = '<span>' + c.t + ' ' + c.note + '</span><span class="temp" data-degf="' + c.temp + '" style="color:' + (safe ? "var(--brand)" : "var(--accent-text)") + ';"></span>';
-      b.addEventListener("click", function () { coldIdx = i; renderCold(); });
-      coldRowsHost.appendChild(b);
+    lbl.className = "mono is-live " + (coldSafe ? "live-brand" : "live-accent");
+
+    var temps = COLD.map(function (c) { return c.temp; });
+    var lo = Math.min(Math.min.apply(null, temps), SAFE_MAX) - 4;
+    var hi = Math.max(Math.max.apply(null, temps), SAFE_MAX) + 4;
+    var plotW = SPARK.w - SPARK.padL - SPARK.padR;
+    var plotH = SPARK.h - SPARK.padT - SPARK.padB;
+    function px(i) { return SPARK.padL + (COLD.length === 1 ? plotW / 2 : i * plotW / (COLD.length - 1)); }
+    function py(t) { return SPARK.padT + (hi - t) / (hi - lo) * plotH; }
+
+    var svg = svgEl("svg", {
+      "class": "cold-spark", viewBox: "0 0 " + SPARK.w + " " + SPARK.h,
+      role: "group", "aria-label": "Cold-chain readings for box 0447, plotted against time"
     });
-    STB.renderUnits(coldRowsHost);
+
+    /* axis: the two ends of the temperature range, and the threshold rule */
+    [lo, hi].forEach(function (v) {
+      var t = svgEl("text", { x: SPARK.padL - 8, y: py(v) + 3, "text-anchor": "end", "data-degf": v });
+      svg.appendChild(t);
+    });
+    var yr = py(SAFE_MAX);
+    svg.appendChild(svgEl("line", {
+      x1: SPARK.padL, x2: SPARK.padL + plotW, y1: yr, y2: yr,
+      stroke: "var(--accent)", "stroke-width": "1.5", "stroke-dasharray": "5 4", opacity: "0.85"
+    }));
+    var ruleLbl = svgEl("text", { x: SPARK.padL + 2, y: yr - 6 });
+    ruleLbl.appendChild(document.createTextNode("safe ≤ "));
+    ruleLbl.appendChild(svgEl("tspan", { "data-degf": SAFE_MAX }));
+    svg.appendChild(ruleLbl);
+
+    /* the line, split at the threshold so each part carries its own colour */
+    function seg(x1, y1, x2, y2, safe) {
+      svg.appendChild(svgEl("line", {
+        x1: x1, y1: y1, x2: x2, y2: y2,
+        stroke: safe ? "var(--brand)" : "var(--accent)",
+        "stroke-width": "2.5", "stroke-linecap": "round"
+      }));
+    }
+    for (var i = 0; i < COLD.length - 1; i++) {
+      var a = COLD[i], b = COLD[i + 1];
+      var ax = px(i), bx = px(i + 1), ay = py(a.temp), by = py(b.temp);
+      var aSafe = a.temp <= SAFE_MAX, bSafe = b.temp <= SAFE_MAX;
+      if (aSafe === bSafe) { seg(ax, ay, bx, by, aSafe); continue; }
+      var frac = (SAFE_MAX - a.temp) / (b.temp - a.temp);
+      var cx = ax + frac * (bx - ax);
+      seg(ax, ay, cx, yr, aSafe);
+      seg(cx, yr, bx, by, bSafe);
+    }
+
+    /* one tooltip, moved and refilled rather than rebuilt per point */
+    var tip = svgEl("g", { "class": "tip", visibility: "hidden", "aria-hidden": "true" });
+    var tipBox = svgEl("rect", { "class": "tip-box", rx: "6", height: "32", width: "120", x: "0", y: "0" });
+    var tipL1 = svgEl("text", { "class": "tip-txt", x: "8", y: "13" });
+    var tipL2 = svgEl("text", { "class": "tip-txt", x: "8", y: "26" });
+    tip.appendChild(tipBox); tip.appendChild(tipL1); tip.appendChild(tipL2);
+
+    COLD.forEach(function (c, i) {
+      var safe = c.temp <= SAFE_MAX;
+      var x = px(i), y = py(c.temp);
+      var sel = i === coldIdx;
+      var g = svgEl("g", {
+        "class": "pt", tabindex: "0", role: "button",
+        "aria-pressed": sel ? "true" : "false",
+        "aria-label": c.t + " " + c.note + ", " + degText(c.temp) + ", " + (safe ? "in range" : "above threshold")
+      });
+      g.appendChild(svgEl("circle", { cx: x, cy: y, r: "14", fill: "transparent" }));
+      g.appendChild(svgEl("circle", { "class": "halo", cx: x, cy: y, r: "9" }));
+      g.appendChild(svgEl("circle", {
+        "class": "dot", cx: x, cy: y, r: sel ? "5.5" : "4",
+        fill: sel ? (safe ? "var(--brand)" : "var(--accent)") : "var(--surface)",
+        stroke: safe ? "var(--brand)" : "var(--accent)", "stroke-width": "2.5"
+      }));
+      function show() {
+        tipL1.textContent = c.t + " · " + c.note;
+        tipL2.textContent = degText(c.temp) + (safe ? "" : " · above threshold");
+        var wide = Math.max(tipL1.textContent.length, tipL2.textContent.length) * 6 + 16;
+        tipBox.setAttribute("width", wide);
+        var tx = Math.min(Math.max(x - wide / 2, 0), SPARK.w - wide);
+        var ty = y > SPARK.padT + plotH / 2 ? y - 42 : y + 12;
+        tip.setAttribute("transform", "translate(" + tx + "," + ty + ")");
+        tip.setAttribute("visibility", "visible");
+      }
+      function hide() { tip.setAttribute("visibility", "hidden"); }
+      function select() { coldIdx = i; renderCold(); $$(".cold-spark .pt")[i].focus(); }
+      g.addEventListener("mouseenter", show);
+      g.addEventListener("mouseleave", hide);
+      g.addEventListener("focus", show);
+      g.addEventListener("blur", hide);
+      g.addEventListener("click", select);
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); select(); }
+      });
+      svg.appendChild(g);
+
+      var xl = svgEl("text", { x: x, y: SPARK.padT + plotH + 18, "text-anchor": "middle" });
+      xl.textContent = c.t;
+      svg.appendChild(xl);
+    });
+    svg.appendChild(tip);
+
+    coldSparkHost.innerHTML = "";
+    coldSparkHost.appendChild(svg);
+    STB.renderUnits(coldSparkHost);
   }
   renderCold();
+  /* The unit toggle rewrites [data-degf] in place, but the point labels and
+     the tooltip are composed strings, so this instance redraws itself. */
+  document.addEventListener("stb:units", function () {
+    var had = document.activeElement && document.activeElement.closest && document.activeElement.closest(".cold-spark");
+    renderCold();
+    if (had) { var pts = $$(".cold-spark .pt"); if (pts[coldIdx]) pts[coldIdx].focus(); }
+  });
 
   /* ---------- chips + manifest ---------- */
   var sortKey = "date", sortDir = "desc", filter = "All";
@@ -1394,10 +1529,10 @@ that wasn't actually clean.</pre>
       var manifest =
         '<div class="packet-doc">' +
           '<h3>Delivery manifest</h3>' +
-          '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
+          '<p class="packet-sub">Stock the Block · box <span class="boxid">' + esc(d.boxid) + '</span> · ' + esc(d.date) + '</p>' +
           '<table class="kv"><tbody>' +
             '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
-            '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
+            '<tr><th scope="row">Box ID</th><td class="boxid">' + esc(d.boxid) + '</td></tr>' +
             '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +
             '<tr><th scope="row">Destination</th><td>' + esc(d.destination) + '</td></tr>' +
             '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
@@ -1410,7 +1545,7 @@ that wasn't actually clean.</pre>
       var log =
         '<div class="packet-doc">' +
           '<h3>Temperature log</h3>' +
-          '<p class="packet-sub">box ' + esc(d.boxid) + ' · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
+          '<p class="packet-sub">box <span class="boxid">' + esc(d.boxid) + '</span> · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
           (temps.length
             ? '<table><thead><tr><th>Time</th><th>Note</th><th>Reading</th><th>Status</th></tr></thead><tbody>' +
                 temps.map(function (r) {

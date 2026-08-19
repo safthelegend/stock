@@ -26,6 +26,9 @@
   --nav-bg:rgba(245,245,247,0.72);
   --sensor-shell:#6B4C9A; --sensor-board:#513A75; --sensor-deep:#3D2B5C;
   --paper-shadow:rgba(29,29,31,0.13); --paper-y:8px; --paper-blur:15px; --grain-op:0.05;
+  /* Accent glow behind the two biggest readouts. Off in light, where the
+     ground is already bright and a bloom would only muddy it. */
+  --glow-op:0;
   /* Interior of the hero box, revealed as the lid hinges open. A darker
      shade of --mascot-fill; never a new colour and never contents. */
   /* Front / side / interior, lightest to darkest, one light direction.
@@ -47,7 +50,7 @@
     --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
     --nav-bg:rgba(20,23,15,0.72);
     --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+    --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22;
     --box-side:#1D2216; --box-interior:#141810;
     --box-shine:rgba(240,242,236,0.30);
   }
@@ -60,7 +63,7 @@
   --brand-line:rgba(143,191,111,0.32); --brand-line-soft:rgba(143,191,111,0.15); --brand-line-mid:rgba(143,191,111,0.42);
   --nav-bg:rgba(20,23,15,0.72);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-  --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
+  --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08; --glow-op:0.22;
   --box-side:#1D2216; --box-interior:#141810;
   --box-shine:rgba(240,242,236,0.30);
 }
@@ -81,7 +84,7 @@
   --brand-line:rgba(143,191,111,0.34); --brand-line-soft:rgba(143,191,111,0.18); --brand-line-mid:rgba(143,191,111,0.46);
   --nav-bg:rgba(27,53,17,0.74);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
+  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07; --glow-op:0.18;
   --box-side:#1B3612; --box-interior:#132608;
   --box-shine:rgba(234,242,222,0.32);
 }
@@ -112,6 +115,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 ::selection { background:var(--tint); color:var(--brand); }
 .mono { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
 .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
+/* A soft bloom behind the two largest readouts, at --glow-op — zero in light,
+   a little in dark and stock. Purely a background wash: it sits under the
+   content, never over it, so it cannot touch text contrast. */
+.has-glow { position:relative; }
+.has-glow::before {
+  content:""; position:absolute; z-index:0; pointer-events:none;
+  left:-10%; top:-20%; width:120%; height:140%;
+  opacity:var(--glow-op); filter:blur(70px);
+  background:radial-gradient(closest-side, var(--glow-colour, var(--brand)), transparent 78%);
+}
+.has-glow > * { position:relative; z-index:1; }
+.glow-accent { --glow-colour:var(--accent); }
 .body-p { font-size:18px; line-height:1.7; max-width:62ch; color:var(--text); text-wrap:pretty; }
 /* Section rhythm. Mobile keeps the tighter 88px; wider viewports get the
    extra breathing room, set here so the two values live in one place. */
@@ -198,6 +213,26 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
 .site-row .status.s-operating { color:var(--on-brand); background:var(--brand); }
 .site-row .status.s-conversation { color:var(--brand); background:var(--tint); border:1px solid var(--brand-line-mid); }
 .site-row .status.s-target { color:var(--text-secondary); background:transparent; border:1px dashed var(--line); }
+/* A live status gets a slow pulse; a planned one does not. The ring is drawn
+   on a pseudo-element and inset by nothing, so it costs no layout and cannot
+   push a row. Only states that are actually running pulse — a Target or an
+   In-conversation school must never read as operating. */
+.is-live { position:relative; }
+/* Base opacity is 0, so where the animation is switched off — reduced motion,
+   print — the ring simply is not there, rather than freezing on as a solid
+   halo the layout never asked for. */
+.is-live::after {
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  pointer-events:none; opacity:0; animation:livePulse 2.4s ease-out infinite;
+}
+.is-live.live-brand::after { box-shadow:0 0 0 4px var(--brand); }
+.is-live.live-accent::after { box-shadow:0 0 0 4px var(--accent); }
+@keyframes livePulse {
+  0%   { opacity:0.5; transform:scale(1); }
+  70%  { opacity:0;   transform:scale(1.06); }
+  100% { opacity:0;   transform:scale(1.06); }
+}
+#coldLabel.is-live { display:inline-block; border-radius:999px; padding:1px 8px; margin-left:-8px; }
 .site-empty { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); margin:0; padding:22px 0; }
 @keyframes siteRowIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 @media (max-width:620px) {
@@ -347,6 +382,10 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
   }
   html { scroll-behavior:auto !important; }
   .prow .pdetail, .doc-panel { transition:none !important; }
+  /* The pulse and the glow are decoration, so they go entirely rather than
+     resting on a frozen frame. */
+  :root, :root[data-theme="light"], :root[data-theme="dark"], :root[data-theme="stock"] { --glow-op:0; }
+  .is-live::after { display:none !important; }
   #progressBar { transition:none !important; }
   #palette, #paletteBackdrop { transition:none !important; }
   .anchor-link { transition:none !important; }
@@ -365,7 +404,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
     --line:#000000; --line-soft:#BBBBBB;
     --brand-line:#000000; --brand-line-soft:#BBBBBB; --brand-line-mid:#000000;
     --mascot-fill:#FFFFFF; --mascot-stroke:#000000; --box-side:#FFFFFF; --box-interior:#FFFFFF; --box-shine:rgba(255,255,255,0);
-    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0;
+    --nav-bg:#FFFFFF; --paper-shadow:transparent; --grain-op:0; --glow-op:0;
   }
   html, body { background:#FFFFFF !important; color:#000000 !important; }
   /* US Letter, portrait, with margins that keep the manifest inside every
@@ -388,6 +427,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
      not, so the label prints and only the caret drops out. */
   .disclosure > h2 .doc-toggle { display:inline !important; }
   .doc-caret { display:none !important; }
+  .is-live::after, .has-glow::before { display:none !important; }
   .prow .pdetail, .doc-panel { display:block !important; grid-template-rows:1fr !important; }
   .prow .pdetail > div, .doc-panel > div { overflow:visible !important; height:auto !important; }
   .prow.open .pdetail, .doc-panel { visibility:visible !important; }
