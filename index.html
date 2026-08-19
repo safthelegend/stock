@@ -42,8 +42,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; border-top:1px solid var(--line-soft); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
-  .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
-  .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
+  .prow .bdy { grid-area:bdy; font-size:18px; line-height:1.7; color:var(--text); max-width:62ch; }
+  .prow .pdetail p { font-size:15px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:62ch; }
   .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
   .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
   .divider .mascot-slot { width:140px; transform-origin:center bottom; }
@@ -83,6 +83,39 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
   .cold-panel .row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:baseline; width:100%; padding:7px 8px; border:none; border-bottom:1px solid var(--line-soft); background:transparent; cursor:pointer; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); text-align:left; transition:background-color 160ms ease; }
   .cold-panel .row:hover { background:var(--tint); }
+  .cold-spark { width:100%; height:auto; display:block; overflow:visible; }
+  .cold-spark text { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10px; fill:var(--text-secondary); }
+  .cold-spark .pt { cursor:pointer; }
+  .cold-spark .pt .halo { fill:none; stroke:var(--brand); stroke-width:2; opacity:0; }
+  .cold-spark .pt:focus { outline:none; }
+  .cold-spark .pt:focus-visible .halo, .cold-spark .pt:hover .halo { opacity:1; }
+  .cold-spark .tip-box { fill:var(--surface); stroke:var(--rule); stroke-width:1; }
+  .cold-spark .tip-txt { fill:var(--text); font-size:10px; }
+  .map-block { margin-top:40px; padding-top:28px; border-top:1px solid var(--line-soft); }
+  .map-host { position:relative; max-width:620px; }
+  .boro-map { width:100%; height:auto; display:block; }
+  .boro-map .cd { transition:fill-opacity 160ms ease; }
+  .boro-map .pin { cursor:pointer; }
+  .boro-map .pin:focus { outline:none; }
+  .boro-map .pin:focus-visible circle:first-child { stroke:var(--accent); stroke-width:6; }
+  .boro-map .pin-lbl { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:21px; fill:var(--text); paint-order:stroke; stroke:var(--surface); stroke-width:5; }
+  .map-pop { position:absolute; z-index:2; transform:translate(14px,-50%); background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:8px 10px; display:grid; gap:2px; font-size:12px; color:var(--text-secondary); box-shadow:0 3px 14px var(--paper-shadow); pointer-events:none; max-width:220px; }
+  .map-pop strong { font-size:13px; color:var(--text); }
+  .map-legend { display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:14px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+  .map-legend .lg-item { display:inline-flex; align-items:center; gap:6px; }
+  .map-legend .lg-sw { width:14px; height:14px; border-radius:3px; border:1px solid var(--line); display:inline-block; }
+  .map-legend .lg-nodata { background:var(--bg); border-style:dashed; }
+  .map-caption { font-size:15px; line-height:1.6; color:var(--text); margin:16px 0 0; max-width:62ch; text-wrap:pretty; }
+  /* One spray mark, in the pull-quote band and nowhere else. Decorative:
+     aria-hidden, inert, unanimated, and behind the quote it sits under. */
+  .quote-band { position:relative; overflow:hidden; }
+  .spray-mark { position:absolute; z-index:0; left:-6%; top:50%; transform:translateY(-50%); width:94%; max-width:1180px; height:auto; opacity:var(--spray-op); pointer-events:none; }
+  @media (max-width:600px) { .spray-mark { display:none; } }
+  .map-block .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:12px 0 0; max-width:62ch; text-wrap:pretty; }
+  /* DM Mono is the site's record typeface: box identifiers, the fields that
+     produce a packet and the packet's own tables all read as log entries. */
+  .boxid, .packet-form label, .packet-doc th, .packet-doc td { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .packet-form input, .packet-form textarea { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
   .cold-panel .row.active { background:var(--tint); }
   .cold-panel .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
   .collage-wrap { position:relative; }
@@ -92,33 +125,39 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .video-thumb:hover { transform:scale(1.015); }
   .video-thumb:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
   .collage-fig { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
-  .collage-copy { font-size:18px; line-height:1.6; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
+  .collage-copy { font-size:15px; line-height:1.6; color:var(--text-secondary); margin:12px 0 0; max-width:62ch; text-wrap:pretty; }
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
   .src-link { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
   .src-link:hover { color:var(--accent-text); text-decoration:underline; }
   .scale-bar-track { position:relative; height:14px; border-radius:7px; background:var(--line-soft); overflow:hidden; margin:16px 0 8px; max-width:520px; }
   .scale-bar-fill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--brand); border-radius:7px; transition:width 900ms cubic-bezier(0.4,0.14,0.3,1); }
   .scale-bar-mark { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); left:64%; }
-  .scale-facts { display:grid; gap:10px; margin:22px 0 0; max-width:560px; }
-  .scale-facts p { font-size:17px; line-height:1.6; color:var(--text); margin:0; text-wrap:pretty; }
-  .scale-facts .scale-standout { font-size:18px; font-weight:600; color:var(--brand); }
+  .scale-facts { display:grid; gap:10px; margin:22px 0 0; max-width:62ch; }
+  .scale-facts p { font-size:15px; line-height:1.6; color:var(--text-secondary); margin:0; text-wrap:pretty; }
+  .scale-facts .scale-standout { font-size:18px; line-height:1.7; font-weight:600; color:var(--brand); }
   .sources-list { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
   .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
   .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
   .sources-list a:hover { color:var(--accent-text); }
-  .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
-  .limits-grid .lbl { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
-  .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
+  .lbl { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:15px; color:var(--text-secondary); margin:0 0 8px; }
+  /* The limits rows carry a label, not a numbered step, so the .prow button
+     drops the num/mascot/body tracks and keeps title + caret. */
+  .prow.prow-plain > button { grid-template-columns:1fr 24px; grid-template-areas:"ttl caret"; align-items:center; }
+  .prow.prow-plain .ttl.lbl { margin:0; font-size:15px; }
+  .prow.prow-plain .pdetail p { padding-left:0; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
   .cards-grid .card, .done-card { border-radius:14px; box-shadow:0 3px 14px var(--paper-shadow); }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
   .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
-  .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
-  .cards-grid .card .doc-toggle:hover { color:var(--accent-text); }
-  .cards-grid .card .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .cards-grid .card.doc-open .doc-panel { grid-template-rows:1fr; }
-  .cards-grid .card .doc-panel > div { overflow:hidden; }
+  .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; text-align:left; }
+  .doc-toggle:hover { color:var(--accent-text); }
+  .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
+  .doc-open > .doc-panel { grid-template-rows:1fr; }
+  .doc-panel > div { overflow:hidden; }
+  /* Same accordion, used outside a document card: a plain disclosure. */
+  .disclosure { display:block; }
+  .disclosure > .doc-toggle, .disclosure > h2 > .doc-toggle { margin-top:0; }
   .cards-grid .card .doc-inner { padding-top:14px; }
   .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:420px; overflow-y:auto; margin:0 0 10px; }
   .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
@@ -196,14 +235,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="visual" style="display:flex; justify-content:center; align-items:center;">
     <div id="heroBoxWrap">
       <canvas id="heroBox" width="420" height="420" role="img"
-              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
+              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll, revealing the sensor pocket and the logger unit inside. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
       <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
     </div>
   </div>
 </header>
 </div>
 
-<section id="whynow" class="wrap" style="padding-top:88px; padding-bottom:72px;">
+<section id="whynow" class="wrap pt-sec" style="padding-bottom:72px;">
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
     <defs>
       <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
@@ -213,6 +252,29 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-f" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.036" numOctaves="3" seed="53" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <!-- Spray stencil (one instance, in the pull-quote band). Same
+           feTurbulence approach as the torn-* filters, at a much higher
+           baseFrequency: the first pass ragged-edges the letterforms, the
+           second knocks speckle out of the fill so it reads as overspray
+           rather than as flat colour. -->
+      <filter id="spray" x="-12%" y="-45%" width="124%" height="190%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" seed="13" result="edge"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="edge" scale="9" xChannelSelector="R" yChannelSelector="G" result="ragged"></feDisplacementMap>
+        <feTurbulence type="fractalNoise" baseFrequency="0.62" numOctaves="4" seed="29" result="speck"></feTurbulence>
+        <feComponentTransfer in="speck" result="speckmask">
+          <feFuncA type="discrete" tableValues="0 1 1 1 0 1 1 0 1 1"></feFuncA>
+        </feComponentTransfer>
+        <feComposite in="ragged" in2="speckmask" operator="in"></feComposite>
+      </filter>
+      <radialGradient id="spray-halo">
+        <stop offset="0" style="stop-color:var(--accent);" stop-opacity="0.55"></stop>
+        <stop offset="1" style="stop-color:var(--accent);" stop-opacity="0"></stop>
+      </radialGradient>
+      <mask id="spray-bridges">
+        <rect x="0" y="0" width="1500" height="300" fill="#fff"></rect>
+        <rect x="0" y="118" width="1500" height="10" fill="#000"></rect>
+        <rect x="0" y="192" width="1500" height="10" fill="#000"></rect>
+      </mask>
       <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
     </defs>
   </svg>
@@ -241,7 +303,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         </div>
       </div>
       <!-- Original diagram: our own synthesis of the SNAP cut's scale, not a recreation of the PBS on-screen graphic. -->
-      <div class="collage-piece" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
+      <div class="collage-piece has-glow" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-g);"></rect></svg>
         <div style="position:relative; padding:40px 44px;">
           <p class="eyebrow">The shape of the cut</p>
@@ -254,38 +316,47 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
           <p class="collage-copy" style="margin-top:0;">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="src-link" href="#src-2">2</a></sup></p>
           <div class="scale-facts">
             <p>SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="src-link" href="#src-3">3</a></sup></p>
-            <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
-            <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
-            <p>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></p>
             <p class="scale-standout">Arizona: a 51% year-over-year drop, 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></p>
           </div>
         </div>
       </div>
-      <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
-        <div style="position:relative; padding:34px 38px;">
-          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
-          <p class="collage-copy">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
+      <div class="disclosure" data-disclosure id="moreNumbers">
+        <button type="button" class="doc-toggle" aria-expanded="false" aria-controls="moreNumbersPanel">More numbers <span class="doc-caret" aria-hidden="true">+</span></button>
+        <div class="doc-panel" id="moreNumbersPanel"><div>
+          <div style="display:grid; gap:20px; padding-top:20px;">
+            <div class="scale-facts">
+            <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
+            <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
+            <p>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></p>
+            </div>
+        <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
+          <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
+          <div style="position:relative; padding:34px 38px;">
+            <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
+            <p class="collage-copy">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
+          </div>
         </div>
-      </div>
-      <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
-        <div style="position:relative; padding:28px 32px;">
-          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
-          <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
+        <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
+          <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
+          <div style="position:relative; padding:28px 32px;">
+            <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
+            <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
+          </div>
         </div>
-      </div>
-      <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
-        <div style="position:relative; padding:24px 28px;">
-          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
-          <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
+        <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
+          <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
+          <div style="position:relative; padding:24px 28px;">
+            <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
+            <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
+          </div>
         </div>
+          </div>
+        </div></div>
       </div>
     </div>
     <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
   </div>
-  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
+  <p class="body-p" data-reveal style="margin:40px 0 0;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
 </section>
 
 <section class="statband" id="statband">
@@ -308,7 +379,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
+<section id="how" class="wrap pt-sec" style="padding-bottom:64px;">
   <p class="eyebrow" data-reveal>Standard operating procedure</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
     <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
@@ -317,20 +388,33 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
 
-<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
+<section id="sensors" class="wrap pb-sec" style="padding-top:24px;">
   <p class="eyebrow" data-reveal>The instruments</p>
   <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
   <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The school needs a record showing the load stayed out of the danger zone, pack-out to hand-off.<sup><a class="src-link" href="#src-11">11</a></sup></p>
-  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
-  <div class="sensor-row cold-panel" style="margin-top:40px;">
+  <div class="disclosure" data-disclosure data-reveal style="margin:16px 0 0;">
+    <button type="button" class="doc-toggle" aria-expanded="false" aria-controls="coverageGapsPanel">Coverage and gaps <span class="doc-caret" aria-hidden="true">+</span></button>
+    <div class="doc-panel" id="coverageGapsPanel"><div>
+      <p class="body-p" style="margin:14px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
+    </div></div>
+  </div>
+  <div class="sensor-row cold-panel has-glow glow-accent" style="margin-top:40px;">
     <div>
       <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
       <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:500; font-size:13px; margin:12px 0 0; color:var(--brand);">in range</p>
-      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
-      <div id="coldRows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);"></div>
+      <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box <span class="boxid">0447</span> · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
+      <div id="coldSpark" style="margin-top:12px;"></div>
+      <noscript>
+        <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);">
+          <div class="row"><span>13:42 packed</span><span class="temp">36°F</span></div>
+          <div class="row"><span>14:05 in transit</span><span class="temp">38°F</span></div>
+          <div class="row"><span>14:28 street handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
+          <div class="row"><span>14:51 received</span><span class="temp">39°F</span></div>
+        </div>
+      </noscript>
     </div>
     <div>
       <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
@@ -376,14 +460,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <div class="box-band-copy">
         <p class="eyebrow" data-midcopy>What actually moves</p>
         <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
-        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
+        <p class="body-p" data-midcopy style="margin:0;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
+  <div class="wrap pb-sec" style="padding-top:24px;">
     <p class="eyebrow" data-reveal>The delivery log</p>
     <h2 class="hd" data-mask style="max-width:620px;">
       <span class="mask-l"><span data-line>The delivery log</span></span>
@@ -461,7 +545,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="story" class="wrap pt-sec pb-sec">
   <p class="eyebrow" data-reveal>Why we exist</p>
   <div class="two-grid">
     <h2 class="hd" data-mask>
@@ -471,56 +555,63 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div>
       <p class="body-p" data-reveal style="margin:0;">We started this because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the logger and the tracker, and will walk the routes and keep the logs.</p>
       <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table and a receiving site within walking distance, it can run there too.</p>
+      <p class="body-p" data-reveal style="margin:16px 0 0; font-size:15px; color:var(--text-secondary);">Built and run by Saif, a student at Stuyvesant High School.</p>
     </div>
   </div>
 </section>
 
 <section id="limits" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap pt-sec pb-sec">
     <p class="eyebrow" data-reveal>The limits</p>
     <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
       <span class="mask-l"><span data-line>What this does not do.</span></span>
       <span class="mask-l"><span data-line>Plainly.</span></span>
     </h2>
-    <div class="limits-grid">
-      <div data-reveal>
-        <p class="lbl">the mechanism</p>
-        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items from a share table to a receiving site in the same borough, on foot, the same afternoon. That is what a borough cluster buys you; it is not a claim about crossing the city.</p>
+    <div id="limitRows" style="border-top:1px solid var(--line); max-width:980px;">
+      <div class="prow prow-plain open" data-prow data-prow-static>
+        <button type="button" aria-expanded="true" aria-controls="limit-1"><span class="ttl lbl" data-ptitle>the mechanism</span><span class="caret" aria-hidden="true">−</span></button>
+        <div class="pdetail" id="limit-1"><div><p>Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items from a share table to a receiving site in the same borough, on foot, the same afternoon. That is what a borough cluster buys you; it is not a claim about crossing the city.</p></div></div>
       </div>
-      <div data-reveal>
-        <p class="lbl">what it measurably changes</p>
-        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus. None of it is measurable yet; the log is empty.</p>
+      <div class="prow prow-plain" data-prow data-prow-static>
+        <button type="button" aria-expanded="false" aria-controls="limit-2"><span class="ttl lbl" data-ptitle>what it measurably changes</span><span class="caret" aria-hidden="true">+</span></button>
+        <div class="pdetail" id="limit-2"><div><p>Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus. None of it is measurable yet; the log is empty.</p></div></div>
       </div>
-      <div data-reveal>
-        <p class="lbl">what it does not touch</p>
-        <p class="body">Income. SNAP enrollment. Rent, wages, or any of the reasons need exists in the first place. A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
+      <div class="prow prow-plain" data-prow data-prow-static>
+        <button type="button" aria-expanded="false" aria-controls="limit-3"><span class="ttl lbl" data-ptitle>what it does not touch</span><span class="caret" aria-hidden="true">+</span></button>
+        <div class="pdetail" id="limit-3"><div><p>Income. SNAP enrollment. Rent, wages, or any of the reasons need exists in the first place. A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p></div></div>
       </div>
-      <div data-reveal>
-        <p class="lbl">what would have to be true</p>
-        <p class="body">Many more buildings than the one we run in. A signed receiving site in every borough we claim a cluster in; three of the four have none. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Sites with capacity for same-day perishable food.</p>
+      <div class="prow prow-plain" data-prow data-prow-static>
+        <button type="button" aria-expanded="false" aria-controls="limit-4"><span class="ttl lbl" data-ptitle>what would have to be true</span><span class="caret" aria-hidden="true">+</span></button>
+        <div class="pdetail" id="limit-4"><div><p>Many more buildings than the one we run in. A signed receiving site in every borough we claim a cluster in; three of the four have none. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Sites with capacity for same-day perishable food.</p></div></div>
       </div>
-      <div data-reveal>
-        <p class="lbl">what would show it is not working</p>
-        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and stays on the map anyway. We publish the log so this is checkable by someone other than us.</p>
+      <div class="prow prow-plain" data-prow data-prow-static>
+        <button type="button" aria-expanded="false" aria-controls="limit-5"><span class="ttl lbl" data-ptitle>what would show it is not working</span><span class="caret" aria-hidden="true">+</span></button>
+        <div class="pdetail" id="limit-5"><div><p>Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and stays on the map anyway. We publish the log so this is checkable by someone other than us.</p></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding:96px 24px;">
+<section aria-label="Pull quote" class="quote-band" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
+  <svg class="spray-mark" aria-hidden="true" focusable="false" viewBox="0 0 1500 300" preserveAspectRatio="xMinYMid meet">
+    <ellipse cx="620" cy="158" rx="700" ry="122" fill="url(#spray-halo)" opacity="0.3"></ellipse>
+    <g mask="url(#spray-bridges)" filter="url(#spray)">
+      <text x="-52" y="212" textLength="1440" lengthAdjust="spacingAndGlyphs" font-family="Archivo,-apple-system,sans-serif" font-weight="700" font-size="152" style="fill:var(--accent);">STOCK THE BLOCK</text>
+    </g>
+  </svg>
+  <div class="wrap" style="padding:96px 24px; position:relative; z-index:1;">
     <p data-reveal style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
   </div>
 </section>
 
 <section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap pt-sec pb-sec">
     <p class="eyebrow" data-reveal>Run this yourself</p>
     <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
       <span class="mask-l"><span data-line>Everything we use</span></span>
       <span class="mask-l"><span data-line>is yours to copy.</span></span>
     </h2>
-    <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Read the health code memo, then the box spec. Those two decide whether your building can run this; the rest follows from them.</p>
+    <p class="body-p" data-reveal style="margin:0 0 32px;">Read the health code memo, then the box spec. Those two decide whether your building can run this; the rest follows from them.</p>
     <div class="cards-grid">
       <div class="card" data-reveal style="grid-column:span 2; background:var(--tint); border-color:var(--brand-line-mid);">
         <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo: start here</p>
@@ -733,7 +824,7 @@ that wasn't actually clean.</pre>
     </div>
     <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
       <p class="eyebrow">The kit, flat</p>
-      <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, route sheet and log template are yours to copy.</p>
+      <p class="body-p" data-reveal style="margin:0 0 24px;">One box, cut and folded from a single sheet. The plans, route sheet and log template are yours to copy.</p>
       <div style="position:relative; max-width:760px;">
         <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
           <g fill="none" style="stroke:var(--mascot-stroke);" stroke-width="2.5" stroke-linejoin="round">
@@ -774,7 +865,7 @@ that wasn't actually clean.</pre>
     </div>
     <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
       <h3 style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
-      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
+      <p class="body-p" style="margin:0;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
       <p class="packet-note"><strong>Nothing here leaves your browser.</strong> No endpoint, no upload, no storage. The packet is built on this page and is gone when you close the tab.</p>
       <form class="packet-form" id="packetForm" autocomplete="off">
         <label>Date<input type="date" name="date" required></label>
@@ -801,7 +892,7 @@ that wasn't actually clean.</pre>
 </section>
 
 <section id="join" style="background:var(--surface);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+  <div class="wrap pt-sec pb-sec">
     <p class="eyebrow" data-reveal>Get involved</p>
     <div class="join-grid">
       <div>
@@ -838,16 +929,17 @@ that wasn't actually clean.</pre>
 <section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
     <p class="eyebrow">Planned operations</p>
-    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">One list, one status per school. Filter it by where each building actually stands.</p>
+    <p class="body-p" style="margin:0 0 24px;">One list, one status per school. Filter it by where each building actually stands.</p>
 
     <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+    <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough" aria-controls="sitesList"></div>
 
     <div id="sitesList" class="sites-list" aria-live="polite">
       <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
            are replaced on first render. -->
       <noscript>
         <ul class="site-rows">
-          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-operating">Operating</span></li>
+          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-operating is-live live-brand">Operating</span></li>
           <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
           <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
           <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
@@ -859,6 +951,15 @@ that wasn't actually clean.</pre>
       </noscript>
     </div>
 
+    <div class="map-block">
+      <h3 class="eyebrow" style="margin:0 0 12px;">Where the need is</h3>
+      <div id="boroughMap" class="map-host"></div>
+      <div id="mapLegend" class="map-legend"></div>
+      <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration Borough/Community District Report and NYC Department of City Planning 2020 Census population, September 2025. It is not a map of where Stock the Block operates. One receiving site is operating, in Manhattan.</p>
+      <p class="cite" id="mapCite"></p>
+      <p class="cite">Markers sit at borough level. The list records a borough for each school and nothing finer, so a pin is not a street address, and a shaded district is not a district this project serves.</p>
+    </div>
+
     <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
   </div>
 </section>
@@ -867,13 +968,15 @@ that wasn't actually clean.</pre>
   <div class="wrap top">
     <span style="display:flex; align-items:center; gap:12px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC · built by Saif</span>
     </span>
     <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
   <div class="wrap" id="sources" style="padding:8px 24px 28px;">
-    <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
-    <ol class="sources-list">
+    <div class="disclosure" data-disclosure id="sourcesDisclosure">
+      <h2 class="eyebrow" style="margin:0;"><button type="button" class="doc-toggle" aria-expanded="false" aria-controls="sourcesPanel" id="sourcesToggle">Sources (11) <span class="doc-caret" aria-hidden="true">+</span></button></h2>
+      <div class="doc-panel" id="sourcesPanel"><div>
+    <ol class="sources-list" style="padding-top:14px;">
       <li id="src-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
       <li id="src-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
       <li id="src-3">3. Pew Charitable Trusts, "As SNAP Changes Shift Food Assistance Costs, States Face New Choices," January 2026</li>
@@ -886,6 +989,8 @@ that wasn't actually clean.</pre>
       <li id="src-10">10. Federal Register. "October 1, 2026" SNAP administrative cost-share change</li>
       <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
     </ol>
+      </div></div>
+    </div>
   </div>
   <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
@@ -975,6 +1080,17 @@ that wasn't actually clean.</pre>
   }
 
   /* ---------- procedure rows ---------- */
+  function bindProw(row, onToggle) {
+    var btn = row.querySelector("button");
+    btn.addEventListener("click", function () {
+      var open = row.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      var caret = btn.querySelector(".caret");
+      if (caret) caret.textContent = open ? "−" : "+";
+      if (onToggle) onToggle(open);
+    });
+  }
+
   var stepsHost = $("#steps");
   STEPS.forEach(function (s, idx) {
     var d = document.createElement("div");
@@ -983,19 +1099,35 @@ that wasn't actually clean.</pre>
     d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
     var maskHost = d.querySelector(".pmasc");
     maskHost.innerHTML = mascotSVG("idle", {});
-    var btn = d.querySelector("button");
-    btn.addEventListener("click", function () {
-      var open = d.classList.toggle("open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      btn.querySelector(".caret").textContent = open ? "−" : "+";
+    bindProw(d, function (open) {
       paintMascot(maskHost.querySelector("svg"), open ? s.state : "idle");
     });
     stepsHost.appendChild(d);
   });
 
-  /* ---------- cold-chain readout ---------- */
+  /* The limits rows are the same accordion, written in the markup rather than
+     built from data, so they share the binder instead of a second handler. */
+  $$("[data-prow-static]").forEach(function (row) { bindProw(row, null); });
+
+  /* ---------- cold-chain readout ----------
+     The same four readings the list showed, drawn as a line against time so
+     the one breach reads as a shape rather than as a row you have to find.
+     No data point is added, invented or interpolated: the only computed
+     coordinate is where a segment crosses the 41°F rule, which is drawn so
+     the colour change lands on the threshold instead of on the next reading.
+     The list survives verbatim in <noscript>. */
   var coldIdx = 3;
-  var coldRowsHost = $("#coldRows");
+  var coldSparkHost = $("#coldSpark");
+  var SPARK = { w: 340, h: 172, padL: 46, padR: 16, padT: 18, padB: 48 };
+
+  function degText(f) {
+    return STB.unitMode() === "metric" ? ((f - 32) * 5 / 9).toFixed(1) + "°C" : f + "°F";
+  }
+  function svgEl(name, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
+    return el;
+  }
   function renderCold() {
     var cur = COLD[coldIdx];
     var coldSafe = cur.temp <= SAFE_MAX;
@@ -1003,19 +1135,118 @@ that wasn't actually clean.</pre>
     var lbl = $("#coldLabel");
     lbl.textContent = coldSafe ? "in range" : "danger zone";
     lbl.style.color = coldSafe ? "var(--brand)" : "var(--accent)";
-    coldRowsHost.innerHTML = "";
-    COLD.forEach(function (c, i) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "row" + (i === coldIdx ? " active" : "");
-      b.setAttribute("aria-pressed", i === coldIdx ? "true" : "false");
-      var safe = c.temp <= SAFE_MAX;
-      b.innerHTML = '<span>' + c.t + ' ' + c.note + '</span><span class="temp" data-degf="' + c.temp + '" style="color:' + (safe ? "var(--brand)" : "var(--accent-text)") + ';"></span>';
-      b.addEventListener("click", function () { coldIdx = i; renderCold(); });
-      coldRowsHost.appendChild(b);
+    lbl.className = "mono is-live " + (coldSafe ? "live-brand" : "live-accent");
+
+    var temps = COLD.map(function (c) { return c.temp; });
+    var lo = Math.min(Math.min.apply(null, temps), SAFE_MAX) - 4;
+    var hi = Math.max(Math.max.apply(null, temps), SAFE_MAX) + 4;
+    var plotW = SPARK.w - SPARK.padL - SPARK.padR;
+    var plotH = SPARK.h - SPARK.padT - SPARK.padB;
+    function px(i) { return SPARK.padL + (COLD.length === 1 ? plotW / 2 : i * plotW / (COLD.length - 1)); }
+    function py(t) { return SPARK.padT + (hi - t) / (hi - lo) * plotH; }
+
+    var svg = svgEl("svg", {
+      "class": "cold-spark", viewBox: "0 0 " + SPARK.w + " " + SPARK.h,
+      role: "group", "aria-label": "Cold-chain readings for box 0447, plotted against time"
     });
-    STB.renderUnits(coldRowsHost);
+
+    /* axis: the two ends of the temperature range, and the threshold rule */
+    [lo, hi].forEach(function (v) {
+      var t = svgEl("text", { x: SPARK.padL - 8, y: py(v) + 3, "text-anchor": "end", "data-degf": v });
+      svg.appendChild(t);
+    });
+    var yr = py(SAFE_MAX);
+    svg.appendChild(svgEl("line", {
+      x1: SPARK.padL, x2: SPARK.padL + plotW, y1: yr, y2: yr,
+      stroke: "var(--accent)", "stroke-width": "1.5", "stroke-dasharray": "5 4", opacity: "0.85"
+    }));
+    var ruleLbl = svgEl("text", { x: SPARK.padL + 2, y: yr - 6 });
+    ruleLbl.appendChild(document.createTextNode("safe ≤ "));
+    ruleLbl.appendChild(svgEl("tspan", { "data-degf": SAFE_MAX }));
+    svg.appendChild(ruleLbl);
+
+    /* the line, split at the threshold so each part carries its own colour */
+    function seg(x1, y1, x2, y2, safe) {
+      svg.appendChild(svgEl("line", {
+        x1: x1, y1: y1, x2: x2, y2: y2,
+        stroke: safe ? "var(--brand)" : "var(--accent)",
+        "stroke-width": "2.5", "stroke-linecap": "round"
+      }));
+    }
+    for (var i = 0; i < COLD.length - 1; i++) {
+      var a = COLD[i], b = COLD[i + 1];
+      var ax = px(i), bx = px(i + 1), ay = py(a.temp), by = py(b.temp);
+      var aSafe = a.temp <= SAFE_MAX, bSafe = b.temp <= SAFE_MAX;
+      if (aSafe === bSafe) { seg(ax, ay, bx, by, aSafe); continue; }
+      var frac = (SAFE_MAX - a.temp) / (b.temp - a.temp);
+      var cx = ax + frac * (bx - ax);
+      seg(ax, ay, cx, yr, aSafe);
+      seg(cx, yr, bx, by, bSafe);
+    }
+
+    /* one tooltip, moved and refilled rather than rebuilt per point */
+    var tip = svgEl("g", { "class": "tip", visibility: "hidden", "aria-hidden": "true" });
+    var tipBox = svgEl("rect", { "class": "tip-box", rx: "6", height: "32", width: "120", x: "0", y: "0" });
+    var tipL1 = svgEl("text", { "class": "tip-txt", x: "8", y: "13" });
+    var tipL2 = svgEl("text", { "class": "tip-txt", x: "8", y: "26" });
+    tip.appendChild(tipBox); tip.appendChild(tipL1); tip.appendChild(tipL2);
+
+    COLD.forEach(function (c, i) {
+      var safe = c.temp <= SAFE_MAX;
+      var x = px(i), y = py(c.temp);
+      var sel = i === coldIdx;
+      var g = svgEl("g", {
+        "class": "pt", tabindex: "0", role: "button",
+        "aria-pressed": sel ? "true" : "false",
+        "aria-label": c.t + " " + c.note + ", " + degText(c.temp) + ", " + (safe ? "in range" : "above threshold")
+      });
+      g.appendChild(svgEl("circle", { cx: x, cy: y, r: "14", fill: "transparent" }));
+      g.appendChild(svgEl("circle", { "class": "halo", cx: x, cy: y, r: "9" }));
+      g.appendChild(svgEl("circle", {
+        "class": "dot", cx: x, cy: y, r: sel ? "5.5" : "4",
+        fill: sel ? (safe ? "var(--brand)" : "var(--accent)") : "var(--surface)",
+        stroke: safe ? "var(--brand)" : "var(--accent)", "stroke-width": "2.5"
+      }));
+      function show() {
+        tipL1.textContent = c.t + " · " + c.note;
+        tipL2.textContent = degText(c.temp) + (safe ? "" : " · above threshold");
+        var wide = Math.max(tipL1.textContent.length, tipL2.textContent.length) * 6 + 16;
+        tipBox.setAttribute("width", wide);
+        var tx = Math.min(Math.max(x - wide / 2, 0), SPARK.w - wide);
+        var ty = y > SPARK.padT + plotH / 2 ? y - 42 : y + 12;
+        tip.setAttribute("transform", "translate(" + tx + "," + ty + ")");
+        tip.setAttribute("visibility", "visible");
+      }
+      function hide() { tip.setAttribute("visibility", "hidden"); }
+      function select() { coldIdx = i; renderCold(); $$(".cold-spark .pt")[i].focus(); }
+      g.addEventListener("mouseenter", show);
+      g.addEventListener("mouseleave", hide);
+      g.addEventListener("focus", show);
+      g.addEventListener("blur", hide);
+      g.addEventListener("click", select);
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); select(); }
+      });
+      svg.appendChild(g);
+
+      var xl = svgEl("text", { x: x, y: SPARK.padT + plotH + 18, "text-anchor": "middle" });
+      xl.textContent = c.t;
+      svg.appendChild(xl);
+    });
+    svg.appendChild(tip);
+
+    coldSparkHost.innerHTML = "";
+    coldSparkHost.appendChild(svg);
+    STB.renderUnits(coldSparkHost);
   }
   renderCold();
+  /* The unit toggle rewrites [data-degf] in place, but the point labels and
+     the tooltip are composed strings, so this instance redraws itself. */
+  document.addEventListener("stb:units", function () {
+    var had = document.activeElement && document.activeElement.closest && document.activeElement.closest(".cold-spark");
+    renderCold();
+    if (had) { var pts = $$(".cold-spark .pt"); if (pts[coldIdx]) pts[coldIdx].focus(); }
+  });
 
   /* ---------- chips + manifest ---------- */
   var sortKey = "date", sortDir = "desc", filter = "All";
@@ -1196,15 +1427,43 @@ that wasn't actually clean.</pre>
   }
 
   /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
+  function setDisclosure(host, btn, open) {
+    host.classList.toggle("doc-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    var caret = btn.querySelector(".doc-caret");
+    if (caret) caret.textContent = open ? "−" : "+";
+  }
   $$(".doc-toggle").forEach(function (btn) {
-    var card = btn.closest(".card");
+    var host = btn.closest("[data-disclosure]") || btn.closest(".card");
+    if (!host) return;
     btn.addEventListener("click", function () {
-      var open = card.classList.toggle("doc-open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      var caret = btn.querySelector(".doc-caret");
-      if (caret) caret.textContent = open ? "−" : "+";
+      setDisclosure(host, btn, !host.classList.contains("doc-open"));
     });
   });
+
+  /* A citation link points into the sources list, which is collapsed by
+     default. Open it first, then scroll, or the browser lands on a target
+     with no height. */
+  var srcHost = $("#sourcesDisclosure"), srcBtn = $("#sourcesToggle");
+  function openSources() {
+    if (!srcHost || srcHost.classList.contains("doc-open")) return false;
+    setDisclosure(srcHost, srcBtn, true);
+    return true;
+  }
+  $$(".src-link").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      var target = document.getElementById(link.getAttribute("href").slice(1));
+      if (!target) return;
+      e.preventDefault();
+      var wasClosed = openSources();
+      var go = function () {
+        target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+        if (history.replaceState) history.replaceState(null, "", link.getAttribute("href"));
+      };
+      if (wasClosed && !reduced) setTimeout(go, 320); else go();
+    });
+  });
+  if (location.hash.indexOf("#src-") === 0) openSources();
   $$(".doc-copy").forEach(function (btn) {
     var pre = document.getElementById(btn.getAttribute("data-copy-target"));
     if (!pre) return;
@@ -1330,10 +1589,10 @@ that wasn't actually clean.</pre>
       var manifest =
         '<div class="packet-doc">' +
           '<h3>Delivery manifest</h3>' +
-          '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
+          '<p class="packet-sub">Stock the Block · box <span class="boxid">' + esc(d.boxid) + '</span> · ' + esc(d.date) + '</p>' +
           '<table class="kv"><tbody>' +
             '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
-            '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
+            '<tr><th scope="row">Box ID</th><td class="boxid">' + esc(d.boxid) + '</td></tr>' +
             '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +
             '<tr><th scope="row">Destination</th><td>' + esc(d.destination) + '</td></tr>' +
             '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
@@ -1346,7 +1605,7 @@ that wasn't actually clean.</pre>
       var log =
         '<div class="packet-doc">' +
           '<h3>Temperature log</h3>' +
-          '<p class="packet-sub">box ' + esc(d.boxid) + ' · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
+          '<p class="packet-sub">box <span class="boxid">' + esc(d.boxid) + '</span> · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
           (temps.length
             ? '<table><thead><tr><th>Time</th><th>Note</th><th>Reading</th><th>Status</th></tr></thead><tbody>' +
                 temps.map(function (r) {
@@ -1383,6 +1642,7 @@ that wasn't actually clean.</pre>
 
   /* ---------- Phase 5 shared features ---------- */
   STB.initSites();
+  STB.initBoroughMap();
   STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();
