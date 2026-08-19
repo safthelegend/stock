@@ -1211,35 +1211,69 @@ function initMascotSlots(root) {
     { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
   ];
 
+  /* The one receiving site. It is not a school, so it does not belong in the
+     school list, but the map has to show it or the map is a map of origins
+     with no destination. Kept beside SITES rather than inside it. */
+  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "operating", kind: "receiving" };
+
+  var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
+
+  /* One filter state, read by the list and by the map. Filtering either one
+     filters both, because there is only one of them. */
+  var siteState = { status: "all", borough: "all" };
+  var siteListeners = [];
+  function onSiteState(fn) { siteListeners.push(fn); }
+  function matchesSiteState(r) {
+    return (siteState.status === "all" || r.status === siteState.status) &&
+           (siteState.borough === "all" || r.borough === siteState.borough);
+  }
+
   function initSites() {
     var list = document.getElementById("sitesList");
     var filter = document.getElementById("sitesFilter");
+    var boroFilter = document.getElementById("sitesBoroughFilter");
     var note = document.getElementById("sitesNote");
     if (!list || !filter) return null;
 
     function count(key) {
       return key === "all" ? SITES.length : SITES.filter(function (s) { return s.status === key; }).length;
     }
+    function boroCount(key) {
+      return key === "all" ? SITES.length : SITES.filter(function (s) { return s.borough === key; }).length;
+    }
 
     /* Filter controls, built from the same status table the rows read, so a
        new status cannot appear in one and not the other. Radios rather than
        buttons: it is a single choice out of a named set, which is what a radio
-       group is, and it arrives with arrow-key navigation already working. */
-    var opts = [{ key: "all", label: "All sites" }].concat(SITE_STATUS);
-    filter.innerHTML = opts.map(function (o, i) {
-      return '<label class="site-filter-opt">' +
-        '<input type="radio" name="siteFilter" value="' + o.key + '"' + (i === 0 ? " checked" : "") + '>' +
-        '<span>' + o.label + ' <span class="count">' + count(o.key) + '</span></span>' +
-        '</label>';
-    }).join("");
+       group is, and it arrives with arrow-key navigation already working.
+
+       The borough group is the same component with a different set fed to it,
+       not a second implementation. */
+    function buildGroup(host, group, opts) {
+      host.innerHTML = opts.map(function (o, i) {
+        return '<label class="site-filter-opt">' +
+          '<input type="radio" name="' + group + '" value="' + o.key + '"' + (i === 0 ? " checked" : "") + '>' +
+          '<span>' + o.label + ' <span class="count">' + o.n + '</span></span>' +
+          '</label>';
+      }).join("");
+    }
+
+    buildGroup(filter, "siteFilter", [{ key: "all", label: "All sites", n: count("all") }].concat(
+      SITE_STATUS.map(function (o) { return { key: o.key, label: o.label, n: count(o.key) }; })));
+
+    if (boroFilter) {
+      buildGroup(boroFilter, "siteBorough", [{ key: "all", label: "All boroughs", n: boroCount("all") }].concat(
+        BOROUGHS.map(function (b) { return { key: b, label: b, n: boroCount(b) }; })));
+    }
 
     function labelFor(key) {
       for (var i = 0; i < SITE_STATUS.length; i++) if (SITE_STATUS[i].key === key) return SITE_STATUS[i];
       return { label: key, note: "" };
     }
 
-    function render(active) {
-      var rows = SITES.filter(function (s) { return active === "all" || s.status === active; });
+    function render() {
+      var active = siteState.status;
+      var rows = SITES.filter(matchesSiteState);
       if (!rows.length) {
         list.innerHTML = '<p class="site-empty">No schools at this status yet.</p>';
       } else {
@@ -1257,13 +1291,166 @@ function initMascotSlots(root) {
         ? "Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have."
         : labelFor(active).note;
       list.setAttribute("data-filter", active);
+      for (var j = 0; j < siteListeners.length; j++) siteListeners[j]();
     }
 
-    filter.addEventListener("change", function (e) {
-      if (e.target && e.target.name === "siteFilter") render(e.target.value);
-    });
-    render("all");
+    function onChange(e) {
+      if (!e.target) return;
+      if (e.target.name === "siteFilter") { siteState.status = e.target.value; render(); }
+      if (e.target.name === "siteBorough") { siteState.borough = e.target.value; render(); }
+    }
+    filter.addEventListener("change", onChange);
+    if (boroFilter) boroFilter.addEventListener("change", onChange);
+    render();
     return { render: render, data: SITES };
+  }
+
+  /* ======================================================================
+     BOROUGH MAP — community districts, one cited indicator, school markers
+     ======================================================================
+     Inline SVG built from assets/geo/nyc-cd.json: boundaries pre-projected at
+     build time, so nothing projects at runtime and no map service, tile layer
+     or third-party request is involved.
+
+     The shading is ONE published indicator, stored with the geometry and
+     printed under the map with its source and vintage. Districts the source
+     does not cover are drawn unshaded and named in the legend as "no data";
+     no gap is filled and no index is blended.
+
+     Markers sit at BOROUGH resolution on purpose. The site list records a
+     borough for each school and nothing finer, so a pin at a street address
+     would be precision this project does not have. */
+  var MAP_BREAKS = [10, 20, 30, 40];        /* percent; five classes with the top open */
+
+  function mapClass(v) {
+    if (v === null || v === undefined) return -1;
+    for (var i = 0; i < MAP_BREAKS.length; i++) if (v < MAP_BREAKS[i]) return i;
+    return MAP_BREAKS.length;
+  }
+  /* A single hue — var(--brand) — stepped by how much of the surface shows
+     through it. One ramp that stays legible whether the ground is paper or
+     forest, because it is always the theme's own brand over the theme's own
+     surface. */
+  var MAP_OPACITY = [0.22, 0.38, 0.55, 0.73, 0.92];
+
+  function initBoroughMap() {
+    var host = document.getElementById("boroughMap");
+    if (!host || !window.fetch) return null;
+    var legendHost = document.getElementById("mapLegend");
+    var svgNS = "http://www.w3.org/2000/svg";
+    function el(n, a) {
+      var e = document.createElementNS(svgNS, n);
+      for (var k in a) if (a.hasOwnProperty(k)) e.setAttribute(k, a[k]);
+      return e;
+    }
+
+    fetch("assets/geo/nyc-cd.json").then(function (r) { return r.json(); }).then(function (geo) {
+      var vb = geo.viewBox;
+      var svg = el("svg", {
+        viewBox: "0 0 " + vb[0] + " " + vb[1], "class": "boro-map",
+        role: "img",
+        "aria-label": "Map of New York City community districts shaded by " +
+                      geo.meta.indicator.toLowerCase() + ", with markers for the schools in the list and the one operating receiving site."
+      });
+      svg.appendChild(el("rect", { x: 0, y: 0, width: vb[0], height: vb[1], fill: "var(--surface)" }));
+
+      geo.districts.forEach(function (d) {
+        var c = mapClass(d.snap);
+        svg.appendChild(el("path", {
+          d: d.d, "class": "cd" + (c < 0 ? " cd-nodata" : ""),
+          fill: c < 0 ? "var(--bg)" : "var(--brand)",
+          "fill-opacity": c < 0 ? 1 : MAP_OPACITY[c],
+          stroke: "var(--line)", "stroke-width": 1.1,
+          /* A dashed edge, so "no data" is distinguishable from the lightest
+             class without relying on how close two fills look. */
+          "stroke-dasharray": c < 0 ? "5 4" : "none"
+        }));
+      });
+
+      var markerLayer = el("g", { "class": "marker-layer" });
+      svg.appendChild(markerLayer);
+      host.innerHTML = "";
+      host.appendChild(svg);
+
+      /* One popup element, moved and refilled — never one per marker. */
+      var pop = document.createElement("div");
+      pop.className = "map-pop"; pop.hidden = true;
+      host.appendChild(pop);
+
+      function statusLabel(k) {
+        for (var i = 0; i < SITE_STATUS.length; i++) if (SITE_STATUS[i].key === k) return SITE_STATUS[i].label;
+        return k;
+      }
+
+      function drawMarkers() {
+        while (markerLayer.firstChild) markerLayer.removeChild(markerLayer.firstChild);
+        pop.hidden = true;
+        /* SITES is read, never copied. The receiving site rides alongside it. */
+        var places = SITES.concat([RECEIVING_SITE]).filter(matchesSiteState);
+        var byBoro = {};
+        places.forEach(function (p) { (byBoro[p.borough] = byBoro[p.borough] || []).push(p); });
+
+        Object.keys(byBoro).forEach(function (b) {
+          var a = geo.boroughAnchors[b];
+          if (!a) return;
+          var group = byBoro[b];
+          var step = 46, top = a[1] - (group.length - 1) * step / 2;
+          group.forEach(function (p, i) {
+            var x = a[0], y = top + i * step;
+            var g = el("g", {
+              "class": "pin pin-" + p.status, tabindex: "0", role: "button",
+              "aria-label": p.name + ", " + p.borough + ", " + statusLabel(p.status)
+            });
+            g.appendChild(el("circle", { cx: x, cy: y, r: 9, fill: "var(--surface)", stroke: "var(--text)", "stroke-width": 3.5 }));
+            g.appendChild(el("circle", { cx: x, cy: y, r: 4.5, fill: "var(--text)" }));
+            var t = el("text", { x: x + 15, y: y + 6, "class": "pin-lbl" });
+            t.textContent = statusLabel(p.status);
+            g.appendChild(t);
+            function show() {
+              pop.innerHTML = '<strong>' + p.name + '</strong><span>' + p.borough + '</span><span>' + statusLabel(p.status) + '</span>';
+              pop.hidden = false;
+              var box = svg.getBoundingClientRect();
+              pop.style.left = (x / vb[0] * box.width) + "px";
+              pop.style.top = (y / vb[1] * box.height) + "px";
+            }
+            function hide() { pop.hidden = true; }
+            g.addEventListener("mouseenter", show);
+            g.addEventListener("mouseleave", hide);
+            g.addEventListener("focus", show);
+            g.addEventListener("blur", hide);
+            markerLayer.appendChild(g);
+          });
+        });
+      }
+
+      /* Legend: the breakpoints in figures, so the ramp reads without colour,
+         plus the explicit "no data" class. */
+      if (legendHost) {
+        var items = [];
+        for (var i = 0; i <= MAP_BREAKS.length; i++) {
+          var lo = i === 0 ? 0 : MAP_BREAKS[i - 1];
+          var hi = MAP_BREAKS[i];
+          items.push('<span class="lg-item"><span class="lg-sw" style="background:var(--brand); opacity:' + MAP_OPACITY[i] + '"></span>' +
+            (hi === undefined ? lo + "% and over" : lo + "–" + hi + "%") + '</span>');
+        }
+        items.push('<span class="lg-item"><span class="lg-sw lg-nodata"></span>no data</span>');
+        legendHost.innerHTML = items.join("");
+      }
+
+      var cite = document.getElementById("mapCite");
+      if (cite) {
+        cite.textContent = geo.meta.indicator + " (" + geo.meta.units + "). Source: " +
+          geo.meta.indicator_source + ". Vintage: " + geo.meta.indicator_vintage +
+          ". Boundaries: " + geo.meta.boundaries.split(".")[0] + ".";
+      }
+
+      drawMarkers();
+      onSiteState(drawMarkers);
+      addEventListener("resize", function () { pop.hidden = true; }, { passive: true });
+    })["catch"](function () {
+      host.innerHTML = '<p class="site-empty">The map data could not be loaded. The list above carries every school and its status.</p>';
+    });
+    return true;
   }
 
   /* ======================================================================
@@ -1465,6 +1652,9 @@ function initMascotSlots(root) {
     getVar: getVar, initTheme: initTheme,
     initNav: initNav, initReveals: initReveals,
     SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
+    RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
+    siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
+    initBoroughMap: initBoroughMap,
     initScrollFx: initScrollFx
   };
 })(window);

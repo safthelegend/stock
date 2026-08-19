@@ -427,7 +427,7 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
      not, so the label prints and only the caret drops out. */
   .disclosure > h2 .doc-toggle { display:inline !important; }
   .doc-caret { display:none !important; }
-  .is-live::after, .has-glow::before { display:none !important; }
+  .is-live::after, .has-glow::before, .map-pop { display:none !important; }
   .prow .pdetail, .doc-panel { display:block !important; grid-template-rows:1fr !important; }
   .prow .pdetail > div, .doc-panel > div { overflow:visible !important; height:auto !important; }
   .prow.open .pdetail, .doc-panel { visibility:visible !important; }

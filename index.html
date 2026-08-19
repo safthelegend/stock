@@ -91,6 +91,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-spark .pt:focus-visible .halo, .cold-spark .pt:hover .halo { opacity:1; }
   .cold-spark .tip-box { fill:var(--surface); stroke:var(--rule); stroke-width:1; }
   .cold-spark .tip-txt { fill:var(--text); font-size:10px; }
+  .map-block { margin-top:40px; padding-top:28px; border-top:1px solid var(--line-soft); }
+  .map-host { position:relative; max-width:620px; }
+  .boro-map { width:100%; height:auto; display:block; }
+  .boro-map .cd { transition:fill-opacity 160ms ease; }
+  .boro-map .pin { cursor:pointer; }
+  .boro-map .pin:focus { outline:none; }
+  .boro-map .pin:focus-visible circle:first-child { stroke:var(--accent); stroke-width:6; }
+  .boro-map .pin-lbl { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:21px; fill:var(--text); paint-order:stroke; stroke:var(--surface); stroke-width:5; }
+  .map-pop { position:absolute; z-index:2; transform:translate(14px,-50%); background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:8px 10px; display:grid; gap:2px; font-size:12px; color:var(--text-secondary); box-shadow:0 3px 14px var(--paper-shadow); pointer-events:none; max-width:220px; }
+  .map-pop strong { font-size:13px; color:var(--text); }
+  .map-legend { display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:14px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+  .map-legend .lg-item { display:inline-flex; align-items:center; gap:6px; }
+  .map-legend .lg-sw { width:14px; height:14px; border-radius:3px; border:1px solid var(--line); display:inline-block; }
+  .map-legend .lg-nodata { background:var(--bg); border-style:dashed; }
+  .map-caption { font-size:15px; line-height:1.6; color:var(--text); margin:16px 0 0; max-width:62ch; text-wrap:pretty; }
+  .map-block .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:12px 0 0; max-width:62ch; text-wrap:pretty; }
   /* DM Mono is the site's record typeface: box identifiers, the fields that
      produce a packet and the packet's own tables all read as log entries. */
   .boxid, .packet-form label, .packet-doc th, .packet-doc td { font-family:'DM Mono',ui-monospace,Menlo,monospace; }
@@ -882,6 +898,7 @@ that wasn't actually clean.</pre>
     <p class="body-p" style="margin:0 0 24px;">One list, one status per school. Filter it by where each building actually stands.</p>
 
     <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+    <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough" aria-controls="sitesList"></div>
 
     <div id="sitesList" class="sites-list" aria-live="polite">
       <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
@@ -898,6 +915,15 @@ that wasn't actually clean.</pre>
           <li class="site-row"><span class="nm">Queens High School for the Sciences at York College</span> <span class="meta"><span class="boro">Queens</span><span class="tag">specialized</span></span> <span class="status s-target">Target</span></li>
         </ul>
       </noscript>
+    </div>
+
+    <div class="map-block">
+      <h3 class="eyebrow" style="margin:0 0 12px;">Where the need is</h3>
+      <div id="boroughMap" class="map-host"></div>
+      <div id="mapLegend" class="map-legend"></div>
+      <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration Borough/Community District Report and NYC Department of City Planning 2020 Census population, September 2025. It is not a map of where Stock the Block operates. One receiving site is operating, in Manhattan.</p>
+      <p class="cite" id="mapCite"></p>
+      <p class="cite">Markers sit at borough level. The list records a borough for each school and nothing finer, so a pin is not a street address, and a shaded district is not a district this project serves.</p>
     </div>
 
     <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
@@ -1582,6 +1608,7 @@ that wasn't actually clean.</pre>
 
   /* ---------- Phase 5 shared features ---------- */
   STB.initSites();
+  STB.initBoroughMap();
   STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();
