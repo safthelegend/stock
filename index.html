@@ -20,7 +20,7 @@
 try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="assets/site.css">
 <style>
@@ -32,14 +32,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
-  .figure { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
-  .statband { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); }
-  .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
-  .statband .cell { padding:32px 24px 24px 0; }
-  .statband .cell + .cell { padding-left:24px; }
-  .statband .cell:not(:last-child) { border-right:1px solid var(--line-soft); }
-  .statband .fig { font-size:clamp(30px,3vw,40px); letter-spacing:-0.03em; margin:0; color:var(--text); }
-  .statband .cap { font-size:14px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
+  .figure { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
+  .statband { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg); }
+  /* Stat cards rather than a ruled row: three claims a partner can scan,
+     each one self-contained. */
+  .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; padding:28px 0 20px; }
+  .statband .cell { background:var(--surface); border:1px solid var(--brand-line); border-radius:14px; padding:22px; box-shadow:0 2px 10px var(--paper-shadow); }
+  .statband .fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(30px,3vw,40px); line-height:1.05; letter-spacing:-0.03em; margin:0; color:var(--text); }
+  .statband .cap { font-size:14px; color:var(--text-secondary); margin:10px 0 0; line-height:1.55; }
   .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; border-top:1px solid var(--line-soft); }
   .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
@@ -60,7 +60,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .box-band-copy [data-midcopy] { margin-left:auto; margin-right:auto; }
     #midBox { max-width:300px; }
   }
-  .chip { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
+  .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
   .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
   .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
@@ -92,10 +92,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .video-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--tint); border-radius:6px; overflow:hidden; cursor:pointer; border:none; padding:0; display:block; transition:transform 200ms ease; }
   .video-thumb:hover { transform:scale(1.015); }
   .video-thumb:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
-  .collage-fig { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
+  .collage-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
   .collage-copy { font-size:18px; line-height:1.6; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
-  .src-link { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
+  .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
   .src-link:hover { color:var(--accent-text); text-decoration:underline; }
   .scale-bar-track { position:relative; height:14px; border-radius:7px; background:var(--line-soft); overflow:hidden; margin:16px 0 8px; max-width:520px; }
   .scale-bar-fill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--brand); border-radius:7px; transition:width 900ms cubic-bezier(0.4,0.14,0.3,1); }
@@ -103,26 +103,28 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .scale-facts { display:grid; gap:10px; margin:22px 0 0; max-width:560px; }
   .scale-facts p { font-size:17px; line-height:1.6; color:var(--text); margin:0; text-wrap:pretty; }
   .scale-facts .scale-standout { font-size:18px; font-weight:600; color:var(--brand); }
-  .sources-list { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
   .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
   .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
   .sources-list a:hover { color:var(--accent-text); }
   .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
-  .limits-grid .lbl { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
+  .limits-grid .lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
   .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
   .cards-grid .card, .done-card { border-radius:14px; box-shadow:0 3px 14px var(--paper-shadow); }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
-  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
+  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
-  .cards-grid .card .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
-  .cards-grid .card .doc-toggle:hover { color:var(--accent-text); }
-  .cards-grid .card .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .cards-grid .card.doc-open .doc-panel { grid-template-rows:1fr; }
-  .cards-grid .card .doc-panel > div { overflow:hidden; }
+  .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
+  .doc-toggle:hover { color:var(--accent-text); }
+  .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
+  .doc-open > .doc-panel { grid-template-rows:1fr; }
+  .doc-panel > div { overflow:hidden; }
+  .disclosure > .doc-toggle { margin-top:0; }
   .cards-grid .card .doc-inner { padding-top:14px; }
-  .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:420px; overflow-y:auto; margin:0 0 10px; }
-  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
+  .doc-actions { display:flex; flex-wrap:wrap; gap:8px; }
+  .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:300px; overflow-y:auto; margin:0 0 12px; }
+  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
   .cards-grid .card .doc-copy:hover, .cards-grid .card .doc-download:hover { border-color:var(--brand); color:var(--brand); }
   .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
   @media (max-width:760px) {
@@ -192,9 +194,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
       <p class="body-p" style="margin:20px 0 0;">Insulated boxes, short local routes inside one borough, and a delivery log anyone can audit.</p>
       <div class="prelaunch">
-        <p class="prelaunch-tag">Pre-launch</p>
-        <p class="prelaunch-line" id="heroFig">The log opens with the first delivery.</p>
-        <p class="prelaunch-sub">The system is built. The record starts with the first box, and every pound after that is logged and public.</p>
+        <p class="prelaunch-tag">Launching with our first partner</p>
+        <p class="prelaunch-line" id="heroFig">Every pound will be on the public record.</p>
+        <p class="prelaunch-sub">Boxes, routes and the delivery log are built and ready. The record opens the day our first receiving partner signs, and every pound moves onto it in real time from there.</p>
       </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
@@ -309,11 +311,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         <p class="cap">of school buildings donate surplus food</p>
       </div>
       <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">No deliveries yet</p>
-        <p class="cap">Pre-launch. The first logged delivery starts the record.</p>
+        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
+        <p class="cap">Boxes built, routes mapped, log live. We need receiving partners.</p>
       </div>
     </div>
-    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25. Recovery total: none yet.</p>
+    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25. No food has been recovered yet — that starts with our first partner.</p>
   </div>
 </section>
 
@@ -332,44 +334,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
     <span class="mask-l"><span data-line>without a record.</span></span>
   </h2>
-  <p class="body-p" data-reveal style="margin:0;">Time and temperature control for safety food cannot leave a cafeteria on trust. The school needs a record showing the load stayed out of the danger zone, pack-out to hand-off.<sup><a class="src-link" href="#src-11">11</a></sup></p>
+  <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
   <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
-  <div class="sensor-row cold-panel" style="margin-top:40px;">
+  <div class="cold-panel" style="margin-top:40px;">
     <div>
       <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:150px;" data-state="inrange" data-glasses></div>
       <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:500; font-size:13px; margin:12px 0 0; color:var(--brand);">in range</p>
       <p class="mono" style="font-weight:400; font-size:12px; margin:4px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record · safe ≤ <span data-degf="41"></span></p>
       <div id="coldRows" role="group" aria-label="Cold-chain readings for box 0447" style="display:grid; gap:2px; margin-top:12px; border-top:1px solid var(--line-soft);"></div>
-    </div>
-    <div>
-      <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-        <rect x="100" y="70" width="520" height="185" fill="none" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="7 6"></rect>
-        <rect x="140" y="105" width="150" height="68" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <g style="fill:var(--sensor-deep);"><rect x="152" y="117" width="34" height="20"></rect><rect x="152" y="147" width="18" height="14"></rect><rect x="196" y="117" width="12" height="44"></rect></g>
-        <g style="fill:var(--bg);"><rect x="222" y="117" width="56" height="8"></rect><rect x="222" y="131" width="56" height="8"></rect></g>
-        <rect x="140" y="190" width="150" height="48" rx="4" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <path d="M290 202 L306 202 M290 214 L306 214" style="stroke:var(--sensor-deep);" stroke-width="3"></path>
-        <rect x="330" y="110" width="110" height="58" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <rect x="344" y="124" width="30" height="18" style="fill:var(--sensor-deep);"></rect>
-        <rect x="386" y="124" width="40" height="8" style="fill:var(--bg);"></rect>
-        <path d="M440 200 C 476 200, 470 138, 506 132" fill="none" style="stroke:var(--sensor-deep);" stroke-width="5" stroke-linecap="round"></path>
-        <rect x="506" y="118" width="86" height="28" rx="14" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <circle cx="580" cy="132" r="6" style="fill:var(--sensor-deep);"></circle>
-        <g style="stroke:var(--rule);" stroke-width="1">
-          <line x1="130" y1="70" x2="112" y2="44"></line>
-          <line x1="215" y1="105" x2="248" y2="48"></line>
-          <line x1="385" y1="110" x2="424" y2="48"></line>
-          <line x1="215" y1="238" x2="188" y2="292"></line>
-          <line x1="549" y1="146" x2="566" y2="292"></line>
-        </g>
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
-          <text x="112" y="36" text-anchor="middle">printed enclosure</text>
-          <text x="248" y="40" text-anchor="middle">ESP32-C3 SuperMini</text>
-          <text x="424" y="40" text-anchor="middle">TP4056 charge module</text>
-          <text x="188" y="310" text-anchor="middle">LiPo cell</text>
-          <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
-        </g>
-      </svg>
     </div>
   </div>
 </section>
@@ -398,7 +370,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mask-l"><span data-line>The delivery log</span></span>
       <span class="mask-l"><span data-line>is the whole pitch.</span></span>
     </h2>
-    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates: a public record of every box that moves, sortable and filterable by anyone. It stays empty until a box moves.</p>
+    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — origin, destination, weight, temperature — sortable and filterable by anyone who wants to check our work. It opens with the first delivery and never closes.</p>
     <div data-reveal style="margin-top:32px; max-width:700px;">
       <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan is operating; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
         <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
@@ -441,10 +413,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
     <div class="sim-bar" data-reveal>
       <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
-        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Pre-launch (real)</button>
-        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">Preview a live run</button>
+        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Live view</button>
+        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">See a sample delivery</button>
       </div>
-      <p class="sim-note" id="simNote">The log is empty because nothing has moved yet. This is the real state.</p>
+      <p class="sim-note" id="simNote">Live view. The record opens with our first delivery.</p>
     </div>
     <div id="simBanner" class="sim-banner" hidden role="status">
       <strong>SIMULATED PREVIEW — not a delivery record.</strong>
@@ -472,8 +444,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </div>
       <div id="mempty" class="empty-state" style="display:none;">
         <div class="mascot-slot" data-state="empty"></div>
-        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The log opens with the first delivery.</p>
-        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Nothing has moved yet.</p>
+        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The record opens with our first delivery.</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Your school could fill the first row.</p>
       </div>
       <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
       <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
@@ -529,7 +501,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
 <section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding:96px 24px;">
-    <p data-reveal style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
+    <p data-reveal style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
   </div>
 </section>
 
@@ -614,7 +586,10 @@ BEFORE YOU RELEASE A BOX
 
 This is a template. Read it, adapt it, verify it with your own health
 department. Do not treat it as a substitute for their guidance.</pre>
-          <button type="button" class="doc-copy" data-copy-target="docHealth">Copy to clipboard</button>
+          <div class="doc-actions">
+            <a class="doc-download" data-download-from="docHealth" data-filename="stock-the-block-health-code-memo.txt" href="#">Download memo</a>
+            <button type="button" class="doc-copy" data-copy-target="docHealth">Copy to clipboard</button>
+          </div>
         </div></div>
       </div>
       <div class="card" data-reveal>
@@ -690,7 +665,7 @@ SIGNATURES
 
 [Insert any additional local requirements your health department or
 school district requires for this agreement, if any.]</pre>
-          <button type="button" class="doc-copy" data-copy-target="docAgreement">Copy to clipboard</button>
+          <div class="doc-actions"><a class="doc-download" data-download-from="docAgreement" data-filename="stock-the-block-partner-agreement.txt" href="#">Download agreement</a><button type="button" class="doc-copy" data-copy-target="docAgreement">Copy to clipboard</button></div>
         </div></div>
       </div>
       <div class="card" data-reveal>
@@ -747,7 +722,7 @@ shows a danger-zone reading, count is off) don't sign it off as a
 clean delivery. Flag it. The whole point of the public log is that it's
 checkable; a flagged delivery is more useful than a clean-looking one
 that wasn't actually clean.</pre>
-          <button type="button" class="doc-copy" data-copy-target="docIntake">Copy to clipboard</button>
+          <div class="doc-actions"><a class="doc-download" data-download-from="docIntake" data-filename="stock-the-block-intake-workflow.txt" href="#">Download checklist</a><button type="button" class="doc-copy" data-copy-target="docIntake">Copy to clipboard</button></div>
         </div></div>
       </div>
     </div>
@@ -793,7 +768,7 @@ that wasn't actually clean.</pre>
       </div>
     </div>
     <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
-      <h3 style="font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
+      <h3 style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
       <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
       <p class="packet-note"><strong>Nothing here leaves your browser.</strong> No endpoint, no upload, no storage. The packet is built on this page and is gone when you close the tab.</p>
       <form class="packet-form" id="packetForm" autocomplete="off">
@@ -861,7 +836,7 @@ that wasn't actually clean.</pre>
           <span class="mask-l"><span data-line>Bring Stock the Block</span></span>
           <span class="mask-l"><span data-line>to your building.</span></span>
         </h2>
-        <p class="body-p" data-reveal style="margin:16px 0 0;">Tell us who you are and we'll follow up with the playbook for your role.</p>
+        <p class="body-p" data-reveal style="margin:16px 0 0;">Tell us who you are and we'll send the playbook for your role, plus what a first run would look like at your site.</p>
         <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
           <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
           <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
@@ -889,8 +864,8 @@ that wasn't actually clean.</pre>
 
 <section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
-    <p class="eyebrow">Planned operations</p>
-    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">One list, one status per school. Filter it by where each building actually stands.</p>
+    <p class="eyebrow">Our school network</p>
+    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
 
     <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
     <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
@@ -916,13 +891,62 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
+
+<section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:64px; padding-bottom:64px;">
+    <p class="eyebrow" data-reveal>Open tech spec</p>
+    <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
+      <span class="mask-l"><span data-line>The hardware, for anyone</span></span>
+      <span class="mask-l"><span data-line>who wants to build one.</span></span>
+    </h2>
+    <p class="body-p" data-reveal style="margin:0 0 28px;">You do not need to read this to partner with us — it is here so a build team can copy the logger without asking us for anything.</p>
+    <div class="disclosure" data-disclosure id="techSpec">
+      <button type="button" class="doc-toggle" aria-expanded="false" aria-controls="techSpecPanel">Show the logger diagram <span class="doc-caret" aria-hidden="true">+</span></button>
+      <div class="doc-panel" id="techSpecPanel"><div>
+        <div style="padding-top:18px; max-width:760px;">
+<div>
+      <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <rect x="100" y="70" width="520" height="185" fill="none" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="7 6"></rect>
+        <rect x="140" y="105" width="150" height="68" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <g style="fill:var(--sensor-deep);"><rect x="152" y="117" width="34" height="20"></rect><rect x="152" y="147" width="18" height="14"></rect><rect x="196" y="117" width="12" height="44"></rect></g>
+        <g style="fill:var(--bg);"><rect x="222" y="117" width="56" height="8"></rect><rect x="222" y="131" width="56" height="8"></rect></g>
+        <rect x="140" y="190" width="150" height="48" rx="4" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <path d="M290 202 L306 202 M290 214 L306 214" style="stroke:var(--sensor-deep);" stroke-width="3"></path>
+        <rect x="330" y="110" width="110" height="58" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <rect x="344" y="124" width="30" height="18" style="fill:var(--sensor-deep);"></rect>
+        <rect x="386" y="124" width="40" height="8" style="fill:var(--bg);"></rect>
+        <path d="M440 200 C 476 200, 470 138, 506 132" fill="none" style="stroke:var(--sensor-deep);" stroke-width="5" stroke-linecap="round"></path>
+        <rect x="506" y="118" width="86" height="28" rx="14" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <circle cx="580" cy="132" r="6" style="fill:var(--sensor-deep);"></circle>
+        <g style="stroke:var(--rule);" stroke-width="1">
+          <line x1="130" y1="70" x2="112" y2="44"></line>
+          <line x1="215" y1="105" x2="248" y2="48"></line>
+          <line x1="385" y1="110" x2="424" y2="48"></line>
+          <line x1="215" y1="238" x2="188" y2="292"></line>
+          <line x1="549" y1="146" x2="566" y2="292"></line>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+          <text x="112" y="36" text-anchor="middle">printed enclosure</text>
+          <text x="248" y="40" text-anchor="middle">ESP32-C3 SuperMini</text>
+          <text x="424" y="40" text-anchor="middle">TP4056 charge module</text>
+          <text x="188" y="310" text-anchor="middle">LiPo cell</text>
+          <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
+        </g>
+      </svg>
+    </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap top">
     <span style="display:flex; align-items:center; gap:12px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
+    <span class="mono" style="font-weight:500;">Ready to run · seeking receiving partners</span>
   </div>
   <div class="wrap" id="sources" style="padding:8px 24px 28px;">
     <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
@@ -1252,7 +1276,8 @@ that wasn't actually clean.</pre>
 
   /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
   $$(".doc-toggle").forEach(function (btn) {
-    var card = btn.closest(".card");
+    var card = btn.closest("[data-disclosure]") || btn.closest(".card");
+    if (!card) return;
     btn.addEventListener("click", function () {
       var open = card.classList.toggle("doc-open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
@@ -1260,6 +1285,23 @@ that wasn't actually clean.</pre>
       if (caret) caret.textContent = open ? "−" : "+";
     });
   });
+  /* A template you can only read in a scroll box is a template nobody uses.
+     The download is built from the preview text itself, so the file and what
+     is on screen can never drift apart. */
+  $$("[data-download-from]").forEach(function (a) {
+    var pre = document.getElementById(a.getAttribute("data-download-from"));
+    if (!pre) return;
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      var blob = new Blob([pre.textContent], { type: "text/plain;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var tmp = document.createElement("a");
+      tmp.href = url; tmp.download = a.getAttribute("data-filename") || "template.txt";
+      document.body.appendChild(tmp); tmp.click(); document.body.removeChild(tmp);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    });
+  });
+
   $$(".doc-copy").forEach(function (btn) {
     var pre = document.getElementById(btn.getAttribute("data-copy-target"));
     if (!pre) return;
@@ -1489,7 +1531,7 @@ that wasn't actually clean.</pre>
       bPre.setAttribute("aria-pressed", live ? "false" : "true");
       banner.hidden = !live;
       note.textContent = live
-        ? "Preview mode. The rows below are invented; the real log is still empty."
+        ? "Preview mode. Sample rows, so you can see exactly how a delivery will be recorded."
         : "The log is empty because nothing has moved yet. This is the real state.";
       filter = "All";
       render(); glance();
