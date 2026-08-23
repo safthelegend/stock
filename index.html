@@ -867,8 +867,16 @@ that wasn't actually clean.</pre>
     <p class="eyebrow">Our school network</p>
     <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
 
-    <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
-    <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label" aria-hidden="true">Status</span>
+        <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label" aria-hidden="true">Borough</span>
+        <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
+      </div>
+    </div>
 
     <div id="sitesList" class="sites-list" aria-live="polite">
       <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
