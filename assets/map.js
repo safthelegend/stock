@@ -1,21 +1,27 @@
 /* ============================================================================
    Stock the Block — interactive network map
 
-   A Leaflet map with three layers, in draw order:
+   Built for a pitch: it has to show that we understand the scale of food
+   insecurity in New York, and what this looks like if it spreads. It plays
+   as a four-act sequence.
 
-     1. a choropleth of one published food-security indicator, by community
-        district;
-     2. the schools from STB.SITES plus the one operating receiving site,
-        as pulsing markers;
-     3. a SCHEMATIC of a run — animated lines from each school to its borough
-        receiving point, with illustrative badges.
+     Act 1  the need      — choropleth of one published indicator, by
+                            community district. Real, cited, and the counts
+                            in the caption are computed from the data file.
+     Act 2  today         — the schools from STB.SITES and the one operating
+                            receiving site, with the routes a borough run is
+                            designed to take. Real, and it says the log is
+                            still empty.
+     Act 3  if it spreads — anonymous dots blooming across the districts with
+                            the highest need. HYPOTHETICAL. A banner stays on
+                            screen the whole time it runs, the dots are never
+                            named as real schools, and the counter is scenario
+                            arithmetic, not a forecast.
+     Act 4  the ask       — hold, and hand off to Join the Movement.
 
-   Layer 3 is not a record of anything. Nothing has been delivered yet: the
-   log is empty and there are no logged runs. So the whole layer is gated
-   behind a banner that says so, its figures are marked illustrative, and it
-   is off until the visitor asks for it. When the log has real entries, this
-   is the seam to replace: feed drawSchematic() from the manifest and drop the
-   "schematic" wording.
+   The line between acts 1-2 and act 3 is the important one and it is drawn
+   in the UI, not just in this comment. When the log has real entries, act 2
+   is the seam to feed from the manifest.
 
    Leaflet is vendored at assets/vendor/leaflet/ — no CDN. Basemap tiles are
    the one third-party request this site makes; the footer says so.
@@ -90,7 +96,8 @@
     map.createPane("routes"); map.getPane("routes").style.zIndex = 450;
     map.createPane("pins"); map.getPane("pins").style.zIndex = 600;
 
-    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], schematicOn: false };
+    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [] };
+    var playBtn = document.getElementById("projectionPlay");
 
     /* ---------- interaction gate: never hijack a scroll ---------- */
     var gate = document.createElement("button");
@@ -212,64 +219,183 @@
       });
     }
 
-    /* ---------- run schematic (explicitly not a record) ---------- */
-    function drawSchematic() {
-      clearSchematic();
-      if (!state.schematicOn) return;
+    /* ---------- the projection sequence ----------
+       A pitch needs to show two things: that we understand the scale of the
+       need, and what this looks like if it spreads. Act 1 and 2 are real —
+       the shading and the counts come from the data files. Act 3 is a
+       hypothetical and is labelled as one on screen the whole time it runs.
+       Nothing in Act 3 is a forecast, and none of its dots is a real school. */
+    var HUD = {};
+    function buildHud() {
+      var shell = host.parentNode;
+      var hud = document.createElement("div");
+      hud.className = "map-hud";
+      hud.innerHTML =
+        '<div class="hud-counts" aria-hidden="true">' +
+          '<span class="hud-stat"><b id="hudSchools">0</b><span>schools</span></span>' +
+          '<span class="hud-stat"><b id="hudBoroughs">0</b><span>boroughs</span></span>' +
+        '</div>' +
+        '<p class="hud-caption" id="hudCaption" role="status"></p>' +
+        '<p class="hud-flag" id="hudFlag" hidden>PROJECTION — illustrative scenario, not a forecast. No school below is real.</p>';
+      shell.appendChild(hud);
+      HUD.caption = hud.querySelector("#hudCaption");
+      HUD.flag = hud.querySelector("#hudFlag");
+      HUD.schools = hud.querySelector("#hudSchools");
+      HUD.boroughs = hud.querySelector("#hudBoroughs");
+    }
+
+    function say(text) { if (HUD.caption) HUD.caption.textContent = text; }
+    function setCount(el, v) { if (el) el.textContent = v; }
+
+    /* Centroids come from the geometry itself rather than a second table. */
+    function districtSeeds() {
+      var out = [];
+      state.choro.eachLayer(function (layer) {
+        var p = layer.feature.properties;
+        if (p.snap === null) return;
+        var c = layer.getBounds().getCenter();
+        out.push({ lat: c.lat, lon: c.lng, snap: p.snap, borough: p.borough });
+      });
+      /* Highest need first: the scenario spreads where the need is greatest. */
+      return out.sort(function (a, b) { return b.snap - a.snap; });
+    }
+
+    var timers = [];
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+
+    function clearProjection() {
+      clearTimers();
+      state.routes.forEach(function (r) { map.removeLayer(r); });
+      state.routes = [];
+      state.seeds.forEach(function (r) { map.removeLayer(r); });
+      state.seeds = [];
+      if (HUD.flag) HUD.flag.hidden = true;
+      setCount(HUD.schools, 0); setCount(HUD.boroughs, 0);
+    }
+
+    function drawRoutes() {
+      var recv = coordsFor("Receiving site");
+      if (!recv) return;
       var byBoro = {};
       placesForMap().forEach(function (p) {
         if (p.kind === "receiving") return;
         (byBoro[p.borough] = byBoro[p.borough] || []).push(p);
       });
-      var recv = coordsFor("Receiving site");
-      if (!recv) return;
-
       Object.keys(byBoro).forEach(function (b) {
         byBoro[b].forEach(function (p, i) {
           var c = coordsFor(p.name);
           if (!c) return;
           var line = L.polyline([[c.lat, c.lon], [recv.lat, recv.lon]], {
-            pane: "routes",
-            color: cssVar("--accent"),
-            weight: 2,
-            opacity: 0.75,
+            pane: "routes", color: cssVar("--accent"), weight: 2, opacity: 0.75,
             dashArray: "6 8",
             className: "route-line" + (reduced ? "" : " route-animate")
           }).addTo(map);
-          line.bindTooltip("Schematic route — no run has been logged on this pair",
+          line.bindTooltip("Illustrative route — no run has been logged on this pair",
             { sticky: true, className: "map-tip" });
           state.routes.push(line);
-
-          /* One badge per borough, not per school: every route in a borough
-             ends at the same receiving point, so per-school badges pile up
-             into an unreadable stack. Sat a third of the way along the line
-             from the school, which keeps it clear of both ends. */
-          if (i !== 0) return;
-          var t = 0.35;
-          var mid = L.marker(
-            [c.lat + (recv.lat - c.lat) * t, c.lon + (recv.lon - c.lon) * t],
-            {
-              pane: "routes",
-              interactive: false,
-              icon: L.divIcon({
-                className: "",
-                html: '<span class="route-badge">' + b + ' &middot; illustrative<br><em>no pounds recorded</em></span>',
-                iconSize: [0, 0]
-              })
-            }
-          );
-          if (!reduced) {
-            setTimeout(function () { mid.addTo(map); state.routes.push(mid); }, 400);
-          } else {
-            mid.addTo(map); state.routes.push(mid);
-          }
         });
       });
     }
 
-    function clearSchematic() {
-      state.routes.forEach(function (r) { map.removeLayer(r); });
-      state.routes = [];
+    /* Act 3: dots bloom outward across districts, weighted to the highest
+       need. They are anonymous on purpose — inventing named schools that have
+       not agreed to anything is exactly what the rest of this site refuses
+       to do. */
+    function bloom(seeds, from, count, delayStep, done) {
+      var placed = 0, boroughs = {};
+      placesForMap().forEach(function (p) { boroughs[p.borough] = 1; });
+      for (var i = from; i < from + count && i < seeds.length; i++) {
+        (function (seed, n) {
+          at(reduced ? 0 : (n - from) * delayStep, function () {
+            var dot = L.circleMarker([seed.lat, seed.lon], {
+              pane: "routes", radius: 0, weight: 1.5,
+              color: cssVar("--accent"), fillColor: cssVar("--accent"), fillOpacity: 0.28
+            }).addTo(map);
+            dot.bindTooltip("Illustrative school — not a real building",
+              { sticky: true, className: "map-tip" });
+            state.seeds.push(dot);
+            var r = 4 + Math.min(9, seed.snap / 5);
+            if (reduced) { dot.setRadius(r); }
+            else {
+              var t0 = performance.now();
+              (function grow(now) {
+                var k = Math.min(1, (now - t0) / 420);
+                dot.setRadius(r * (1 - Math.pow(1 - k, 3)));
+                if (k < 1) requestAnimationFrame(grow);
+              })(t0);
+            }
+            placed++;
+            boroughs[seed.borough] = 1;
+            setCount(HUD.schools, SCENARIO_BASE + (from - 0) + placed);
+            setCount(HUD.boroughs, Object.keys(boroughs).length);
+            if (placed === count && done) done();
+          });
+        })(seeds[i], i);
+      }
+    }
+
+    var SCENARIO_BASE = 0;
+    function runSequence() {
+      clearProjection();
+      var seeds = districtSeeds();
+      var real = placesForMap().filter(function (p) { return p.kind !== "receiving"; }).length;
+      SCENARIO_BASE = real;
+
+      var above30 = 0, withData = 0;
+      state.geo.features.forEach(function (f) {
+        if (f.properties.snap === null) return;
+        withData++;
+        if (f.properties.snap > 30) above30++;
+      });
+
+      var t = 0;
+      var step = reduced ? 0 : 1;
+
+      /* Act 1 — the need. Real figures, straight from the data file. */
+      say("New York City has " + withData + " community districts. In " + above30 +
+          " of them, more than 30% of residents are on SNAP.");
+      /* setView rather than a zero-duration flyTo: Leaflet's flyTo does not
+         take kindly to a duration of 0. */
+      var home = state.sites.boroughView.all;
+      if (reduced) map.setView([home.lat, home.lon], home.zoom);
+      else map.flyTo([home.lat, home.lon], home.zoom, { duration: 1.2 });
+
+      /* Act 2 — where we actually are today. Also real. */
+      t += 3200 * step;
+      at(t, function () {
+        setCount(HUD.schools, real);
+        setCount(HUD.boroughs, Object.keys(placesForMap().reduce(function (a, p) {
+          a[p.borough] = 1; return a;
+        }, {})).length);
+        say("Today: " + real + " schools tracked, one receiving site operating in Manhattan. The log is still empty.");
+        drawRoutes();
+      });
+
+      /* Act 3 — the hypothetical. Flagged for as long as it is on screen. */
+      t += 3400 * step;
+      at(t, function () {
+        if (HUD.flag) HUD.flag.hidden = false;
+        say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
+        bloom(seeds, 0, Math.min(14, seeds.length), 150 * step);
+      });
+      t += 3000 * step;
+      at(t, function () {
+        say("Every district above 20% reached — one share table at a time.");
+        bloom(seeds, 14, Math.min(13, Math.max(0, seeds.length - 14)), 120 * step);
+      });
+      t += 2800 * step;
+      at(t, function () {
+        say("Citywide: a student-run recovery network on top of the need map, feeding partner food banks in every borough.");
+        bloom(seeds, 27, Math.max(0, seeds.length - 27), 70 * step);
+      });
+
+      /* Act 4 — hold, and hand off to the ask. */
+      t += 3200 * step;
+      at(t, function () {
+        say("That is the shape of the idea. It starts with one receiving partner saying yes.");
+        if (playBtn) { playBtn.textContent = "Replay the projection"; playBtn.disabled = false; }
+      });
     }
 
     /* ---------- view control ---------- */
@@ -318,22 +444,38 @@
       /* The filter drives the map: one state, two views. */
       if (STB.onSiteState) {
         STB.onSiteState(function () {
+          clearProjection();
           drawMarkers();
-          drawSchematic();
+          if (playBtn) { playBtn.disabled = false; playBtn.textContent = "Play the projection"; }
+          say("Filtered. Press play to run the projection again.");
           if (STB.siteState && STB.siteState.borough) flyToBorough(STB.siteState.borough);
         });
       }
 
-      var toggle = document.getElementById("schematicToggle");
-      if (toggle) {
-        toggle.addEventListener("click", function () {
-          state.schematicOn = !state.schematicOn;
-          toggle.setAttribute("aria-pressed", state.schematicOn ? "true" : "false");
-          toggle.textContent = state.schematicOn ? "Hide the run schematic" : "Show how a run will work";
-          var nb = document.getElementById("schematicNote");
-          if (nb) nb.hidden = !state.schematicOn;
-          drawSchematic();
+      buildHud();
+      say("Press play to see the need, where we are today, and what this looks like if it spreads.");
+
+      if (playBtn) {
+        playBtn.addEventListener("click", function () {
+          playBtn.disabled = true;
+          playBtn.textContent = "Playing…";
+          runSequence();
         });
+      }
+      /* Plays itself the first time it scrolls into view, which is what a
+         pitch surface should do. Never more than once, and never under
+         reduced motion, where it jumps to the end instead. */
+      if ("IntersectionObserver" in window) {
+        var played = false;
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (!e.isIntersecting || played) return;
+            played = true; io.disconnect();
+            if (playBtn) { playBtn.disabled = true; playBtn.textContent = "Playing…"; }
+            runSequence();
+          });
+        }, { threshold: 0.35 });
+        io.observe(host);
       }
 
       /* Re-tile and re-colour on a theme switch: every colour above is read
@@ -341,7 +483,6 @@
       var mo = new MutationObserver(function () {
         tiles.setUrl(TILES[isDarkTheme() ? "dark" : "light"]);
         if (state.choro) state.choro.setStyle(styleFor);
-        drawSchematic();
       });
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
