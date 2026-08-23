@@ -184,18 +184,18 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
 .site-filter-opt input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; }
 .site-filter-opt > span { display:inline-flex; align-items:center; gap:6px;
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  font-weight:600; font-size:13px; line-height:1; padding:8px 13px; border-radius:8px;
-  border:1px solid var(--brand-line); color:var(--text); background:var(--surface);
-  transition:background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+  font-weight:600; font-size:12.5px; line-height:1; padding:7px 12px; border-radius:7px;
+  border:1px solid transparent; color:var(--text-secondary); background:var(--surface);
+  transition:background-color 140ms ease, color 140ms ease; }
 .site-filter-opt > span .count { font-weight:500; font-size:11.5px; color:var(--text-secondary);
   font-variant-numeric:tabular-nums; }
-.site-filter-opt:hover > span { border-color:var(--brand-line-mid); }
+.site-filter-opt:hover > span { color:var(--text); background:var(--tint); }
 .site-filter-opt input:checked + span { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
 .site-filter-opt input:checked + span .count { color:var(--on-brand); opacity:0.75; }
 .site-filter-opt input:focus-visible + span { outline:2px solid var(--brand); outline-offset:2px; }
 /* The borough row is a refinement of the status row, so it sits a step back. */
-#sitesBoroughFilter .site-filter-opt > span { font-weight:500; background:transparent; border-color:var(--line); }
-#sitesBoroughFilter .site-filter-opt input:checked + span { background:var(--tint); color:var(--brand); border-color:var(--brand-line-mid); font-weight:600; }
+#sitesBoroughFilter .site-filter-opt > span { font-weight:500; background:transparent; }
+#sitesBoroughFilter .site-filter-opt input:checked + span { background:var(--tint); color:var(--brand); border-color:var(--brand-line-mid); font-weight:700; }
 #sitesBoroughFilter .site-filter-opt input:checked + span .count { color:var(--brand); }
 @media (max-width:560px) {
   .filter-group { grid-template-columns:minmax(0,1fr); gap:6px; }
@@ -208,11 +208,11 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
   grid-template-columns:repeat(auto-fit,minmax(228px,1fr)); gap:12px; align-items:stretch; }
 .site-row { display:grid; grid-template-columns:minmax(0,1fr) auto;
   grid-template-areas:"nm nm" "meta status"; align-items:end; gap:12px;
-  background:var(--surface); border:1px solid var(--brand-line); border-radius:12px;
-  padding:15px 16px 14px; box-shadow:0 1px 3px var(--paper-shadow);
-  color:var(--text); animation:siteRowIn 420ms cubic-bezier(0.16,1,0.3,1) both;
-  transition:border-color 160ms ease, box-shadow 160ms ease; }
-.site-row:hover { border-color:var(--brand-line-mid); box-shadow:0 3px 10px var(--paper-shadow); }
+  background:var(--surface); border:1px solid var(--brand-line-soft); border-radius:10px;
+  padding:14px 15px 13px; color:var(--text);
+  animation:siteRowIn 420ms cubic-bezier(0.16,1,0.3,1) both;
+  transition:border-color 140ms ease, background-color 140ms ease; }
+.site-row:hover { border-color:var(--brand-line-mid); background:var(--tint); }
 .site-row .nm { grid-area:nm; min-width:0;
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   font-weight:600; font-size:15.5px; line-height:1.3; letter-spacing:-0.01em; text-wrap:balance; }
@@ -222,8 +222,8 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
   background:var(--bg); border-radius:999px; padding:2px 7px; }
 .site-row .status { grid-area:status; justify-self:end; white-space:nowrap;
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
-  padding:4px 9px; border-radius:6px; }
+  font-size:10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  padding:3px 8px; border-radius:5px; }
 .site-row .status.s-operating { color:var(--on-brand); background:var(--brand); }
 .site-row .status.s-conversation { color:var(--brand); background:var(--tint); border:1px solid var(--brand-line-mid); }
 .site-row .status.s-target { color:var(--text-secondary); background:transparent; border:1px dashed var(--line); }
