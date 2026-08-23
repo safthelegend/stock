@@ -657,3 +657,31 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 }
 @media (prefers-reduced-motion: reduce) { .map-hud { transition:none !important; } }
 @media print { .map-hud { display:none !important; } }
+
+
+/* --- map polish: depth, borough labels, floating legend ------------------ */
+/* A soft inner vignette gives the map a horizon; without a tile layer the
+   flat outline otherwise floats. */
+.map-shell::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:400;
+  box-shadow:inset 0 0 70px -20px var(--paper-shadow); border-radius:inherit; }
+.boro-label { display:inline-block; transform:translate(-50%,-50%);
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--text-secondary); opacity:0.75; white-space:nowrap; pointer-events:none;
+  text-shadow:0 0 4px var(--bg), 0 0 4px var(--bg), 0 0 8px var(--bg); }
+.map-legend-card { position:absolute; z-index:500; right:12px; top:68px; display:grid; gap:5px;
+  background:var(--surface); border:1px solid var(--brand-line-soft); border-radius:10px;
+  padding:10px 12px; box-shadow:0 4px 16px var(--paper-shadow); max-width:158px; }
+.map-legend-card .lg-title { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary); }
+.map-legend-card .lg-item { font-size:11.5px; }
+.map-legend-card .lg-sw { width:12px; height:12px; border-radius:3px; }
+/* Districts under the cursor animate their edge rather than snapping. */
+.leaflet-interactive { transition:fill-opacity 140ms ease, stroke-width 140ms ease; }
+@media (max-width:600px) {
+  .map-legend-card { right:8px; top:auto; bottom:96px; padding:8px 10px; max-width:132px; }
+  .map-legend-card .lg-item { font-size:10.5px; }
+  .boro-label { font-size:9px; letter-spacing:0.1em; }
+}
+@media (prefers-reduced-motion: reduce) { .leaflet-interactive { transition:none !important; } }
+@media print { .map-legend-card, .map-shell::after { display:none !important; } }

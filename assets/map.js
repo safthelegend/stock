@@ -96,7 +96,7 @@
     map.createPane("routes"); map.getPane("routes").style.zIndex = 450;
     map.createPane("pins"); map.getPane("pins").style.zIndex = 600;
 
-    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [] };
+    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null };
     var playBtn = document.getElementById("projectionPlay");
 
     /* ---------- interaction gate: never hijack a scroll ---------- */
@@ -148,8 +148,33 @@
             '<strong>' + p.name + '</strong><br>' + p.borough + '<br>' + val,
             { sticky: true, className: "map-tip" }
           );
+          /* A district lifts under the cursor: brighter edge, brought to the
+             front so its outline is never clipped by a neighbour. Cheap, and
+             it turns a flat fill into something that responds. */
+          layer.on("mouseover", function () {
+            if (state.spotlit === layer) return;
+            layer.setStyle({ weight: 2.5, color: cssVar("--accent"), fillOpacity: Math.min(0.95, (styleFor(f).fillOpacity || 0.3) + 0.16) });
+            layer.bringToFront();
+          });
+          layer.on("mouseout", function () {
+            if (state.spotlit === layer) return;
+            state.choro.resetStyle(layer);
+          });
         }
       }).addTo(map);
+    }
+
+    /* Borough names, set once. Without a tile layer under it the outline is
+       just shapes; with these it is a map of a city you know. */
+    function drawBoroughLabels() {
+      Object.keys(state.sites.boroughView).forEach(function (b) {
+        if (b === "all") return;
+        var v = state.sites.boroughView[b];
+        L.marker([v.lat, v.lon], {
+          pane: "choro", interactive: false,
+          icon: L.divIcon({ className: "", html: '<span class="boro-label">' + b + '</span>', iconSize: [0, 0] })
+        }).addTo(map);
+      });
     }
 
     /* ---------- markers ---------- */
@@ -260,6 +285,33 @@
       return out.sort(function (a, b) { return b.snap - a.snap; });
     }
 
+    /* Act 1 lands harder if the worst districts name themselves rather than
+       sitting in a colour ramp. Walks the top few, one at a time. */
+    function spotlight(n, stepMs, done) {
+      var ranked = [];
+      state.choro.eachLayer(function (layer) {
+        if (layer.feature && layer.feature.properties.snap !== null) ranked.push(layer);
+      });
+      ranked.sort(function (a, b) { return b.feature.properties.snap - a.feature.properties.snap; });
+      ranked = ranked.slice(0, n);
+      ranked.forEach(function (layer, i) {
+        at(reduced ? 0 : i * stepMs, function () {
+          if (state.spotlit) { var prev = state.spotlit; state.spotlit = null; state.choro.resetStyle(prev); }
+          state.spotlit = layer;
+          layer.setStyle({ weight: 3, color: cssVar("--accent"), fillOpacity: 0.95 });
+          layer.bringToFront();
+          var p = layer.feature.properties;
+          say(p.name + " — " + p.snap + "% of residents on SNAP.");
+          if (i === ranked.length - 1) {
+            at(reduced ? 0 : stepMs, function () {
+              if (state.spotlit) { var last = state.spotlit; state.spotlit = null; state.choro.resetStyle(last); }
+              if (done) done();
+            });
+          }
+        });
+      });
+    }
+
     var timers = [];
     function clearTimers() { timers.forEach(clearTimeout); timers = []; }
     function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
@@ -270,6 +322,7 @@
       state.routes = [];
       state.seeds.forEach(function (r) { map.removeLayer(r); });
       state.seeds = [];
+      if (state.spotlit && state.choro) { var sp = state.spotlit; state.spotlit = null; state.choro.resetStyle(sp); }
       if (HUD.flag) HUD.flag.hidden = true;
       setCount(HUD.schools, 0); setCount(HUD.boroughs, 0);
     }
@@ -361,8 +414,12 @@
       if (reduced) map.setView([home.lat, home.lon], home.zoom);
       else map.flyTo([home.lat, home.lon], home.zoom, { duration: 1.2 });
 
+      /* Act 1b — the four worst districts name themselves. */
+      t += 2600 * step;
+      at(t, function () { spotlight(4, 1250 * step); });
+
       /* Act 2 — where we actually are today. Also real. */
-      t += 3200 * step;
+      t += 5600 * step;
       at(t, function () {
         setCount(HUD.schools, real);
         setCount(HUD.boroughs, Object.keys(placesForMap().reduce(function (a, p) {
@@ -373,7 +430,7 @@
       });
 
       /* Act 3 — the hypothetical. Flagged for as long as it is on screen. */
-      t += 3400 * step;
+      t += 3600 * step;
       at(t, function () {
         if (HUD.flag) HUD.flag.hidden = false;
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
@@ -409,6 +466,11 @@
     function paintLegend(meta) {
       var host2 = document.getElementById("networkMapLegend");
       if (host2) {
+        /* The legend belongs over the data it explains, not in a strip
+           underneath it. Moved onto the map as a floating card. */
+        var shell = host.parentNode;
+        if (host2.parentNode !== shell) { host2.classList.add("map-legend-card"); shell.appendChild(host2); }
+        host2.setAttribute("aria-label", "Legend: " + meta.indicator);
         var items = [];
         for (var i = 0; i <= BREAKS.length; i++) {
           var lo = i === 0 ? 0 : BREAKS[i - 1], hi = BREAKS[i];
@@ -416,7 +478,7 @@
             RAMP_OPACITY[i] + '"></span>' + (hi === undefined ? lo + "% and over" : lo + "–" + hi + "%") + "</span>");
         }
         items.push('<span class="lg-item"><span class="lg-sw lg-nodata"></span>no data</span>');
-        host2.innerHTML = items.join("");
+        host2.innerHTML = '<span class="lg-title">% on SNAP</span>' + items.join("");
       }
       var cite = document.getElementById("networkMapCite");
       if (cite) {
@@ -438,6 +500,7 @@
       map.setView([v.lat, v.lon], v.zoom);
 
       drawChoropleth();
+      drawBoroughLabels();
       paintLegend(state.geo.meta);
       drawMarkers();
 
