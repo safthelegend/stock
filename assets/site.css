@@ -594,3 +594,32 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
   .stats-strip, .map-shell, .map-gate, .map-controls, .sim-controls { display:none !important; }
   .sim-banner { border:2px solid #000 !important; }
 }
+
+
+/* --- projection HUD ------------------------------------------------------
+   Sits over the bottom of the map. The caption carries the narration; the
+   flag under it is the one element that separates the real acts from the
+   hypothetical one, so it is the loudest thing in the component. */
+.map-hud { position:absolute; z-index:500; left:0; right:0; bottom:0; pointer-events:none;
+  /* Bottom padding clears Leaflet's attribution, which sits in the same
+     corner and must stay legible. */
+  padding:14px 16px 28px; display:grid; gap:8px;
+  background:linear-gradient(to top, var(--surface) 62%, transparent); }
+.hud-counts { display:flex; gap:22px; }
+.hud-stat { display:inline-flex; align-items:baseline; gap:6px;
+  font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+.hud-stat b { font-size:22px; font-weight:500; color:var(--brand); font-variant-numeric:tabular-nums; }
+.hud-caption { margin:0; font-family:'Archivo',-apple-system,sans-serif; font-weight:600;
+  font-size:clamp(14px,1.7vw,17px); line-height:1.45; color:var(--text); max-width:60ch; text-wrap:pretty; }
+.hud-flag { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11.5px; letter-spacing:0.03em;
+  color:var(--accent-text); border-left:3px solid var(--accent); padding-left:9px; }
+.hud-flag[hidden] { display:none; }
+.btn-play { font-weight:700; }
+.btn-play[disabled] { opacity:0.6; cursor:default; }
+@media (max-width:600px) {
+  .map-hud { padding:10px 12px 12px; }
+  .hud-stat b { font-size:18px; }
+  .hud-caption { font-size:13px; }
+}
+@media (prefers-reduced-motion: reduce) { .map-hud { transition:none !important; } }
+@media print { .map-hud { display:none !important; } }
