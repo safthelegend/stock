@@ -1147,37 +1147,71 @@ function initMascotSlots(root) {
     { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
   ];
 
+  /* The one receiving site. It is not a school, so it does not belong in the
+     school list, but the map needs it or the map shows origins with no
+     destination. Kept beside SITES rather than inside it. */
+  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "operating", kind: "receiving" };
+
+  var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
+
+  /* One filter state, read by the list and by the map. Filtering either one
+     filters both, because there is only one of them to filter. */
+  var siteState = { status: "all", borough: "all" };
+  var siteListeners = [];
+  function onSiteState(fn) { siteListeners.push(fn); }
+  function matchesSiteState(r) {
+    return (siteState.status === "all" || r.status === siteState.status) &&
+           (siteState.borough === "all" || r.borough === siteState.borough);
+  }
+
   function initSites() {
     var list = document.getElementById("sitesList");
     var filter = document.getElementById("sitesFilter");
+    var boroFilter = document.getElementById("sitesBoroughFilter");
     var note = document.getElementById("sitesNote");
     if (!list || !filter) return null;
 
     function count(key) {
       return key === "all" ? SITES.length : SITES.filter(function (s) { return s.status === key; }).length;
     }
+    function boroCount(key) {
+      return key === "all" ? SITES.length : SITES.filter(function (s) { return s.borough === key; }).length;
+    }
 
     /* Filter controls, built from the same status table the rows read, so a
        new status cannot appear in one and not the other. Radios rather than
        buttons: it is a single choice out of a named set, which is what a radio
-       group is, and it arrives with arrow-key navigation already working. */
-    var opts = [{ key: "all", label: "All sites" }].concat(SITE_STATUS);
-    filter.innerHTML = opts.map(function (o, i) {
-      return '<label class="site-filter-opt">' +
-        '<input type="radio" name="siteFilter" value="' + o.key + '"' + (i === 0 ? " checked" : "") + '>' +
-        '<span>' + o.label + ' <span class="count">' + count(o.key) + '</span></span>' +
-        '</label>';
-    }).join("");
+       group is, and it arrives with arrow-key navigation already working.
+
+       The borough group is that same component fed a different set, not a
+       second implementation of it. */
+    function buildGroup(host, group, opts) {
+      host.innerHTML = opts.map(function (o, i) {
+        return '<label class="site-filter-opt">' +
+          '<input type="radio" name="' + group + '" value="' + o.key + '"' + (i === 0 ? " checked" : "") + '>' +
+          '<span>' + o.label + ' <span class="count">' + o.n + '</span></span>' +
+          '</label>';
+      }).join("");
+    }
+
+    buildGroup(filter, "siteFilter", [{ key: "all", label: "All sites", n: count("all") }].concat(
+      SITE_STATUS.map(function (o) { return { key: o.key, label: o.label, n: count(o.key) }; })));
+
+    if (boroFilter) {
+      buildGroup(boroFilter, "siteBorough", [{ key: "all", label: "All boroughs", n: boroCount("all") }].concat(
+        BOROUGHS.map(function (b) { return { key: b, label: b, n: boroCount(b) }; })));
+    }
 
     function labelFor(key) {
       for (var i = 0; i < SITE_STATUS.length; i++) if (SITE_STATUS[i].key === key) return SITE_STATUS[i];
       return { label: key, note: "" };
     }
 
-    function render(active) {
-      var rows = SITES.filter(function (s) { return active === "all" || s.status === active; });
+    function render() {
+      var active = siteState.status;
+      var rows = SITES.filter(matchesSiteState);
       if (!rows.length) {
-        list.innerHTML = '<p class="site-empty">No schools at this status yet.</p>';
+        list.innerHTML = '<p class="site-empty">No schools match this filter yet.</p>';
       } else {
         list.innerHTML = '<ul class="site-rows">' + rows.map(function (s, i) {
           var st = labelFor(s.status);
@@ -1193,12 +1227,17 @@ function initMascotSlots(root) {
         ? "Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have."
         : labelFor(active).note;
       list.setAttribute("data-filter", active);
+      for (var j = 0; j < siteListeners.length; j++) siteListeners[j]();
     }
 
-    filter.addEventListener("change", function (e) {
-      if (e.target && e.target.name === "siteFilter") render(e.target.value);
-    });
-    render("all");
+    function onChange(e) {
+      if (!e.target) return;
+      if (e.target.name === "siteFilter") { siteState.status = e.target.value; render(); }
+      if (e.target.name === "siteBorough") { siteState.borough = e.target.value; render(); }
+    }
+    filter.addEventListener("change", onChange);
+    if (boroFilter) boroFilter.addEventListener("change", onChange);
+    render();
     return { render: render, data: SITES };
   }
 
@@ -1398,6 +1437,8 @@ function initMascotSlots(root) {
     getVar: getVar, initTheme: initTheme,
     initNav: initNav, initReveals: initReveals,
     SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
+    RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
+    siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
     initScrollFx: initScrollFx
   };
 })(window);
