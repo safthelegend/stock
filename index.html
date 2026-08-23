@@ -21,6 +21,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="assets/site.css">
 <style>
   html { scroll-behavior:smooth; }
@@ -146,6 +147,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
+
+<div class="stats-strip" id="statsStrip" aria-label="Key figures">
+  <div class="wrap">
+    <span class="stat-item"><span class="stat-fig" data-countto="880000" data-format="int">0</span> <span class="stat-cap">school meals served daily in NYC</span></span>
+    <span class="stat-item"><span class="stat-fig" data-countto="4" data-format="pct">0</span> <span class="stat-cap">of school buildings donate surplus food</span></span>
+    <span class="stat-item"><span class="stat-fig" data-countto="8" data-format="int">0</span> <span class="stat-cap">schools tracked · 1 operating</span></span>
+  </div>
+</div>
 
 <nav class="bar" id="nav">
   <div class="wrap">
@@ -429,6 +438,17 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
           <circle cx="400" cy="214" r="7"></circle>
         </g>
       </svg>
+    </div>
+    <div class="sim-bar" data-reveal>
+      <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
+        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Pre-launch (real)</button>
+        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">Preview a live run</button>
+      </div>
+      <p class="sim-note" id="simNote">The log is empty because nothing has moved yet. This is the real state.</p>
+    </div>
+    <div id="simBanner" class="sim-banner" hidden role="status">
+      <strong>SIMULATED PREVIEW — not a delivery record.</strong>
+      Every row, temperature and signature below is invented to show what the log will look like once boxes move. Nothing here has happened.
     </div>
     <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
     <div class="manifest" id="manifest">
@@ -800,6 +820,38 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
+<section id="network" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>The network</p>
+    <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
+      <span class="mask-l"><span data-line>Where the need is,</span></span>
+      <span class="mask-l"><span data-line>and where we are.</span></span>
+    </h2>
+
+    <div class="map-shell">
+      <div class="map-cta">
+        <span class="map-cta-text">Join the Movement</span>
+        <a class="map-cta-btn" href="#join">Get involved</a>
+      </div>
+      <div id="networkMap" class="map-canvas" role="region" aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0"></div>
+    </div>
+
+    <div class="map-controls">
+      <button type="button" id="schematicToggle" class="btn-sm" aria-pressed="false">Show how a run will work</button>
+      <div id="networkMapLegend" class="map-legend"></div>
+    </div>
+
+    <p class="sim-banner" id="schematicNote" hidden>
+      <strong>SCHEMATIC — no run has been logged.</strong>
+      These lines show the shape a borough run is designed to take. They are not routes that have been walked, and no pounds have been recovered on any of them.
+    </p>
+
+    <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where Stock the Block operates. One receiving site is operating, in Manhattan.</p>
+    <p class="cite" id="networkMapCite"></p>
+    <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
+  </div>
+</section>
+
 <section id="join" style="background:var(--surface);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
     <p class="eyebrow" data-reveal>Get involved</p>
@@ -841,6 +893,7 @@ that wasn't actually clean.</pre>
     <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">One list, one status per school. Filter it by where each building actually stands.</p>
 
     <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+    <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
 
     <div id="sitesList" class="sites-list" aria-live="polite">
       <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
@@ -887,10 +940,12 @@ that wasn't actually clean.</pre>
       <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
     </ol>
   </div>
-  <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
+  <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
 </footer>
 
+<script src="assets/vendor/leaflet/leaflet.js"></script>
 <script src="assets/site.js"></script>
+<script src="assets/map.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1382,7 +1437,69 @@ that wasn't actually clean.</pre>
   })();
 
   /* ---------- Phase 5 shared features ---------- */
+  /* ---------- stats strip: counters, once, on first view ---------- */
+  (function () {
+    var strip = $("#statsStrip");
+    if (!strip) return;
+    var figs = $$("[data-countto]", strip), done = false;
+    function paint(el, v) {
+      el.textContent = el.getAttribute("data-format") === "pct" ? v + "%" : fmtN(v);
+    }
+    function run() {
+      if (done) return;
+      done = true;
+      figs.forEach(function (el) {
+        var target = parseFloat(el.getAttribute("data-countto"));
+        if (reduced) { paint(el, target); return; }
+        var t0 = performance.now(), dur = 1100;
+        (function step(now) {
+          var k = Math.min(1, (now - t0) / dur);
+          paint(el, Math.round(target * (1 - Math.pow(1 - k, 3))));
+          if (k < 1) requestAnimationFrame(step);
+        })(t0);
+      });
+    }
+    if (!("IntersectionObserver" in window)) { run(); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { run(); io.disconnect(); } });
+    }, { threshold: 0.4 });
+    io.observe(strip);
+  })();
+
+  /* ---------- delivery log: real state vs a labelled preview ----------
+     SIM_ROWS are invented. They exist so a visitor can see the shape of the
+     record before there is a record, and they are never presented as one:
+     the banner stays up the whole time the preview is on, and the real state
+     is what the page loads with. */
+  var SIM_ROWS = [
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 42, status: "RECEIVED" },
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 31, status: "IN TRANSIT" },
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 55, status: "RECEIVED" }
+  ];
+  (function () {
+    var bPre = $("#simPrelaunch"), bLive = $("#simLive");
+    var banner = $("#simBanner"), note = $("#simNote");
+    if (!bPre || !bLive) return;
+    function apply(live) {
+      ROWS.length = 0;
+      if (live) SIM_ROWS.forEach(function (r) { ROWS.push(r); });
+      bLive.classList.toggle("is-on", live);
+      bPre.classList.toggle("is-on", !live);
+      bLive.setAttribute("aria-pressed", live ? "true" : "false");
+      bPre.setAttribute("aria-pressed", live ? "false" : "true");
+      banner.hidden = !live;
+      note.textContent = live
+        ? "Preview mode. The rows below are invented; the real log is still empty."
+        : "The log is empty because nothing has moved yet. This is the real state.";
+      filter = "All";
+      render(); glance();
+    }
+    bPre.addEventListener("click", function () { apply(false); });
+    bLive.addEventListener("click", function () { apply(true); });
+  })();
+
   STB.initSites();
+  if (STB.initNetworkMap) STB.initNetworkMap();
   STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();

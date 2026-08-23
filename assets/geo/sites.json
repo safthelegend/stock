@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "purpose": "Map pin coordinates for the schools in STB.SITES, plus the one operating receiving site. Names and statuses are NOT stored here — those live in the SITES array in assets/site.js, which stays the single source. This file only answers 'where does the pin go'.",
+    "precision": "Each entry carries a precision field. 'address' means the point is the school campus. 'borough' means no point is published and the pin is placed at a borough reference point rather than at a real address.",
+    "verified": false,
+    "verification_note": "These coordinates were entered from publicly known school addresses and have NOT been checked against a geocoding service. Run tools/geocode.mjs to regenerate them from a live geocoder and overwrite this file before treating any pin as authoritative.",
+    "geocoder": "tools/geocode.mjs (OpenStreetMap Nominatim)"
+  },
+  "sites": [
+    { "name": "Stuyvesant High School", "lat": 40.7176, "lon": -74.0139, "precision": "address" },
+    { "name": "Midwood High School", "lat": 40.6240, "lon": -73.9576, "precision": "address" },
+    { "name": "James Madison High School", "lat": 40.6099, "lon": -73.9482, "precision": "address" },
+    { "name": "Brooklyn Technical High School", "lat": 40.6885, "lon": -73.9767, "precision": "address" },
+    { "name": "Rachel Carson High School", "lat": 40.5772, "lon": -73.9855, "precision": "address" },
+    { "name": "Bronx High School of Science", "lat": 40.8736, "lon": -73.8907, "precision": "address" },
+    { "name": "Townsend Harris High School", "lat": 40.7345, "lon": -73.8203, "precision": "address" },
+    { "name": "Queens High School for the Sciences at York College", "lat": 40.7005, "lon": -73.7977, "precision": "address" },
+    { "name": "Receiving site", "lat": 40.7220, "lon": -74.0020, "precision": "borough" }
+  ],
+  "boroughView": {
+    "Manhattan": { "lat": 40.7780, "lon": -73.9700, "zoom": 12 },
+    "Bronx": { "lat": 40.8500, "lon": -73.8700, "zoom": 12 },
+    "Brooklyn": { "lat": 40.6500, "lon": -73.9500, "zoom": 12 },
+    "Queens": { "lat": 40.7100, "lon": -73.8200, "zoom": 11 },
+    "Staten Island": { "lat": 40.5800, "lon": -74.1500, "zoom": 12 },
+    "all": { "lat": 40.7050, "lon": -73.9400, "zoom": 10 }
+  }
+}

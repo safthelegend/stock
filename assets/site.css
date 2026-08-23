@@ -469,3 +469,128 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 /* Section rhythm: the tier rules and the sources rule were the only hairlines
    that ran wider than the text they belonged to. */
 #sites .site-rows { max-width:none; }
+
+
+/* ============================================================================
+   NETWORK MAP + the UI added alongside it
+   ============================================================================
+   Every colour is a theme token, so the map, its pins and its legend follow
+   light / dark / stock exactly as the rest of the page does. Leaflet's own
+   chrome is re-skinned rather than left in its default blue-grey.
+   ========================================================================= */
+
+/* --- stats strip ------------------------------------------------------- */
+.stats-strip { background:var(--brand); color:var(--on-brand); }
+.stats-strip .wrap { display:flex; flex-wrap:wrap; gap:8px 34px; padding-top:10px; padding-bottom:10px; }
+.stats-strip .stat-item { display:inline-flex; align-items:baseline; gap:8px; }
+.stats-strip .stat-fig { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:16px; font-variant-numeric:tabular-nums; }
+.stats-strip .stat-cap { font-size:13px; opacity:0.88; }
+@media (max-width:700px) {
+  /* One figure per line rather than a wrapped row: at this width the third
+     item was overflowing the viewport instead of wrapping. */
+  .stats-strip .wrap { flex-direction:column; gap:3px; }
+  .stats-strip .stat-item { flex-wrap:wrap; }
+  .stats-strip .stat-cap { font-size:12px; }
+}
+
+/* --- delivery-log preview toggle --------------------------------------- */
+.sim-bar { margin-top:28px; display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; }
+.sim-controls { display:inline-flex; gap:8px; }
+.sim-btn { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; color:var(--text-secondary);
+  background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:999px; padding:7px 14px; cursor:pointer;
+  transition:color 160ms ease, border-color 160ms ease, background-color 160ms ease; }
+.sim-btn:hover { color:var(--brand); border-color:var(--brand); }
+.sim-btn.is-on { background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+.sim-note { font-size:13px; color:var(--text-secondary); margin:0; }
+/* The one piece of chrome that must never be subtle: it is the only thing
+   separating a preview from a record. */
+.sim-banner[hidden] { display:none; }
+.sim-banner { display:block; margin:16px 0 0; padding:12px 14px; border-radius:10px;
+  border:2px dashed var(--accent); background:var(--surface);
+  font-size:14px; line-height:1.6; color:var(--text); max-width:70ch; }
+.sim-banner strong { color:var(--accent-text); letter-spacing:0.04em; }
+
+/* --- map shell + overlay CTA ------------------------------------------- */
+.map-shell { position:relative; border:1px solid var(--brand-line); border-radius:14px; overflow:hidden; box-shadow:0 3px 14px var(--paper-shadow); }
+.map-cta { position:absolute; z-index:500; top:0; left:0; right:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:10px; padding:12px 16px; background:var(--brand); color:var(--on-brand); }
+.map-cta-text { font-family:'Archivo',-apple-system,sans-serif; font-weight:700; font-size:clamp(16px,2.2vw,20px); letter-spacing:-0.01em; }
+.map-cta-btn { font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px; color:var(--brand);
+  background:var(--on-brand); border-radius:999px; padding:7px 14px; text-decoration:none; white-space:nowrap; }
+.map-cta-btn:hover { background:var(--tint); color:var(--brand-press); }
+.map-canvas { height:clamp(360px,58vh,560px); width:100%; background:var(--bg); }
+/* The overlay bar owns the top of the map, so Leaflet's controls keep clear of it. */
+.map-shell .leaflet-top { top:56px; }
+@media (max-width:600px) { .map-shell .leaflet-top { top:86px; } }
+.map-canvas:focus-visible { outline:3px solid var(--accent); outline-offset:-3px; }
+.map-fallback { padding:28px; margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text-secondary); }
+
+/* Interaction gate: the map never swallows a page scroll until asked. */
+.map-gate { display:block; width:100%; margin-top:10px; padding:9px 14px; cursor:pointer;
+  font-family:'Archivo',-apple-system,sans-serif; font-weight:600; font-size:13px;
+  color:var(--brand); background:var(--surface); border:1px dashed var(--brand-line-mid); border-radius:10px; }
+.map-gate:hover { border-color:var(--brand); }
+
+.map-controls { display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px; margin-top:16px; }
+.map-legend { display:flex; flex-wrap:wrap; gap:8px 16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; color:var(--text-secondary); }
+.map-legend .lg-item { display:inline-flex; align-items:center; gap:6px; }
+.map-legend .lg-sw { width:14px; height:14px; border-radius:3px; border:1px solid var(--line); display:inline-block; }
+.map-legend .lg-nodata { background:var(--bg); border-style:dashed; }
+.map-caption { font-size:15px; line-height:1.6; color:var(--text); margin:18px 0 0; max-width:62ch; text-wrap:pretty; }
+#network .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:10px 0 0; max-width:62ch; }
+#network .cite code { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; }
+
+/* --- markers ------------------------------------------------------------ */
+.pin-wrap { position:relative; display:block; width:14px; height:14px; }
+.pin-dot { position:absolute; inset:0; border-radius:50%; border:3px solid var(--text); background:var(--surface); box-sizing:border-box; }
+.pin-dot.pin-operating { background:var(--brand); border-color:var(--on-brand); }
+.pin-text { position:absolute; left:19px; top:50%; transform:translateY(-50%);
+  font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; white-space:nowrap; color:var(--text);
+  text-shadow:0 0 3px var(--bg), 0 0 3px var(--bg), 0 0 3px var(--bg), 0 0 6px var(--bg); }
+/* Only an operating site pulses. A target or in-conversation school must
+   never read as live. */
+.pin-live::before { content:""; position:absolute; inset:-4px; border-radius:50%;
+  box-shadow:0 0 0 4px var(--brand); opacity:0; animation:pinPulse 2.4s ease-out infinite; }
+@keyframes pinPulse {
+  0% { opacity:0.55; transform:scale(1); }
+  70% { opacity:0; transform:scale(1.5); }
+  100% { opacity:0; transform:scale(1.5); }
+}
+
+/* --- run schematic ------------------------------------------------------ */
+.route-animate { animation:routeDash 1.4s linear infinite; }
+@keyframes routeDash { to { stroke-dashoffset:-28; } }
+.route-badge { display:inline-block; transform:translate(-50%,-50%);
+  font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10px; line-height:1.35; text-align:center; white-space:nowrap;
+  color:var(--accent-text); background:var(--surface); border:1px solid var(--accent); border-radius:6px; padding:3px 6px; }
+.route-badge em { font-style:normal; opacity:0.8; }
+
+/* --- Leaflet chrome, re-skinned ---------------------------------------- */
+.leaflet-container { background:var(--bg); font-family:'Archivo',-apple-system,sans-serif; }
+.leaflet-bar a, .leaflet-bar a:hover { background:var(--surface); color:var(--text); border-bottom-color:var(--line); }
+.leaflet-bar a:hover { color:var(--brand); }
+.leaflet-control-attribution { background:var(--surface) !important; color:var(--text-secondary) !important; font-size:11px !important; }
+.leaflet-control-attribution a { color:var(--brand) !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background:var(--surface); color:var(--text); box-shadow:0 3px 14px var(--paper-shadow); }
+.leaflet-popup-content { margin:12px 14px; font-size:13px; }
+.leaflet-popup-content strong { display:block; font-size:14px; color:var(--text); margin-bottom:4px; }
+.leaflet-popup-content .pop-line { display:block; color:var(--text-secondary); }
+.leaflet-popup-content .pop-note { display:block; margin-top:6px; font-size:12px; color:var(--accent-text); }
+.map-tip { background:var(--surface) !important; color:var(--text) !important; border:1px solid var(--rule) !important;
+  font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px !important; }
+
+@media (max-width:600px) {
+  .map-canvas { height:400px; }
+  .map-cta { flex-direction:column; align-items:flex-start; gap:8px; }
+  .pin-text { font-size:10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-live::before, .route-animate { animation:none !important; }
+  .pin-live::before { display:none !important; }
+}
+
+@media print {
+  .stats-strip, .map-shell, .map-gate, .map-controls, .sim-controls { display:none !important; }
+  .sim-banner { border:2px solid #000 !important; }
+}
