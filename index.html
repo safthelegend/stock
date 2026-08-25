@@ -21,8 +21,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=7">
-<link rel="stylesheet" href="assets/site.css?v=7">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=8">
+<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=8">
+<link rel="stylesheet" href="assets/site.css?v=8">
 <style>
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
@@ -972,9 +973,10 @@ that wasn't actually clean.</pre>
   <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
 </footer>
 
-<script src="assets/vendor/leaflet/leaflet.js?v=7"></script>
-<script src="assets/site.js?v=7"></script>
-<script src="assets/map.js?v=7"></script>
+<script src="assets/vendor/leaflet/leaflet.js?v=8"></script>
+<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=8"></script>
+<script src="assets/site.js?v=8"></script>
+<script src="assets/map.js?v=8"></script>
 <script>
 (function () {
   "use strict";

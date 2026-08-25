@@ -101,7 +101,41 @@
     map.createPane("routes"); map.getPane("routes").style.zIndex = 450;
     map.createPane("pins"); map.getPane("pins").style.zIndex = 600;
 
-    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null };
+    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null, cluster: null };
+
+    /* Clustering, for where pins genuinely stack. Deliberately tight
+       (46px, and off entirely past zoom 12): the point is to merge markers
+       that overlap, not to hide a borough behind a number. Only the school and
+       receiving pins cluster — the Act 3 seed dots never do, because watching
+       the spread collapse into counters would defeat the whole sequence.
+
+       The hull polygon on hover is off: over a choropleth it reads as another
+       data layer. */
+    function clusterIcon(cluster) {
+      var kids = cluster.getAllChildMarkers();
+      var live = kids.some(function (m) { return m.options.stbStatus === "operating"; });
+      var n = kids.length;
+      return L.divIcon({
+        className: "",
+        html: '<span class="pin-cluster' + (live ? " pin-cluster-live" : "") + '">' +
+              '<b>' + n + '</b><span class="pin-cluster-lbl">sites</span></span>',
+        iconSize: [34, 34], iconAnchor: [17, 17]
+      });
+    }
+
+    if (L.markerClusterGroup) {
+      state.cluster = L.markerClusterGroup({
+        clusterPane: "pins",
+        maxClusterRadius: 46,
+        disableClusteringAtZoom: 13,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        animate: !reduced,
+        iconCreateFunction: clusterIcon
+      });
+      map.addLayer(state.cluster);
+    }
 
 
     /* ---------- interaction gate: never hijack a scroll ---------- */
@@ -197,6 +231,9 @@
       });
       var m = L.marker([coords.lat, coords.lon], {
         pane: "pins", icon: icon, keyboard: true,
+        /* Read back by the cluster icon so a cluster containing a live site
+           can say so rather than averaging it away. */
+        stbStatus: place.status,
         alt: place.name + ", " + place.borough + ", " + (statusOf[place.status] || place.status),
         title: place.name
       });
@@ -250,13 +287,14 @@
     }
 
     function drawMarkers() {
+      if (state.cluster) state.cluster.clearLayers();
       state.markers.forEach(function (m) { map.removeLayer(m); });
       state.markers = [];
       placesForMap().forEach(function (p, i) {
         var c = coordsFor(p.name);
         if (!c) return;
         var m = pinFor(p, c);
-        m.addTo(map);
+        if (state.cluster) state.cluster.addLayer(m); else m.addTo(map);
         state.markers.push(m);
         /* The pop-in sequence: markers arrive in turn rather than all at once.
            Under reduced motion they are simply there. */
@@ -622,6 +660,7 @@
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
       map.on("zoomend moveend", declutterLabels);
+      if (state.cluster) state.cluster.on("animationend spiderfied unspiderfied", declutterLabels);
       host.setAttribute("data-ready", "true");
     })["catch"](function () {
       host.innerHTML = '<p class="map-fallback">The map could not be loaded. ' +
