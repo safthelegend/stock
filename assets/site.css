@@ -20,6 +20,8 @@
      grounds. In dark and stock the accent already passes, so there the two
      tokens are the same colour. */
   --accent-text:#9F5D15;
+  /* Placeholder text. Measured to clear 4.5:1 on --surface in each theme. */
+  --placeholder:#5A5A5E;
   --on-brand:#FFFFFF; --brand-press:#234618;
   --line:rgba(29,29,31,0.12); --line-soft:rgba(29,29,31,0.08);
   --brand-line:rgba(46,90,34,0.25); --brand-line-soft:rgba(46,90,34,0.12); --brand-line-mid:rgba(46,90,34,0.35);
@@ -50,6 +52,7 @@
     --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
     --box-side:#1D2216; --box-interior:#141810;
     --box-shine:rgba(240,242,236,0.30);
+    --placeholder:#9BA093;
   }
 }
 :root[data-theme="dark"] {
@@ -63,6 +66,7 @@
   --paper-shadow:rgba(0,0,0,0.62); --paper-y:4px; --paper-blur:8px; --grain-op:0.08;
   --box-side:#1D2216; --box-interior:#141810;
   --box-shine:rgba(240,242,236,0.30);
+  --placeholder:#9BA093;
 }
 /* Stock — brand mode. Forest-green ground, cream text, orange accent.
    The hues are the site's own two brand colours; nothing new is introduced.
@@ -84,6 +88,7 @@
   --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
   --box-side:#1B3612; --box-interior:#132608;
   --box-shine:rgba(234,242,222,0.32);
+  --placeholder:#B9BFB0;
 }
 @media (prefers-contrast: more) {
   :root {
@@ -135,10 +140,12 @@ h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
 .mask-l { display:block; overflow:hidden; }
 .mask-l > span { display:block; }
 .btn { font-size:19px; font-weight:600; padding:12px 24px; border-radius:12px; display:inline-block; }
-.btn.solid { background:var(--brand); color:var(--on-brand); transition:background-color 200ms ease; }
-.btn.solid:hover { background:var(--brand-press); color:var(--on-brand); }
-.btn.line { color:var(--brand); border:1px solid var(--brand-line-mid); transition:color 200ms ease,border-color 200ms ease; }
-.btn.line:hover { border-color:var(--brand); color:var(--brand); }
+.btn.solid { background:var(--brand); color:var(--on-brand); box-shadow:0 2px 8px var(--paper-shadow); transition:background-color 200ms ease, box-shadow 200ms ease; }
+.btn.solid:hover { background:var(--brand-press); color:var(--on-brand); box-shadow:0 4px 14px var(--paper-shadow); }
+/* A secondary button on the light-green card needs its own ground, or the
+   outline alone leaves it floating in the tint. */
+.btn.line { color:var(--brand); background:var(--surface); border:1.5px solid var(--brand-line-mid); transition:color 200ms ease, border-color 200ms ease, background-color 200ms ease; }
+.btn.line:hover { border-color:var(--brand); color:var(--brand-press); background:var(--tint); }
 .prow { border-bottom:1px solid var(--line); }
 .prow .num { grid-area:num; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; color:var(--text-secondary); }
 .prow .ttl { grid-area:ttl; display:flex; align-items:center; gap:10px; font-size:19px; font-weight:600; color:var(--text); }
@@ -331,14 +338,31 @@ h2:hover > .anchor-link, h3:hover > .anchor-link, .anchor-link:focus-visible { o
 #unitToggle[hidden] { display:none; }
 
 /* --- 4/6. Run packet + CSV ---------------------------------------------- */
-.packet-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:18px; }
-.packet-form label { display:grid; gap:6px; font-size:13px; color:var(--text-secondary); }
-.packet-form input, .packet-form textarea { border:1px solid var(--line); background:var(--bg); color:var(--text); font-family:inherit; font-size:14px; padding:10px 12px; border-radius:10px; }
+/* Explicit column counts rather than auto-fit: with six fields, auto-fit
+   produced a different arrangement at almost every width, including a lone
+   trailing field on its own row. */
+.packet-form { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px 18px; margin-top:18px; }
+@media (max-width:900px) { .packet-form { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px) { .packet-form { grid-template-columns:minmax(0,1fr); } }
+.packet-form label { display:grid; gap:7px; align-content:start; font-size:13px; font-weight:600;
+  color:var(--text); }
+.packet-form input, .packet-form textarea { width:100%; box-sizing:border-box;
+  border:1px solid var(--rule); background:var(--surface); color:var(--text);
+  font-family:inherit; font-size:14px; padding:11px 12px; border-radius:10px;
+  transition:border-color 140ms ease, box-shadow 140ms ease; }
+.packet-form input:hover, .packet-form textarea:hover { border-color:var(--brand-line-mid); }
+.packet-form input:focus-visible, .packet-form textarea:focus-visible {
+  outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-line-soft); }
+/* The UA placeholder grey lands at 4.23:1 on this ground. --placeholder is
+   set per theme to clear 4.5:1 against the field it actually sits in. */
+.packet-form input::placeholder, .packet-form textarea::placeholder,
+input::placeholder, textarea::placeholder { color:var(--placeholder); opacity:1; }
 .packet-form .span-all { grid-column:1/-1; }
 .packet-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
-.btn-sm { display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; padding:9px 15px; border-radius:10px; border:1px solid var(--brand-line-mid); background:var(--surface); color:var(--brand); cursor:pointer; }
-.btn-sm:hover:not(:disabled) { border-color:var(--brand); }
-.btn-sm.solid { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+.btn-sm { display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:14px; padding:10px 16px; border-radius:10px; border:1.5px solid var(--brand-line-mid); background:var(--surface); color:var(--brand); cursor:pointer; transition:border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease; }
+.btn-sm:hover:not(:disabled) { border-color:var(--brand); background:var(--tint); }
+.btn-sm.solid { background:var(--brand); color:var(--on-brand); border-color:var(--brand); box-shadow:0 2px 8px var(--paper-shadow); }
+.btn-sm.solid:hover:not(:disabled) { background:var(--brand-press); border-color:var(--brand-press); box-shadow:0 4px 14px var(--paper-shadow); }
 .btn-sm:disabled { opacity:0.5; cursor:not-allowed; }
 .packet-note { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:14px 0 0; max-width:62ch; }
 #runPacketOut { display:none; margin-top:26px; }
@@ -555,7 +579,9 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .map-canvas { height:clamp(360px,58vh,560px); width:100%; background:var(--bg); }
 /* The overlay bar owns the top of the map, so Leaflet's controls keep clear of it. */
 .map-shell .leaflet-top { top:56px; }
-@media (max-width:600px) { .map-shell .leaflet-top { top:86px; } }
+/* Clear of the transport bar. */
+.map-shell .leaflet-bottom.leaflet-left { bottom:56px; }
+@media (max-width:600px) { .map-shell .leaflet-top { top:86px; } .map-shell .leaflet-bottom.leaflet-left { bottom:54px; } }
 .map-canvas:focus-visible { outline:3px solid var(--accent); outline-offset:-3px; }
 .map-fallback { padding:28px; margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; color:var(--text-secondary); }
 
@@ -576,11 +602,20 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 
 /* --- markers ------------------------------------------------------------ */
 .pin-wrap { position:relative; display:block; width:14px; height:14px; }
-.pin-dot { position:absolute; inset:0; border-radius:50%; border:3px solid var(--text); background:var(--surface); box-sizing:border-box; }
-.pin-dot.pin-operating { background:var(--brand); border-color:var(--on-brand); }
-.pin-text { position:absolute; left:19px; top:50%; transform:translateY(-50%);
-  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:11px; white-space:nowrap; color:var(--text);
-  text-shadow:0 0 3px var(--bg), 0 0 3px var(--bg), 0 0 3px var(--bg), 0 0 6px var(--bg); }
+.pin-dot { position:absolute; inset:0; box-sizing:border-box; }
+/* Operating: a solid filled disc with a light collar — reads as "on". */
+.pin-dot.pin-operating { border-radius:50%; background:var(--brand); border:3px solid var(--surface);
+  box-shadow:0 0 0 1.5px var(--brand); }
+/* In conversation: a half-filled disc — started, not finished. */
+.pin-dot.pin-conversation { border-radius:50%; background:var(--surface); border:3px solid var(--brand);
+  background-image:linear-gradient(to right, var(--brand) 50%, transparent 50%); }
+/* Target: a hollow ring, dashed — nothing agreed. */
+.pin-dot.pin-target { border-radius:50%; background:var(--surface); border:2px dashed var(--text-secondary); }
+.pin-text { position:absolute; left:20px; top:50%; transform:translateY(-50%);
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:600; font-size:10.5px; letter-spacing:0.02em; white-space:nowrap;
+  color:var(--text); background:var(--surface); border:1px solid var(--brand-line-mid);
+  border-radius:5px; padding:2px 6px; box-shadow:0 1px 3px var(--paper-shadow); }
 /* Only an operating site pulses. A target or in-conversation school must
    never read as live. */
 .pin-live::before { content:""; position:absolute; inset:-4px; border-radius:50%;
@@ -637,7 +672,9 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .map-hud { position:absolute; z-index:500; left:0; right:0; bottom:0; pointer-events:none;
   /* Bottom padding clears Leaflet's attribution, which sits in the same
      corner and must stay legible. */
-  padding:14px 16px 28px; display:grid; gap:8px;
+  /* Left padding clears the zoom control, which shares this corner; bottom
+     padding clears Leaflet's attribution. */
+  padding:14px 16px 28px 58px; display:grid; gap:8px;
   background:linear-gradient(to top, var(--surface) 62%, transparent); }
 .hud-counts { display:flex; gap:22px; }
 .hud-stat { display:inline-flex; align-items:baseline; gap:6px;
@@ -651,7 +688,7 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .btn-play { font-weight:700; }
 .btn-play[disabled] { opacity:0.6; cursor:default; }
 @media (max-width:600px) {
-  .map-hud { padding:10px 12px 12px; }
+  .map-hud { padding:10px 12px 12px 52px; }
   .hud-stat b { font-size:18px; }
   .hud-caption { font-size:13px; }
 }
@@ -685,3 +722,64 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 }
 @media (prefers-reduced-motion: reduce) { .leaflet-interactive { transition:none !important; } }
 @media print { .map-legend-card, .map-shell::after { display:none !important; } }
+
+
+/* --- playback transport + disambiguation watermark ----------------------- */
+.map-playbar { position:absolute; z-index:520; left:0; right:0; bottom:0;
+  display:flex; align-items:center; gap:10px; padding:8px 12px;
+  background:var(--surface); border-top:1px solid var(--brand-line-soft); }
+.pb-btn { display:inline-flex; align-items:center; justify-content:center; flex:none;
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  background:var(--brand); border:1px solid var(--brand); color:var(--on-brand); }
+.pb-btn:hover { background:var(--brand-press); border-color:var(--brand-press); }
+.pb-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+/* Play triangle / pause bars, drawn rather than typeset so they stay crisp. */
+.pb-icon { display:block; width:0; height:0; margin-left:2px;
+  border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:10px solid currentColor; }
+.pb-play.is-playing .pb-icon { width:9px; height:11px; margin-left:0; border:none;
+  border-left:3px solid currentColor; border-right:3px solid currentColor; }
+.pb-scrub { flex:1 1 auto; min-width:60px; accent-color:var(--brand); height:20px; cursor:pointer; }
+.pb-scrub:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.pb-time { flex:none; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px;
+  color:var(--text-secondary); font-variant-numeric:tabular-nums; }
+.pb-speeds { flex:none; display:inline-flex; gap:3px; }
+.pb-rate { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:600; font-size:11px; padding:5px 8px; border-radius:6px; cursor:pointer;
+  background:transparent; border:1px solid transparent; color:var(--text-secondary); }
+.pb-rate:hover { color:var(--text); background:var(--tint); }
+.pb-rate[aria-pressed="true"] { background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+.pb-rate:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* Anchored inside the map frame, so it cannot be scrolled away from the
+   thing it qualifies. */
+.map-watermark { position:absolute; z-index:510; left:12px; top:64px; margin:0;
+  max-width:min(320px, calc(100% - 24px));
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:11px; line-height:1.45; color:var(--text);
+  background:var(--surface); border:2px solid var(--accent); border-left-width:5px;
+  border-radius:8px; padding:7px 10px; box-shadow:0 3px 12px var(--paper-shadow); }
+.map-watermark[hidden] { display:none; }
+.map-watermark strong { display:block; font-size:10px; letter-spacing:0.1em;
+  color:var(--accent-text); margin-bottom:2px; }
+
+/* The HUD sits above the transport rather than under it. */
+.map-hud { bottom:49px; }
+.map-legend-card { top:66px; }
+.seed-dot { transition:fill-opacity 260ms ease; }
+
+@media (max-width:600px) {
+  .map-playbar { gap:7px; padding:7px 9px; }
+  .pb-time { display:none; }
+  .pb-rate { padding:5px 6px; font-size:10px; }
+  .map-watermark { left:8px; top:auto; bottom:112px; font-size:10px; max-width:calc(100% - 16px); }
+  .map-legend-card { top:auto; bottom:180px; }
+  .map-hud { bottom:47px; }
+}
+@media (prefers-reduced-motion: reduce) { .seed-dot { transition:none !important; } }
+@media print { .map-playbar, .map-watermark { display:none !important; } }
+
+/* A label suppressed for collision. The pin and its popup are untouched — the
+   label comes back on hover or keyboard focus, and on zoom in. */
+.pin-muted .pin-text { opacity:0; pointer-events:none; transition:opacity 140ms ease; }
+.pin-muted:hover .pin-text, .pin-muted:focus-within .pin-text { opacity:1; }
+@media (prefers-reduced-motion: reduce) { .pin-muted .pin-text { transition:none !important; } }

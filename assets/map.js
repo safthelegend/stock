@@ -77,7 +77,10 @@
     (STB.SITE_STATUS || []).forEach(function (s) { statusOf[s.key] = s.label; });
 
     var map = L.map(host, {
-      zoomControl: true,
+      /* Zoom moves to the bottom-left: the top-left corner is where the
+         projection watermark has to sit, and that notice outranks a control
+         the visitor can reach anywhere. */
+      zoomControl: false,
       attributionControl: true,
       /* Touch and wheel both start disabled so the map never steals a scroll.
          They are handed back once the visitor deliberately engages. */
@@ -86,6 +89,8 @@
       tap: false,
       keyboard: true
     });
+
+    L.control.zoom({ position: "bottomleft" }).addTo(map);
 
     var tiles = L.tileLayer(TILES[isDarkTheme() ? "dark" : "light"], {
       attribution: TILE_ATTR, maxZoom: 17, minZoom: 9, detectRetina: true
@@ -97,7 +102,7 @@
     map.createPane("pins"); map.getPane("pins").style.zIndex = 600;
 
     var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null };
-    var playBtn = document.getElementById("projectionPlay");
+
 
     /* ---------- interaction gate: never hijack a scroll ---------- */
     var gate = document.createElement("button");
@@ -220,6 +225,30 @@
       return null;
     }
 
+    /* Declutter. With nine markers the pins themselves rarely collide, but
+       their status labels do — two Brooklyn schools a mile apart still overlap
+       at citywide zoom. So the label is what gets hidden, per pair, measured
+       in screen pixels at the current zoom and re-run whenever the view moves.
+       The pin, its shape and its popup always stay: nothing is ever hidden
+       that carries status on its own. */
+    var LABEL_PAD = 92, LABEL_H = 20;
+    function declutterLabels() {
+      var boxes = [];
+      state.markers.forEach(function (m) {
+        var el = m.getElement();
+        if (!el) return;
+        var lbl = el.querySelector(".pin-text");
+        if (!lbl) return;
+        var pt = map.latLngToContainerPoint(m.getLatLng());
+        var box = { x: pt.x, y: pt.y, w: LABEL_PAD, h: LABEL_H };
+        var clash = boxes.some(function (b) {
+          return Math.abs(b.x - box.x) < (b.w + box.w) / 2 && Math.abs(b.y - box.y) < b.h;
+        });
+        el.classList.toggle("pin-muted", clash);
+        if (!clash) boxes.push(box);
+      });
+    }
+
     function drawMarkers() {
       state.markers.forEach(function (m) { map.removeLayer(m); });
       state.markers = [];
@@ -242,15 +271,28 @@
           }
         }
       });
+      declutterLabels();
     }
 
-    /* ---------- the projection sequence ----------
-       A pitch needs to show two things: that we understand the scale of the
-       need, and what this looks like if it spreads. Act 1 and 2 are real —
-       the shading and the counts come from the data files. Act 3 is a
-       hypothetical and is labelled as one on screen the whole time it runs.
-       Nothing in Act 3 is a forecast, and none of its dots is a real school. */
+    /* ---------- the projection, as a timeline ----------
+       Everything below is a pure function of one number: the playhead, in ms.
+       renderAt(t) rebuilds the whole projection state from scratch for any t,
+       which is what makes pause, speed and scrubbing possible at all — you
+       cannot scrub a pile of setTimeouts. The engine only moves the playhead;
+       it never knows what any act contains.
+
+       Acts 1 and 2 are real and sourced. Act 3 is a hypothetical, and the
+       watermark inside the map frame says so for as long as it is on screen. */
+    var TL = {
+      ACT1: 0, SPOT_AT: 2600, SPOT_EACH: 1250, SPOT_N: 4,
+      ACT2: 7800, ACT3A: 11400, ACT3B: 14400, ACT3C: 17200, ACT4: 20400, END: 23500
+    };
+    var SEED_STOPS = [14, 27];   /* how far the bloom has got by 3B and 3C */
+
     var HUD = {};
+    var clock = 0, speed = 1, playing = false, rafId = null, lastFrame = 0;
+    var ui = {};
+
     function buildHud() {
       var shell = host.parentNode;
       var hud = document.createElement("div");
@@ -260,20 +302,64 @@
           '<span class="hud-stat"><b id="hudSchools">0</b><span>schools</span></span>' +
           '<span class="hud-stat"><b id="hudBoroughs">0</b><span>boroughs</span></span>' +
         '</div>' +
-        '<p class="hud-caption" id="hudCaption" role="status"></p>' +
-        '<p class="hud-flag" id="hudFlag" hidden>PROJECTION — illustrative scenario, not a forecast. No school below is real.</p>';
+        '<p class="hud-caption" id="hudCaption" role="status"></p>';
       shell.appendChild(hud);
       HUD.caption = hud.querySelector("#hudCaption");
-      HUD.flag = hud.querySelector("#hudFlag");
       HUD.schools = hud.querySelector("#hudSchools");
       HUD.boroughs = hud.querySelector("#hudBoroughs");
+
+      /* The disambiguation watermark lives inside the map frame, not in the
+         page flow, so it cannot be scrolled away from the thing it qualifies. */
+      var mark = document.createElement("p");
+      mark.className = "map-watermark";
+      mark.id = "projWatermark";
+      mark.hidden = true;
+      mark.innerHTML = '<strong>PROJECTION</strong> illustrative scenario — not a forecast, and no dot is a real school';
+      shell.appendChild(mark);
+      HUD.mark = mark;
+
+      var bar = document.createElement("div");
+      bar.className = "map-playbar";
+      bar.innerHTML =
+        '<button type="button" class="pb-btn pb-play" id="pbPlay" aria-label="Play the projection">' +
+          '<span class="pb-icon" aria-hidden="true"></span></button>' +
+        '<input type="range" class="pb-scrub" id="pbScrub" min="0" max="' + TL.END + '" step="100" value="0" ' +
+          'aria-label="Projection timeline" aria-valuetext="Start">' +
+        '<span class="pb-time" id="pbTime">0:00</span>' +
+        '<span class="pb-speeds" role="group" aria-label="Playback speed">' +
+          [1, 2, 5].map(function (x) {
+            return '<button type="button" class="pb-rate" data-speed="' + x + '" aria-pressed="' +
+              (x === 1) + '">' + x + '×</button>';
+          }).join("") +
+        '</span>';
+      shell.appendChild(bar);
+      ui.play = bar.querySelector("#pbPlay");
+      ui.scrub = bar.querySelector("#pbScrub");
+      ui.time = bar.querySelector("#pbTime");
+      ui.rates = [].slice.call(bar.querySelectorAll(".pb-rate"));
+
+      ui.play.addEventListener("click", function () { playing ? pause() : play(); });
+      ui.scrub.addEventListener("input", function () { pause(); seek(+ui.scrub.value); });
+      ui.rates.forEach(function (b) {
+        b.addEventListener("click", function () {
+          speed = +b.getAttribute("data-speed");
+          ui.rates.forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+        });
+      });
     }
 
-    function say(text) { if (HUD.caption) HUD.caption.textContent = text; }
-    function setCount(el, v) { if (el) el.textContent = v; }
+    function say(text) { if (HUD.caption && HUD.caption.textContent !== text) HUD.caption.textContent = text; }
+    function setCount(el, v) { if (el && el.textContent !== String(v)) el.textContent = String(v); }
+    function fmtTime(ms) {
+      var s = Math.round(ms / 1000);
+      return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+    }
 
-    /* Centroids come from the geometry itself rather than a second table. */
+    /* Centroids come from the geometry itself rather than a second table,
+       ordered by need so the scenario spreads where the need is greatest. */
+    var seedCache = null;
     function districtSeeds() {
+      if (seedCache) return seedCache;
       var out = [];
       state.choro.eachLayer(function (layer) {
         var p = layer.feature.properties;
@@ -281,178 +367,173 @@
         var c = layer.getBounds().getCenter();
         out.push({ lat: c.lat, lon: c.lng, snap: p.snap, borough: p.borough });
       });
-      /* Highest need first: the scenario spreads where the need is greatest. */
-      return out.sort(function (a, b) { return b.snap - a.snap; });
+      out.sort(function (a, b) { return b.snap - a.snap; });
+      seedCache = out;
+      return out;
+    }
+    var rankedCache = null;
+    function rankedDistricts() {
+      if (rankedCache) return rankedCache;
+      var r = [];
+      state.choro.eachLayer(function (l) {
+        if (l.feature && l.feature.properties.snap !== null) r.push(l);
+      });
+      r.sort(function (a, b) { return b.feature.properties.snap - a.feature.properties.snap; });
+      rankedCache = r;
+      return r;
     }
 
-    /* Act 1 lands harder if the worst districts name themselves rather than
-       sitting in a colour ramp. Walks the top few, one at a time. */
-    function spotlight(n, stepMs, done) {
-      var ranked = [];
-      state.choro.eachLayer(function (layer) {
-        if (layer.feature && layer.feature.properties.snap !== null) ranked.push(layer);
-      });
-      ranked.sort(function (a, b) { return b.feature.properties.snap - a.feature.properties.snap; });
-      ranked = ranked.slice(0, n);
-      ranked.forEach(function (layer, i) {
-        at(reduced ? 0 : i * stepMs, function () {
-          if (state.spotlit) { var prev = state.spotlit; state.spotlit = null; state.choro.resetStyle(prev); }
-          state.spotlit = layer;
-          layer.setStyle({ weight: 3, color: cssVar("--accent"), fillOpacity: 0.95 });
-          layer.bringToFront();
-          var p = layer.feature.properties;
-          say(p.name + " — " + p.snap + "% of residents on SNAP.");
-          if (i === ranked.length - 1) {
-            at(reduced ? 0 : stepMs, function () {
-              if (state.spotlit) { var last = state.spotlit; state.spotlit = null; state.choro.resetStyle(last); }
-              if (done) done();
-            });
-          }
-        });
-      });
-    }
-
-    var timers = [];
-    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
-
-    function clearProjection() {
-      clearTimers();
-      state.routes.forEach(function (r) { map.removeLayer(r); });
-      state.routes = [];
-      state.seeds.forEach(function (r) { map.removeLayer(r); });
-      state.seeds = [];
-      if (state.spotlit && state.choro) { var sp = state.spotlit; state.spotlit = null; state.choro.resetStyle(sp); }
-      if (HUD.flag) HUD.flag.hidden = true;
-      setCount(HUD.schools, 0); setCount(HUD.boroughs, 0);
-    }
-
-    function drawRoutes() {
-      var recv = coordsFor("Receiving site");
-      if (!recv) return;
-      var byBoro = {};
-      placesForMap().forEach(function (p) {
-        if (p.kind === "receiving") return;
-        (byBoro[p.borough] = byBoro[p.borough] || []).push(p);
-      });
-      Object.keys(byBoro).forEach(function (b) {
-        byBoro[b].forEach(function (p, i) {
-          var c = coordsFor(p.name);
-          if (!c) return;
-          var line = L.polyline([[c.lat, c.lon], [recv.lat, recv.lon]], {
-            pane: "routes", color: cssVar("--accent"), weight: 2, opacity: 0.75,
-            dashArray: "6 8",
-            className: "route-line" + (reduced ? "" : " route-animate")
-          }).addTo(map);
-          line.bindTooltip("Illustrative route — no run has been logged on this pair",
-            { sticky: true, className: "map-tip" });
-          state.routes.push(line);
-        });
-      });
-    }
-
-    /* Act 3: dots bloom outward across districts, weighted to the highest
-       need. They are anonymous on purpose — inventing named schools that have
-       not agreed to anything is exactly what the rest of this site refuses
-       to do. */
-    function bloom(seeds, from, count, delayStep, done) {
-      var placed = 0, boroughs = {};
-      placesForMap().forEach(function (p) { boroughs[p.borough] = 1; });
-      for (var i = from; i < from + count && i < seeds.length; i++) {
-        (function (seed, n) {
-          at(reduced ? 0 : (n - from) * delayStep, function () {
-            var dot = L.circleMarker([seed.lat, seed.lon], {
-              pane: "routes", radius: 0, weight: 1.5,
-              color: cssVar("--accent"), fillColor: cssVar("--accent"), fillOpacity: 0.28
-            }).addTo(map);
-            dot.bindTooltip("Illustrative school — not a real building",
-              { sticky: true, className: "map-tip" });
-            state.seeds.push(dot);
-            var r = 4 + Math.min(9, seed.snap / 5);
-            if (reduced) { dot.setRadius(r); }
-            else {
-              var t0 = performance.now();
-              (function grow(now) {
-                var k = Math.min(1, (now - t0) / 420);
-                dot.setRadius(r * (1 - Math.pow(1 - k, 3)));
-                if (k < 1) requestAnimationFrame(grow);
-              })(t0);
-            }
-            placed++;
-            boroughs[seed.borough] = 1;
-            setCount(HUD.schools, SCENARIO_BASE + (from - 0) + placed);
-            setCount(HUD.boroughs, Object.keys(boroughs).length);
-            if (placed === count && done) done();
-          });
-        })(seeds[i], i);
+    /* ---------- idempotent layer sync ---------- */
+    function syncSpotlight(idx) {
+      var want = idx >= 0 && idx < TL.SPOT_N ? rankedDistricts()[idx] : null;
+      if (state.spotlit === want) return;
+      if (state.spotlit) { var prev = state.spotlit; state.spotlit = null; state.choro.resetStyle(prev); }
+      state.spotlit = want;
+      if (want) {
+        want.setStyle({ weight: 3, color: cssVar("--accent"), fillOpacity: 0.95 });
+        want.bringToFront();
       }
     }
 
-    var SCENARIO_BASE = 0;
-    function runSequence() {
-      clearProjection();
-      var seeds = districtSeeds();
-      var real = placesForMap().filter(function (p) { return p.kind !== "receiving"; }).length;
-      SCENARIO_BASE = real;
+    function syncRoutes(on) {
+      if (on === (state.routes.length > 0)) return;
+      if (!on) {
+        state.routes.forEach(function (r) { map.removeLayer(r); });
+        state.routes = [];
+        return;
+      }
+      var recv = coordsFor("Receiving site");
+      if (!recv) return;
+      placesForMap().forEach(function (p) {
+        if (p.kind === "receiving") return;
+        var c = coordsFor(p.name);
+        if (!c) return;
+        var line = L.polyline([[c.lat, c.lon], [recv.lat, recv.lon]], {
+          pane: "routes", color: cssVar("--accent"), weight: 2, opacity: 0.75,
+          dashArray: "6 8", className: "route-line" + (reduced ? "" : " route-animate")
+        }).addTo(map);
+        line.bindTooltip("Illustrative route — no run has been logged on this pair",
+          { sticky: true, className: "map-tip" });
+        state.routes.push(line);
+      });
+    }
 
-      var above30 = 0, withData = 0;
+    /* Anonymous on purpose: inventing named schools that have not agreed to
+       anything is the one thing the rest of this site refuses to do. */
+    function syncSeeds(n) {
+      var seeds = districtSeeds();
+      n = Math.max(0, Math.min(n, seeds.length));
+      while (state.seeds.length > n) map.removeLayer(state.seeds.pop());
+      while (state.seeds.length < n) {
+        var seed = seeds[state.seeds.length];
+        var dot = L.circleMarker([seed.lat, seed.lon], {
+          pane: "routes", radius: 4 + Math.min(9, seed.snap / 5), weight: 1.5,
+          color: cssVar("--accent"), fillColor: cssVar("--accent"), fillOpacity: 0.3,
+          className: "seed-dot"
+        }).addTo(map);
+        dot.bindTooltip("Illustrative school — not a real building",
+          { sticky: true, className: "map-tip" });
+        state.seeds.push(dot);
+      }
+    }
+
+    function lerpCount(t, t0, t1, n0, n1) {
+      if (t <= t0) return n0;
+      if (t >= t1) return n1;
+      return Math.round(n0 + (n1 - n0) * (t - t0) / (t1 - t0));
+    }
+
+    /* ---------- the one render function ---------- */
+    function renderAt(t) {
+      var real = placesForMap().filter(function (p) { return p.kind !== "receiving"; }).length;
+      var seeds = districtSeeds();
+
+      var withData = 0, above30 = 0;
       state.geo.features.forEach(function (f) {
         if (f.properties.snap === null) return;
         withData++;
         if (f.properties.snap > 30) above30++;
       });
 
-      var t = 0;
-      var step = reduced ? 0 : 1;
+      var spotIdx = -1;
+      if (t >= TL.SPOT_AT && t < TL.ACT2) spotIdx = Math.floor((t - TL.SPOT_AT) / TL.SPOT_EACH);
+      syncSpotlight(spotIdx);
 
-      /* Act 1 — the need. Real figures, straight from the data file. */
-      say("New York City has " + withData + " community districts. In " + above30 +
-          " of them, more than 30% of residents are on SNAP.");
-      /* setView rather than a zero-duration flyTo: Leaflet's flyTo does not
-         take kindly to a duration of 0. */
-      var home = state.sites.boroughView.all;
-      if (reduced) map.setView([home.lat, home.lon], home.zoom);
-      else map.flyTo([home.lat, home.lon], home.zoom, { duration: 1.2 });
+      syncRoutes(t >= TL.ACT2);
 
-      /* Act 1b — the four worst districts name themselves. */
-      t += 2600 * step;
-      at(t, function () { spotlight(4, 1250 * step); });
+      var nSeeds = 0;
+      if (t >= TL.ACT3A) nSeeds = lerpCount(t, TL.ACT3A, TL.ACT3B, 0, SEED_STOPS[0]);
+      if (t >= TL.ACT3B) nSeeds = lerpCount(t, TL.ACT3B, TL.ACT3C, SEED_STOPS[0], SEED_STOPS[1]);
+      if (t >= TL.ACT3C) nSeeds = lerpCount(t, TL.ACT3C, TL.ACT4, SEED_STOPS[1], seeds.length);
+      syncSeeds(nSeeds);
 
-      /* Act 2 — where we actually are today. Also real. */
-      t += 5600 * step;
-      at(t, function () {
-        setCount(HUD.schools, real);
-        setCount(HUD.boroughs, Object.keys(placesForMap().reduce(function (a, p) {
-          a[p.borough] = 1; return a;
-        }, {})).length);
+      if (HUD.mark) HUD.mark.hidden = t < TL.ACT3A;
+
+      if (spotIdx >= 0 && spotIdx < TL.SPOT_N) {
+        var p = rankedDistricts()[spotIdx].feature.properties;
+        say(p.name + " — " + p.snap + "% of residents on SNAP.");
+      } else if (t < TL.ACT2) {
+        say("New York City has " + withData + " community districts. In " + above30 +
+            " of them, more than 30% of residents are on SNAP.");
+      } else if (t < TL.ACT3A) {
         say("Today: " + real + " schools tracked, one receiving site operating in Manhattan. The log is still empty.");
-        drawRoutes();
-      });
-
-      /* Act 3 — the hypothetical. Flagged for as long as it is on screen. */
-      t += 3600 * step;
-      at(t, function () {
-        if (HUD.flag) HUD.flag.hidden = false;
+      } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
-        bloom(seeds, 0, Math.min(14, seeds.length), 150 * step);
-      });
-      t += 3000 * step;
-      at(t, function () {
+      } else if (t < TL.ACT3C) {
         say("Every district above 20% reached — one share table at a time.");
-        bloom(seeds, 14, Math.min(13, Math.max(0, seeds.length - 14)), 120 * step);
-      });
-      t += 2800 * step;
-      at(t, function () {
+      } else if (t < TL.ACT4) {
         say("Citywide: a student-run recovery network on top of the need map, feeding partner food banks in every borough.");
-        bloom(seeds, 27, Math.max(0, seeds.length - 27), 70 * step);
-      });
-
-      /* Act 4 — hold, and hand off to the ask. */
-      t += 3200 * step;
-      at(t, function () {
+      } else {
         say("That is the shape of the idea. It starts with one receiving partner saying yes.");
-        if (playBtn) { playBtn.textContent = "Replay the projection"; playBtn.disabled = false; }
-      });
+      }
+
+      var boroughs = {};
+      placesForMap().forEach(function (pl) { boroughs[pl.borough] = 1; });
+      if (t < TL.ACT2) { setCount(HUD.schools, 0); setCount(HUD.boroughs, 0); }
+      else {
+        setCount(HUD.schools, real + nSeeds);
+        for (var i = 0; i < nSeeds; i++) boroughs[seeds[i].borough] = 1;
+        setCount(HUD.boroughs, Object.keys(boroughs).length);
+      }
+
+      if (ui.scrub && +ui.scrub.value !== Math.round(t)) ui.scrub.value = Math.round(t);
+      if (ui.time) ui.time.textContent = fmtTime(t) + " / " + fmtTime(TL.END);
+      if (ui.scrub) ui.scrub.setAttribute("aria-valuetext", HUD.caption ? HUD.caption.textContent : fmtTime(t));
+    }
+
+    /* ---------- transport ---------- */
+    function setPlayUI() {
+      if (!ui.play) return;
+      ui.play.classList.toggle("is-playing", playing);
+      ui.play.setAttribute("aria-label", playing ? "Pause the projection" : "Play the projection");
+    }
+    function seek(t) { clock = Math.max(0, Math.min(t, TL.END)); renderAt(clock); }
+    function pause() {
+      playing = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      setPlayUI();
+    }
+    function play() {
+      if (clock >= TL.END) clock = 0;
+      playing = true; setPlayUI();
+      lastFrame = performance.now();
+      /* Reduced motion gets the finished state rather than a fast one. */
+      if (reduced) { seek(TL.END); pause(); return; }
+      (function frame(now) {
+        if (!playing) return;
+        clock += (now - lastFrame) * speed;
+        lastFrame = now;
+        if (clock >= TL.END) { seek(TL.END); pause(); return; }
+        renderAt(clock);
+        rafId = requestAnimationFrame(frame);
+      })(lastFrame);
+    }
+    function clearProjection() {
+      pause();
+      clock = 0;
+      syncRoutes(false); syncSeeds(0); syncSpotlight(-1);
+      if (HUD.mark) HUD.mark.hidden = true;
+      renderAt(0);
     }
 
     /* ---------- view control ---------- */
@@ -509,22 +590,14 @@
         STB.onSiteState(function () {
           clearProjection();
           drawMarkers();
-          if (playBtn) { playBtn.disabled = false; playBtn.textContent = "Play the projection"; }
-          say("Filtered. Press play to run the projection again.");
           if (STB.siteState && STB.siteState.borough) flyToBorough(STB.siteState.borough);
         });
       }
 
       buildHud();
-      say("Press play to see the need, where we are today, and what this looks like if it spreads.");
+      renderAt(0);
 
-      if (playBtn) {
-        playBtn.addEventListener("click", function () {
-          playBtn.disabled = true;
-          playBtn.textContent = "Playing…";
-          runSequence();
-        });
-      }
+
       /* Plays itself the first time it scrolls into view, which is what a
          pitch surface should do. Never more than once, and never under
          reduced motion, where it jumps to the end instead. */
@@ -534,8 +607,7 @@
           es.forEach(function (e) {
             if (!e.isIntersecting || played) return;
             played = true; io.disconnect();
-            if (playBtn) { playBtn.disabled = true; playBtn.textContent = "Playing…"; }
-            runSequence();
+            play();
           });
         }, { threshold: 0.35 });
         io.observe(host);
@@ -549,6 +621,7 @@
       });
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
+      map.on("zoomend moveend", declutterLabels);
       host.setAttribute("data-ready", "true");
     })["catch"](function () {
       host.innerHTML = '<p class="map-fallback">The map could not be loaded. ' +
