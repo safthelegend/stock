@@ -21,9 +21,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=8">
-<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=8">
-<link rel="stylesheet" href="assets/site.css?v=8">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=9">
+<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=9">
+<link rel="stylesheet" href="assets/site.css?v=9">
 <style>
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
@@ -88,6 +88,79 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-panel .row.active { background:var(--tint); }
   .cold-panel .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
   .collage-wrap { position:relative; }
+  /* ------------------------------------------------------------------
+     Strip-chart recorder. The section is a record of a decline against
+     time, so it is set as one: a single axis spanning the full measure,
+     with the figure and the terminal reading above it and the statutory
+     events annotated below.
+
+     The trace is dashed and captioned as schematic on purpose. There is no
+     y-axis and no gridline anywhere in here, because there is no series to
+     plot — inventing one would be the exact failure this section is about.
+     ------------------------------------------------------------------ */
+  .strip { margin-top:44px; }
+  .strip-head { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); gap:32px 40px; align-items:end; }
+  .strip-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:800; font-size:clamp(46px,7.5vw,92px); line-height:0.94; letter-spacing:-0.04em;
+    color:var(--text); margin:0; }
+  .strip-fig .strip-unit { font-size:0.34em; font-weight:700; letter-spacing:-0.01em; margin-left:10px; }
+  .strip-fig .strip-unit sup { font-size:0.4em; vertical-align:super; }
+  .strip-term-fig sup { font-size:0.42em; }
+  .strip-fig-cap { font-size:15px; line-height:1.55; color:var(--text-secondary); margin:14px 0 0; max-width:44ch; }
+  .strip-terminal { justify-self:end; text-align:right; max-width:46ch; }
+  .strip-term-lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 4px; }
+  .strip-term-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700; font-size:clamp(24px,3.2vw,34px); line-height:1.05; letter-spacing:-0.02em; color:var(--accent-text); margin:0; }
+  .strip-term-cap { font-size:14px; line-height:1.5; color:var(--text-secondary); margin:8px 0 0; }
+  .strip-term-sub { list-style:none; margin:10px 0 0; padding:0; display:grid; gap:5px; }
+  .strip-term-sub li { font-size:13px; line-height:1.45; color:var(--text-secondary); }
+
+  .strip-svg { display:block; width:100%; height:auto; margin-top:26px; overflow:visible; }
+  .strip-schematic { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
+
+  /* Markers sit at their real position in time: March 1 2026 is 240 of the
+     454 days between the two ends, which is the 52.9% the markup carries. */
+  .strip-events { list-style:none; margin:22px 0 0; padding:0; position:relative; min-height:112px; }
+  .strip-events .ev { position:absolute; top:0; left:var(--at); width:48%; }
+  .strip-events .ev-mid { width:22%; }
+  .strip-events .ev-end { left:auto; right:0; width:23%; text-align:right; }
+  .ev-date { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700; font-size:14px; line-height:1.25; color:var(--text); margin:0 0 5px; }
+  .ev-note { font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; text-wrap:pretty; }
+
+  /* Smaller and tighter than the event annotations, so the hierarchy reads
+     figure > events > supporting without needing a rule to separate them. */
+  .strip-support { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 40px;
+    margin-top:14px; padding-top:18px; border-top:1px solid var(--line-soft); max-width:820px; }
+  .sup-lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--text-secondary); margin:0 0 7px; }
+  .sup-line { font-size:13.5px; line-height:1.5; color:var(--text); margin:0 0 5px; }
+  .strip-close { margin-top:64px !important; font-size:20px !important; line-height:1.6 !important; max-width:62ch; }
+
+  @media (max-width:860px) {
+    .strip-head { grid-template-columns:minmax(0,1fr); gap:26px; }
+    .strip-terminal { justify-self:start; text-align:left; max-width:52ch; }
+  }
+  /* Under 760px the axis becomes a vertical timeline: markers top to bottom,
+     never a shrunken horizontal one and never a scroller. */
+  @media (max-width:760px) {
+    .strip-svg, .strip-schematic { display:none; }
+    .strip-terminal { max-width:100%; }
+    .strip-events { margin-top:28px; min-height:0; padding-left:22px;
+      border-left:1px solid var(--rule); display:grid; gap:22px; }
+    /* Every horizontal-position property has to be unset, not just position:
+       a relative box still honours left:52.9% and would sit half off-screen. */
+    .strip-events .ev,
+    .strip-events .ev-mid,
+    .strip-events .ev-end { position:relative; left:auto; right:auto; width:auto;
+      transform:none; text-align:left; }
+    .strip-events .ev::before { content:""; position:absolute; left:-26.5px; top:6px;
+      width:9px; height:9px; border-radius:50%; background:var(--accent); }
+    .strip-support { grid-template-columns:minmax(0,1fr); gap:16px; }
+    .strip-close { margin-top:44px !important; font-size:18px !important; }
+  }
   .collage-piece { position:relative; }
   .collage-piece .tear { position:absolute; filter:drop-shadow(0 var(--paper-y) var(--paper-blur) var(--paper-shadow)); }
   .video-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--tint); border-radius:6px; overflow:hidden; cursor:pointer; border:none; padding:0; display:block; transition:transform 200ms ease; }
@@ -98,12 +171,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
   .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
   .src-link:hover { color:var(--accent-text); text-decoration:underline; }
-  .scale-bar-track { position:relative; height:14px; border-radius:7px; background:var(--line-soft); overflow:hidden; margin:16px 0 8px; max-width:520px; }
-  .scale-bar-fill { position:absolute; left:0; top:0; bottom:0; width:100%; background:var(--brand); border-radius:7px; transition:width 900ms cubic-bezier(0.4,0.14,0.3,1); }
-  .scale-bar-mark { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); left:64%; }
-  .scale-facts { display:grid; gap:10px; margin:22px 0 0; max-width:560px; }
-  .scale-facts p { font-size:17px; line-height:1.6; color:var(--text); margin:0; text-wrap:pretty; }
-  .scale-facts .scale-standout { font-size:18px; font-weight:600; color:var(--brand); }
   .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
   .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
   .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
@@ -215,7 +282,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </header>
 </div>
 
-<section id="whynow" class="wrap" style="padding-top:88px; padding-bottom:72px;">
+<section id="whynow" class="wrap pt-sec" style="padding-bottom:72px;">
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
     <defs>
       <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
@@ -233,10 +300,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
     <span class="mask-l"><span data-line>This is the scale of it.</span></span>
   </h2>
+
   <div class="collage-wrap">
     <div style="display:grid; gap:20px;">
       <!-- Local video: PBS NewsHour "Cutting Food Aid" anchor intro, self-hosted from assets/video/health-clip.mp4. Silent, 7.9s. -->
-      <div class="collage-piece" style="width:100%; max-width:50%; justify-self:start;">
+      <div class="collage-piece" style="width:100%; max-width:min(660px, 100%); justify-self:start;">
         <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
         <div style="position:relative; padding:24px 28px;">
           <button type="button" class="video-thumb" id="videoThumb" aria-label="Play video: PBS NewsHour anchor introducing the &quot;Cutting Food Aid&quot; segment">
@@ -252,52 +320,76 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
           <p class="collage-src">PBS NewsHour, "Cutting Food Aid" segment intro</p>
         </div>
       </div>
-      <!-- Original diagram: our own synthesis of the SNAP cut's scale, not a recreation of the PBS on-screen graphic. -->
-      <div class="collage-piece" id="scaleDiagram" style="width:100%; max-width:100%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--tint); filter:url(#torn-g);"></rect></svg>
-        <div style="position:relative; padding:40px 44px;">
-          <p class="eyebrow">The shape of the cut</p>
-          <p class="collage-fig" style="font-size:clamp(34px,5vw,54px);">$<span id="scaleBillion">187</span><span style="font-size:0.5em; font-weight:600; letter-spacing:-0.02em; margin-left:8px;">billion</span><sup><a class="src-link" href="#src-1">1</a></sup></p>
-          <p class="collage-copy">Cut to SNAP over ten years, FY2025–FY2034. H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
-          <div class="scale-bar-track" role="img" aria-label="SNAP funding shrinking to roughly 64 percent of its current level by 2034">
-            <div class="scale-bar-mark"></div>
-            <div class="scale-bar-fill" id="scaleBarFill"></div>
-          </div>
-          <p class="collage-copy" style="margin-top:0;">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="src-link" href="#src-2">2</a></sup></p>
-          <div class="scale-facts">
-            <p>SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="src-link" href="#src-3">3</a></sup></p>
-            <p>States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
-            <p>Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
-            <p>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></p>
-            <p class="scale-standout">Arizona: a 51% year-over-year drop, 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></p>
-          </div>
-        </div>
-      </div>
-      <div class="collage-piece" style="width:100%; max-width:80%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-b);"></rect></svg>
-        <div style="position:relative; padding:34px 38px;">
-          <p class="collage-fig" style="font-size:clamp(30px,4.4vw,44px);">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
-          <p class="collage-copy">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
-        </div>
-      </div>
-      <div class="collage-piece" style="width:100%; max-width:60%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--mascot-fill); filter:url(#torn-c);"></rect></svg>
-        <div style="position:relative; padding:28px 32px;">
-          <p class="collage-fig" style="font-size:clamp(22px,3vw,30px);">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
-          <p class="collage-copy">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
-        </div>
-      </div>
-      <div class="collage-piece" style="width:100%; max-width:44%; justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-d);"></rect></svg>
-        <div style="position:relative; padding:24px 28px;">
-          <p class="collage-fig" style="font-size:clamp(19px,2.4vw,25px);">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
-          <p class="collage-copy">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
-        </div>
-      </div>
     </div>
     <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
   </div>
-  <p class="body-p" data-reveal style="margin:40px 0 0; max-width:62ch;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
+
+  <!-- Strip-chart recorder: the same idiom as the cold-chain logs this
+       program produces, because this section is also a record of a decline
+       against time. The trace is schematic and says so; no value on it is
+       plotted from data, and nothing here carries a y-axis or a gridline
+       that would imply one. -->
+  <div class="strip" data-reveal>
+    <div class="strip-head">
+      <div class="strip-lead">
+        <p class="strip-fig">$<span id="scaleBillion">187</span><span class="strip-unit">billion<sup><a class="src-link" href="#src-1">1</a></sup></span></p>
+        <p class="strip-fig-cap">Cut to SNAP over ten years, FY2025–FY2034. H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
+      </div>
+      <div class="strip-terminal">
+        <p class="strip-term-lbl">By April 2026</p>
+        <p class="strip-term-fig">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
+        <p class="strip-term-cap">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
+        <ul class="strip-term-sub">
+          <li>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></li>
+          <li>Arizona: a 51% year-over-year drop, 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></li>
+        </ul>
+      </div>
+    </div>
+
+    <svg class="strip-svg" viewBox="0 0 1000 92" role="img" focusable="false"
+         aria-label="Schematic time axis running July 2025 to October 2026, with a step down at the March 2026 work-requirement date. The line is illustrative and is not plotted from data.">
+      <!-- trace: dashed on purpose, so it never reads as a plotted series -->
+      <path d="M3 22 H529 V44 H997" fill="none" stroke="var(--accent)" stroke-width="2.5"
+            stroke-dasharray="5 3.5" stroke-linejoin="miter" vector-effect="non-scaling-stroke"></path>
+      <circle cx="997" cy="44" r="4" fill="var(--accent)" vector-effect="non-scaling-stroke"></circle>
+      <!-- axis -->
+      <line x1="3" y1="70" x2="997" y2="70" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+      <line x1="3" y1="62" x2="3" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+      <line x1="529" y1="62" x2="529" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+      <line x1="997" y1="62" x2="997" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+    </svg>
+    <p class="strip-schematic">Trace is schematic — the shape of the change, not plotted values.</p>
+
+    <ol class="strip-events">
+      <li class="ev" style="--at:0%">
+        <p class="ev-date">July 4, 2025</p>
+        <p class="ev-note">H.R. 1 / P.L. 119-21 signed.</p>
+      </li>
+      <li class="ev ev-mid" style="--at:52.9%">
+        <p class="ev-date">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
+        <p class="ev-note">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
+      </li>
+      <li class="ev ev-end" style="--at:100%">
+        <p class="ev-date">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
+        <p class="ev-note">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
+      </li>
+    </ol>
+
+    <div class="strip-support">
+      <div class="sup-group">
+        <p class="sup-lbl">Scale</p>
+        <p class="sup-line">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="src-link" href="#src-2">2</a></sup></p>
+        <p class="sup-line">SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="src-link" href="#src-3">3</a></sup></p>
+      </div>
+      <div class="sup-group">
+        <p class="sup-lbl">Mechanism</p>
+        <p class="sup-line">States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
+        <p class="sup-line">Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
+      </div>
+    </div>
+  </div>
+
+  <p class="body-p strip-close" data-reveal class="strip-close" style="margin:0;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
 </section>
 
 <section class="statband" id="statband">
@@ -973,10 +1065,10 @@ that wasn't actually clean.</pre>
   <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
 </footer>
 
-<script src="assets/vendor/leaflet/leaflet.js?v=8"></script>
-<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=8"></script>
-<script src="assets/site.js?v=8"></script>
-<script src="assets/map.js?v=8"></script>
+<script src="assets/vendor/leaflet/leaflet.js?v=9"></script>
+<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=9"></script>
+<script src="assets/site.js?v=9"></script>
+<script src="assets/map.js?v=9"></script>
 <script>
 (function () {
   "use strict";

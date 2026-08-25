@@ -19,7 +19,7 @@
    ============================================================================ */
 "use strict";
 
-var CACHE_VERSION = "v8";
+var CACHE_VERSION = "v9";
 var CACHE = "stb-" + CACHE_VERSION;
 
 /* Precached on install. Relative to the worker's scope, so this keeps working
@@ -29,13 +29,13 @@ var PRECACHE = [
   "index.html",
   "getting-started.html",
   "404.html",
-  "assets/site.css?v=8",
-  "assets/site.js?v=8",
-  "assets/map.js?v=8",
-  "assets/vendor/leaflet/leaflet.js?v=8",
-  "assets/vendor/leaflet/leaflet.markercluster.js?v=8",
-  "assets/vendor/leaflet/MarkerCluster.css?v=8",
-  "assets/vendor/leaflet/leaflet.css?v=8",
+  "assets/site.css?v=9",
+  "assets/site.js?v=9",
+  "assets/map.js?v=9",
+  "assets/vendor/leaflet/leaflet.js?v=9",
+  "assets/vendor/leaflet/leaflet.markercluster.js?v=9",
+  "assets/vendor/leaflet/MarkerCluster.css?v=9",
+  "assets/vendor/leaflet/leaflet.css?v=9",
   "assets/geo/nyc-cd.geojson",
   "assets/geo/sites.json",
   "sw.js"
