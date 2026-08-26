@@ -131,8 +131,17 @@ nav.bar.on { opacity:1; pointer-events:auto; }
 nav.bar .wrap { height:48px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
 nav.bar a.brand { display:flex; align-items:center; gap:10px; color:var(--text); font-weight:600; font-size:14px; }
 nav.bar .links { display:flex; align-items:center; gap:14px; font-size:14px; }
-nav.bar .links a { color:var(--text); }
-nav.bar .links a.cta { color:var(--brand); font-weight:600; }
+/* Every link here is a plain <a>, so the browser already shows a pointer —
+   this is the "add a little pop, don't make it disappear" hover the video
+   argues for: a hairline underline that grows in, no colour swap, no motion. */
+nav.bar .links a { color:var(--text); text-decoration:none;
+  background-image:linear-gradient(var(--text), var(--text));
+  background-repeat:no-repeat; background-position:0 100%; background-size:0% 1px;
+  transition:background-size 160ms ease; padding-bottom:2px; }
+nav.bar .links a:hover, nav.bar .links a:focus-visible { background-size:100% 1px; }
+nav.bar .links a[aria-current="true"]:hover { background-size:0% 1px; }
+nav.bar .links a.cta { color:var(--brand); font-weight:600;
+  background-image:linear-gradient(var(--brand), var(--brand)); }
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
 .eyebrow { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
 h1, h2 { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
