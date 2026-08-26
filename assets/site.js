@@ -221,6 +221,24 @@ function initMascotSlots(root) {
     addEventListener("scroll", function () { nav.classList.toggle("on", scrollY > 100); }, { passive: true });
   }
 
+  /* Reveal-on-scroll, off by default.
+
+     Forty-nine elements fading up as you scroll was the loudest generated-site
+     tell on this page, and it had a second cost: the page was never simply
+     THERE when you arrived — every section had to be earned by scrolling, and
+     anything screenshotted or printed mid-flight came out half-drawn.
+
+     The machinery is intact and unchanged behind this one switch, so a
+     deliberate reveal on a specific element is a one-line change rather than a
+     rebuild. What it does when off: nothing is hidden up front, and each
+     registered reveal fires immediately, so the resting state IS the finished
+     state. */
+  var REVEAL_ON_SCROLL = false;
+  /* Marks the document so the CSS-driven reveals (.fade-in-up) drop their
+     transition too. Without this they still fade in over 600ms on load —
+     the same effect, just triggered by arrival instead of by scrolling. */
+  if (!REVEAL_ON_SCROLL) document.documentElement.classList.add("no-reveal");
+
   /* ---------- scroll reveal ----------
      initReveals() registers the three reveal patterns both pages share and
      hands back { shot, tick }. Call it AFTER any JS-built rows exist. Pages
@@ -228,10 +246,16 @@ function initMascotSlots(root) {
      it into the loop that also runs its 3D scenes. */
   function initReveals() {
     var shots = [];
-    function shot(el, fire) { if (el && !el.dataset.fxd) { el.dataset.fxd = "1"; shots.push({ el: el, fire: fire, done: false }); } }
+    var armed = REVEAL_ON_SCROLL && !reduced;
+    function shot(el, fire) {
+      if (!el || el.dataset.fxd) return;
+      el.dataset.fxd = "1";
+      if (!armed) { fire(); return; }
+      shots.push({ el: el, fire: fire, done: false });
+    }
     $$("[data-mask]").forEach(function (mk) {
       var lines = $$("[data-line]", mk);
-      if (!reduced) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
+      if (armed) lines.forEach(function (l) { l.style.transform = "translateY(110%)"; });
       shot(mk, function () {
         lines.forEach(function (l, i) {
           l.style.transition = "transform 700ms " + EXP + " " + (i * 80) + "ms";
@@ -240,7 +264,7 @@ function initMascotSlots(root) {
       });
     });
     $$("[data-reveal]").forEach(function (el) {
-      if (!reduced) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
+      if (armed) { el.style.opacity = "0"; el.style.transform = "translateY(" + 20 * f + "px)"; }
       shot(el, function () {
         el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
         el.style.opacity = "1"; el.style.transform = "translateY(0)";
@@ -248,7 +272,7 @@ function initMascotSlots(root) {
     });
     $$("[data-prow]").forEach(function (row) {
       var num = row.querySelector("[data-pnum]"), ttl = row.querySelector("[data-ptitle]"), bdy = row.querySelector("[data-pbody]");
-      if (!reduced) {
+      if (armed) {
         num.style.opacity = "0";
         ttl.style.opacity = "0"; ttl.style.transform = "translateX(" + -16 * f + "px)";
         bdy.style.opacity = "0";
@@ -1256,7 +1280,7 @@ function initMascotSlots(root) {
   function initScrollFx(root) {
     var els = $$(".fade-in-up, .fade-in", root);
     if (!els.length) return null;
-    if (reduced || !("IntersectionObserver" in window)) {
+    if (!REVEAL_ON_SCROLL || reduced || !("IntersectionObserver" in window)) {
       els.forEach(function (el) { el.classList.add("visible"); });
       return null;
     }
@@ -1429,6 +1453,7 @@ function initMascotSlots(root) {
     clamp01: clamp01, sub: sub, easeOut: easeOut, easeInOut: easeInOut,
     $: $, $$: $$,
     reduced: reduced, mob: mob, f: f, EXP: EXP, PRO: PRO,
+    revealOnScroll: REVEAL_ON_SCROLL,
     ICONS: ICONS, iconSVG: iconSVG, initIcons: initIcons,
     MASCOT_EYES: MASCOT_EYES, MASCOT_SMILE: MASCOT_SMILE,
     MASCOT_LID: MASCOT_LID, MASCOT_LEAN: MASCOT_LEAN,
