@@ -192,16 +192,16 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   /* ------------------------------------------------------------------
      Why-now media: a dot field standing in for the PBS clip that used to
-     anchor this slot. Every dot is the same 250,000-person unit; the last
-     18 are drawn as open rings in the accent orange to read as "removed"
-     rather than counted, so scale and cut sit in one glance instead of a
-     screenshot of a broadcast segment.
+     anchor this slot. Every tray is the same 250,000-person unit; the last
+     18 are drawn as empty trays in the accent orange (compartments faded
+     to a ghost of themselves) to read as "removed" rather than counted,
+     so scale and cut sit in one glance instead of a screenshot of a
+     broadcast segment. Two <symbol> defs, referenced by <use> for every
+     mark, so the tray path is never duplicated 168 times.
      ------------------------------------------------------------------ */
   .whynow-media { margin-top:28px; }
-  .dotfield-wrap { max-width:440px; }
+  .dotfield-wrap { max-width:480px; }
   .dotfield { display:block; width:100%; height:auto; overflow:visible; }
-  .dot-fill { fill:var(--text-secondary); }
-  .dot-ring { fill:none; stroke:var(--accent); stroke-width:2; }
   .whynow-stats { display:flex; flex-wrap:wrap; gap:22px 40px; margin-top:30px; }
   .whynow-stat { flex:1 1 200px; min-width:180px; }
   /* Same caption scale as .strip-schematic, but not that rule itself: that
@@ -340,8 +340,197 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   <div class="whynow-media" data-reveal>
     <div class="dotfield-wrap">
-      <svg id="dotField" class="dotfield" viewBox="0 0 336 288" preserveAspectRatio="xMidYMid meet" role="img"
-           aria-label="A grid of 168 dots, 14 across and 12 down. 150 dots are filled solid; the last 18 are drawn as open accent-orange rings, marking the share this cut removes from the count."></svg>
+      <svg id="dotField" class="dotfield" viewBox="0 0 440 326" preserveAspectRatio="xMidYMid meet" role="img"
+           aria-label="A grid of 168 meal trays, 14 across and 12 down. 150 trays are full, with three visible food compartments; the last 18 are drawn as empty trays outlined in accent orange, marking the share this cut removes from the count.">
+        <defs>
+          <symbol id="tray-present" viewBox="0 0 24 18">
+            <rect x="1.75" y="1.75" width="13.25" height="14.5" fill="var(--text-secondary)" opacity="0.9"></rect>
+            <rect x="17" y="1.75" width="5.25" height="1.25" fill="var(--text-secondary)" opacity="0.9"></rect>
+            <rect x="17" y="5" width="5.25" height="11.25" fill="var(--text-secondary)" opacity="0.9"></rect>
+            <rect x="0.75" y="0.75" width="22.5" height="16.5" rx="2" fill="none" stroke="var(--text-secondary)" stroke-width="1.25"></rect>
+            <line x1="9" y1="4" x2="9" y2="17.25" stroke="var(--text-secondary)" stroke-width="1"></line>
+            <line x1="16" y1="4" x2="16" y2="17.25" stroke="var(--text-secondary)" stroke-width="1"></line>
+            <line x1="16" y1="4" x2="23.25" y2="4" stroke="var(--text-secondary)" stroke-width="1"></line>
+          </symbol>
+          <symbol id="tray-removed" viewBox="0 0 24 18">
+            <rect x="1.75" y="1.75" width="13.25" height="14.5" fill="var(--text-secondary)" opacity="0.15"></rect>
+            <rect x="17" y="1.75" width="5.25" height="1.25" fill="var(--text-secondary)" opacity="0.15"></rect>
+            <rect x="17" y="5" width="5.25" height="11.25" fill="var(--text-secondary)" opacity="0.15"></rect>
+            <rect x="0.75" y="0.75" width="22.5" height="16.5" rx="2" fill="none" stroke="var(--accent)" stroke-width="1.25"></rect>
+            <line x1="9" y1="4" x2="9" y2="17.25" stroke="var(--accent)" stroke-width="1"></line>
+            <line x1="16" y1="4" x2="16" y2="17.25" stroke="var(--accent)" stroke-width="1"></line>
+            <line x1="16" y1="4" x2="23.25" y2="4" stroke="var(--accent)" stroke-width="1"></line>
+          </symbol>
+        </defs>
+        <use href="#tray-present" x="0" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="0" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="28" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="56" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="84" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="112" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="140" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="168" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="196" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="224" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="320" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="352" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="384" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="416" y="252" width="24" height="18"></use>
+        <use href="#tray-present" x="0" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="32" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="64" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="96" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="128" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="160" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="192" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="224" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="256" y="280" width="24" height="18"></use>
+        <use href="#tray-present" x="288" y="280" width="24" height="18"></use>
+        <use href="#tray-removed" x="320" y="280" width="24" height="18"></use>
+        <use href="#tray-removed" x="352" y="280" width="24" height="18"></use>
+        <use href="#tray-removed" x="384" y="280" width="24" height="18"></use>
+        <use href="#tray-removed" x="416" y="280" width="24" height="18"></use>
+        <use href="#tray-removed" x="0" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="32" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="64" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="96" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="128" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="160" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="192" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="224" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="256" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="288" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="320" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="352" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="384" y="308" width="24" height="18"></use>
+        <use href="#tray-removed" x="416" y="308" width="24" height="18"></use>
+      </svg>
       <!-- TODO(source): 168 dots at 250,000 people per dot implies a total of
            roughly 42,000,000 people. That total has not been independently
            sourced for this graphic specifically and must not be presented as
@@ -1489,23 +1678,6 @@ that wasn't actually clean.</pre>
     paintMascot($("#mascotJoin svg"), "confirmed");
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
   });
-
-  /* ---------- whynow dot field: 168 dots, 14x12, last 18 flagged as removed ---------- */
-  (function () {
-    var svg = document.getElementById("dotField");
-    if (!svg) return;
-    var cols = 14, rows = 12, cell = 24, r = 7, pad = 12;
-    var ns = "http://www.w3.org/2000/svg";
-    for (var i = 0; i < cols * rows; i++) {
-      var col = i % cols, row = Math.floor(i / cols);
-      var dot = document.createElementNS(ns, "circle");
-      dot.setAttribute("cx", pad + col * cell);
-      dot.setAttribute("cy", pad + row * cell);
-      dot.setAttribute("r", r);
-      dot.setAttribute("class", i < 150 ? "dot-fill" : "dot-ring");
-      svg.appendChild(dot);
-    }
-  })();
 
   /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
   $$(".doc-toggle").forEach(function (btn) {
