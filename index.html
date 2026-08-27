@@ -117,7 +117,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .cold-status #coldLabel { margin:0 !important; }
     .cold-status p:not(#coldLabel) { flex-basis:100%; margin:4px 0 0 !important; }
   }
-  .collage-wrap { position:relative; }
   /* ------------------------------------------------------------------
      Strip-chart recorder. The section is a record of a decline against
      time, so it is set as one: a single axis spanning the full measure,
@@ -191,14 +190,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .strip-support { grid-template-columns:minmax(0,1fr); gap:16px; }
     .strip-close { margin-top:44px !important; font-size:18px !important; }
   }
-  .collage-piece { position:relative; }
-  .collage-piece .tear { position:absolute; filter:drop-shadow(0 var(--paper-y) var(--paper-blur) var(--paper-shadow)); }
-  .video-thumb { position:relative; width:100%; aspect-ratio:16/9; background:var(--tint); border-radius:4px; overflow:hidden; cursor:pointer; border:none; padding:0; display:block; transition:transform 200ms ease; }
-  .video-thumb:hover { transform:scale(1.015); }
-  .video-thumb:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
-  .collage-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.02em; line-height:1.05; margin:0; color:var(--text); font-variant-numeric:tabular-nums; }
-  .collage-copy { font-size:18px; line-height:1.6; color:var(--text); margin:12px 0 0; max-width:46ch; text-wrap:pretty; }
-  .collage-src { font-size:13px; color:var(--text-secondary); margin:8px 0 0; line-height:1.6; }
+  /* ------------------------------------------------------------------
+     Why-now media: a dot field standing in for the PBS clip that used to
+     anchor this slot. Every dot is the same 250,000-person unit; the last
+     18 are drawn as open rings in the accent orange to read as "removed"
+     rather than counted, so scale and cut sit in one glance instead of a
+     screenshot of a broadcast segment.
+     ------------------------------------------------------------------ */
+  .whynow-media { margin-top:28px; }
+  .dotfield-wrap { max-width:440px; }
+  .dotfield { display:block; width:100%; height:auto; overflow:visible; }
+  .dot-fill { fill:var(--text-secondary); }
+  .dot-ring { fill:none; stroke:var(--accent); stroke-width:2; }
+  .whynow-stats { display:flex; flex-wrap:wrap; gap:22px 40px; margin-top:30px; }
+  .whynow-stat { flex:1 1 200px; min-width:180px; }
+  /* Same caption scale as .strip-schematic, but not that rule itself: that
+     one is hidden below 760px alongside the timeline SVG it captions, and
+     this text needs to stay visible at every width. */
+  .whynow-caption { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
   .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
   .src-link:hover { color:var(--accent-text); text-decoration:underline; }
   .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
@@ -235,7 +244,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
-    nav.bar, .skip-link, .divider, .box-band, #heroBoxWrap, #formWrap, .paper-grain { display:none !important; }
+    nav.bar, .skip-link, .divider, .box-band, #heroBoxWrap, #formWrap { display:none !important; }
     #heropin { height:auto !important; }
     #top, .thead { position:static !important; min-height:0 !important; }
     * { animation:none !important; transition:none !important; box-shadow:none !important; }
@@ -320,9 +329,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <filter id="torn-c" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="41" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-d" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.044" numOctaves="3" seed="67" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-f" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.036" numOctaves="3" seed="53" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
       <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="paper-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="saturate" values="0"></feColorMatrix></filter>
     </defs>
   </svg>
   <p class="eyebrow" data-reveal>Why now</p>
@@ -331,27 +338,34 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <span class="mask-l"><span data-line>This is the scale of it.</span></span>
   </h2>
 
-  <div class="collage-wrap">
-    <div style="display:grid; gap:20px;">
-      <!-- Local video: PBS NewsHour "Cutting Food Aid" anchor intro, self-hosted from assets/video/health-clip.mp4. Silent, 7.9s. -->
-      <div class="collage-piece" style="width:100%; max-width:min(660px, 100%); justify-self:start;">
-        <svg class="tear" aria-hidden="true" focusable="false" style="left:9px; top:9px; width:calc(100% - 18px); height:calc(100% - 18px);"><rect x="0" y="0" width="100%" height="100%" style="fill:var(--surface); filter:url(#torn-f);"></rect></svg>
-        <div style="position:relative; padding:24px 28px;">
-          <button type="button" class="video-thumb" id="videoThumb" aria-label="Play video: PBS NewsHour anchor introducing the &quot;Cutting Food Aid&quot; segment">
-            <video id="healthClipVideo" muted playsinline preload="none" loop poster="assets/video/health-clip-poster.jpg" style="width:100%; height:100%; object-fit:cover; display:block;">
-              <source src="assets/video/health-clip.mp4" type="video/mp4">
-            </video>
-            <svg id="playIcon" viewBox="0 0 64 64" aria-hidden="true" style="position:absolute; top:50%; left:50%; width:56px; height:56px; transform:translate(-50%,-50%); pointer-events:none;">
-              <circle cx="32" cy="32" r="30" style="fill:var(--brand);"></circle>
-              <path d="M26 20 L46 32 L26 44 Z" style="fill:var(--on-brand);"></path>
-            </svg>
-          </button>
-          <p class="collage-copy" style="margin-top:12px;">PBS NewsHour anchor introducing the "Cutting Food Aid" segment on SNAP eligibility changes.</p>
-          <p class="collage-src">PBS NewsHour, "Cutting Food Aid" segment intro</p>
-        </div>
+  <div class="whynow-media" data-reveal>
+    <div class="dotfield-wrap">
+      <svg id="dotField" class="dotfield" viewBox="0 0 336 288" preserveAspectRatio="xMidYMid meet" role="img"
+           aria-label="A grid of 168 dots, 14 across and 12 down. 150 dots are filled solid; the last 18 are drawn as open accent-orange rings, marking the share this cut removes from the count."></svg>
+      <!-- TODO(source): 168 dots at 250,000 people per dot implies a total of
+           roughly 42,000,000 people. That total has not been independently
+           sourced for this graphic specifically and must not be presented as
+           a cited figure until it is — hence the flag on the line below. -->
+      <p class="whynow-caption"><span class="unverified">Each dot = 250,000 people</span></p>
+    </div>
+
+    <div class="whynow-stats">
+      <div class="whynow-stat">
+        <p class="strip-term-fig">$186 billion</p>
+        <p class="strip-term-cap">cut from SNAP over ten years</p>
+        <p class="whynow-caption">One Big Beautiful Bill Act, signed July 4, 2025 (CBO)</p>
+      </div>
+      <div class="whynow-stat">
+        <p class="strip-term-fig">~17%</p>
+        <p class="strip-term-cap">reduction in program benefit spending</p>
+        <p class="whynow-caption">CBO / CRS</p>
+      </div>
+      <div class="whynow-stat">
+        <p class="strip-term-fig">4.5 million</p>
+        <p class="strip-term-cap">fewer people receiving benefits by April 2026</p>
+        <p class="whynow-caption">CBO / CRS</p>
       </div>
     </div>
-    <svg class="paper-grain" aria-hidden="true" focusable="false" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:var(--grain-op); mix-blend-mode:multiply;"><rect x="0" y="0" width="100%" height="100%" filter="url(#paper-grain)"></rect></svg>
   </div>
 
   <!-- Strip-chart recorder: the same idiom as the cold-chain logs this
@@ -1101,6 +1115,7 @@ that wasn't actually clean.</pre>
       <li id="src-9">9. NY OTDA. "March 1, 2026" ABAWD work requirement effective date</li>
       <li id="src-10">10. Federal Register. "October 1, 2026" SNAP administrative cost-share change</li>
       <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
+      <li id="src-12">12. PBS NewsHour, "Cutting Food Aid" segment intro</li>
     </ol>
   </div>
   <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
@@ -1158,7 +1173,7 @@ that wasn't actually clean.</pre>
   /* ---------- torn-paper responsive scale ---------- */
   function tornResize() {
     var narrow = innerWidth < 480;
-    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6, "torn-f": 7, "torn-g": 8 };
+    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6, "torn-g": 8 };
     Object.keys(base).forEach(function (id) {
       var filt = document.getElementById(id);
       if (!filt) return;
@@ -1475,14 +1490,22 @@ that wasn't actually clean.</pre>
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
   });
 
-  /* ---------- whynow video: click-to-play, never autoplay on load/scroll ---------- */
-  var videoThumb = $("#videoThumb"), healthClipVideo = $("#healthClipVideo"), playIcon = $("#playIcon");
-  if (videoThumb && healthClipVideo) {
-    videoThumb.addEventListener("click", function () {
-      if (healthClipVideo.paused) { healthClipVideo.play(); playIcon.style.opacity = "0"; }
-      else { healthClipVideo.pause(); playIcon.style.opacity = "1"; }
-    });
-  }
+  /* ---------- whynow dot field: 168 dots, 14x12, last 18 flagged as removed ---------- */
+  (function () {
+    var svg = document.getElementById("dotField");
+    if (!svg) return;
+    var cols = 14, rows = 12, cell = 24, r = 7, pad = 12;
+    var ns = "http://www.w3.org/2000/svg";
+    for (var i = 0; i < cols * rows; i++) {
+      var col = i % cols, row = Math.floor(i / cols);
+      var dot = document.createElementNS(ns, "circle");
+      dot.setAttribute("cx", pad + col * cell);
+      dot.setAttribute("cy", pad + row * cell);
+      dot.setAttribute("r", r);
+      dot.setAttribute("class", i < 150 ? "dot-fill" : "dot-ring");
+      svg.appendChild(dot);
+    }
+  })();
 
   /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
   $$(".doc-toggle").forEach(function (btn) {
@@ -1535,20 +1558,6 @@ that wasn't actually clean.</pre>
       items.forEach(function (el, i) {
         el.style.transition = "opacity 600ms " + EXP + " " + i * 90 + "ms, transform 600ms " + EXP + " " + i * 90 + "ms";
         el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
-      });
-    });
-  })();
-  (function () {
-    var pieces = $$(".collage-piece");
-    if (armed) pieces.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
-    pieces.forEach(function (el) {
-      shot(el, function () {
-        el.style.transition = "opacity 600ms " + EXP + ", transform 600ms " + EXP;
-        el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
-        var scaleBillionEl = el.querySelector("#scaleBillion"), scalePctEl = el.querySelector("#scalePct"), scaleBarEl = el.querySelector("#scaleBarFill");
-        if (scaleBillionEl) count(187, function (v) { scaleBillionEl.textContent = v; });
-        if (scalePctEl) count(36, function (v) { scalePctEl.textContent = v; });
-        if (scaleBarEl) scaleBarEl.style.width = "64%";
       });
     });
   })();
