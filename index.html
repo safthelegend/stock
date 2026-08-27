@@ -191,23 +191,33 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .strip-close { margin-top:44px !important; font-size:18px !important; }
   }
   /* ------------------------------------------------------------------
-     Why-now media: a dot field standing in for the PBS clip that used to
-     anchor this slot. Every tray is the same 250,000-person unit; the last
-     18 are drawn as empty trays in the accent orange (compartments faded
-     to a ghost of themselves) to read as "removed" rather than counted,
-     so scale and cut sit in one glance instead of a screenshot of a
-     broadcast segment. Two <symbol> defs, referenced by <use> for every
-     mark, so the tray path is never duplicated 168 times.
+     Why-now layout: headline and stats own the left column, the dot
+     field owns the right. Every dot is the same 250,000-person unit;
+     the 18 that are cut are the thing to notice, so they carry the
+     weight — solid accent orange at full opacity — while the ~150 that
+     remain sit back as a low-contrast field. That was inverted before
+     (cut units outlined, background units filled); this fixes it.
+     Two <symbol> defs, referenced by <use> for every mark, so the dot
+     path is never duplicated 168 times.
      ------------------------------------------------------------------ */
-  .whynow-media { margin-top:28px; }
-  .dotfield-wrap { max-width:480px; }
+  .whynow-layout { display:grid; grid-template-columns:minmax(0,0.72fr) minmax(0,1fr); gap:5%; align-items:center; margin-top:8px; margin-bottom:56px; }
+  .whynow-col-left { display:flex; flex-direction:column; min-width:0; }
+  .whynow-col-right { display:flex; flex-direction:column; align-items:stretch; min-width:0; }
+  .dotfield-wrap { width:100%; }
   .dotfield { display:block; width:100%; height:auto; overflow:visible; }
-  .whynow-stats { display:flex; flex-wrap:wrap; gap:22px 40px; margin-top:30px; }
-  .whynow-stat { flex:1 1 200px; min-width:180px; }
+  .whynow-stats { display:flex; flex-direction:column; gap:28px; margin-top:36px; }
   /* Same caption scale as .strip-schematic, but not that rule itself: that
      one is hidden below 760px alongside the timeline SVG it captions, and
      this text needs to stay visible at every width. */
   .whynow-caption { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
+  .whynow-legend { margin-top:14px; }
+  /* Footnote weight: smaller and faded relative to the figure/label above
+     it, so a source reads as backup material, not a fourth line of body
+     copy competing with the stat itself. */
+  .whynow-stat-source { font-size:11px; line-height:1.4; color:var(--text-secondary); opacity:0.65; margin:4px 0 0; }
+  @media (max-width:860px) {
+    .whynow-layout { grid-template-columns:minmax(0,1fr); gap:36px; }
+  }
   .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
   .src-link:hover { color:var(--accent-text); text-decoration:underline; }
   .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
@@ -332,227 +342,211 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
     </defs>
   </svg>
-  <p class="eyebrow" data-reveal>Why now</p>
-  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
-    <span class="mask-l"><span data-line>This is the scale of it.</span></span>
-  </h2>
+  <div class="whynow-layout">
+    <div class="whynow-col-left">
+      <p class="eyebrow" data-reveal>Why now</p>
+      <h2 class="hd" data-mask style="margin-bottom:0; max-width:520px;">
+        <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
+        <span class="mask-l"><span data-line>This is the scale of it.</span></span>
+      </h2>
 
-  <div class="whynow-media" data-reveal>
-    <div class="dotfield-wrap">
-      <svg id="dotField" class="dotfield" viewBox="0 0 440 326" preserveAspectRatio="xMidYMid meet" role="img"
-           aria-label="A grid of 168 meal trays, 14 across and 12 down. 150 trays are full, with three visible food compartments; the last 18 are drawn as empty trays outlined in accent orange, marking the share this cut removes from the count.">
-        <defs>
-          <symbol id="tray-present" viewBox="0 0 24 18">
-            <rect x="1.75" y="1.75" width="13.25" height="14.5" fill="var(--text-secondary)" opacity="0.9"></rect>
-            <rect x="17" y="1.75" width="5.25" height="1.25" fill="var(--text-secondary)" opacity="0.9"></rect>
-            <rect x="17" y="5" width="5.25" height="11.25" fill="var(--text-secondary)" opacity="0.9"></rect>
-            <rect x="0.75" y="0.75" width="22.5" height="16.5" rx="2" fill="none" stroke="var(--text-secondary)" stroke-width="1.25"></rect>
-            <line x1="9" y1="4" x2="9" y2="17.25" stroke="var(--text-secondary)" stroke-width="1"></line>
-            <line x1="16" y1="4" x2="16" y2="17.25" stroke="var(--text-secondary)" stroke-width="1"></line>
-            <line x1="16" y1="4" x2="23.25" y2="4" stroke="var(--text-secondary)" stroke-width="1"></line>
-          </symbol>
-          <symbol id="tray-removed" viewBox="0 0 24 18">
-            <rect x="1.75" y="1.75" width="13.25" height="14.5" fill="var(--text-secondary)" opacity="0.15"></rect>
-            <rect x="17" y="1.75" width="5.25" height="1.25" fill="var(--text-secondary)" opacity="0.15"></rect>
-            <rect x="17" y="5" width="5.25" height="11.25" fill="var(--text-secondary)" opacity="0.15"></rect>
-            <rect x="0.75" y="0.75" width="22.5" height="16.5" rx="2" fill="none" stroke="var(--accent)" stroke-width="1.25"></rect>
-            <line x1="9" y1="4" x2="9" y2="17.25" stroke="var(--accent)" stroke-width="1"></line>
-            <line x1="16" y1="4" x2="16" y2="17.25" stroke="var(--accent)" stroke-width="1"></line>
-            <line x1="16" y1="4" x2="23.25" y2="4" stroke="var(--accent)" stroke-width="1"></line>
-          </symbol>
-        </defs>
-        <use href="#tray-present" x="0" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="0" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="28" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="56" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="84" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="112" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="140" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="168" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="196" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="224" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="320" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="352" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="384" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="416" y="252" width="24" height="18"></use>
-        <use href="#tray-present" x="0" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="32" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="64" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="96" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="128" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="160" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="192" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="224" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="256" y="280" width="24" height="18"></use>
-        <use href="#tray-present" x="288" y="280" width="24" height="18"></use>
-        <use href="#tray-removed" x="320" y="280" width="24" height="18"></use>
-        <use href="#tray-removed" x="352" y="280" width="24" height="18"></use>
-        <use href="#tray-removed" x="384" y="280" width="24" height="18"></use>
-        <use href="#tray-removed" x="416" y="280" width="24" height="18"></use>
-        <use href="#tray-removed" x="0" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="32" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="64" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="96" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="128" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="160" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="192" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="224" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="256" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="288" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="320" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="352" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="384" y="308" width="24" height="18"></use>
-        <use href="#tray-removed" x="416" y="308" width="24" height="18"></use>
-      </svg>
-      <!-- TODO(source): 168 dots at 250,000 people per dot implies a total of
-           roughly 42,000,000 people. That total has not been independently
-           sourced for this graphic specifically and must not be presented as
-           a cited figure until it is — hence the flag on the line below. -->
-      <p class="whynow-caption"><span class="unverified">Each dot = 250,000 people</span></p>
+      <div class="whynow-stats" data-reveal>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">$186 billion</p>
+          <p class="strip-term-cap">cut from SNAP over ten years</p>
+          <p class="whynow-stat-source">One Big Beautiful Bill Act, signed July 4, 2025 (CBO)</p>
+        </div>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">~17%</p>
+          <p class="strip-term-cap">reduction in program benefit spending</p>
+          <p class="whynow-stat-source">CBO / CRS</p>
+        </div>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">$9 billion</p>
+          <p class="strip-term-cap">in new costs shifted onto states, a first for SNAP</p>
+          <p class="whynow-stat-source">CBPP<sup><a class="src-link" href="#src-4">4</a></sup></p>
+        </div>
+      </div>
     </div>
 
-    <div class="whynow-stats">
-      <div class="whynow-stat">
-        <p class="strip-term-fig">$186 billion</p>
-        <p class="strip-term-cap">cut from SNAP over ten years</p>
-        <p class="whynow-caption">One Big Beautiful Bill Act, signed July 4, 2025 (CBO)</p>
-      </div>
-      <div class="whynow-stat">
-        <p class="strip-term-fig">~17%</p>
-        <p class="strip-term-cap">reduction in program benefit spending</p>
-        <p class="whynow-caption">CBO / CRS</p>
-      </div>
-      <div class="whynow-stat">
-        <p class="strip-term-fig">4.5 million</p>
-        <p class="strip-term-cap">fewer people receiving benefits by April 2026</p>
-        <p class="whynow-caption">CBO / CRS</p>
+    <div class="whynow-col-right" data-reveal>
+      <div class="dotfield-wrap">
+        <svg id="dotField" class="dotfield" viewBox="0 0 336 292" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="A grid of 168 dots, 14 across and 12 down, grouped into blocks of 25. 150 dots are a low-contrast gray; the other 18 are solid accent orange, marking the share this cut removes from the count.">
+          <defs>
+            <symbol id="dot-present" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--text-secondary)" opacity="0.3"></circle></symbol>
+            <symbol id="dot-removed" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--accent)"></circle></symbol>
+          </defs>
+          <use href="#dot-present" x="6" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="250" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="272" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="294" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="316" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="6" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="28" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="50" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="72" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="94" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="128" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="150" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="172" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="194" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="216" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="250" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="272" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="294" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="316" y="272" width="14" height="14"></use>
+        </svg>
+        <p class="whynow-caption whynow-legend">18 dots = 4.5 million people</p>
       </div>
     </div>
   </div>
