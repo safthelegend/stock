@@ -74,8 +74,55 @@ var MASCOT_SMILE = {
 var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
 var MASCOT_LEAN = { deliver: "rotate(5deg)" };
 
+/* ---------- goggles face (opt-in: { solid: true } / data-solid, and the
+   3D renderer's { face: "goggles" }) ----------
+   One definition, in the flat mascot's 300x260 space, drawn by both the flat
+   SVG and the canvas box so the two faces can never drift apart. Curves are
+   runs of quadratic segments [x0,y0, cx,cy, x1,y1]. Nothing here is read by
+   the default mascot, which keeps its own paths above. */
+var GOGGLE_FACE = {
+  band: { x: 51, y: 111, w: 198, h: 53, r: 21 },          /* r = 40% of h */
+  straps: [[20, 137.5, 51, 137.5], [249, 137.5, 280, 137.5]],
+  eyes: {
+    inrange: [[[80, 146, 99, 122, 118, 146]], [[182, 146, 201, 122, 220, 146]]],
+    /* worried: brows rising to the inner edge, open eyes under them */
+    danger:  [[[82, 134, 97, 132, 114, 126]], [[99, 139, 99, 144.5, 99, 150]],
+              [[186, 126, 203, 132, 218, 134]], [[201, 139, 201, 144.5, 201, 150]]]
+  },
+  mouth: {
+    inrange: [[118, 183, 150, 213, 182, 183]],
+    danger:  [[124, 194, 131, 185, 138, 194], [138, 194, 145, 203, 152, 194], [152, 194, 159, 185, 166, 194], [166, 194, 173, 203, 180, 194]]
+  },
+  centre: [150, 157.5]
+};
+function goggleD(segs) {
+  return segs.map(function (q, i) { return (i ? "" : "M" + q[0] + " " + q[1]) + " Q" + q[2] + " " + q[3] + " " + q[4] + " " + q[5]; }).join("");
+}
+/* Solid flat mascot: tinted body, one uniform non-scaling stroke on every
+   line, goggles band, and both expressions stacked so a change crossfades. */
+function mascotSolidSVG(state, opts) {
+  state = state === "danger" ? "danger" : "inrange";
+  var F = GOGGLE_FACE, b = F.band, sw = opts.strokeWidth || 5;
+  var line = ' fill="none" stroke-width="' + sw + '" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"';
+  function face(k) {
+    return '<g data-face="' + k + '" style="opacity:' + (k === state ? 1 : 0) + ';transition:opacity 250ms ease;">' +
+      F.eyes[k].map(function (e) { return '<path d="' + goggleD(e) + '"' + line + ' style="stroke:var(--mascot-stroke);"></path>'; }).join("") +
+      '<path d="' + goggleD(F.mouth[k]) + '"' + line + ' style="stroke:var(--accent);"></path></g>';
+  }
+  var informative = !!opts.informative;
+  return '<svg data-mascot data-solid data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + (opts.label || "Stock the Block mascot") + '"' : "") + ' style="width:100%;height:auto;display:block;overflow:visible;">' +
+    '<rect x="20" y="20" width="260" height="200" rx="28"' + line.replace('fill="none"', 'fill="var(--mascot-fill)"') + ' style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect>' +
+    '<path d="M20 93 L280 93"' + line + ' style="stroke:var(--mascot-stroke);"></path>' +
+    '<g data-squash style="transform-origin:' + F.centre[0] + 'px ' + F.centre[1] + 'px;">' +
+      F.straps.map(function (t) { return '<path d="M' + t[0] + " " + t[1] + " L" + t[2] + " " + t[3] + '"' + line + ' style="stroke:var(--mascot-stroke);"></path>'; }).join("") +
+      '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" rx="' + b.r + '"' + line.replace('fill="none"', 'fill="var(--mascot-goggle, transparent)"') + ' style="fill:var(--mascot-goggle, transparent);stroke:var(--mascot-stroke);"></rect>' +
+      face("inrange") + face("danger") +
+    '</g></svg>';
+}
+
 function mascotSVG(state, opts) {
   opts = opts || {};
+  if (opts.solid) return mascotSolidSVG(state, opts);
   state = MASCOT_EYES[state] ? state : "idle";
   var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
   var bare = !!opts.bare, faceless = !!opts.faceless, glasses = !!opts.glasses && !faceless;
@@ -111,6 +158,18 @@ function mascotSVG(state, opts) {
 }
 function paintMascot(svg, state) {
   if (!svg) return;
+  if (svg.hasAttribute("data-solid")) {
+    state = state === "danger" ? "danger" : "inrange";
+    if (svg.getAttribute("data-state") === state) return;
+    $$("[data-face]", svg).forEach(function (g) { g.style.opacity = g.getAttribute("data-face") === state ? 1 : 0; });
+    var sq = svg.querySelector("[data-squash]");
+    if (sq && sq.animate && !reduced) {
+      sq.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.04,0.9)" }, { transform: "scale(1,1)" }],
+        { duration: 250, easing: "cubic-bezier(0.16,1,0.3,1)" });
+    }
+    svg.setAttribute("data-state", state);
+    return;
+  }
   state = MASCOT_EYES[state] ? state : "idle";
   var e = MASCOT_EYES[state], smile = MASCOT_SMILE[state];
   var isRecord = state === "record", isConfirmed = state === "confirmed";
@@ -138,7 +197,8 @@ function initMascotSlots(root) {
       blink: el.hasAttribute("data-blink"),
       breathe: el.hasAttribute("data-breathe"),
       informative: el.hasAttribute("data-informative"),
-      label: el.getAttribute("data-label")
+      label: el.getAttribute("data-label"),
+      solid: el.hasAttribute("data-solid")
     });
   });
 }
@@ -403,6 +463,9 @@ function initMascotSlots(root) {
   function createMascotBox(canvas, opts) {
     opts = opts || {};
     var ctx = canvas.getContext("2d");
+    /* Opt-in: read theme colours from this element instead of the root, so an
+       instance can take a local palette. Default instances read the root. */
+    var gv = opts.varsFrom ? function (n) { return getComputedStyle(opts.varsFrom).getPropertyValue(n).trim(); } : getVar;
     var hw = BOX.W / 2, hh = BOX.H / 2, hd = BOX.D / 2;
 
     /* Body without its top face — the lid is that face, and leaving the
@@ -514,6 +577,100 @@ function initMascotSlots(root) {
       line(seg);
     }
 
+    /* ---------- opt-in extras: goggles face, probe, ice pack ----------
+       Only reached when an instance asks for them; the hero and the mid-page
+       box pass none of these options and render exactly as before. */
+    function drawGoggles(quad, face, stroke, accent, glass, lw) {
+      face = face || { from: "inrange", to: "inrange", t: 1 };
+      var F = GOGGLE_FACE, u0 = 20, uw = 260, k = (BOX.W / uw) / BOX.H;
+      var t = face.t < 0 ? 0 : face.t > 1 ? 1 : face.t;
+      var sq = 1 - 0.1 * Math.sin(Math.PI * t), sx = 1 + 0.04 * Math.sin(Math.PI * t);
+      function at(x, y) {
+        x = F.centre[0] + (x - F.centre[0]) * sx; y = F.centre[1] + (y - F.centre[1]) * sq;
+        var u = (x - u0) / uw, v = 0.5 + (y - F.centre[1]) * k;
+        var tl = quad[3], tr = quad[2], bl = quad[0];
+        return [tl[0] + u * (tr[0] - tl[0]) + v * (bl[0] - tl[0]), tl[1] + u * (tr[1] - tl[1]) + v * (bl[1] - tl[1])];
+      }
+      function quadPts(segs) {
+        var pts = [];
+        segs.forEach(function (q, s) {
+          for (var i = s ? 1 : 0; i <= 10; i++) {
+            var tt = i / 10, m = 1 - tt;
+            pts.push(at(m * m * q[0] + 2 * m * tt * q[2] + tt * tt * q[4], m * m * q[1] + 2 * m * tt * q[3] + tt * tt * q[5]));
+          }
+        });
+        return pts;
+      }
+      function path(pts, close) {
+        ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+        for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        if (close) ctx.closePath();
+      }
+      ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      /* strap, band */
+      ctx.strokeStyle = stroke;
+      F.straps.forEach(function (s) { path([at(s[0], s[1]), at(s[2], s[3])]); ctx.stroke(); });
+      var b = F.band, r = b.r, bp = [], a;
+      [[b.x + b.w - r, b.y + r, -90], [b.x + b.w - r, b.y + b.h - r, 0], [b.x + r, b.y + b.h - r, 90], [b.x + r, b.y + r, 180]]
+        .forEach(function (c) { for (a = 0; a <= 90; a += 15) { var rad = (c[2] + a) * Math.PI / 180; bp.push(at(c[0] + r * Math.cos(rad), c[1] + r * Math.sin(rad))); } });
+      path(bp, true);
+      if (glass) { ctx.fillStyle = glass; ctx.fill(); }
+      ctx.stroke();
+      /* expressions, crossfaded */
+      [[face.from, 1 - t], [face.to, t]].forEach(function (e) {
+        if (!(e[1] > 0.001) || !F.eyes[e[0]]) return;
+        ctx.globalAlpha = e[1];
+        ctx.strokeStyle = stroke;
+        F.eyes[e[0]].forEach(function (eye) { path(quadPts(eye)); ctx.stroke(); });
+        ctx.strokeStyle = accent;
+        path(quadPts(F.mouth[e[0]])); ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+    }
+    /* A DS18B20-style probe: cable out of the sensor pocket on the back panel,
+       round the right-hand side, ending in a steel tip beside the box. Drawn
+       as short depth-sorted segments so the box hides whatever is behind it. */
+    var PROBE = (function () {
+      var c = [[0.42, -0.10, -hd], [0.42, -0.10, -hd - 0.16], [0.66, -0.04, -hd - 0.24], [hw + 0.12, 0.02, -0.42],
+               [hw + 0.16, -0.02, 0.02], [hw + 0.16, -0.20, 0.30], [hw + 0.15, -0.34, 0.40]];
+      var out = [], i, j;
+      for (i = 0; i < c.length - 1; i++) {                 /* Catmull-Rom through the control points */
+        var p0 = c[Math.max(0, i - 1)], p1 = c[i], p2 = c[i + 1], p3 = c[Math.min(c.length - 1, i + 2)];
+        for (j = 0; j < 5; j++) {
+          var t = j / 5, t2 = t * t, t3 = t2 * t;
+          out.push([0, 1, 2].map(function (d) {
+            return 0.5 * ((2 * p1[d]) + (-p0[d] + p2[d]) * t + (2 * p0[d] - 5 * p1[d] + 4 * p2[d] - p3[d]) * t2 + (-p0[d] + 3 * p1[d] - 3 * p2[d] + p3[d]) * t3);
+          }));
+        }
+      }
+      out.push(c[c.length - 1]);
+      return { cable: out, tip: [c[c.length - 1], [hw + 0.15, -0.56, 0.42]] };
+    })();
+    function pushProbe(polys, yaw) {
+      var pts = PROBE.cable.map(function (p) { return project(p, yaw); }), i;
+      for (i = 0; i < pts.length - 1; i++) {
+        polys.push({ seg: true, sv: [pts[i], pts[i + 1]], depth: (pts[i][2] + pts[i + 1][2]) / 2 - 0.02, colour: "#AEB8A8", w: 2.4 });
+      }
+      var t0 = project(PROBE.tip[0], yaw), t1 = project(PROBE.tip[1], yaw);
+      polys.push({ seg: true, sv: [t0, t1], depth: (t0[2] + t1[2]) / 2 - 0.02, colour: "#C9D1D8", w: 5.5, glint: true });
+    }
+    var ICE = { w: 0.44, h: 0.08, d: 0.3 };
+    function pushIce(polys, yaw, cy) {
+      var x = ICE.w, y = ICE.h, z = ICE.d, zc = 0.08;
+      var F6 = [
+        { v: [[-x, y, -z], [-x, y, z], [x, y, z], [x, y, -z]], n: [0, 1, 0], top: true },
+        { v: [[-x, -y, z], [x, -y, z], [x, y, z], [-x, y, z]], n: [0, 0, 1] },
+        { v: [[x, -y, -z], [-x, -y, -z], [-x, y, -z], [x, y, -z]], n: [0, 0, -1] },
+        { v: [[-x, -y, -z], [-x, -y, z], [-x, y, z], [-x, y, -z]], n: [-1, 0, 0] },
+        { v: [[x, -y, z], [x, -y, -z], [x, y, -z], [x, y, z]], n: [1, 0, 0] }
+      ];
+      F6.forEach(function (f) {
+        var v = f.v.map(function (p) { return [p[0], p[1] + cy, p[2] + zc]; });
+        var sv = v.map(function (p) { return project(p, yaw); });
+        polys.push({ ice: true, top: !!f.top, sv: sv, depth: (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4 - 0.01, front: facingPts(v, rotYaw(f.n, yaw), yaw) });
+      });
+    }
+
     var blink = false;
     if (!opts.reduced) {
       (function blinkLoop() {
@@ -620,11 +777,11 @@ function initMascotSlots(root) {
       var a = state.lid || 0;
       var yaw = state.yaw || 0;
       scale = state.scale || 1;
-      var fill = getVar("--mascot-fill") || "#EAF2DE";
-      var edge = getVar("--mascot-stroke") || "#2E5A22";
-      var side = getVar("--box-side") || fill;
-      var inner = getVar("--box-interior") || fill;
-      var accent = getVar("--accent") || "#E8871E";
+      var fill = gv("--mascot-fill") || "#EAF2DE";
+      var edge = gv("--mascot-stroke") || "#2E5A22";
+      var side = gv("--box-side") || fill;
+      var inner = gv("--box-interior") || fill;
+      var accent = gv("--accent") || "#E8871E";
       var shineCol = getVar("--box-shine") || "rgba(255,255,255,0.7)";
       var hasShine = typeof state.shine === "number" && state.shine > 0 && state.shine < 1;
 
@@ -657,17 +814,38 @@ function initMascotSlots(root) {
          stamping it last means the shut lid correctly hides it. */
       var h1 = project([-hw, hh, -hd], yaw), h2 = project([hw, hh, -hd], yaw);
       polys.push({ sv: [h1, h2], depth: (h1[2] + h2[2]) / 2, hinge: true });
+      if (opts.probe) pushProbe(polys, yaw);
+      if (typeof state.iceY === "number") pushIce(polys, yaw, state.iceY);
 
       polys.sort(function (p, q) { return q.depth - p.depth; });   /* far to near */
 
       ctx.lineJoin = "round"; ctx.lineCap = "round";
-      var strokeW = Math.max(1, Hpx * 0.006 * scale);
+      var strokeW = opts.lineWidth ? opts.lineWidth * dpr : Math.max(1, Hpx * 0.006 * scale);
       for (i = 0; i < polys.length; i++) {
         var pl = polys[i];
         if (pl.hinge) {
           ctx.beginPath();
           ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
-          ctx.strokeStyle = edge; ctx.lineWidth = strokeW * 1.5; ctx.stroke();
+          ctx.strokeStyle = edge; ctx.lineWidth = opts.lineWidth ? strokeW : strokeW * 1.5; ctx.stroke();
+          continue;
+        }
+        if (pl.seg) {                     /* opt-in probe cable / tip */
+          ctx.beginPath();
+          ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
+          ctx.strokeStyle = pl.colour; ctx.lineWidth = pl.w * dpr; ctx.stroke();
+          if (pl.glint) {
+            ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = Math.max(1, pl.w * dpr * 0.28); ctx.stroke();
+          }
+          continue;
+        }
+        if (pl.ice) {                     /* opt-in ice pack */
+          if (!pl.front) continue;
+          ctx.beginPath();
+          ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
+          for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
+          ctx.closePath();
+          ctx.fillStyle = pl.top ? "#E4F3FF" : "#BFDDF4"; ctx.fill();
+          ctx.strokeStyle = "#5F97C2"; ctx.lineWidth = strokeW * 0.8; ctx.stroke();
           continue;
         }
         ctx.beginPath();
@@ -685,7 +863,8 @@ function initMascotSlots(root) {
           ctx.strokeStyle = edge; ctx.lineWidth = strokeW; ctx.stroke();
           if (pl.isFace) {
             ctx.save(); ctx.clip();
-            drawFace(pl.sv, blink, edge, accent);
+            if (opts.face === "goggles") drawGoggles(pl.sv, state.face, edge, accent, gv("--mascot-goggle"), strokeW);
+            else drawFace(pl.sv, blink, edge, accent);
             ctx.restore();
           }
         }
