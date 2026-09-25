@@ -74,50 +74,84 @@ var MASCOT_SMILE = {
 var MASCOT_LID = { collect: "translateY(-9px) rotate(-13deg)", pack: "translateY(-4px) rotate(-5deg)" };
 var MASCOT_LEAN = { deliver: "rotate(5deg)" };
 
-/* ---------- goggles face (opt-in: { solid: true } / data-solid, and the
-   3D renderer's { face: "goggles" }) ----------
-   One definition, in the flat mascot's 300x260 space, drawn by both the flat
-   SVG and the canvas box so the two faces can never drift apart. Curves are
-   runs of quadratic segments [x0,y0, cx,cy, x1,y1]. Nothing here is read by
-   the default mascot, which keeps its own paths above. */
-var GOGGLE_FACE = {
-  band: { x: 51, y: 111, w: 198, h: 53, r: 21 },          /* r = 40% of h */
-  straps: [[20, 137.5, 51, 137.5], [249, 137.5, 280, 137.5]],
+/* ---------- lab-coat mascot (opt-in: { solid: true } / data-solid, and the
+   3D renderer's { face: "mid", coat: true, probe: "pocket" }) ----------
+   Used only by the cold-chain panel. Two parts, one definition each, drawn by
+   both the flat SVG and the canvas box so they cannot drift apart:
+
+   CM_FACE is the mid-page box's own face — its 512-space chevron eyes and
+   smile, stroked at the same 26/512 of the front panel's width — lifted and
+   enlarged so it fills the upper ~55% of the panel. Danger keeps the style:
+   worried slanted eyes and a short, thick wavy mouth.
+
+   CM_COAT is the lab coat, in the front panel's unit square (u right, v down),
+   covering the lower ~45%. Nothing here is read by any other mascot. */
+var CM_FACE = {
+  from: [256, 340], to: [256, 168], k: 1.15, w: 26,
   eyes: {
-    inrange: [[[80, 146, 99, 122, 118, 146]], [[182, 146, 201, 122, 220, 146]]],
-    /* worried: brows rising to the inner edge, open eyes under them */
-    danger:  [[[82, 134, 97, 132, 114, 126]], [[99, 139, 99, 144.5, 99, 150]],
-              [[186, 126, 203, 132, 218, 134]], [[201, 139, 201, 144.5, 201, 150]]]
+    inrange: [[[110, 320], [165, 258], [220, 320]], [[292, 320], [347, 258], [402, 320]]],
+    danger:  [[[110, 314], [165, 300], [220, 270]], [[292, 270], [347, 300], [402, 314]]]
   },
   mouth: {
-    inrange: [[118, 183, 150, 213, 182, 183]],
-    danger:  [[124, 194, 131, 185, 138, 194], [138, 194, 145, 203, 152, 194], [152, 194, 159, 185, 166, 194], [166, 194, 173, 203, 180, 194]]
-  },
-  centre: [150, 157.5]
+    inrange: (function () { var pts = [], i, t, m; for (i = 0; i <= 12; i++) { t = i / 12; m = 1 - t;
+      pts.push([m * m * 192 + 2 * m * t * 256 + t * t * 320, m * m * 372 + 2 * m * t * 422 + t * t * 372]); } return pts; })(),
+    danger: (function () { var pts = [], i, t; for (i = 0; i <= 16; i++) { t = i / 16;
+      pts.push([212 + t * 88, 398 + 7 * Math.sin(t * Math.PI * 4)]); } return pts; })()
+  }
 };
-function goggleD(segs) {
-  return segs.map(function (q, i) { return (i ? "" : "M" + q[0] + " " + q[1]) + " Q" + q[2] + " " + q[3] + " " + q[4] + " " + q[5]; }).join("");
+/* A 512-space face point, moved into the upper part of the panel: unit square out. */
+function cmFaceUV(p) {
+  var F = CM_FACE;
+  return [(F.to[0] + (p[0] - F.from[0]) * F.k) / 512, (F.to[1] + (p[1] - F.from[1]) * F.k) / 512];
 }
-/* Solid flat mascot: tinted body, one uniform non-scaling stroke on every
-   line, goggles band, and both expressions stacked so a change crossfades. */
+var CM_COAT = {
+  top: 0.56,
+  collar: [[0.41, 0.56], [0.59, 0.56], [0.5, 1]],                                   /* green inner */
+  lapels: [[[0.31, 0.56], [0.41, 0.56], [0.49, 0.9], [0.37, 0.72]],
+           [[0.69, 0.56], [0.59, 0.56], [0.51, 0.9], [0.63, 0.72]]],
+  pocket: [[0.7, 0.74], [0.88, 0.74], [0.88, 0.9], [0.7, 0.9]],                      /* viewer's right */
+  badge:  [[0.13, 0.66], [0.27, 0.66], [0.27, 0.74], [0.13, 0.74]],                  /* left chest */
+  tip: [[0.8, 0.8], [0.8, 0.585]],                                                   /* probe, clipped like a pen */
+  green: "#2E5A22", white: "#FFFFFF", sideWhite: "#EDF1EA", orange: "#E8871E",
+  cable: "#6F7D6A", steel: "#C9D1D8"
+};
+/* Flat front view of the same mascot: body 260x195 (the 3D panel's 4:3),
+   the lid's top face as a thin strip above one shared lid line, the coat,
+   pocket, badge and the probe in its pocket, and both faces stacked so a
+   change crossfades. Outlines are 1.07% of the body width, the mid-page box's
+   ratio; face strokes are its 26/512. */
 function mascotSolidSVG(state, opts) {
   state = state === "danger" ? "danger" : "inrange";
-  var F = GOGGLE_FACE, b = F.band, sw = opts.strokeWidth || 5;
-  var line = ' fill="none" stroke-width="' + sw + '" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"';
+  var X = 20, Y = 44, BW = 260, BH = 195, C = CM_COAT;
+  var ow = +(BW * 0.0107).toFixed(2), fw = +(BW * CM_FACE.w / 512).toFixed(2);
+  function P(u, v) { return (X + u * BW).toFixed(1) + " " + (Y + v * BH).toFixed(1); }
+  function poly(pts) { return "M" + pts.map(function (q) { return P(q[0], q[1]); }).join(" L") + " Z"; }
+  function fpath(pts) { return "M" + pts.map(function (q) { var uv = cmFaceUV(q); return P(uv[0], uv[1]); }).join(" L"); }
+  var line = ' stroke-linecap="round" stroke-linejoin="round"';
+  var ol = ' stroke="' + C.green + '" stroke-width="' + ow + '"' + line;
   function face(k) {
     return '<g data-face="' + k + '" style="opacity:' + (k === state ? 1 : 0) + ';transition:opacity 250ms ease;">' +
-      F.eyes[k].map(function (e) { return '<path d="' + goggleD(e) + '"' + line + ' style="stroke:var(--mascot-stroke);"></path>'; }).join("") +
-      '<path d="' + goggleD(F.mouth[k]) + '"' + line + ' style="stroke:var(--accent);"></path></g>';
+      CM_FACE.eyes[k].map(function (e) { return '<path d="' + fpath(e) + '" fill="none" stroke-width="' + fw + '"' + line + ' style="stroke:var(--mascot-stroke);"></path>'; }).join("") +
+      '<path d="' + fpath(CM_FACE.mouth[k]) + '" fill="none" stroke-width="' + fw + '"' + line + ' style="stroke:var(--accent);"></path></g>';
   }
+  var cy = Y + C.top * BH, r = 14;
+  var coatD = "M" + X + " " + cy.toFixed(1) + " H" + (X + BW) + " V" + (Y + BH - r) + " Q" + (X + BW) + " " + (Y + BH) + " " + (X + BW - r) + " " + (Y + BH) +
+    " H" + (X + r) + " Q" + X + " " + (Y + BH) + " " + X + " " + (Y + BH - r) + " Z";
   var informative = !!opts.informative;
   return '<svg data-mascot data-solid data-state="' + state + '" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="' + (informative ? "false" : "true") + '" role="' + (informative ? "img" : "presentation") + '"' + (informative ? ' aria-label="' + (opts.label || "Stock the Block mascot") + '"' : "") + ' style="width:100%;height:auto;display:block;overflow:visible;">' +
-    '<rect x="20" y="20" width="260" height="200" rx="28"' + line.replace('fill="none"', 'fill="var(--mascot-fill)"') + ' style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect>' +
-    '<path d="M20 93 L280 93"' + line + ' style="stroke:var(--mascot-stroke);"></path>' +
-    '<g data-squash style="transform-origin:' + F.centre[0] + 'px ' + F.centre[1] + 'px;">' +
-      F.straps.map(function (t) { return '<path d="M' + t[0] + " " + t[1] + " L" + t[2] + " " + t[3] + '"' + line + ' style="stroke:var(--mascot-stroke);"></path>'; }).join("") +
-      '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" rx="' + b.r + '"' + line.replace('fill="none"', 'fill="var(--mascot-goggle, transparent)"') + ' style="fill:var(--mascot-goggle, transparent);stroke:var(--mascot-stroke);"></rect>' +
-      face("inrange") + face("danger") +
-    '</g></svg>';
+    /* lid: its top face as a strip, sharing the one lid line with the body */
+    '<path d="M' + (X + 10) + " " + (Y - 13) + " H" + (X + BW - 10) + " L" + (X + BW) + " " + Y + " H" + X + ' Z" stroke-width="' + ow + '"' + line + ' style="fill:var(--box-side);stroke:var(--mascot-stroke);"></path>' +
+    '<rect x="' + X + '" y="' + Y + '" width="' + BW + '" height="' + BH + '" rx="' + r + '" stroke-width="' + ow + '"' + line + ' style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect>' +
+    '<path d="' + coatD + '" fill="' + C.white + '"' + ol + '></path>' +
+    '<path d="' + poly(C.collar) + '" fill="' + C.green + '"' + ol + '></path>' +
+    C.lapels.map(function (l) { return '<path d="' + poly(l) + '" fill="' + C.white + '"' + ol + '></path>'; }).join("") +
+    '<path d="' + poly(C.badge) + '" fill="' + C.orange + '"' + ol + '></path>' +
+    /* probe: cable out of the pocket, down and round the right edge to the back */
+    '<path d="M' + P(0.8, 0.9) + " C" + P(0.8, 1.02) + " " + P(0.97, 1.03) + " " + P(1.035, 0.93) + '" fill="none" stroke="' + C.cable + '" stroke-width="' + (ow * 2.6).toFixed(2) + '"' + line + '></path>' +
+    '<path d="M' + P(C.tip[0][0], C.tip[0][1]) + " L" + P(C.tip[1][0], C.tip[1][1]) + '" fill="none" stroke="' + C.green + '" stroke-width="' + (ow * 4.4).toFixed(2) + '"' + line + '></path>' +
+    '<path d="M' + P(C.tip[0][0], C.tip[0][1]) + " L" + P(C.tip[1][0], C.tip[1][1]) + '" fill="none" stroke="' + C.steel + '" stroke-width="' + (ow * 2.8).toFixed(2) + '"' + line + '></path>' +
+    '<path d="' + poly(C.pocket) + '" fill="' + C.white + '"' + ol + '></path>' +
+    '<g data-squash style="transform-origin:150px 90px;">' + face("inrange") + face("danger") + '</g></svg>';
 }
 
 function mascotSVG(state, opts) {
@@ -481,7 +515,7 @@ function initMascotSlots(root) {
     /* Lid, in hinge-local space: the hinge is the origin, running
        left-to-right across the REAR of the box, so rotation about X lifts
        the front edge off the seam. */
-    var L = BOX.LID;
+    var L = typeof opts.lidThick === "number" ? opts.lidThick : BOX.LID;   /* opt-in: a thinner lid reads as one line */
     var LID = [
       { v: [[-hw, 0, BOX.D], [hw, 0, BOX.D], [hw, L, BOX.D], [-hw, L, BOX.D]], n: [0, 0, 1] },
       { v: [[hw, 0, 0], [-hw, 0, 0], [-hw, L, 0], [hw, L, 0]], n: [0, 0, -1] },
@@ -577,62 +611,63 @@ function initMascotSlots(root) {
       line(seg);
     }
 
-    /* ---------- opt-in extras: goggles face, probe, ice pack ----------
+    /* ---------- opt-in extras: mid-box face, lab coat, pocket probe, ice pack ----------
        Only reached when an instance asks for them; the hero and the mid-page
        box pass none of these options and render exactly as before. */
-    function drawGoggles(quad, face, stroke, accent, glass, lw) {
+    function quadAt(quad, u, v) {
+      var tl = quad[3], tr = quad[2], bl = quad[0];
+      return [tl[0] + u * (tr[0] - tl[0]) + v * (bl[0] - tl[0]), tl[1] + u * (tr[1] - tl[1]) + v * (bl[1] - tl[1])];
+    }
+    function drawMidFace(quad, face, stroke, accent) {
       face = face || { from: "inrange", to: "inrange", t: 1 };
-      var F = GOGGLE_FACE, u0 = 20, uw = 260, k = (BOX.W / uw) / BOX.H;
       var t = face.t < 0 ? 0 : face.t > 1 ? 1 : face.t;
       var sq = 1 - 0.1 * Math.sin(Math.PI * t), sx = 1 + 0.04 * Math.sin(Math.PI * t);
-      function at(x, y) {
-        x = F.centre[0] + (x - F.centre[0]) * sx; y = F.centre[1] + (y - F.centre[1]) * sq;
-        var u = (x - u0) / uw, v = 0.5 + (y - F.centre[1]) * k;
-        var tl = quad[3], tr = quad[2], bl = quad[0];
-        return [tl[0] + u * (tr[0] - tl[0]) + v * (bl[0] - tl[0]), tl[1] + u * (tr[1] - tl[1]) + v * (bl[1] - tl[1])];
-      }
-      function quadPts(segs) {
-        var pts = [];
-        segs.forEach(function (q, s) {
-          for (var i = s ? 1 : 0; i <= 10; i++) {
-            var tt = i / 10, m = 1 - tt;
-            pts.push(at(m * m * q[0] + 2 * m * tt * q[2] + tt * tt * q[4], m * m * q[1] + 2 * m * tt * q[3] + tt * tt * q[5]));
-          }
+      var span = Math.hypot(quad[2][0] - quad[3][0], quad[2][1] - quad[3][1]);
+      function stroke512(pts) {
+        ctx.beginPath();
+        pts.forEach(function (q, i) {
+          var uv = cmFaceUV(q), s = quadAt(quad, 0.5 + (uv[0] - 0.5) * sx, 0.29 + (uv[1] - 0.29) * sq);
+          if (i) ctx.lineTo(s[0], s[1]); else ctx.moveTo(s[0], s[1]);
         });
-        return pts;
+        ctx.stroke();
       }
-      function path(pts, close) {
-        ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-        for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-        if (close) ctx.closePath();
-      }
-      ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round";
-      /* strap, band */
-      ctx.strokeStyle = stroke;
-      F.straps.forEach(function (s) { path([at(s[0], s[1]), at(s[2], s[3])]); ctx.stroke(); });
-      var b = F.band, r = b.r, bp = [], a;
-      [[b.x + b.w - r, b.y + r, -90], [b.x + b.w - r, b.y + b.h - r, 0], [b.x + r, b.y + b.h - r, 90], [b.x + r, b.y + r, 180]]
-        .forEach(function (c) { for (a = 0; a <= 90; a += 15) { var rad = (c[2] + a) * Math.PI / 180; bp.push(at(c[0] + r * Math.cos(rad), c[1] + r * Math.sin(rad))); } });
-      path(bp, true);
-      if (glass) { ctx.fillStyle = glass; ctx.fill(); }
-      ctx.stroke();
-      /* expressions, crossfaded */
+      ctx.lineWidth = Math.max(1, span * (CM_FACE.w / 512));   /* the mid-page box's ratio */
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
       [[face.from, 1 - t], [face.to, t]].forEach(function (e) {
-        if (!(e[1] > 0.001) || !F.eyes[e[0]]) return;
+        if (!(e[1] > 0.001) || !CM_FACE.eyes[e[0]]) return;
         ctx.globalAlpha = e[1];
-        ctx.strokeStyle = stroke;
-        F.eyes[e[0]].forEach(function (eye) { path(quadPts(eye)); ctx.stroke(); });
-        ctx.strokeStyle = accent;
-        path(quadPts(F.mouth[e[0]])); ctx.stroke();
+        ctx.strokeStyle = stroke; CM_FACE.eyes[e[0]].forEach(stroke512);
+        ctx.strokeStyle = accent; stroke512(CM_FACE.mouth[e[0]]);
       });
       ctx.globalAlpha = 1;
     }
-    /* A DS18B20-style probe: cable out of the sensor pocket on the back panel,
-       round the right-hand side, ending in a steel tip beside the box. Drawn
-       as short depth-sorted segments so the box hides whatever is behind it. */
-    var PROBE = (function () {
-      var c = [[0.42, -0.10, -hd], [0.42, -0.10, -hd - 0.16], [0.66, -0.04, -hd - 0.24], [hw + 0.12, 0.02, -0.42],
-               [hw + 0.16, -0.02, 0.02], [hw + 0.16, -0.20, 0.30], [hw + 0.15, -0.34, 0.40]];
+    /* The coat on one body panel: the front gets collar, lapels, badge and
+       pocket; a side panel gets the plain, slightly shaded wrap. */
+    function drawCoat(quad, isFront, lw) {
+      var C = CM_COAT;
+      function shape(pts, fillCol) {
+        ctx.beginPath();
+        pts.forEach(function (q, i) { var s = quadAt(quad, q[0], q[1]); if (i) ctx.lineTo(s[0], s[1]); else ctx.moveTo(s[0], s[1]); });
+        ctx.closePath();
+        ctx.fillStyle = fillCol; ctx.fill(); ctx.stroke();
+      }
+      ctx.lineWidth = lw; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.strokeStyle = C.green;
+      shape([[-0.02, C.top], [1.02, C.top], [1.02, 1.02], [-0.02, 1.02]], isFront ? C.white : C.sideWhite);
+      if (!isFront) return;
+      shape(C.collar, C.green);
+      C.lapels.forEach(function (l) { shape(l, C.white); });
+      shape(C.badge, C.orange);
+    }
+    /* Probe clipped in the chest pocket like a pen: steel tip up out of the
+       pocket, cable from the pocket's foot down and round the right-hand side
+       to the sensor pocket on the back panel. The pocket itself is drawn after
+       the cable and tip so they sit inside it. Front-of-box pieces are pulled
+       forward in the sort so the front panel never covers them. */
+    function uvToWorld(u, v, dz) { return [-hw + u * BOX.W, hh - v * BOX.H, hd + dz]; }
+    var POCKET = (function () {
+      var c = [uvToWorld(0.8, 0.88, 0.03), uvToWorld(0.8, 1.0, 0.06), [hw - 0.08, -hh + 0.02, hd + 0.08],
+               [hw + 0.08, -hh + 0.06, 0.34], [hw + 0.1, -0.42, -0.1], [hw + 0.06, -0.3, -hd + 0.06],
+               [0.62, -0.16, -hd - 0.08], [0.42, -0.1, -hd]];
       var out = [], i, j;
       for (i = 0; i < c.length - 1; i++) {                 /* Catmull-Rom through the control points */
         var p0 = c[Math.max(0, i - 1)], p1 = c[i], p2 = c[i + 1], p3 = c[Math.min(c.length - 1, i + 2)];
@@ -644,15 +679,19 @@ function initMascotSlots(root) {
         }
       }
       out.push(c[c.length - 1]);
-      return { cable: out, tip: [c[c.length - 1], [hw + 0.15, -0.56, 0.42]] };
+      return { cable: out, tip: [uvToWorld(CM_COAT.tip[0][0], CM_COAT.tip[0][1], 0.035), uvToWorld(CM_COAT.tip[1][0], CM_COAT.tip[1][1], 0.035)],
+               pocket: CM_COAT.pocket.map(function (q) { return uvToWorld(q[0], q[1], 0.04); }) };
     })();
-    function pushProbe(polys, yaw) {
-      var pts = PROBE.cable.map(function (p) { return project(p, yaw); }), i;
+    function pushPocketProbe(polys, yaw, lw) {
+      var pts = POCKET.cable.map(function (p) { return project(p, yaw); }), i, C = CM_COAT;
       for (i = 0; i < pts.length - 1; i++) {
-        polys.push({ seg: true, sv: [pts[i], pts[i + 1]], depth: (pts[i][2] + pts[i + 1][2]) / 2 - 0.02, colour: "#AEB8A8", w: 2.4 });
+        var front = POCKET.cable[i][2] > hd - 0.02 && POCKET.cable[i + 1][2] > hd - 0.02;
+        polys.push({ seg: true, sv: [pts[i], pts[i + 1]], depth: (pts[i][2] + pts[i + 1][2]) / 2 - (front ? 0.5 : 0.03), colour: C.cable, w: lw * 2.6, solid: true });
       }
-      var t0 = project(PROBE.tip[0], yaw), t1 = project(PROBE.tip[1], yaw);
-      polys.push({ seg: true, sv: [t0, t1], depth: (t0[2] + t1[2]) / 2 - 0.02, colour: "#C9D1D8", w: 5.5, glint: true });
+      var t0 = project(POCKET.tip[0], yaw), t1 = project(POCKET.tip[1], yaw);
+      polys.push({ seg: true, sv: [t0, t1], depth: (t0[2] + t1[2]) / 2 - 0.52, colour: C.steel, w: lw * 2.8, outline: C.green, ow: lw * 4.4, glint: true });
+      var pk = POCKET.pocket.map(function (p) { return project(p, yaw); });
+      polys.push({ pocketPoly: true, sv: pk, depth: (pk[0][2] + pk[2][2]) / 2 - 0.54 });
     }
     var ICE = { w: 0.44, h: 0.08, d: 0.3 };
     function pushIce(polys, yaw, cy) {
@@ -795,7 +834,7 @@ function initMascotSlots(root) {
         n = rotYaw(f.n, yaw);
         depth = (sv[0][2] + sv[1][2] + sv[2][2] + sv[3][2]) / 4;
         front = facing(f.v, f.n, yaw);
-        polys.push({ sv: sv, depth: depth, front: front, n: n, isFace: !!f.face && front });
+        polys.push({ sv: sv, depth: depth, front: front, n: n, isFace: !!f.face && front, coatSide: i === 2 || i === 3 });
       }
       for (i = 0; i < LID.length; i++) {
         f = LID[i];
@@ -812,15 +851,15 @@ function initMascotSlots(root) {
          the lid read as hinged, because the one line that never moves is the
          one the lid is visibly attached to. Sorting it in rather than
          stamping it last means the shut lid correctly hides it. */
+      var strokeW = opts.lineWidth ? opts.lineWidth * dpr : Math.max(1, Hpx * 0.006 * scale);
       var h1 = project([-hw, hh, -hd], yaw), h2 = project([hw, hh, -hd], yaw);
       polys.push({ sv: [h1, h2], depth: (h1[2] + h2[2]) / 2, hinge: true });
-      if (opts.probe) pushProbe(polys, yaw);
+      if (opts.probe === "pocket") pushPocketProbe(polys, yaw, strokeW);
       if (typeof state.iceY === "number") pushIce(polys, yaw, state.iceY);
 
       polys.sort(function (p, q) { return q.depth - p.depth; });   /* far to near */
 
       ctx.lineJoin = "round"; ctx.lineCap = "round";
-      var strokeW = opts.lineWidth ? opts.lineWidth * dpr : Math.max(1, Hpx * 0.006 * scale);
       for (i = 0; i < polys.length; i++) {
         var pl = polys[i];
         if (pl.hinge) {
@@ -832,10 +871,19 @@ function initMascotSlots(root) {
         if (pl.seg) {                     /* opt-in probe cable / tip */
           ctx.beginPath();
           ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
-          ctx.strokeStyle = pl.colour; ctx.lineWidth = pl.w * dpr; ctx.stroke();
+          if (pl.solid) { ctx.strokeStyle = pl.colour; ctx.lineWidth = pl.w; ctx.stroke(); }
+          else if (pl.outline) { ctx.strokeStyle = pl.outline; ctx.lineWidth = pl.ow; ctx.stroke(); ctx.strokeStyle = pl.colour; ctx.lineWidth = pl.w; ctx.stroke(); }
+          else { ctx.strokeStyle = pl.colour; ctx.lineWidth = pl.w * dpr; ctx.stroke(); }
           if (pl.glint) {
             ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = Math.max(1, pl.w * dpr * 0.28); ctx.stroke();
           }
+          continue;
+        }
+        if (pl.pocketPoly) {              /* opt-in chest pocket, over the probe's foot */
+          ctx.beginPath(); ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
+          for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
+          ctx.closePath(); ctx.fillStyle = CM_COAT.white; ctx.fill();
+          ctx.strokeStyle = CM_COAT.green; ctx.lineWidth = strokeW; ctx.lineJoin = "round"; ctx.stroke();
           continue;
         }
         if (pl.ice) {                     /* opt-in ice pack */
@@ -860,10 +908,22 @@ function initMascotSlots(root) {
             paintShine(state.shine, state.shineWidth || 0.5, shineCol);
             ctx.restore();
           }
+          if (opts.coat && (pl.isFace || pl.coatSide)) {
+            var outline = new Path2D();
+            outline.moveTo(pl.sv[0][0], pl.sv[0][1]);
+            for (k = 1; k < pl.sv.length; k++) outline.lineTo(pl.sv[k][0], pl.sv[k][1]);
+            outline.closePath();
+            ctx.save(); ctx.clip(outline);
+            drawCoat(pl.isFace ? pl.sv : pl.sv, !!pl.isFace, strokeW);
+            ctx.restore();
+            ctx.beginPath(); ctx.moveTo(pl.sv[0][0], pl.sv[0][1]);
+            for (k = 1; k < pl.sv.length; k++) ctx.lineTo(pl.sv[k][0], pl.sv[k][1]);
+            ctx.closePath();
+          }
           ctx.strokeStyle = edge; ctx.lineWidth = strokeW; ctx.stroke();
           if (pl.isFace) {
             ctx.save(); ctx.clip();
-            if (opts.face === "goggles") drawGoggles(pl.sv, state.face, edge, accent, gv("--mascot-goggle"), strokeW);
+            if (opts.face === "mid") drawMidFace(pl.sv, state.face, edge, accent);
             else drawFace(pl.sv, blink, edge, accent);
             ctx.restore();
           }

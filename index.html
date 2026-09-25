@@ -96,18 +96,21 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      (which is told to take its colours from here). */
   .cold-mascot { grid-area:mascot; position:relative; width:220px; justify-self:center;
     --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22; --box-side:#D3E3C1; --box-interior:#BFD4A8;
-    --mascot-goggle:rgba(255,255,255,0.6); --cm-glow:rgba(156,203,122,0.5); }
-  :root[data-theme="dark"] .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; --mascot-goggle:rgba(156,203,122,0.12); }
+    --cm-glow:rgba(156,203,122,0.34); }
+  :root[data-theme="dark"] .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; --mascot-goggle:rgba(156,203,122,0.12); }
+    :root:not([data-theme]) .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
   }
-  .cold-mascot.is-danger { --cm-glow:rgba(240,160,64,0.55); }
-  .cold-mascot > svg, .cold-mascot > canvas { filter:drop-shadow(0 0 8px var(--cm-glow)); transition:filter 250ms ease; }
+  .cold-mascot.is-danger { --cm-glow:rgba(240,160,64,0.4); }
+  /* A tight, soft glow: small blur, low opacity. */
+  .cold-mascot > svg, .cold-mascot > canvas { filter:drop-shadow(0 0 3px var(--cm-glow)); transition:filter 250ms ease; }
   .cold-mascot > canvas { display:block; width:100%; }
   .cold-mascot.is-3d > svg { display:none !important; }
   /* The canvas is square; the box sits in its middle band, so the frame is
      cropped to the box and the empty sky above it is not layout. */
-  .cold-mascot.is-3d { height:196px; }
+  .cold-mascot.is-3d { height:200px; }
+  /* At least 20px between the bottom of the model and the verdict. */
+  .cold-mascot { margin-bottom:10px; }
   .cold-mascot.is-3d > canvas { margin-top:-12px; }
   .cold-run { margin:10px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; }
   .cold-tag { display:inline-block; margin:6px 0 0; padding:2px 8px; border:1px solid var(--line); border-radius:999px;
@@ -115,7 +118,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-verdict { margin:2px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; line-height:1.3; letter-spacing:-0.01em; }
   .cold-verdict.is-danger { color:var(--accent-text); }
   .cold-verdict.is-safe { color:var(--brand); }
-  .cold-sim-tag { display:inline-block; margin:6px 0 0; padding:2px 8px; border:1px dashed var(--accent); border-radius:999px;
+  .cold-sim-tag { display:block; width:max-content; margin:6px 0 0; padding:2px 8px; border:1px dashed var(--accent); border-radius:999px;
     font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--accent-text); white-space:nowrap; }
   .cold-sim-tag[hidden] { display:none; }
   .cold-reading { margin:8px 0 0; min-height:1.5em; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.5; color:var(--text-secondary); }
@@ -178,7 +181,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (max-width:640px) {
     .cold-panel { grid-template-columns:minmax(0,1fr); grid-template-areas:"status" "mascot" "chart"; row-gap:12px; padding:16px 16px 12px; }
-    .cold-mascot { width:160px; }
+    .cold-mascot { width:160px; margin-bottom:0; }
     .cold-mascot.is-3d { height:144px; }
     .cold-mascot.is-3d > canvas { margin-top:-8px; }
     .cold-ice { width:100%; min-height:44px; }
@@ -358,7 +361,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
   <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
   <div class="cold-panel" data-reveal style="margin-top:40px;">
-    <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" style="width:100%;height:auto;display:block;overflow:visible;"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect><path d="M20 93 L280 93" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><g data-squash style="transform-origin:150px 157.5px;"><path d="M20 137.5 L51 137.5" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M249 137.5 L280 137.5" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><rect x="51" y="111" width="198" height="53" rx="21" fill="var(--mascot-goggle, transparent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="fill:var(--mascot-goggle, transparent);stroke:var(--mascot-stroke);"></rect><g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;"><path d="M80 146 Q99 122 118 146" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M182 146 Q201 122 220 146" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M118 183 Q150 213 182 183" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--accent);"></path></g><g data-face="danger" style="opacity:1;transition:opacity 250ms ease;"><path d="M82 134 Q97 132 114 126" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M99 139 Q99 144.5 99 150" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M186 126 Q203 132 218 134" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M201 139 Q201 144.5 201 150" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M124 194 Q131 185 138 194 Q145 203 152 194 Q159 185 166 194 Q173 203 180 194" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--accent);"></path></g></g></svg></div>
+    <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" style="width:100%;height:auto;display:block;overflow:visible;"><path d="M30 31 H270 L280 44 H20 Z" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--box-side);stroke:var(--mascot-stroke);"></path><rect x="20" y="44" width="260" height="195" rx="14" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect><path d="M20 153.2 H280 V225 Q280 239 266 239 H34 Q20 239 20 225 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M126.6 153.2 L173.4 153.2 L150.0 239.0 Z" fill="#2E5A22" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M100.6 153.2 L126.6 153.2 L147.4 219.5 L116.2 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M199.4 153.2 L173.4 153.2 L152.6 219.5 L183.8 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M53.8 172.7 L90.2 172.7 L90.2 188.3 L53.8 188.3 Z" fill="#E8871E" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 219.5 C228.0 242.9 272.2 244.8 289.1 225.4" fill="none" stroke="#6F7D6A" stroke-width="7.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#2E5A22" stroke-width="12.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#C9D1D8" stroke-width="7.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M202.0 188.3 L248.8 188.3 L248.8 219.5 L202.0 219.5 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><g data-squash style="transform-origin:150px 90px;"><g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;"><path d="M64.7 99.2 L96.9 72.1 L129.0 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 99.2 L203.1 72.1 L235.3 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M112.6 122.0 L118.9 125.3 L125.1 128.1 L131.3 130.2 L137.5 131.7 L143.8 132.6 L150.0 132.9 L156.2 132.6 L162.5 131.7 L168.7 130.2 L174.9 128.1 L181.1 125.3 L187.4 122.0" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g><g data-face="danger" style="opacity:1;transition:opacity 250ms ease;"><path d="M64.7 96.6 L96.9 90.5 L129.0 77.3" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 77.3 L203.1 90.5 L235.3 96.6" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M124.3 133.4 L127.5 135.6 L130.7 136.5 L133.9 135.6 L137.2 133.4 L140.4 131.2 L143.6 130.3 L146.8 131.2 L150.0 133.4 L153.2 135.6 L156.4 136.5 L159.6 135.6 L162.8 133.4 L166.1 131.2 L169.3 130.3 L172.5 131.2 L175.7 133.4" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g></g></svg></div>
     <div class="cold-status">
       <p id="coldVerdict" class="cold-verdict is-danger">1 excursion · peak 43°F at 14:28</p>
       <p id="coldSimTag" class="cold-sim-tag" hidden>what-if, not a measured effect</p>
@@ -1227,7 +1230,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     try {
       canvas = document.createElement("canvas");
       host.appendChild(canvas);
-      box = STB.createMascotBox(canvas, { reduced: false, varsFrom: canvas, face: "goggles", probe: true, lineWidth: 3, frameY: -0.1 });
+      box = STB.createMascotBox(canvas, { reduced: false, varsFrom: canvas, face: "mid", coat: true, probe: "pocket", lidThick: 0.012, frameY: -0.1 });
       box.render({ yaw: 0, lid: 0, scale: SCALE, face: { from: mood, to: mood, t: 1 } });
     } catch (err) {
       if (canvas) canvas.remove();
@@ -1319,10 +1322,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     temps.forEach(function (t, i) { if (t > temps[peak]) peak = i; });
     var safe = n === 0;
     if (cold.ice) {
-      /* Never a bare "in range" for invented numbers. */
+      /* Never a bare "in range" for invented numbers; the what-if tag sits on
+         its own line under this. */
       v.innerHTML = safe
-        ? "Simulated · in range with one more ice pack"
-        : "Simulated · " + n + " excursion" + (n === 1 ? "" : "s") + " with one more ice pack";
+        ? "Simulated · in range"
+        : "Simulated · " + n + " excursion" + (n === 1 ? "" : "s");
       tag.hidden = false;
     } else {
       v.innerHTML = safe ? "in range"
