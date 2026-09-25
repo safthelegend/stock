@@ -85,16 +85,33 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      left, so the width the section actually has gets used. */
   /* One instrument readout: identity and verdict on the left, the trace on
      the right, both centred on the same axis so they read as one unit. */
-  .cold-panel { position:relative; display:grid; grid-template-columns:252px minmax(0,1fr); gap:28px; align-items:center;
-    background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:18px 22px 14px;
+  .cold-panel { position:relative; display:grid; grid-template-columns:260px minmax(0,1fr);
+    grid-template-areas:"mascot chart" "status chart"; column-gap:28px; row-gap:4px; align-items:start;
+    background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:14px 20px 16px;
     transform-origin:50% 50%; }
-  .cold-status { min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
-  .cold-id { display:flex; align-items:center; gap:14px; }
-  .cold-id .mascot-slot { width:80px; flex:none; display:block; }
-  .cold-run { margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; }
+  .cold-status { grid-area:status; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
+  /* The mascot. Its own palette, per spec: a light tinted body in light and
+     stock, a lifted sage in dark, read by both the flat SVG and the 3D box
+     (which is told to take its colours from here). */
+  .cold-mascot { grid-area:mascot; position:relative; width:220px; justify-self:center;
+    --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22; --box-side:#D3E3C1; --box-interior:#BFD4A8;
+    --mascot-goggle:rgba(255,255,255,0.6); --cm-glow:rgba(156,203,122,0.5); }
+  :root[data-theme="dark"] .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; --mascot-goggle:rgba(156,203,122,0.12); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; --mascot-goggle:rgba(156,203,122,0.12); }
+  }
+  .cold-mascot.is-danger { --cm-glow:rgba(240,160,64,0.55); }
+  .cold-mascot > svg, .cold-mascot > canvas { filter:drop-shadow(0 0 8px var(--cm-glow)); transition:filter 250ms ease; }
+  .cold-mascot > canvas { display:block; width:100%; }
+  .cold-mascot.is-3d > svg { display:none !important; }
+  /* The canvas is square; the box sits in its middle band, so the frame is
+     cropped to the box and the empty sky above it is not layout. */
+  .cold-mascot.is-3d { height:196px; }
+  .cold-mascot.is-3d > canvas { margin-top:-12px; }
+  .cold-run { margin:10px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; }
   .cold-tag { display:inline-block; margin:6px 0 0; padding:2px 8px; border:1px solid var(--line); border-radius:999px;
     font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:0.02em; color:var(--text-secondary); white-space:nowrap; }
-  .cold-verdict { margin:16px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; line-height:1.3; letter-spacing:-0.01em; }
+  .cold-verdict { margin:2px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; line-height:1.3; letter-spacing:-0.01em; }
   .cold-verdict.is-danger { color:var(--accent-text); }
   .cold-verdict.is-safe { color:var(--brand); }
   .cold-sim-tag { display:inline-block; margin:6px 0 0; padding:2px 8px; border:1px dashed var(--accent); border-radius:999px;
@@ -110,7 +127,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-ice[aria-pressed="true"] { background:rgba(190,225,255,0.10); border-color:rgba(190,225,255,0.55); color:#D8ECFF; }
   .cold-ice[hidden] { display:none; }
   .cold-ice svg { flex:none; }
-  .cold-chart { position:relative; min-width:0; border-radius:10px; }
+  .cold-chart { grid-area:chart; align-self:center; position:relative; min-width:0; border-radius:10px; }
   /* Frosted inner glow while the what-if is on. */
   .cold-chart::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
     box-shadow:inset 0 0 28px rgba(200,232,255,0.22), inset 0 0 0 1px rgba(200,232,255,0.16); transition:opacity 500ms ease; }
@@ -159,9 +176,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .cold-frost { display:none; }
   }
   @media (max-width:640px) {
-    .cold-panel { grid-template-columns:minmax(0,1fr); gap:14px; padding:16px 16px 12px; }
-    .cold-id .mascot-slot { width:60px; }
-    .cold-verdict { margin-top:12px; }
+    .cold-panel { grid-template-columns:minmax(0,1fr); grid-template-areas:"status" "mascot" "chart"; row-gap:12px; padding:16px 16px 12px; }
+    .cold-mascot { width:160px; }
+    .cold-mascot.is-3d { height:144px; }
+    .cold-mascot.is-3d > canvas { margin-top:-8px; }
     .cold-ice { width:100%; min-height:44px; }
     .cs-xlabel { font-size:10px; }
     .cs-temp { font-size:11px; }
@@ -339,17 +357,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
   <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
   <div class="cold-panel" data-reveal style="margin-top:40px;">
+    <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" style="width:100%;height:auto;display:block;overflow:visible;"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect><path d="M20 93 L280 93" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><g data-squash style="transform-origin:150px 157.5px;"><path d="M20 137.5 L51 137.5" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M249 137.5 L280 137.5" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><rect x="51" y="111" width="198" height="53" rx="21" fill="var(--mascot-goggle, transparent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="fill:var(--mascot-goggle, transparent);stroke:var(--mascot-stroke);"></rect><g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;"><path d="M80 146 Q99 122 118 146" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M182 146 Q201 122 220 146" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M118 183 Q150 213 182 183" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--accent);"></path></g><g data-face="danger" style="opacity:1;transition:opacity 250ms ease;"><path d="M82 134 Q97 132 114 126" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M99 139 Q99 144.5 99 150" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M186 126 Q203 132 218 134" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M201 139 Q201 144.5 201 150" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--mascot-stroke);"></path><path d="M124 194 Q131 185 138 194 Q145 203 152 194 Q159 185 166 194 Q173 203 180 194" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke:var(--accent);"></path></g></g></svg></div>
     <div class="cold-status">
-      <div class="cold-id">
-        <div id="mascotCold" class="mascot-slot" data-state="danger" data-glasses></div>
-        <div>
-          <p class="cold-run">Sample run · box 0447</p>
-          <p class="cold-tag">not a delivery record</p>
-        </div>
-      </div>
       <p id="coldVerdict" class="cold-verdict is-danger">1 excursion · peak 43°F at 14:28</p>
       <p id="coldSimTag" class="cold-sim-tag" hidden>what-if, not a measured effect</p>
       <p id="coldReading" class="cold-reading" aria-live="polite"></p>
+      <p class="cold-run">Sample run · box 0447</p>
+      <p class="cold-tag">not a delivery record</p>
       <button type="button" id="coldIce" class="cold-ice" aria-pressed="false" hidden>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17l15.6-10"/><path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5"/></svg>
         <span class="cold-ice-lbl">Add ice pack</span>
@@ -1185,6 +1199,94 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   var coldSparkHost = $("#coldSpark");
   var coldPanel = coldSparkHost.closest(".cold-panel");
   var coldChart = coldSparkHost.closest(".cold-chart");
+
+  /* ---------- the panel's mascot ----------
+     3D by default: the shared box renderer with the opt-in goggles face,
+     probe and ice pack, idling through ±15° and paused while offscreen. The
+     solid flat SVG is the fallback for reduced motion, no JS (it ships in the
+     markup) and a renderer failure. Either way, mood() crossfades the face. */
+  var coldMascot = (function () {
+    var host = $("#coldMascot");
+    host.innerHTML = STB.mascotSVG("danger", { solid: true });
+    var svg = host.querySelector("svg"), mood = "danger", faceFrom = "danger", faceT0 = -1e9;
+    var api = { is3D: false, onLand: null };
+    var kick = function () {};
+    api.mood = function (m) {
+      m = m === "danger" ? "danger" : "inrange";
+      if (m === mood) return;
+      faceFrom = mood; mood = m; faceT0 = performance.now();
+      host.classList.toggle("is-danger", m === "danger");
+      paintMascot(svg, m);
+      kick();
+    };
+    api.ice = function () {};
+    if (reduced || !STB.createMascotBox) return api;
+
+    var canvas = null, box = null, SCALE = 1.3;
+    try {
+      canvas = document.createElement("canvas");
+      host.appendChild(canvas);
+      box = STB.createMascotBox(canvas, { reduced: false, varsFrom: canvas, face: "goggles", probe: true, lineWidth: 3, frameY: -0.1 });
+      box.render({ yaw: 0, lid: 0, scale: SCALE, face: { from: mood, to: mood, t: 1 } });
+    } catch (err) {
+      if (canvas) canvas.remove();
+      return api;
+    }
+    host.classList.add("is-3d");
+    api.is3D = true;
+
+    var YAW = 15 * Math.PI / 180, PERIOD = 6000, LID_OPEN = 50 * Math.PI / 180;
+    var ICE_TOP = 1.55, ICE_REST = -0.52;
+    var t0 = performance.now(), raf = 0, visible = false, lid = 0, iceY = null, seq = null;
+    function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+    /* Falls under "gravity" (k²) and lands with one small bounce. */
+    function drop(e, from) {
+      var fall = clamp01((e - 160) / 460);
+      if (fall < 1) return from + (ICE_REST - from) * fall * fall;
+      var b = clamp01((e - 620) / 160);
+      return ICE_REST + 0.09 * Math.sin(Math.PI * b) * (1 - b);
+    }
+    /* Lid lifts (0-240ms), the pack drops in or climbs out (160-680ms), the
+       lid settles shut (700-960ms). A re-toggle mid-flight starts from where
+       everything is, so fast toggling never jumps. */
+    function step(now) {
+      var e = now - seq.t0;
+      lid = e < 700 ? seq.lid0 + (LID_OPEN - seq.lid0) * easeOut(clamp01(e / 240))
+                    : LID_OPEN * (1 - easeOut(clamp01((e - 700) / 260)));
+      var k = clamp01((e - 160) / 520);
+      iceY = seq.on ? drop(e, seq.ice0) : seq.ice0 + (ICE_TOP - seq.ice0) * k * k;
+      if (seq.on && !seq.landed && e >= 620) { seq.landed = true; if (api.onLand) api.onLand(); }
+      if (e >= 960) { lid = 0; if (!seq.on) iceY = null; seq = null; }
+    }
+    function frame(now) {
+      raf = 0;
+      if (seq) step(now);
+      box.render({
+        scale: SCALE,
+        yaw: YAW * Math.sin((now - t0) / PERIOD * Math.PI * 2),
+        lid: lid,
+        face: { from: faceFrom, to: mood, t: clamp01((now - faceT0) / 250) },
+        iceY: iceY
+      });
+      if (visible) raf = requestAnimationFrame(frame);
+    }
+    kick = function () { if (visible && !raf) raf = requestAnimationFrame(frame); };
+    api.ice = function (on) {
+      seq = { on: on, t0: performance.now(), lid0: lid, ice0: iceY === null ? ICE_TOP : iceY, landed: false };
+      kick();
+    };
+    api.mouth = function () {   /* where the frost bursts from, in panel coordinates */
+      var r = canvas.getBoundingClientRect(), pr = coldPanel.getBoundingClientRect();
+      return { x: r.left - pr.left + r.width / 2, y: r.top - pr.top + r.height * 0.4 };
+    };
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[es.length - 1].isIntersecting;
+        if (visible) kick();
+      }).observe(host);
+    } else { visible = true; kick(); }
+    return api;
+  })();
   var cold = {
     sel: -1,                       /* selected point, or -1 */
     ice: false,                    /* what-if on */
@@ -1228,7 +1330,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     }
     v.className = "cold-verdict " + (safe ? "is-safe" : "is-danger");
     STB.renderUnits(v);
-    paintMascot($("#mascotCold svg"), safe ? "inrange" : "danger");
+    coldMascot.mood(safe ? "inrange" : "danger");
     renderReading();
   }
   function renderReading() {
@@ -1246,7 +1348,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   function buildCold() {
     var W = Math.max(280, Math.round(coldSparkHost.clientWidth || 640));
     var narrow = W < 480;
-    var H = narrow ? 220 : 220;
+    /* Desktop: the chart is as tall as the column beside it, so neither side
+       has dead space; never shorter than 220. */
+    var side = 0;
+    if (!narrow && matchMedia("(min-width:641px)").matches) {
+      var mEl = $("#coldMascot"), sEl = coldPanel.querySelector(".cold-status");
+      side = mEl.getBoundingClientRect().height + sEl.getBoundingClientRect().height + 4;
+    }
+    var H = Math.round(Math.max(220, Math.min(380, side)));
     var PAD_T = 18, PAD_B = narrow ? 58 : 48;
     var PAD_X = narrow ? 40 : 56;           /* room for centred two-line x labels */
     var all = COLD.concat(COLD_ICE).map(function (c) { return c.temp; }).concat([SAFE_MAX]);
@@ -1419,27 +1528,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     var sr = G.svg.getBoundingClientRect(), pr = coldPanel.getBoundingClientRect(), k = sr.width / G.W;
     return { x: sr.left - pr.left + G.px(peak) * k, y: sr.top - pr.top + Math.max(12, (G.PAD_T - 2)) * k, top: sr.top - pr.top };
   }
-  function iceVisual(on) {
-    coldChart.classList.toggle("is-frost", on);
-    if (!icePack) {
-      icePack = document.createElement("span");
-      icePack.className = "cold-icepack"; icePack.setAttribute("aria-hidden", "true");
-      icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" fill="rgba(200,232,255,0.18)" stroke="#CFE8FF" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" stroke="#E6F4FF" stroke-width="1.5" stroke-linecap="round"/></svg>';
-      coldPanel.appendChild(icePack);
-    }
-    var d = dropPoint();
-    icePack.style.left = d.x.toFixed(1) + "px"; icePack.style.top = d.y.toFixed(1) + "px";
-    icePack.style.setProperty("--drop", (-(d.y + 24)).toFixed(0) + "px");
-    icePack.classList.remove("is-in", "is-out"); void icePack.offsetWidth;
-    icePack.classList.add(on ? "is-in" : "is-out");
+  function frostBurst(x, y) {
     /* One burst at a time: a fast re-toggle replaces the last one, so nothing
        is ever left behind. */
     var old = coldPanel.querySelector(".cold-frost"); if (old) old.remove();
     clearTimeout(frostTimer);
-    if (!on || reduced) return;
+    if (reduced) return;
     var burst = document.createElement("span");
     burst.className = "cold-frost"; burst.setAttribute("aria-hidden", "true");
-    burst.style.left = d.x.toFixed(1) + "px"; burst.style.top = (d.y + 8).toFixed(1) + "px";
+    burst.style.left = x.toFixed(1) + "px"; burst.style.top = y.toFixed(1) + "px";
     for (var n = 0; n < 10; n++) {
       var a = (n / 10) * Math.PI * 2 + Math.random() * 0.5, r = 22 + Math.random() * 22;
       var s = document.createElement("i");
@@ -1451,6 +1548,30 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     }
     coldPanel.appendChild(burst);
     frostTimer = setTimeout(function () { burst.remove(); }, 720);
+  }
+  coldMascot.onLand = function () { var m = coldMascot.mouth(); frostBurst(m.x, m.y); };
+  function iceVisual(on) {
+    coldChart.classList.toggle("is-frost", on);
+    var old = coldPanel.querySelector(".cold-frost"); if (old) old.remove();
+    clearTimeout(frostTimer);
+    /* 3D: the pack drops into the mascot's box, and the frost bursts from
+       its opening as it lands. */
+    if (coldMascot.is3D) { coldMascot.ice(on); return; }
+    /* Reduced motion: the state swaps and nothing drops. */
+    if (reduced) return;
+    /* Flat fallback: a small pack drops onto the chart instead. */
+    if (!icePack) {
+      icePack = document.createElement("span");
+      icePack.className = "cold-icepack"; icePack.setAttribute("aria-hidden", "true");
+      icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" fill="rgba(200,232,255,0.18)" stroke="#CFE8FF" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" stroke="#E6F4FF" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      coldPanel.appendChild(icePack);
+    }
+    var d = dropPoint();
+    icePack.style.left = d.x.toFixed(1) + "px"; icePack.style.top = d.y.toFixed(1) + "px";
+    icePack.style.setProperty("--drop", (-(d.y + 24)).toFixed(0) + "px");
+    icePack.classList.remove("is-in", "is-out"); void icePack.offsetWidth;
+    icePack.classList.add(on ? "is-in" : "is-out");
+    if (on) frostBurst(d.x, d.y + 8);
   }
   function setIce(on) {
     cold.ice = on;
