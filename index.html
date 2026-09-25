@@ -21,15 +21,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=11">
-<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=11">
-<link rel="stylesheet" href="assets/site.css?v=11">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=12">
+<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=12">
+<link rel="stylesheet" href="assets/site.css?v=12">
 <style>
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
   canvas:focus-visible { outline:2px solid var(--brand); outline-offset:4px; }
   @keyframes rowUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .hero-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(240px,0.95fr); gap:48px; align-items:center; padding-top:88px; padding-bottom:72px; }
+  .hero-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(240px,0.8fr); gap:40px; align-items:center; padding-top:104px; padding-bottom:88px; }
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
@@ -265,6 +265,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     section { break-inside:avoid; }
   }
 </style>
+<link rel="stylesheet" href="assets/design.css?v=12">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -641,7 +642,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
+<section id="how" class="wrap" style="padding-top:80px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>Standard operating procedure</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
     <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
@@ -650,7 +651,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
 
-<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
+<div class="instrument">
+<section id="sensors" class="wrap" style="padding-top:96px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>The instruments</p>
   <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
@@ -696,8 +698,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
+<section id="tracker">
+  <div class="wrap" style="padding-top:72px; padding-bottom:104px;">
     <p class="eyebrow" data-reveal>The delivery log</p>
     <h2 class="hd" data-mask style="max-width:620px;">
       <span class="mask-l"><span data-line>The delivery log</span></span>
@@ -785,8 +787,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
   </div>
 </section>
+</div>
 
-<section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="story" class="wrap" style="padding-top:96px; padding-bottom:56px;">
   <p class="eyebrow" data-reveal>Why we exist</p>
   <div class="two-grid">
     <h2 class="hd" data-mask>
@@ -800,7 +803,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="team" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="team" class="wrap" style="padding-top:56px; padding-bottom:96px;">
   <p class="eyebrow" data-reveal>Who runs this</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
     <span class="mask-l"><span data-line>Four students.</span></span>
@@ -831,8 +834,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p class="cite">Students from three NYC public high schools. School affiliations are listed for identification only and do not indicate that any school has agreed to participate; see the school network section for each school’s actual status.</p>
 </section>
 
-<section id="limits" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="limits" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>The limits</p>
     <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
       <span class="mask-l"><span data-line>What this does not do.</span></span>
@@ -864,13 +867,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </section>
 
 <section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding:96px 24px;">
+  <div class="wrap" style="padding:64px 24px;">
     <p data-reveal style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
   </div>
 </section>
 
-<section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="replicate" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Run this yourself</p>
     <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
       <span class="mask-l"><span data-line>Everything we use</span></span>
@@ -1154,13 +1157,13 @@ that wasn't actually clean.</pre>
 </section>
 
 <section aria-hidden="true" class="divider" style="border-bottom:1px solid var(--brand-line-soft);">
-  <div class="inner" data-dpar style="padding:64px 24px;">
+  <div class="inner" data-dpar style="padding:40px 24px;">
     <div class="mascot-slot" data-dsvg data-state="idle" data-breathe data-fill="var(--bg)"></div>
   </div>
 </section>
 
 <section id="network" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+  <div class="wrap" style="padding-top:88px; padding-bottom:64px;">
     <p class="eyebrow" data-reveal>The network</p>
     <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
       <span class="mask-l"><span data-line>Where the need is,</span></span>
@@ -1188,8 +1191,8 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
-<section id="join" style="background:var(--surface);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="join" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Get involved</p>
     <div class="join-grid">
       <div>
@@ -1224,7 +1227,7 @@ that wasn't actually clean.</pre>
 </section>
 
 <section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+  <div class="wrap" style="padding-top:64px; padding-bottom:64px;">
     <p class="eyebrow">Our school network</p>
     <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
 
@@ -1261,8 +1264,8 @@ that wasn't actually clean.</pre>
 </section>
 
 
-<section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:64px; padding-bottom:64px;">
+<section id="tech-spec" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
     <p class="eyebrow" data-reveal>Open tech spec</p>
     <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
       <span class="mask-l"><span data-line>The hardware, for anyone</span></span>
@@ -1337,10 +1340,10 @@ that wasn't actually clean.</pre>
   <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
 </footer>
 
-<script src="assets/vendor/leaflet/leaflet.js?v=11"></script>
-<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=11"></script>
-<script src="assets/site.js?v=11"></script>
-<script src="assets/map.js?v=11"></script>
+<script src="assets/vendor/leaflet/leaflet.js?v=12"></script>
+<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=12"></script>
+<script src="assets/site.js?v=12"></script>
+<script src="assets/map.js?v=12"></script>
 <script>
 (function () {
   "use strict";

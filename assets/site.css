@@ -828,3 +828,4 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
   .leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow,
   .leaflet-cluster-spider-leg { transition:none !important; }
 }
+
