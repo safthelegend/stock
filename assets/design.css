@@ -121,17 +121,13 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
   box-shadow:0 0 0 3px rgba(156,203,122,0.14), 0 0 10px rgba(156,203,122,0.7); flex:none; }
 .instrument h2.hd { color:var(--text); }
 .instrument .body-p { color:#CBD6C2; }
-.instrument .unverified { color:var(--accent-text); background:rgba(240,160,64,0.10); }
-/* Panels read as instrument faces: hairline frame, inset glass, corner ticks. */
+.instrument .unverified { color:var(--accent-text); }
+/* Panels read as instrument faces: one hairline frame and inset glass. */
 .instrument .cold-panel, .instrument .manifest {
   background:linear-gradient(180deg, rgba(156,203,122,0.035), transparent 40%), var(--surface);
   border:1px solid var(--brand-line); border-radius:12px;
   box-shadow:inset 0 1px 0 rgba(231,238,223,0.05), 0 24px 60px -30px rgba(0,0,0,0.8); }
 .instrument .cold-panel { position:relative; }
-.instrument .cold-panel::before, .instrument .cold-panel::after { content:""; position:absolute; width:14px; height:14px; pointer-events:none;
-  border:1.5px solid var(--brand); opacity:0.55; }
-.instrument .cold-panel::before { top:8px; left:8px; border-right:none; border-bottom:none; border-top-left-radius:4px; }
-.instrument .cold-panel::after { bottom:8px; right:8px; border-left:none; border-top:none; border-bottom-right-radius:4px; }
 .instrument .manifest { overflow:hidden; }
 .instrument .mhead { background:rgba(156,203,122,0.05); }
 .instrument .thead { background:var(--surface); }
@@ -140,8 +136,7 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
 .instrument .cs-threshold { stroke:var(--accent); stroke-width:1.5; stroke-dasharray:4 4; opacity:1;
   filter:drop-shadow(0 0 3px rgba(240,160,64,0.9)) drop-shadow(0 0 8px rgba(240,160,64,0.45)); }
 .instrument .cs-threshold-lbl { fill:var(--accent-text); opacity:1; letter-spacing:0.06em; }
-.instrument .cs-line { stroke-width:2.25; filter:drop-shadow(0 0 3px rgba(156,203,122,0.45)); }
-.instrument .cs-line.danger { filter:drop-shadow(0 0 4px rgba(240,160,64,0.6)); }
+.instrument .cs-line { filter:drop-shadow(0 0 3px rgba(156,203,122,0.35)); }
 .instrument .cs-xlabel { letter-spacing:0.04em; }
 .instrument .sim-btn { background:transparent; }
 .instrument .sim-btn.is-on { background:var(--brand); color:var(--on-brand); }

@@ -182,12 +182,10 @@ footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondar
    quietly reading as fact. Accent-orange, per the existing palette — no new
    colour is introduced.
    --------------------------------------------------------------------------- */
-/* A dotted underline reads fine under a clause; stretched across two full
-   sentences that wrap three lines each, it breaks at every line end and
-   reads as a spelling-check squiggle rather than a deliberate flag. A tinted
-   background clones cleanly across wraps instead. */
-.unverified { color:var(--accent-text); background:var(--tint); border-radius:3px;
-  padding:0.5px 4px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+/* A dotted orange underline, offset clear of descenders: it flags the claim
+   without the highlighter block the tinted background used to paint. */
+.unverified { color:var(--accent-text); text-decoration-line:underline; text-decoration-style:dotted;
+  text-decoration-color:var(--accent); text-decoration-thickness:1.5px; text-underline-offset:4px; }
 
 /* Planned operations. One list for every school, filtered by status, rather
    than three hand-kept tiers. The status is on the row, so a school can never
