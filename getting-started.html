@@ -21,7 +21,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=11">
+<link rel="stylesheet" href="assets/site.css?v=12">
 <style>
   .prow > button { width:100%; display:grid; grid-template-columns:36px 1fr 24px; grid-template-areas:"num ttl caret" "num bdy bdy"; gap:6px 20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .bdy { grid-area:bdy; font-size:17px; line-height:1.6; color:var(--text-secondary); max-width:60ch; }
@@ -148,7 +148,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <p class="body-p" style="margin:0 0 28px; max-width:60ch;">Tell us who you are on the sign-up form and we'll follow up with the playbook for your role.</p>
     <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="confirmed"></span>
-      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site operating, in Manhattan.</p>
+      <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site in setup, in Manhattan.</p>
     </div>
     <a href="index.html#join" class="btn solid" style="margin-top:20px;">Go to the sign-up form</a>
   </div>
@@ -157,10 +157,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <section aria-label="School sites" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
     <p class="eyebrow">School sites</p>
-    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is operating; the rest are conversations and targets.</p>
+    <p class="body-p" style="margin:0 0 32px; max-width:62ch; font-size:17px;">Every school below carries an explicit status. One building is in setup; the rest are conversations and targets. No food has moved yet.</p>
     <div class="sites">
       <div class="tier">
-        <p class="tier-label">Operating <span class="count">1</span></p>
+        <p class="tier-label">In setup <span class="count">1</span></p>
         <ul>
           <li>Stuyvesant High School <span class="boro">Manhattan</span></li>
         </ul>
@@ -198,7 +198,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
 
-<script src="assets/site.js?v=11"></script>
+<script src="assets/site.js?v=12"></script>
 <script>
 (function () {
   "use strict";
@@ -265,7 +265,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     { kind: "section", label: "Pickup cadence", href: "#cadence", keywords: "weekly daily schedule frequency" },
     { kind: "section", label: "What you'll need", href: "#needs", keywords: "people route partner logger agreement" },
     { kind: "section", label: "Get involved", href: "#join-cta", keywords: "contact signup" },
-    { kind: "section", label: "Planned operations", href: "index.html#sites", keywords: "schools operating target" },
+    { kind: "section", label: "Planned operations", href: "index.html#sites", keywords: "schools in setup target" },
     { kind: "section", label: "The delivery log", href: "index.html#tracker", keywords: "tracker manifest" },
     { kind: "template", label: "Health code memo", href: "index.html#replicate", keywords: "food safety release records" },
     { kind: "template", label: "Partner agreement", href: "index.html#replicate" },

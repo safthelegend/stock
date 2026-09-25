@@ -1149,13 +1149,13 @@ function initMascotSlots(root) {
      the counts, the ordering and the caveat about targets all had to be kept
      true by hand. They are one array now: status lives on the record, and the
      view is derived. Adding a school is one line, and promoting one from
-     target to operating is one word.
+     target to in setup is one word.
 
      The list renders from JS, so the markup in index.html carries the same
      rows as a <noscript> fallback — a reader with JS off still gets every
      school and its status, just without the filter. */
   var SITES = [
-    { name: "Stuyvesant High School", borough: "Manhattan", status: "operating" },
+    { name: "Stuyvesant High School", borough: "Manhattan", status: "setup" },
     { name: "Midwood High School", borough: "Brooklyn", status: "conversation" },
     { name: "James Madison High School", borough: "Brooklyn", status: "conversation" },
     { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "target" },
@@ -1166,7 +1166,7 @@ function initMascotSlots(root) {
   ];
 
   var SITE_STATUS = [
-    { key: "operating", label: "Operating", note: "Running now. Boxes have a route, a receiving site and a signed agreement." },
+    { key: "setup", label: "In setup", note: "Pre-launch. Boxes and routes are being prepared; no food has moved yet." },
     { key: "conversation", label: "In conversation", note: "Talking to staff or administration. Nothing agreed, nothing running." },
     { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
   ];
@@ -1174,7 +1174,7 @@ function initMascotSlots(root) {
   /* The one receiving site. It is not a school, so it does not belong in the
      school list, but the map needs it or the map shows origins with no
      destination. Kept beside SITES rather than inside it. */
-  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "operating", kind: "receiving" };
+  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "setup", kind: "receiving" };
 
   var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
 

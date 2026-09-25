@@ -8,7 +8,7 @@
      Act 1  the need      — choropleth of one published indicator, by
                             community district. Real, cited, and the counts
                             in the caption are computed from the data file.
-     Act 2  today         — the schools from STB.SITES and the one operating
+     Act 2  today         — the schools from STB.SITES and the one in-setup
                             receiving site, with the routes a borough run is
                             designed to take. Real, and it says the log is
                             still empty.
@@ -113,7 +113,7 @@
        data layer. */
     function clusterIcon(cluster) {
       var kids = cluster.getAllChildMarkers();
-      var live = kids.some(function (m) { return m.options.stbStatus === "operating"; });
+      var live = kids.some(function (m) { return m.options.stbStatus === "setup"; });
       var n = kids.length;
       return L.divIcon({
         className: "",
@@ -218,7 +218,7 @@
 
     /* ---------- markers ---------- */
     function pinFor(place, coords) {
-      var live = place.status === "operating";
+      var live = place.status === "setup";
       var icon = L.divIcon({
         className: "",
         html:
@@ -514,7 +514,7 @@
         say("New York City has " + withData + " community districts. In " + above30 +
             " of them, more than 30% of residents are on SNAP.");
       } else if (t < TL.ACT3A) {
-        say("Today: " + real + " schools tracked, one receiving site operating in Manhattan. The log is still empty.");
+        say("Today: " + real + " schools tracked, one receiving site in setup in Manhattan. The log is still empty.");
       } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
       } else if (t < TL.ACT3C) {
