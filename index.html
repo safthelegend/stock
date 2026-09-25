@@ -46,9 +46,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
   .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
-  .divider { background:var(--tint); border-top:1px solid var(--brand-line-soft); overflow:hidden; }
-  .divider .inner { display:flex; justify-content:center; padding:72px 24px 56px; }
-  .divider .mascot-slot { width:140px; transform-origin:center bottom; }
   /* Mid-page 3D container band. The section height and the sticky frame are
      set from JS so the scroll length lives in one place. */
   .box-band { background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft); overflow:hidden; }
@@ -117,77 +114,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .cold-status #coldLabel { margin:0 !important; }
     .cold-status p:not(#coldLabel) { flex-basis:100%; margin:4px 0 0 !important; }
   }
-  /* ------------------------------------------------------------------
-     Strip-chart recorder. The section is a record of a decline against
-     time, so it is set as one: a single axis spanning the full measure,
-     with the figure and the terminal reading above it and the statutory
-     events annotated below.
-
-     The trace is dashed and captioned as schematic on purpose. There is no
-     y-axis and no gridline anywhere in here, because there is no series to
-     plot — inventing one would be the exact failure this section is about.
-     ------------------------------------------------------------------ */
-  .strip { margin-top:44px; }
-  .strip-head { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); gap:32px 40px; align-items:end; }
-  .strip-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:800; font-size:clamp(46px,7.5vw,92px); line-height:0.94; letter-spacing:-0.04em;
-    color:var(--text); margin:0; }
-  .strip-fig .strip-unit { font-size:0.34em; font-weight:700; letter-spacing:-0.01em; margin-left:10px; }
-  .strip-fig .strip-unit sup { font-size:0.4em; vertical-align:super; }
-  .strip-term-fig sup { font-size:0.42em; }
-  .strip-fig-cap { font-size:15px; line-height:1.55; color:var(--text-secondary); margin:14px 0 0; max-width:44ch; }
-  .strip-terminal { justify-self:end; text-align:right; max-width:46ch; }
-  .strip-term-lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:700; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 4px; }
+  /* Why-now stat figures and the section's closing line. */
   .strip-term-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     font-weight:700; font-size:clamp(24px,3.2vw,34px); line-height:1.05; letter-spacing:-0.02em; color:var(--accent-text); margin:0; }
+  .strip-term-fig sup { font-size:0.42em; }
   .strip-term-cap { font-size:14px; line-height:1.5; color:var(--text-secondary); margin:8px 0 0; }
-  .strip-term-sub { list-style:none; margin:10px 0 0; padding:0; display:grid; gap:5px; }
-  .strip-term-sub li { font-size:13px; line-height:1.45; color:var(--text-secondary); }
-
-  .strip-svg { display:block; width:100%; height:auto; margin-top:26px; overflow:visible; }
-  .strip-schematic { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
-
-  /* Markers sit at their real position in time: March 1 2026 is 240 of the
-     454 days between the two ends, which is the 52.9% the markup carries. */
-  .strip-events { list-style:none; margin:22px 0 0; padding:0; position:relative; min-height:112px; }
-  .strip-events .ev { position:absolute; top:0; left:var(--at); width:48%; }
-  .strip-events .ev-mid { width:22%; }
-  .strip-events .ev-end { left:auto; right:0; width:23%; text-align:right; }
-  .ev-date { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:700; font-size:14px; line-height:1.25; color:var(--text); margin:0 0 5px; }
-  .ev-note { font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; text-wrap:pretty; }
-
-  /* Smaller and tighter than the event annotations, so the hierarchy reads
-     figure > events > supporting without needing a rule to separate them. */
-  .strip-support { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 40px;
-    margin-top:14px; padding-top:18px; border-top:1px solid var(--line-soft); max-width:820px; }
-  .sup-lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:700; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--text-secondary); margin:0 0 7px; }
-  .sup-line { font-size:13.5px; line-height:1.5; color:var(--text); margin:0 0 5px; }
   .strip-close { margin-top:64px !important; font-size:20px !important; line-height:1.6 !important; max-width:62ch; }
-
-  @media (max-width:860px) {
-    .strip-head { grid-template-columns:minmax(0,1fr); gap:26px; }
-    .strip-terminal { justify-self:start; text-align:left; max-width:52ch; }
-  }
-  /* Under 760px the axis becomes a vertical timeline: markers top to bottom,
-     never a shrunken horizontal one and never a scroller. */
   @media (max-width:760px) {
-    .strip-svg, .strip-schematic { display:none; }
-    .strip-terminal { max-width:100%; }
-    .strip-events { margin-top:28px; min-height:0; padding-left:22px;
-      border-left:1px solid var(--rule); display:grid; gap:22px; }
-    /* Every horizontal-position property has to be unset, not just position:
-       a relative box still honours left:52.9% and would sit half off-screen. */
-    .strip-events .ev,
-    .strip-events .ev-mid,
-    .strip-events .ev-end { position:relative; left:auto; right:auto; width:auto;
-      transform:none; text-align:left; }
-    .strip-events .ev::before { content:""; position:absolute; left:-26.5px; top:6px;
-      width:9px; height:9px; border-radius:50%; background:var(--accent); }
-    .strip-support { grid-template-columns:minmax(0,1fr); gap:16px; }
     .strip-close { margin-top:44px !important; font-size:18px !important; }
   }
   /* ------------------------------------------------------------------
@@ -206,9 +139,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .dotfield-wrap { width:100%; }
   .dotfield { display:block; width:100%; height:auto; overflow:visible; }
   .whynow-stats { display:flex; flex-direction:column; gap:28px; margin-top:36px; }
-  /* Same caption scale as .strip-schematic, but not that rule itself: that
-     one is hidden below 760px alongside the timeline SVG it captions, and
-     this text needs to stay visible at every width. */
   .whynow-caption { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
   .whynow-legend { margin-top:14px; }
   /* Footnote weight: smaller and faded relative to the figure/label above
@@ -240,11 +170,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .doc-open > .doc-panel { grid-template-rows:1fr; }
   .doc-panel > div { overflow:hidden; }
   .disclosure > .doc-toggle { margin-top:0; }
-  .cards-grid .card .doc-inner { padding-top:14px; }
-  .doc-actions { display:flex; flex-wrap:wrap; gap:8px; }
-  .cards-grid .card .doc-text { background:var(--bg); border:1px solid var(--rule); border-radius:8px; padding:16px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.6; color:var(--text); white-space:pre-wrap; overflow-x:auto; max-height:300px; overflow-y:auto; margin:0 0 12px; }
-  .cards-grid .card .doc-copy, .cards-grid .card .doc-download { display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; color:var(--brand); background:var(--surface); border:1px solid var(--brand-line-mid); border-radius:8px; padding:7px 12px; cursor:pointer; text-decoration:none; transition:border-color 160ms ease, color 160ms ease; }
-  .cards-grid .card .doc-copy:hover, .cards-grid .card .doc-download:hover { border-color:var(--brand); color:var(--brand); }
   .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
   @media (max-width:760px) {
     .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
@@ -256,7 +181,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
-    nav.bar, .skip-link, .divider, .box-band, #heroBoxWrap, #formWrap { display:none !important; }
+    nav.bar, .skip-link, .box-band, #heroBoxWrap, #formWrap { display:none !important; }
     #heropin { height:auto !important; }
     #top, .thead { position:static !important; min-height:0 !important; }
     * { animation:none !important; transition:none !important; box-shadow:none !important; }
@@ -268,14 +193,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
-
-<div class="stats-strip" id="statsStrip" aria-label="Key figures">
-  <div class="wrap">
-    <span class="stat-item"><span class="stat-fig" data-countto="880000" data-format="int">880,000</span> <span class="stat-cap">school meals served daily in NYC</span></span>
-    <span class="stat-item"><span class="stat-fig" data-countto="4" data-format="pct">4%</span> <span class="stat-cap">of school buildings donate surplus food</span></span>
-    <span class="stat-item"><span class="stat-fig" data-countto="8" data-format="int">8</span> <span class="stat-cap">schools tracked · 1 in setup</span></span>
-  </div>
-</div>
 
 <nav class="bar" id="nav">
   <div class="wrap">
@@ -295,12 +212,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
         <span class="theme-name">Light</span>
       </button>
-      <button id="unitToggle" type="button" aria-label="Units">lbs · °F</button>
     </div>
   </div>
 </nav>
 <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
-<p id="unitStatus" class="vh" role="status" aria-live="polite"></p>
 
 <div id="heropin">
 <header id="top" class="wrap hero-grid">
@@ -308,18 +223,16 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <p class="eyebrow" data-reveal>Student-run food recovery · NYC</p>
     <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
       Students move surplus cafeteria food from share tables to food banks.
-      <em>The tracker will prove it.</em>
+      <em>Every box, logged and checkable.</em>
     </h1>
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
       <p class="body-p" style="margin:20px 0 0;">Insulated boxes, short local routes inside one borough, and a delivery log anyone can audit.</p>
-      <div class="prelaunch">
-        <p class="prelaunch-tag">Launching with our first partner</p>
-        <p class="prelaunch-line" id="heroFig">Every pound will be on the public record.</p>
-        <p class="prelaunch-sub">Boxes, routes and the delivery log are built and ready. The record opens the day our first receiving partner signs, and every pound moves onto it in real time from there.</p>
+      <div class="prelaunch" id="heroStatus">
+        <p class="prelaunch-sub" style="margin:0;">Pre-launch: the first run starts when our first receiving site signs.</p>
       </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
-        <a href="#tracker" class="btn line">See the log</a>
+        <a href="#how" class="btn line">How it works</a>
       </div>
     </div>
   </div>
@@ -332,6 +245,237 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </header>
 </div>
+
+<section class="statband" id="statband">
+  <div class="wrap">
+    <div class="grid">
+      <div class="cell fade-in-up" data-stat>
+        <p class="figure fig" id="statMeals">880,000</p>
+        <p class="cap">school meals served daily in NYC</p>
+      </div>
+      <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
+        <p class="figure fig" id="statPct">4%</p>
+        <p class="cap">of school buildings donate surplus food</p>
+      </div>
+      <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
+        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
+        <p class="cap">Boxes built, routes mapped, log live. We need receiving partners.</p>
+      </div>
+    </div>
+    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25.</p>
+  </div>
+</section>
+
+<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
+  <p class="eyebrow" data-reveal>Standard operating procedure</p>
+  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+    <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
+    <span class="mask-l"><span data-line>all on the record.</span></span>
+  </h2>
+  <div id="steps" style="border-top:1px solid var(--line);"></div>
+</section>
+
+<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
+  <p class="eyebrow" data-reveal>The instruments</p>
+  <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
+    <span class="mask-l"><span data-line>A school cannot release food</span></span>
+    <span class="mask-l"><span data-line>without a record.</span></span>
+  </h2>
+  <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
+  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
+  <div class="cold-panel" data-reveal style="margin-top:40px;">
+    <div class="cold-status">
+      <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:120px;" data-state="inrange" data-glasses></div>
+      <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:600; font-size:14px; margin:14px 0 0; color:var(--brand);">in range</p>
+      <p class="mono" style="font-weight:400; font-size:12px; line-height:1.6; margin:6px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record</p>
+      <p class="mono" style="font-weight:500; font-size:12px; margin:2px 0 0; color:var(--text-secondary);">safe ≤ <span data-degf="41"></span></p>
+    </div>
+    <div class="cold-chart">
+      <div id="coldSpark"></div>
+      <noscript>
+        <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447">
+          <div class="row"><span>13:42 packed</span><span class="temp">36°F</span></div>
+          <div class="row"><span>14:05 in transit</span><span class="temp">38°F</span></div>
+          <div class="row"><span>14:28 street handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
+          <div class="row"><span>14:51 received</span><span class="temp">39°F</span></div>
+        </div>
+      </noscript>
+    </div>
+  </div>
+</section>
+
+<!-- The second instance of the hero's box, same renderer, different behaviour:
+     shut throughout, not draggable, and given the shine and the zoom instead.
+     Sizing and the sticky frame are set by initScrollScrub / initMidBox. -->
+<section id="boxpin" class="box-band">
+  <div id="boxpinSticky">
+    <div class="box-band-inner">
+      <canvas id="midBox" width="440" height="440" role="img"
+              aria-label="The insulated box, sealed and logged."></canvas>
+      <div class="box-band-copy">
+        <p class="eyebrow" data-midcopy>What actually moves</p>
+        <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
+        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
+  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
+    <p class="eyebrow" data-reveal>The delivery log</p>
+    <h2 class="hd" data-mask style="max-width:620px;">
+      <span class="mask-l"><span data-line>Every delivery,</span></span>
+      <span class="mask-l"><span data-line>on the public record.</span></span>
+    </h2>
+    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — origin, destination, weight, temperature — sortable and filterable by anyone who wants to check our work. It opens with the first delivery and never closes.</p>
+    <div data-reveal style="margin-top:32px; max-width:700px;">
+      <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan's receiving site is in setup; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
+          <text x="8" y="16">borough cluster</text>
+          <text x="410" y="16">receiving site in that borough</text>
+        </g>
+        <g fill="none" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="2 8">
+          <path d="M170 56 L392 56"></path>
+          <path d="M170 110 L392 110"></path>
+          <path d="M170 164 L392 164"></path>
+          <path d="M170 218 L392 218"></path>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13">
+          <g style="fill:var(--brand);" font-weight="500">
+            <text x="8" y="60">Manhattan</text>
+            <text x="8" y="114">Brooklyn</text>
+            <text x="8" y="168">Bronx</text>
+            <text x="8" y="222">Queens</text>
+          </g>
+          <g style="fill:var(--text-secondary);">
+            <text x="410" y="60">receiving site (in setup)</text>
+            <text x="410" y="114">to be identified</text>
+            <text x="410" y="168">to be identified</text>
+            <text x="410" y="222">to be identified</text>
+          </g>
+        </g>
+        <g fill="none" stroke-width="2.5">
+          <circle cx="150" cy="52" r="7" style="stroke:var(--brand);"></circle>
+          <circle cx="150" cy="106" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="160" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="214" r="7" style="stroke:var(--brand-line-mid);"></circle>
+        </g>
+        <g transform="translate(400, 52)"><circle cx="0" cy="0" r="7" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle></g>
+        <g fill="none" stroke-width="2.5" stroke-dasharray="3 5" style="stroke:var(--brand-line-mid);">
+          <circle cx="400" cy="106" r="7"></circle>
+          <circle cx="400" cy="160" r="7"></circle>
+          <circle cx="400" cy="214" r="7"></circle>
+        </g>
+      </svg>
+    </div>
+    <div class="sim-bar" data-reveal>
+      <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
+        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Live view</button>
+        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">See a sample delivery</button>
+      </div>
+      <p class="sim-note" id="simNote">Live view. The record opens with our first delivery.</p>
+    </div>
+    <div id="simBanner" class="sim-banner" hidden role="status">
+      <strong>SIMULATED PREVIEW — not a delivery record.</strong>
+      Every row, temperature and signature below is invented to show what the log will look like once boxes move. Nothing here has happened.
+    </div>
+    <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
+    <div class="manifest" id="manifest">
+      <div class="mhead">
+        <span class="left">
+          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST · <span id="filterLabel">RECENT</span></span>
+          <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
+        </span>
+        <span class="right">
+          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
+          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">pre-launch</span>
+          <span id="mascotMood" class="mascot-slot" data-state="empty"></span>
+        </span>
+      </div>
+      <div class="thead" id="thead">
+        <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="from" aria-sort="none">Origin <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="to" aria-sort="none">Destination <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="lbs" aria-sort="none">Lbs <span class="caret" aria-hidden="true">▾</span></button>
+        <span class="lab">Status</span>
+      </div>
+      <div id="mempty" class="empty-state" style="display:none;">
+        <div class="mascot-slot" data-state="empty"></div>
+        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The record opens with our first delivery.</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Your school could fill the first row.</p>
+      </div>
+      <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
+      <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="network" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>The network</p>
+    <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
+      <span class="mask-l"><span data-line>Where the need is,</span></span>
+      <span class="mask-l"><span data-line>and where we are.</span></span>
+    </h2>
+
+    <div class="map-shell">
+      <div class="map-cta">
+        <span class="map-cta-text">Join the Movement</span>
+        <a class="map-cta-btn" href="#join">Get involved</a>
+      </div>
+      <div id="networkMap" class="map-canvas" role="region" aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0"></div>
+    </div>
+
+    <div id="networkMapLegend" class="map-legend"></div>
+
+    <p class="sim-banner">
+      <strong>What you are watching.</strong>
+      The shading and the school counts are real and sourced. The spread that follows is a projection: it shows what a student-run recovery network could look like across the city, not anything that has happened. None of the pale dots is a real school.
+    </p>
+
+    <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where Stock the Block operates. One receiving site is in setup, in Manhattan.</p>
+    <p class="cite" id="networkMapCite"></p>
+    <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
+  </div>
+</section>
+
+<section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+    <p class="eyebrow">Our school network</p>
+    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label" aria-hidden="true">Status</span>
+        <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label" aria-hidden="true">Borough</span>
+        <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
+      </div>
+    </div>
+
+    <div id="sitesList" class="sites-list" aria-live="polite">
+      <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
+           are replaced on first render. -->
+      <noscript>
+        <ul class="site-rows">
+          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-setup">In setup</span></li>
+          <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
+          <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
+          <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Rachel Carson High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Bronx High School of Science</span> <span class="meta"><span class="boro">Bronx</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Townsend Harris High School</span> <span class="meta"><span class="boro">Queens</span></span> <span class="status s-target">Target</span></li>
+          <li class="site-row"><span class="nm">Queens High School for the Sciences at York College</span> <span class="meta"><span class="boro">Queens</span><span class="tag">specialized</span></span> <span class="status s-target">Target</span></li>
+        </ul>
+      </noscript>
+    </div>
+
+    <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
+  </div>
+</section>
 
 <section id="whynow" class="wrap pt-sec" style="padding-bottom:72px;">
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
@@ -548,242 +692,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
           <use href="#dot-removed" x="294" y="272" width="14" height="14"></use>
           <use href="#dot-removed" x="316" y="272" width="14" height="14"></use>
         </svg>
-        <p class="whynow-caption whynow-legend">18 dots = 4.5 million people</p>
+        <p class="whynow-caption whynow-legend">18 dots = 4.5 million people<sup><a class="src-link" href="#src-8">8</a></sup></p>
       </div>
     </div>
   </div>
 
-  <!-- Strip-chart recorder: the same idiom as the cold-chain logs this
-       program produces, because this section is also a record of a decline
-       against time. The trace is schematic and says so; no value on it is
-       plotted from data, and nothing here carries a y-axis or a gridline
-       that would imply one. -->
-  <div class="strip" data-reveal>
-    <div class="strip-head">
-      <div class="strip-lead">
-        <p class="strip-fig">$<span id="scaleBillion">187</span><span class="strip-unit">billion<sup><a class="src-link" href="#src-1">1</a></sup></span></p>
-        <p class="strip-fig-cap">Cut to SNAP over ten years, FY2025–FY2034. H.R. 1 / P.L. 119-21, signed July 4, 2025.</p>
-      </div>
-      <div class="strip-terminal">
-        <p class="strip-term-lbl">By April 2026</p>
-        <p class="strip-term-fig">4.5 million<sup><a class="src-link" href="#src-8">8</a></sup></p>
-        <p class="strip-term-cap">People off SNAP nationally between enactment and April 2026, about 11 percent.</p>
-        <ul class="strip-term-sub">
-          <li>Participation has dropped in every state except Alaska and Guam<sup><a class="src-link" href="#src-6">6</a></sup></li>
-          <li>Arizona: a 51% year-over-year drop, 449,478 people<sup><a class="src-link" href="#src-7">7</a></sup></li>
-        </ul>
-      </div>
-    </div>
-
-    <svg class="strip-svg" viewBox="0 0 1000 92" role="img" focusable="false"
-         aria-label="Schematic time axis running July 2025 to October 2026, with a step down at the March 2026 work-requirement date. The line is illustrative and is not plotted from data.">
-      <!-- trace: dashed on purpose, so it never reads as a plotted series -->
-      <path d="M3 22 H529 V44 H997" fill="none" stroke="var(--accent)" stroke-width="2.5"
-            stroke-dasharray="5 3.5" stroke-linejoin="miter" vector-effect="non-scaling-stroke"></path>
-      <circle cx="997" cy="44" r="4" fill="var(--accent)" vector-effect="non-scaling-stroke"></circle>
-      <!-- axis -->
-      <line x1="3" y1="70" x2="997" y2="70" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
-      <line x1="3" y1="62" x2="3" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
-      <line x1="529" y1="62" x2="529" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
-      <line x1="997" y1="62" x2="997" y2="78" stroke="var(--rule)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
-    </svg>
-    <p class="strip-schematic">Trace is schematic — the shape of the change, not plotted values.</p>
-
-    <ol class="strip-events">
-      <li class="ev" style="--at:0%">
-        <p class="ev-date">July 4, 2025</p>
-        <p class="ev-note">H.R. 1 / P.L. 119-21 signed.</p>
-      </li>
-      <li class="ev ev-mid" style="--at:52.9%">
-        <p class="ev-date">March 1, 2026<sup><a class="src-link" href="#src-9">9</a></sup></p>
-        <p class="ev-note">Expanded work requirements took effect in NYC. ABAWDs aged 18–64 must document 80 hours a month.</p>
-      </li>
-      <li class="ev ev-end" style="--at:100%">
-        <p class="ev-date">October 1, 2026<sup><a class="src-link" href="#src-10">10</a></sup></p>
-        <p class="ev-note">Federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.</p>
-      </li>
-    </ol>
-
-    <div class="strip-support">
-      <div class="sup-group">
-        <p class="sup-lbl">Scale</p>
-        <p class="sup-line">Funding cut by roughly <strong id="scalePct">36</strong> percent by 2034<sup><a class="src-link" href="#src-2">2</a></sup></p>
-        <p class="sup-line">SNAP serves nearly <strong>42 million</strong> people monthly<sup><a class="src-link" href="#src-3">3</a></sup></p>
-      </div>
-      <div class="sup-group">
-        <p class="sup-lbl">Mechanism</p>
-        <p class="sup-line">States face a first-ever bill of roughly <strong>$9 billion</strong> in shifted costs<sup><a class="src-link" href="#src-4">4</a></sup></p>
-        <p class="sup-line">Work-requirement age raised from <strong>54 to 64</strong><sup><a class="src-link" href="#src-5">5</a></sup></p>
-      </div>
-    </div>
-  </div>
+  <p class="body-p" data-reveal style="margin:0; max-width:62ch;">On October 1, 2026, federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.<sup><a class="src-link" href="#src-10">10</a></sup></p>
 
   <p class="body-p strip-close" data-reveal style="margin:0;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
-</section>
-
-<section class="statband" id="statband">
-  <div class="wrap">
-    <div class="grid">
-      <div class="cell fade-in-up" data-stat>
-        <p class="figure fig" id="statMeals">880,000</p>
-        <p class="cap">school meals served daily in NYC</p>
-      </div>
-      <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
-        <p class="figure fig" id="statPct">4%</p>
-        <p class="cap">of school buildings donate surplus food</p>
-      </div>
-      <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
-        <p class="cap">Boxes built, routes mapped, log live. We need receiving partners.</p>
-      </div>
-    </div>
-    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25. No food has been recovered yet — that starts with our first partner.</p>
-  </div>
-</section>
-
-<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
-  <p class="eyebrow" data-reveal>Standard operating procedure</p>
-  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
-    <span class="mask-l"><span data-line>all on the record.</span></span>
-  </h2>
-  <div id="steps" style="border-top:1px solid var(--line);"></div>
-</section>
-
-<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
-  <p class="eyebrow" data-reveal>The instruments</p>
-  <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
-    <span class="mask-l"><span data-line>A school cannot release food</span></span>
-    <span class="mask-l"><span data-line>without a record.</span></span>
-  </h2>
-  <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
-  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
-  <div class="cold-panel" data-reveal style="margin-top:40px;">
-    <div class="cold-status">
-      <div id="mascotCold" class="mascot-slot" style="width:100%; max-width:120px;" data-state="inrange" data-glasses></div>
-      <p aria-live="polite" id="coldLabel" class="mono" style="font-weight:600; font-size:14px; margin:14px 0 0; color:var(--brand);">in range</p>
-      <p class="mono" style="font-weight:400; font-size:12px; line-height:1.6; margin:6px 0 0; color:var(--text-secondary);">box 0447 · illustrative sample, not a delivery record</p>
-      <p class="mono" style="font-weight:500; font-size:12px; margin:2px 0 0; color:var(--text-secondary);">safe ≤ <span data-degf="41"></span></p>
-    </div>
-    <div class="cold-chart">
-      <div id="coldSpark"></div>
-      <noscript>
-        <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447">
-          <div class="row"><span>13:42 packed</span><span class="temp">36°F</span></div>
-          <div class="row"><span>14:05 in transit</span><span class="temp">38°F</span></div>
-          <div class="row"><span>14:28 street handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
-          <div class="row"><span>14:51 received</span><span class="temp">39°F</span></div>
-        </div>
-      </noscript>
-    </div>
-  </div>
-</section>
-
-<!-- The second instance of the hero's box, same renderer, different behaviour:
-     shut throughout, not draggable, and given the shine and the zoom instead.
-     Sizing and the sticky frame are set by initScrollScrub / initMidBox. -->
-<section id="boxpin" class="box-band">
-  <div id="boxpinSticky">
-    <div class="box-band-inner">
-      <canvas id="midBox" width="440" height="440" role="img"
-              aria-label="The insulated box, sealed and logged."></canvas>
-      <div class="box-band-copy">
-        <p class="eyebrow" data-midcopy>What actually moves</p>
-        <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
-        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
-    <p class="eyebrow" data-reveal>The delivery log</p>
-    <h2 class="hd" data-mask style="max-width:620px;">
-      <span class="mask-l"><span data-line>The delivery log</span></span>
-      <span class="mask-l"><span data-line>is the whole pitch.</span></span>
-    </h2>
-    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — origin, destination, weight, temperature — sortable and filterable by anyone who wants to check our work. It opens with the first delivery and never closes.</p>
-    <div data-reveal style="margin-top:32px; max-width:700px;">
-      <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan's receiving site is in setup; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
-          <text x="8" y="16">borough cluster</text>
-          <text x="410" y="16">receiving site in that borough</text>
-        </g>
-        <g fill="none" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="2 8">
-          <path d="M170 56 L392 56"></path>
-          <path d="M170 110 L392 110"></path>
-          <path d="M170 164 L392 164"></path>
-          <path d="M170 218 L392 218"></path>
-        </g>
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13">
-          <g style="fill:var(--brand);" font-weight="500">
-            <text x="8" y="60">Manhattan</text>
-            <text x="8" y="114">Brooklyn</text>
-            <text x="8" y="168">Bronx</text>
-            <text x="8" y="222">Queens</text>
-          </g>
-          <g style="fill:var(--text-secondary);">
-            <text x="410" y="60">receiving site (in setup)</text>
-            <text x="410" y="114">to be identified</text>
-            <text x="410" y="168">to be identified</text>
-            <text x="410" y="222">to be identified</text>
-          </g>
-        </g>
-        <g fill="none" stroke-width="2.5">
-          <circle cx="150" cy="52" r="7" style="stroke:var(--brand);"></circle>
-          <circle cx="150" cy="106" r="7" style="stroke:var(--brand-line-mid);"></circle>
-          <circle cx="150" cy="160" r="7" style="stroke:var(--brand-line-mid);"></circle>
-          <circle cx="150" cy="214" r="7" style="stroke:var(--brand-line-mid);"></circle>
-        </g>
-        <g transform="translate(400, 52)"><circle cx="0" cy="0" r="7" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle></g>
-        <g fill="none" stroke-width="2.5" stroke-dasharray="3 5" style="stroke:var(--brand-line-mid);">
-          <circle cx="400" cy="106" r="7"></circle>
-          <circle cx="400" cy="160" r="7"></circle>
-          <circle cx="400" cy="214" r="7"></circle>
-        </g>
-      </svg>
-    </div>
-    <div class="sim-bar" data-reveal>
-      <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
-        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Live view</button>
-        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">See a sample delivery</button>
-      </div>
-      <p class="sim-note" id="simNote">Live view. The record opens with our first delivery.</p>
-    </div>
-    <div id="simBanner" class="sim-banner" hidden role="status">
-      <strong>SIMULATED PREVIEW — not a delivery record.</strong>
-      Every row, temperature and signature below is invented to show what the log will look like once boxes move. Nothing here has happened.
-    </div>
-    <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
-    <div class="manifest" id="manifest">
-      <div class="mhead">
-        <span class="left">
-          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST · <span id="filterLabel">RECENT</span></span>
-          <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
-        </span>
-        <span class="right">
-          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
-          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">pre-launch</span>
-          <span id="mascotMood" class="mascot-slot" data-state="empty"></span>
-        </span>
-      </div>
-      <div class="thead" id="thead">
-        <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="from" aria-sort="none">Origin <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="to" aria-sort="none">Destination <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="lbs" aria-sort="none">Lbs <span class="caret" aria-hidden="true">▾</span></button>
-        <span class="lab">Status</span>
-      </div>
-      <div id="mempty" class="empty-state" style="display:none;">
-        <div class="mascot-slot" data-state="empty"></div>
-        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The record opens with our first delivery.</p>
-        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Your school could fill the first row.</p>
-      </div>
-      <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
-      <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
-    </div>
-  </div>
 </section>
 
 <section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
@@ -803,7 +719,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <section id="team" class="wrap" style="padding-top:88px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>Who runs this</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four students.</span></span>
+    <span class="mask-l"><span data-line>Five students.</span></span>
     <span class="mask-l"><span data-line>Three schools.</span></span>
   </h2>
   <div class="cards-grid">
@@ -827,6 +743,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <p class="kicker">Engineering Co-Lead</p>
       <p class="meta">Stuyvesant High School</p>
     </div>
+    <div class="card" data-reveal>
+      <p class="name">Cesar Julian</p>
+      <p class="kicker">Health &amp; Safety Lead</p>
+      <p class="meta">Midwood High School</p>
+    </div>
   </div>
   <p class="cite">Students from three NYC public high schools. School affiliations are listed for identification only and do not indicate that any school has agreed to participate; see the school network section for each school’s actual status.</p>
 </section>
@@ -845,7 +766,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </div>
       <div data-reveal>
         <p class="lbl">what it measurably changes</p>
-        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus. None of it is measurable yet; the log is empty.</p>
+        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus.</p>
       </div>
       <div data-reveal>
         <p class="lbl">what it does not touch</p>
@@ -863,12 +784,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section aria-label="Pull quote" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding:96px 24px;">
-    <p data-reveal style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:clamp(28px,4vw,42px); line-height:1.3; letter-spacing:-0.02em; color:var(--brand); margin:0; max-width:22ch;">A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
-  </div>
-</section>
-
 <section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
     <p class="eyebrow" data-reveal>Run this yourself</p>
@@ -878,216 +793,29 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </h2>
     <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Read the health code memo, then the box spec. Those two decide whether your building can run this; the rest follows from them.</p>
     <div class="cards-grid">
-      <div class="card" data-reveal style="grid-column:span 2; background:var(--tint); border-color:var(--brand-line-mid);">
+      <div class="card" data-reveal style="grid-column:1 / -1; background:var(--tint); border-color:var(--brand-line-mid);">
         <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo: start here</p>
         <p class="body" style="font-size:19px;">What a school may release, and the records it must keep to release it.</p>
         <p class="meta">Food service directors and school administrators.</p>
-        <button type="button" class="doc-toggle" aria-expanded="false">Read the memo <span class="doc-caret" aria-hidden="true">+</span></button>
-        <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docHealth">STOCK THE BLOCK: HEALTH CODE MEMO (TEMPLATE)
-For food service directors and school administrators
-
-WHAT THIS COVERS
-This memo explains why unopened, sealed share-table surplus is generally
-lower-risk to release than prepared or served food, and what record a
-school should keep before releasing it. It is a starting template, not
-legal advice. Read the bracketed sections and fill them in with your
-own health department's guidance before relying on it.
-
-WHAT COUNTS AS TCS FOOD
-Time/Temperature Control for Safety (TCS) food is food that can support
-rapid bacterial growth if it sits at an unsafe temperature: milk and
-dairy, cut produce, anything that needs refrigeration. Most share-table
-surplus (sealed milk cartons, prepackaged snacks, whole fruit) is
-lower-risk than prepared or served food because it was never opened,
-plated, or handled after packaging. That does not mean it is exempt
-from time/temperature rules. It means the risk profile is different
-from a steam-table item that sat out during lunch service.
-
-WHY A TEMPERATURE RECORD IS WHAT LETS YOU RELEASE IT
-A school cannot show a box of surplus was safe by asserting it. It has
-to show it. A written record of the load's temperature from pack-out to
-hand-off is the artifact a health department or a skeptical parent can
-actually check. No record, no defensible release.
-
-PLANNED, NOT YET IN PLACE: the intended fallback for a run that goes out
-without a logger unit is a documented model of that route's typical
-time-and-temperature profile, built from previous logged runs on the
-same route. No such model exists yet, and it cannot exist until a route
-has accumulated logged runs to build it from. Until then, treat a run
-without a logger unit as having no temperature record at all, and do not
-release against a model that has not been built and validated with your
-health department.
-
-[Insert your local health department's specific guidance on TCS food
-donation and record-keeping. Verify it with your health department
-before relying on this memo. Requirements vary by jurisdiction.]
-
-LIABILITY: THE BILL EMERSON GOOD SAMARITAN FOOD DONATION ACT
-The federal Bill Emerson Good Samaritan Food Donation Act protects
-schools and other good-faith donors from civil and criminal liability
-if a food item donated in good faith later causes harm, except in cases
-of gross negligence or intentional misconduct. It does not replace
-local health code compliance; a school still has to follow its state
-and local food safety rules. What the Emerson Act does is remove the
-liability fear that keeps some schools from donating at all, once
-they're already following the rules above.
-
-BEFORE YOU RELEASE A BOX
-  1. Confirm every item is sealed and unopened: nothing served, nothing
-     plated, nothing that touched an open steam table.
-  2. Confirm the box has a temperature record covering pack-out to
-     hand-off, from a logger unit. (The route-model fallback described
-     above is planned and not yet available. Until it is built, a run
-     without a logger unit has no temperature record.)
-  3. Confirm the record is attached to a box ID that appears on the
-     delivery manifest.
-  4. Keep the record after the delivery. It's what you'd show if
-     anyone ever asked what happened to the surplus.
-
-[Insert your school's contact for questions about this memo]
-[Insert local health department name and contact]
-
-This is a template. Read it, adapt it, verify it with your own health
-department. Do not treat it as a substitute for their guidance.</pre>
-          <div class="doc-actions">
-            <a class="doc-download" data-download-from="docHealth" data-filename="stock-the-block-health-code-memo.txt" href="#">Download memo</a>
-            <button type="button" class="doc-copy" data-copy-target="docHealth">Copy to clipboard</button>
-          </div>
-        </div></div>
+        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-health">Read the memo <span aria-hidden="true">→</span></a>
       </div>
       <div class="card" data-reveal>
-        <p class="kicker" data-icon="ruler">Box spec</p>
-        <p class="body">Cut sheet, materials list and fold order for one insulated box.</p>
-        <p class="meta">Whoever builds the first three boxes.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2s6IEluc3VsYXRlZCBUcmFuc3BvcnQgQm94IFNwZWMgKFRlbXBsYXRlKQoKT25lIGJveCwgY3V0IGFuZCBmb2xkZWQgZnJvbSBhIHNpbmdsZSBzaGVldCwgbWF0Y2hpbmcgdGhlIGZsYXQgZGlhZ3JhbQpvbiB0aGUgc2l0ZTogc2l4IGxhYmVsZWQgZWxlbWVudHMuIExpZCBmbGFwLCBmYWNlIHBhbmVsLCBiYXNlLCBoYW5kbGUKY3V0LCBzZW5zb3IgcG9ja2V0LCBhbmQgYmFjayBwYW5lbC4KClRoaXMgaXMgYSBzdGFydGluZyB0ZW1wbGF0ZSBmb3IgYSBidWlsZCB0ZWFtLCBub3QgYSBmaW5pc2hlZAplbmdpbmVlcmluZyBkcmF3aW5nLiBFeGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCB0aGUgcHJlY2lzZSBmb2xkCnNlcXVlbmNlIGRlcGVuZCBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IGNob29zZSBhbmQgYXJlbid0IGludmVudGVkCmhlcmUuIFZlcmlmeSB0aGVtIGFnYWluc3QgdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUgYW5kIHlvdXIgYWN0dWFsCm1hdGVyaWFsIGJlZm9yZSBjdXR0aW5nLgoKIyMgVGhlIHNpeCBsYWJlbGVkIGVsZW1lbnRzCgotICoqTGlkIGZsYXAqKjogZm9sZHMgZG93biBvdmVyIHRoZSBvcGVuIHRvcCB0byBjbG9zZSB0aGUgYm94LgotICoqRmFjZSBwYW5lbCoqOiB0aGUgZnJvbnQgd2FsbDsgY2FycmllcyB0aGUgaGFuZGxlIGN1dC4KLSAqKkJhc2UqKjogdGhlIGJvdHRvbSBwYW5lbC4KLSAqKkhhbmRsZSBjdXQqKjogYW4gb3BlbmluZyBpbiB0aGUgZmFjZSBwYW5lbCBzaXplZCBmb3IgYSBnbG92ZWQKICBoYW5kLCByZWluZm9yY2VkIGF0IHRoZSBlZGdlLgotICoqU2Vuc29yIHBvY2tldCoqOiBhIHBvY2tldCBpbiB0aGUgYmFjayBwYW5lbCB0aGF0IGhvbGRzIHRoZSBsb2dnZXIKICB1bml0IGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZSAoRVNQMzItQzMgU3VwZXJNaW5pICsKICBEUzE4QjIwIHByb2JlKSwgb3BlbiBlbm91Z2ggZm9yIHRoZSBwcm9iZSB0byByZWFjaCB0aGUgaW50ZXJpb3IuCi0gKipCYWNrIHBhbmVsKio6IHRoZSByZWFyIHdhbGw7IGNhcnJpZXMgdGhlIHNlbnNvciBwb2NrZXQuCgojIyBNYXRlcmlhbHMgKGdlbmVyaWM7IGNvbmZpcm0gcXVhbnRpdGllcyBhZ2FpbnN0IHlvdXIgYWN0dWFsIHNoZWV0IHNpemUpCgp8IEl0ZW0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IE5vdGVzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18CnwgUmlnaWQgaW5zdWxhdGlvbiBib2FyZCAgICAgICAgICAgICB8IFNpemVkIHRvIHRoZSBwYW5lbCBsYXlvdXQgaW4gdGhlIGRpYWdyYW0gICAgICAgICAgICAgICAgICAgIHwKfCBSZWZsZWN0aXZlIGxpbmVyIG9yIGZvaWwgdGFwZSAgICAgIHwgSW50ZXJpb3IgZmFjZSwgYWxsIHBhbmVscyAgICAgICAgICAgICAgICAgfAp8IFNlYW0gdGFwZSAgICAgICAgICAgICAgICAgICAgICAgICAgfCBGb2xkIGxpbmVzIGFuZCBqb2ludHMgICAgICAgICAgICAgICAgICAgICB8CnwgQ2xvc3VyZSAoaG9vay1hbmQtbG9vcCBvciBsYXRjaCkgICB8IEtlZXBzIHRoZSBsaWQgZmxhcCBzaHV0IGluIHRyYW5zaXQgICAgICAgIHwKfCBIYW5kbGUgZWRnZSByZWluZm9yY2VtZW50ICAgICAgICAgIHwgVGhyb3VnaCB0aGUgaGFuZGxlIGN1dCAgICAgICAgICAgICAgICAgICAgfAoKUHJpY2UgdGhlIG1hdGVyaWFscyBhYm92ZSBmcm9tIHlvdXIgb3duIHN1cHBsaWVyIGJlZm9yZSBvcmRlcmluZyBhCmJhdGNoLiBQZXItYm94IGNvc3QgZGVwZW5kcyBlbnRpcmVseSBvbiB0aGUgc2hlZXQgbWF0ZXJpYWwgeW91IHBpY2ssIHNvCm5vIGZpZ3VyZSBpcyBxdW90ZWQgaGVyZS4KCiMjIEFzc2VtYmx5LCBpbiBnZW5lcmFsIHRlcm1zCgoxLiBDdXQgdGhlIHNoZWV0IHRvIHRoZSBwYW5lbCBsYXlvdXQgc2hvd24gaW4gdGhlIGRpYWdyYW0gb24gdGhlIHNpdGUuCjIuIEN1dCB0aGUgaGFuZGxlIG9wZW5pbmcgaW50byB0aGUgZmFjZSBwYW5lbDsgY3V0IHRoZSBzZW5zb3IgcG9ja2V0CiAgIGludG8gdGhlIGJhY2sgcGFuZWwuCjMuIEZvbGQgdGhlIGZhY2UgcGFuZWwsIGJhY2sgcGFuZWwsIGFuZCByZW1haW5pbmcgc2lkZSBwYW5lbHMgdXAgZnJvbQogICB0aGUgYmFzZSB0byBmb3JtIHRoZSBib3gncyB3YWxscy4KNC4gU2VhbSB0aGUgdmVydGljYWwgZWRnZXMgd2hlcmUgYWRqb2luaW5nIHBhbmVscyBtZWV0Lgo1LiBGb2xkIHRoZSBsaWQgZmxhcCBkb3duIHRvIGNsb3NlIHRoZSBvcGVuIHRvcC4KNi4gTGluZSB0aGUgaW50ZXJpb3Igd2l0aCB0aGUgcmVmbGVjdGl2ZSBsaW5lci4KNy4gRml0IHRoZSBzZW5zb3IgcG9ja2V0IHNvIHRoZSBsb2dnZXIgc2l0cyBhZ2FpbnN0IHRoZSBpbnRlcmlvciB3YWxsCiAgIHdpdGggdGhlIHByb2JlIHJlYWNoaW5nIGludG8gdGhlIG1haW4gY2F2aXR5LgoKW0luc2VydCBleGFjdCBwYW5lbCBkaW1lbnNpb25zIGFuZCBmb2xkIHNlcXVlbmNlLCB2ZXJpZmllZCBhZ2FpbnN0IHRoZQpkaWFncmFtIG9uIHRoZSBzaXRlIGFuZCB5b3VyIGNob3NlbiBzaGVldCBtYXRlcmlhbCwgb25jZSB5b3VyIGJ1aWxkCnRlYW0gZmluYWxpemVzIHRoZW0uIFRoaXMgdGVtcGxhdGUgaW50ZW50aW9uYWxseSBkb2Vzbid0IGludmVudAptZWFzdXJlbWVudHMgdGhhdCBkZXBlbmQgb24gbWF0ZXJpYWwgeW91IGhhdmVuJ3QgcGlja2VkIHlldC5dCg==" download="stock-the-block-box-spec.md">Download box-spec.md ↓</a>
+        <p class="kicker" data-icon="ruler">Box spec and firmware</p>
+        <p class="body">Cut sheet, materials list and fold order for one insulated box, plus the logger firmware overview.</p>
+        <p class="meta">Whoever builds the first three boxes, and the student build team.</p>
+        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-build">Get the build files <span aria-hidden="true">→</span></a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="handshake">Partner agreement</p>
         <p class="body">One page between a school and a receiving site, signed before the first run.</p>
         <p class="meta">School administrators and pantry directors.</p>
-        <button type="button" class="doc-toggle" aria-expanded="false">Read the agreement <span class="doc-caret" aria-hidden="true">+</span></button>
-        <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docAgreement">STOCK THE BLOCK: PARTNER AGREEMENT (TEMPLATE)
-One page, signed before the first run.
-
-This agreement is between:
-
-  School / releasing site:  [Insert school name]
-  Receiving site:           [Insert partner organization name]
-
-Effective date: [Insert start date]
-
-WHAT IS BEING DONATED
-Sealed, unopened surplus food from the school's cafeteria share table
-only. Nothing served, nothing plated, nothing opened. Every box carries
-a temperature record covering pack-out to hand-off (see the accompanying
-health code memo).
-
-PICKUP / DELIVERY CADENCE
-Cadence is negotiated per-partner and is not fixed by this template. A
-new route may start at once or twice a week and increase from there as
-it proves reliable (see the "getting started" page's cadence guidance
-for why starting slow and consistent beats starting ambitious and
-unreliable). The agreed cadence for this partnership:
-
-  Day(s) of week: [Insert]
-  Time: [Insert]
-  Route / drop-off point: [Insert]
-
-LIABILITY
-This donation is made under the protection of the federal Bill Emerson
-Good Samaritan Food Donation Act, which shields good-faith donors and
-receiving organizations from liability for food donated in good faith,
-except in cases of gross negligence or intentional misconduct. Both
-parties acknowledge this protection applies to the donations covered by
-this agreement.
-
-WHAT EACH SIDE COMMITS TO
-  The school commits to: releasing only sealed, unopened, temperature-
-  logged surplus, and notifying the receiving site if a scheduled
-  pickup will be missed or delayed.
-
-  The receiving site commits to: confirming receipt on the manifest for
-  every delivery (see the accompanying intake workflow), and notifying
-  the school if it can't take a delivery on a given date.
-
-Either party may end this agreement with [Insert notice period] written
-notice to the other party.
-
-SIGNATURES
-
-  School representative:                   Date:
-  ______________________________           ____________
-
-  Name / title: [Insert]
-
-  Receiving site representative:           Date:
-  ______________________________           ____________
-
-  Name / title: [Insert]
-
-[Insert any additional local requirements your health department or
-school district requires for this agreement, if any.]</pre>
-          <div class="doc-actions"><a class="doc-download" data-download-from="docAgreement" data-filename="stock-the-block-partner-agreement.txt" href="#">Download agreement</a><button type="button" class="doc-copy" data-copy-target="docAgreement">Copy to clipboard</button></div>
-        </div></div>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="cpu">Firmware repo</p>
-        <p class="body">Logger sketch, probe calibration and wiring for the unit under "the instruments."</p>
-        <p class="meta">The student build team.</p>
-        <a class="doc-download" href="data:text/markdown;charset=utf-8;base64,IyBTdG9jayB0aGUgQmxvY2s6IExvZ2dlciBGaXJtd2FyZSAoT3ZlcnZpZXcpCgpUaGlzIGRvY3VtZW50IGRlc2NyaWJlcyB0aGUgbG9nZ2VyIHVuaXQncyBzdGF0ZSBtYWNoaW5lIGFyY2hpdGVjdHVyZSBhdAp0aGUgbGV2ZWwgYWxyZWFkeSBlc3RhYmxpc2hlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIiBvbiB0aGUgc2l0ZS4gSXQgaXMgYQpkZXNjcmlwdGlvbiBvZiBpbnRlbmRlZCBiZWhhdmlvciwgbm90IHNvdXJjZSBjb2RlLiBUaGUgYWN0dWFsIGZpcm13YXJlCnNvdXJjZSBsaXZlcyBpbiB0aGUgc3R1ZGVudCBidWlsZCB0ZWFtJ3Mgb3duIHJlcG9zaXRvcnkuCgpbTGluayB0byBmaXJtd2FyZSByZXBvOiBpbnNlcnQgb25jZSBjcmVhdGVkXQoKIyMgSGFyZHdhcmUgKGFzIGRlc2NyaWJlZCB1bmRlciAidGhlIGluc3RydW1lbnRzIikKCi0gRVNQMzItQzMgU3VwZXJNaW5pIGJvYXJkCi0gRFMxOEIyMCB0ZW1wZXJhdHVyZSBwcm9iZQotIFRQNDA1NiBjaGFyZ2UgbW9kdWxlCi0gTGlQbyBjZWxsCi0gUHJpbnRlZCBlbmNsb3N1cmUKLSBObyBsb2NhdGlvbiBzZW5zb3IuIFRoZSBsb2cgbWFrZXMgbm8gY2xhaW0gYWJvdXQgd2hlcmUgYSBib3ggd2FzLgoKUExBTk5FRCwgTk9UIFlFVCBJTiBQTEFDRS4gVGhlIGludGVuZGVkIGRlc2lnbiBpcyBhIHNtYWxsIHNoYXJlZCBzZXQgb2YKbG9nZ2VyIHVuaXRzLCBvbiB0aGUgb3JkZXIgb2YgdGhyZWUsIHJvdGF0aW5nIGFjcm9zcyByb3V0ZXMgcmF0aGVyIHRoYW4Kb25lIHBlcm1hbmVudGx5IGFzc2lnbmVkIHBlciBib3gsIHdpdGggYSBydW4gdGhhdCBnb2VzIG91dCB3aXRob3V0IGFuCmF2YWlsYWJsZSB1bml0IHZhbGlkYXRlZCBhZ2FpbnN0IGEgdGhlcm1hbCBtb2RlbCBidWlsdCBmcm9tIGxvZ2dlZCBydW5zCm9uIHRoZSBzYW1lIHJvdXRlIChzZWUgInRoZSBpbnN0cnVtZW50cyIgb24gdGhlIHNpdGUpLiBOZWl0aGVyIHRoZSBmbGVldApub3IgdGhhdCBtb2RlbCBleGlzdHMgeWV0OiB0aGVyZSBhcmUgbm8gbG9nZ2VkIHJ1bnMgdG8gYnVpbGQgYSBtb2RlbApmcm9tLiBVbnRpbCB0aGVyZSBhcmUsIGEgcnVuIHdpdGhvdXQgYSB1bml0IGhhcyBubyB0ZW1wZXJhdHVyZSByZWNvcmQsCmFuZCB0aGUgbWFuaWZlc3QgbGluZSBzYXlzIGV4YWN0bHkgdGhhdCByYXRoZXIgdGhhbiBpbXBseWluZyBvbmUuCgojIyBTdGF0ZSBtYWNoaW5lCgoqKkJPT1QqKjogUG93ZXItb24gLyByZXNldC4gUnVucyBhIHNlbGYtY2hlY2ssIHRoZW4gbW92ZXMgdG8gSURMRS4KCioqSURMRSoqOiBQb3dlcmVkIGFuZCByZWFkeSwgbm90IHlldCBhdHRhY2hlZCB0byBhIGJveC4gV2FpdGluZyBmb3IgYQpwYWNrLW91dCBldmVudCB0byBiZWdpbiBsb2dnaW5nLgoKKipBUk1FRCoqOiBBdHRhY2hlZCB0byBhIHBhY2tlZCBib3gsIHdhaXRpbmcgZm9yIHRoZSByb3V0ZSB0byBiZWdpbi4KVGhpcyBpcyB0aGUgInBhY2tlZCwgYWJvdXQgdG8gbGVhdmUgdGhlIGJ1aWxkaW5nIiBzdGF0ZS4KCioqTE9HR0lORyoqOiBBY3RpdmVseSByZWNvcmRpbmcgdGVtcGVyYXR1cmUgcmVhZGluZ3MgYWdhaW5zdCB0aGUKZGFuZ2VyLXpvbmUgdGhyZXNob2xkIChzYWZlIGF0IG9yIGJlbG93IDQxwrBGLCBwZXIgInRoZSBpbnN0cnVtZW50cyIpIGZvciB0aGUKZHVyYXRpb24gb2YgdGhlIHJvdXRlLCBmcm9tIHBhY2stb3V0IHRvIGhhbmQtb2ZmLgoKKipDTE9TRUQqKjogUm91dGUgY29tcGxldGUsIGRlbGl2ZXJ5IGNvbmZpcm1lZCBieSB0aGUgcmVjZWl2aW5nIHNpdGUuClRoZSBsb2cgZm9yIHRoaXMgcnVuIGlzIGZpbmFsaXplZCBhbmQgZG9lcyBub3QgY2hhbmdlIGFmdGVyIHRoaXMgcG9pbnQuCkNvcnJlY3Rpb25zIGFwcGVuZCBhcyBuZXcgbWFuaWZlc3QgbGluZXMgcmF0aGVyIHRoYW4gZWRpdGluZyBoaXN0b3J5LApjb25zaXN0ZW50IHdpdGggaG93IFRyYWNrIHRoZSBCb3ggaGFuZGxlcyB0aGUgcHVibGljIGxvZy4KCioqRkFVTFQqKjogU29tZXRoaW5nIGluIHRoZSBhYm92ZSBmYWlsZWQ6IHByb2JlIGRpc2Nvbm5lY3RlZCwgYmF0dGVyeQpjcml0aWNhbCwgb3IgYSByZWFkaW5nIG91dHNpZGUgYSBwbGF1c2libGUgcmFuZ2UuIEEgRkFVTFQgcnVuIGlzIGZsYWdnZWQKcmF0aGVyIHRoYW4gdHJ1c3RlZC4gVGhlIGludGVuZGVkIGZhbGxiYWNrIGlzIHRoZSByb3V0ZS1sZXZlbCB0aGVybWFsCm1vZGVsIGRlc2NyaWJlZCBhYm92ZTsgdW50aWwgdGhhdCBtb2RlbCBleGlzdHMsIGEgRkFVTFQgcnVuIHNpbXBseSBoYXMKbm8gdXNhYmxlIHRlbXBlcmF0dXJlIHJlY29yZCBhbmQgaXMgZmxhZ2dlZCBhcyBzdWNoLgoKIyMgV2hhdCB0aGlzIGRvY3VtZW50IGlzIG5vdAoKVGhpcyBpcyBub3QgdGhlIGZpcm13YXJlIHNvdXJjZS4gSXQgZGVzY3JpYmVzIHRoZSBpbnRlbmRlZCBzdGF0ZXMgYW5kCnRoZSByZWFzb25pbmcgYmVoaW5kIHRoZW0gc28gYSBuZXcgY29udHJpYnV0b3IgdW5kZXJzdGFuZHMgd2hhdCB0aGUKdW5pdCBpcyBzdXBwb3NlZCB0byBkbyBiZWZvcmUgcmVhZGluZyB0aGUgYWN0dWFsIGNvZGUuIENhbGlicmF0aW9uCmNvbnN0YW50cywgZXhhY3QgdGltaW5nLCBhbmQgdGhlIHJlYWwgLmlubyAvIEMrKyBzb3VyY2UgYXJlIG1haW50YWluZWQKaW4gdGhlIGZpcm13YXJlIHJlcG8gbGlua2VkIGFib3ZlIG9uY2UgaXQgZXhpc3RzLiBEbyBub3QgdHJlYXQgdGhpcwpkb2N1bWVudCBhcyBhdXRob3JpdGF0aXZlIGZvciBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzLgo=" download="stock-the-block-firmware-readme.md">Download firmware-readme.md ↓</a>
+        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-agreement">Read the agreement <span aria-hidden="true">→</span></a>
       </div>
       <div class="card" data-reveal>
         <p class="kicker" data-icon="clipboard-list">Intake workflow</p>
         <p class="body">How a receiving site confirms a delivery and closes out the manifest line.</p>
         <p class="meta">Pantry staff and volunteers.</p>
-        <button type="button" class="doc-toggle" aria-expanded="false">Read the checklist <span class="doc-caret" aria-hidden="true">+</span></button>
-        <div class="doc-panel"><div class="doc-inner">
-          <pre class="doc-text mono" id="docIntake">STOCK THE BLOCK: INTAKE WORKFLOW
-For pantry staff and volunteers, at delivery
-
-When a delivery arrives, work through this checklist before signing
-off. Do not close out the manifest line until all four are confirmed.
-
-  1. CONFIRM THE BOX ID
-     Match the box ID on the delivery to the corresponding line on the
-     delivery manifest. If there's no matching line, don't accept the
-     box as a normal delivery. Flag it instead.
-
-  2. CONFIRM THE COLD-CHAIN LOG
-     Check the box's temperature log from the logger unit. The load
-     needs to have stayed at or below 41°F throughout, the same "in
-     range" threshold used on the site's cold-chain readout. If any
-     reading is above 41°F, the box is "danger zone," not "in range."
-     Flag it and use your own judgment (and your health department's
-     guidance) before distributing that food.
-
-     If a run arrives with no logger unit, it arrives with no
-     temperature record. The route-model fallback described elsewhere on
-     the site is planned and not yet built, so there is currently
-     nothing to check against. Treat the box as unverified and use your
-     own judgment before distributing it.
-
-  3. CONFIRM THE COUNT / WEIGHT
-     Check that the item count or weight in front of you matches what
-     was logged before the box left the school. Note any discrepancy;
-     don't silently correct the manifest number to match what arrived.
-
-  4. SIGN TO CLOSE OUT THE MANIFEST LINE
-     Once 1–3 are confirmed, sign to close out the line. This is what
-     moves the delivery from "en route" to "received" on the public
-     log. Corrections after this point append as new lines rather than
-     editing the closed entry, so the record doesn't get quietly changed
-     after the fact.
-
-If something doesn't check out (box ID doesn't match, temperature log
-shows a danger-zone reading, count is off) don't sign it off as a
-clean delivery. Flag it. The whole point of the public log is that it's
-checkable; a flagged delivery is more useful than a clean-looking one
-that wasn't actually clean.</pre>
-          <div class="doc-actions"><a class="doc-download" data-download-from="docIntake" data-filename="stock-the-block-intake-workflow.txt" href="#">Download checklist</a><button type="button" class="doc-copy" data-copy-target="docIntake">Copy to clipboard</button></div>
-        </div></div>
+        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-intake">Read the checklist <span aria-hidden="true">→</span></a>
       </div>
     </div>
     <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
@@ -1153,41 +881,6 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
-<section aria-hidden="true" class="divider" style="border-bottom:1px solid var(--brand-line-soft);">
-  <div class="inner" data-dpar style="padding:64px 24px;">
-    <div class="mascot-slot" data-dsvg data-state="idle" data-breathe data-fill="var(--bg)"></div>
-  </div>
-</section>
-
-<section id="network" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>The network</p>
-    <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
-      <span class="mask-l"><span data-line>Where the need is,</span></span>
-      <span class="mask-l"><span data-line>and where we are.</span></span>
-    </h2>
-
-    <div class="map-shell">
-      <div class="map-cta">
-        <span class="map-cta-text">Join the Movement</span>
-        <a class="map-cta-btn" href="#join">Get involved</a>
-      </div>
-      <div id="networkMap" class="map-canvas" role="region" aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0"></div>
-    </div>
-
-    <div id="networkMapLegend" class="map-legend"></div>
-
-    <p class="sim-banner">
-      <strong>What you are watching.</strong>
-      The shading and the school counts are real and sourced. The spread that follows is a projection: it shows what a student-run recovery network could look like across the city, not anything that has happened. No run has been logged, no pounds have been recovered, and none of the pale dots is a real school.
-    </p>
-
-    <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where Stock the Block operates. One receiving site is in setup, in Manhattan.</p>
-    <p class="cite" id="networkMapCite"></p>
-    <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
-  </div>
-</section>
-
 <section id="join" style="background:var(--surface);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
     <p class="eyebrow" data-reveal>Get involved</p>
@@ -1222,44 +915,6 @@ that wasn't actually clean.</pre>
     </div>
   </div>
 </section>
-
-<section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
-    <p class="eyebrow">Our school network</p>
-    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
-
-    <div class="filter-bar">
-      <div class="filter-group">
-        <span class="filter-label" aria-hidden="true">Status</span>
-        <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label" aria-hidden="true">Borough</span>
-        <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
-      </div>
-    </div>
-
-    <div id="sitesList" class="sites-list" aria-live="polite">
-      <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
-           are replaced on first render. -->
-      <noscript>
-        <ul class="site-rows">
-          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-setup">In setup</span></li>
-          <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
-          <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
-          <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Rachel Carson High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Bronx High School of Science</span> <span class="meta"><span class="boro">Bronx</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Townsend Harris High School</span> <span class="meta"><span class="boro">Queens</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Queens High School for the Sciences at York College</span> <span class="meta"><span class="boro">Queens</span><span class="tag">specialized</span></span> <span class="status s-target">Target</span></li>
-        </ul>
-      </noscript>
-    </div>
-
-    <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
-  </div>
-</section>
-
 
 <section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
   <div class="wrap" style="padding-top:64px; padding-bottom:64px;">
@@ -1705,8 +1360,10 @@ that wasn't actually clean.</pre>
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
   });
 
-  /* ---------- section 08 document cards: accordion + copy to clipboard ---------- */
-  $$(".doc-toggle").forEach(function (btn) {
+  /* ---------- tech-spec disclosure ----------
+     The document templates live on getting-started.html now; the replicate
+     cards here are plain links, so only <button> toggles are wired. */
+  $$("button.doc-toggle").forEach(function (btn) {
     var card = btn.closest("[data-disclosure]") || btn.closest(".card");
     if (!card) return;
     btn.addEventListener("click", function () {
@@ -1714,35 +1371,6 @@ that wasn't actually clean.</pre>
       btn.setAttribute("aria-expanded", open ? "true" : "false");
       var caret = btn.querySelector(".doc-caret");
       if (caret) caret.textContent = open ? "−" : "+";
-    });
-  });
-  /* A template you can only read in a scroll box is a template nobody uses.
-     The download is built from the preview text itself, so the file and what
-     is on screen can never drift apart. */
-  $$("[data-download-from]").forEach(function (a) {
-    var pre = document.getElementById(a.getAttribute("data-download-from"));
-    if (!pre) return;
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      var blob = new Blob([pre.textContent], { type: "text/plain;charset=utf-8" });
-      var url = URL.createObjectURL(blob);
-      var tmp = document.createElement("a");
-      tmp.href = url; tmp.download = a.getAttribute("data-filename") || "template.txt";
-      document.body.appendChild(tmp); tmp.click(); document.body.removeChild(tmp);
-      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-    });
-  });
-
-  $$(".doc-copy").forEach(function (btn) {
-    var pre = document.getElementById(btn.getAttribute("data-copy-target"));
-    if (!pre) return;
-    btn.addEventListener("click", function () {
-      if (!navigator.clipboard || !navigator.clipboard.writeText) return;
-      navigator.clipboard.writeText(pre.textContent).then(function () {
-        var orig = btn.textContent;
-        btn.textContent = "Copied";
-        setTimeout(function () { btn.textContent = orig; }, 1600);
-      }, function () {});
     });
   });
 
@@ -1759,9 +1387,6 @@ that wasn't actually clean.</pre>
       });
     });
   })();
-  $$("[data-dsvg]").forEach(function (svg) {
-    shot(svg, function () { if (armed) svg.style.animation = "squashIn 500ms " + EXP + " both"; });
-  });
   (function () {
     var fields = $$("[data-ff]");
     if (armed) fields.forEach(function (el) {
@@ -1782,14 +1407,6 @@ that wasn't actually clean.</pre>
     var vh = innerHeight;
     FX.tick();
     checkCounters();
-    if (!reduced && !mob) {
-      $$("[data-dpar]").forEach(function (el) {
-        var r = el.getBoundingClientRect();
-        var d = (r.top + r.height / 2 - vh / 2) * 0.12;
-        d = Math.max(-60, Math.min(60, d));
-        el.style.transform = "translateY(" + d.toFixed(1) + "px)";
-      });
-    }
     var th = $("#thead");
     if (th) {
       var tr = th.getBoundingClientRect();
@@ -1896,38 +1513,6 @@ that wasn't actually clean.</pre>
   })();
 
   /* ---------- Phase 5 shared features ---------- */
-  /* ---------- stats strip: counters, once, on first view ---------- */
-  (function () {
-    var strip = $("#statsStrip");
-    if (!strip) return;
-    var figs = $$("[data-countto]", strip), done = false;
-    /* The markup ships the real figures, so no-JS readers and crawlers see
-       them. Only when this script runs, and motion is allowed, do they reset
-       to zero and count up. */
-    if (!reduced) figs.forEach(function (el) { paint(el, 0); });
-    function paint(el, v) {
-      el.textContent = el.getAttribute("data-format") === "pct" ? v + "%" : fmtN(v);
-    }
-    function run() {
-      if (done) return;
-      done = true;
-      figs.forEach(function (el) {
-        var target = parseFloat(el.getAttribute("data-countto"));
-        if (reduced) { paint(el, target); return; }
-        var t0 = performance.now(), dur = 1100;
-        (function step(now) {
-          var k = Math.min(1, (now - t0) / dur);
-          paint(el, Math.round(target * (1 - Math.pow(1 - k, 3))));
-          if (k < 1) requestAnimationFrame(step);
-        })(t0);
-      });
-    }
-    if (!("IntersectionObserver" in window)) { run(); return; }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { run(); io.disconnect(); } });
-    }, { threshold: 0.4 });
-    io.observe(strip);
-  })();
 
   /* ---------- delivery log: real state vs a labelled preview ----------
      SIM_ROWS are invented. They exist so a visitor can see the shape of the
@@ -1972,21 +1557,23 @@ that wasn't actually clean.</pre>
   STB.initPalette([
     { kind: "page", label: "Home", href: "index.html#top" },
     { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-    { kind: "section", label: "Why now: the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
     { kind: "section", label: "Standard operating procedure", href: "#how", keywords: "sop steps how it works collect pack deliver log" },
     { kind: "section", label: "The instruments: cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
     { kind: "section", label: "The delivery log", href: "#tracker", keywords: "tracker manifest track the box deliveries" },
+    { kind: "section", label: "The network map", href: "#network", keywords: "map snap need boroughs districts" },
     { kind: "section", label: "Planned operations", href: "#sites", keywords: "schools sites in setup in conversation target stuyvesant midwood madison filter" },
+    { kind: "section", label: "Why now: the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
     { kind: "section", label: "Why we exist", href: "#story" },
     { kind: "section", label: "Who runs this", href: "#team", keywords: "team founder students who" },
     { kind: "section", label: "The limits: what this does not do", href: "#limits", keywords: "honest caveats limitations" },
     { kind: "section", label: "Run this yourself", href: "#replicate", keywords: "templates documents copy replicate" },
     { kind: "section", label: "Partner with us", href: "#join", keywords: "contact signup form" },
-    { kind: "template", label: "Health code memo", href: "#replicate", keywords: "tcs food safety release records health department" },
-    { kind: "template", label: "Box spec", href: "#replicate", keywords: "insulated transport box cut sheet materials" },
-    { kind: "template", label: "Partner agreement", href: "#replicate", keywords: "one page signed school receiving site" },
-    { kind: "template", label: "Firmware repo", href: "#replicate", keywords: "logger sketch state machine calibration" },
-    { kind: "template", label: "Intake workflow", href: "#replicate", keywords: "pantry receive confirm close out manifest line" },
+    { kind: "section", label: "Open tech spec", href: "#tech-spec", keywords: "hardware logger diagram build" },
+    { kind: "template", label: "Health code memo", href: "getting-started.html#doc-health", keywords: "tcs food safety release records health department" },
+    { kind: "template", label: "Box spec", href: "getting-started.html#doc-build", keywords: "insulated transport box cut sheet materials" },
+    { kind: "template", label: "Partner agreement", href: "getting-started.html#doc-agreement", keywords: "one page signed school receiving site" },
+    { kind: "template", label: "Firmware repo", href: "getting-started.html#doc-build", keywords: "logger sketch state machine calibration" },
+    { kind: "template", label: "Intake workflow", href: "getting-started.html#doc-intake", keywords: "pantry receive confirm close out manifest line" },
     { kind: "tool", label: "Run packet generator", href: "#runPacket", keywords: "print manifest temperature log paperwork" },
     { kind: "tool", label: "Sources", href: "#sources", keywords: "citations footnotes references" }
   ]);
