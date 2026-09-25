@@ -30,6 +30,7 @@ var PRECACHE = [
   "getting-started.html",
   "404.html",
   "assets/site.css?v=12",
+  "assets/design.css?v=12",
   "assets/site.js?v=12",
   "assets/map.js?v=12",
   "assets/vendor/leaflet/leaflet.js?v=12",

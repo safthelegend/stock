@@ -29,7 +29,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .sources-list li, #sources { scroll-margin-top:64px; }
   canvas:focus-visible { outline:2px solid var(--brand); outline-offset:4px; }
   @keyframes rowUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .hero-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(240px,0.95fr); gap:48px; align-items:center; padding-top:88px; padding-bottom:72px; }
+  .hero-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(240px,0.8fr); gap:40px; align-items:center; padding-top:104px; padding-bottom:88px; }
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
@@ -190,6 +190,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     section { break-inside:avoid; }
   }
 </style>
+<link rel="stylesheet" href="assets/design.css?v=12">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -228,7 +229,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
       <p class="body-p" style="margin:20px 0 0;">Insulated boxes, short local routes inside one borough, and a delivery log anyone can audit.</p>
       <div class="prelaunch" id="heroStatus">
-        <p class="prelaunch-sub" style="margin:0;">Pre-launch: the first run starts when our first receiving site signs.</p>
+        <p class="prelaunch-tag">Pre-launch: the first run starts when our first receiving site signs.</p>
       </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
         <a href="#join" class="btn solid">Partner with us</a>
@@ -266,7 +267,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="how" class="wrap" style="padding-top:88px; padding-bottom:64px;">
+<section id="how" class="wrap" style="padding-top:80px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>Standard operating procedure</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
     <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
@@ -275,7 +276,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
 
-<section id="sensors" class="wrap" style="padding-top:24px; padding-bottom:88px;">
+<div class="instrument">
+<section id="sensors" class="wrap" style="padding-top:96px; padding-bottom:88px;">
   <p class="eyebrow" data-reveal>The instruments</p>
   <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
     <span class="mask-l"><span data-line>A school cannot release food</span></span>
@@ -321,8 +323,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="tracker" style="background:var(--tint); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:24px; padding-bottom:88px;">
+<section id="tracker">
+  <div class="wrap" style="padding-top:72px; padding-bottom:104px;">
     <p class="eyebrow" data-reveal>The delivery log</p>
     <h2 class="hd" data-mask style="max-width:620px;">
       <span class="mask-l"><span data-line>Every delivery,</span></span>
@@ -410,9 +412,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
   </div>
 </section>
+</div>
 
-<section id="network" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+<section id="network" style="background:var(--bg);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:64px;">
     <p class="eyebrow" data-reveal>The network</p>
     <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
       <span class="mask-l"><span data-line>Where the need is,</span></span>
@@ -441,7 +444,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </section>
 
 <section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+  <div class="wrap" style="padding-top:64px; padding-bottom:80px;">
     <p class="eyebrow">Our school network</p>
     <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
 
@@ -477,7 +480,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="whynow" class="wrap pt-sec" style="padding-bottom:72px;">
+<section id="whynow" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap pt-sec" style="padding-top:88px; padding-bottom:88px;">
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
     <defs>
       <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
@@ -700,9 +704,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p class="body-p" data-reveal style="margin:0; max-width:62ch;">On October 1, 2026, federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.<sup><a class="src-link" href="#src-10">10</a></sup></p>
 
   <p class="body-p strip-close" data-reveal style="margin:0;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
+</div>
 </section>
 
-<section id="story" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="story" class="wrap" style="padding-top:96px; padding-bottom:56px;">
   <p class="eyebrow" data-reveal>Why we exist</p>
   <div class="two-grid">
     <h2 class="hd" data-mask>
@@ -716,7 +721,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="team" class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="team" class="wrap" style="padding-top:56px; padding-bottom:96px;">
   <p class="eyebrow" data-reveal>Who runs this</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
     <span class="mask-l"><span data-line>Five students.</span></span>
@@ -752,8 +757,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p class="cite">Students from three NYC public high schools. School affiliations are listed for identification only and do not indicate that any school has agreed to participate; see the school network section for each school’s actual status.</p>
 </section>
 
-<section id="limits" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="limits" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>The limits</p>
     <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
       <span class="mask-l"><span data-line>What this does not do.</span></span>
@@ -784,8 +789,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="replicate" style="background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="replicate" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Run this yourself</p>
     <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
       <span class="mask-l"><span data-line>Everything we use</span></span>
@@ -881,8 +886,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="join" style="background:var(--surface);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
+<section id="join" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Get involved</p>
     <div class="join-grid">
       <div>
@@ -917,7 +922,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </section>
 
 <section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:64px; padding-bottom:64px;">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
     <p class="eyebrow" data-reveal>Open tech spec</p>
     <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
       <span class="mask-l"><span data-line>The hardware, for anyone</span></span>

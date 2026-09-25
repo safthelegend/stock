@@ -597,7 +597,13 @@
             RAMP_OPACITY[i] + '"></span>' + (hi === undefined ? lo + "% and over" : lo + "–" + hi + "%") + "</span>");
         }
         items.push('<span class="lg-item"><span class="lg-sw lg-nodata"></span>no data</span>');
-        host2.innerHTML = '<span class="lg-title">% on SNAP</span>' + items.join("");
+        /* Status key: the same pin marks the map draws, labelled from the
+           same SITE_STATUS table the school list reads. */
+        var keys = (STB.SITE_STATUS || []).map(function (st) {
+          return '<span class="lg-item"><span class="lg-pin"><span class="pin-dot pin-' + st.key + '"></span></span>' + st.label + "</span>";
+        });
+        host2.innerHTML = '<span class="lg-title">% on SNAP</span>' + items.join("") +
+          (keys.length ? '<span class="lg-sep" aria-hidden="true"></span><span class="lg-title">Sites</span>' + keys.join("") : "");
       }
       var cite = document.getElementById("networkMapCite");
       if (cite) {
