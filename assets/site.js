@@ -1379,7 +1379,12 @@ function initMascotSlots(root) {
      text is re-rendered from that on each switch, so flipping back and forth
      any number of times cannot compound a rounding error. */
   var UNIT_KEY = "stb-units";
+  /* Only a page that carries the #unitToggle control honours a saved metric
+     choice. Without the control there is no way to switch back, so the page
+     stays in lbs / °F. */
+  var unitToggleOn = false;
   function unitMode() {
+    if (!unitToggleOn) return "imperial";
     try { return localStorage.getItem(UNIT_KEY) === "metric" ? "metric" : "imperial"; } catch (e) { return "imperial"; }
   }
   function renderUnits(root) {
@@ -1397,7 +1402,8 @@ function initMascotSlots(root) {
   }
   function initUnits() {
     var btn = $("#unitToggle");
-    if (!btn) return;
+    if (!btn) { renderUnits(); return; }
+    unitToggleOn = true;
     /* The control is site-wide, but a page with nothing convertible on it
        gets no control rather than a dead one. */
     if (!$("[data-lbs]") && !$("[data-degf]")) { btn.hidden = true; return; }
