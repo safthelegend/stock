@@ -329,6 +329,9 @@
 
     var HUD = {};
     var clock = 0, speed = 1, playing = false, rafId = null, lastFrame = 0;
+    /* True while the map shows its resting "today" view; the first Play then
+       starts the story from the top rather than from where it rests. */
+    var atRest = false;
     var ui = {};
 
     function buildHud() {
@@ -376,8 +379,11 @@
       ui.time = bar.querySelector("#pbTime");
       ui.rates = [].slice.call(bar.querySelectorAll(".pb-rate"));
 
-      ui.play.addEventListener("click", function () { playing ? pause() : play(); });
-      ui.scrub.addEventListener("input", function () { pause(); seek(+ui.scrub.value); });
+      ui.play.addEventListener("click", function () {
+        if (!playing && atRest) { atRest = false; clock = 0; }
+        playing ? pause() : play();
+      });
+      ui.scrub.addEventListener("input", function () { atRest = false; pause(); seek(+ui.scrub.value); });
       ui.rates.forEach(function (b) {
         b.addEventListener("click", function () {
           speed = +b.getAttribute("data-speed");
@@ -639,23 +645,12 @@
       }
 
       buildHud();
-      renderAt(0);
 
-
-      /* Plays itself the first time it scrolls into view, which is what a
-         pitch surface should do. Never more than once, and never under
-         reduced motion, where it jumps to the end instead. */
-      if ("IntersectionObserver" in window) {
-        var played = false;
-        var io = new IntersectionObserver(function (es) {
-          es.forEach(function (e) {
-            if (!e.isIntersecting || played) return;
-            played = true; io.disconnect();
-            play();
-          });
-        }, { threshold: 0.35 });
-        io.observe(host);
-      }
+      /* No autoplay. The map opens on the real, sourced picture: the need
+         shading, today's school pins and the one receiving site. The
+         projection only runs when a visitor presses Play. */
+      seek(TL.ACT2);
+      atRest = true;
 
       /* Re-tile and re-colour on a theme switch: every colour above is read
          from a custom property, so the map follows the page. */
@@ -670,7 +665,7 @@
       host.setAttribute("data-ready", "true");
     })["catch"](function () {
       host.innerHTML = '<p class="map-fallback">The map could not be loaded. ' +
-        'The school list above carries every school and its status.</p>';
+        'The full school list, with each school\u2019s status, is on the Getting started page.</p>';
       host.setAttribute("data-ready", "error");
       gate.hidden = true;
     });

@@ -22,7 +22,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=12">
+<link rel="stylesheet" href="assets/site.css?v=13">
 <style>
   .prow > button { width:100%; display:grid; grid-template-columns:36px 1fr 24px; grid-template-areas:"num ttl caret" "num bdy bdy"; gap:6px 20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
   .prow .bdy { grid-area:bdy; font-size:17px; line-height:1.6; color:var(--text-secondary); max-width:60ch; }
@@ -48,8 +48,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .prow .pdetail p { padding-left:24px; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+  .disclosure > .doc-toggle { margin-top:0; }
+  .packet-note { font-size:14px; }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=12">
+<link rel="stylesheet" href="assets/design.css?v=13">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -61,11 +63,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       Stock the Block
     </a>
     <div class="links">
-      <a href="index.html#tracker">Tracker</a>
       <a href="index.html#how">How it works</a>
-      <a href="index.html#story">Story</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
       <a href="getting-started.html" aria-current="page">Getting started</a>
-      <a href="index.html#join" class="cta">Partner with us</a>
+      <a href="index.html#join" class="cta">Work with us</a>
       <button id="themeToggle" type="button" aria-label="Colour theme">
         <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
         <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -372,6 +374,123 @@ that wasn't actually clean.</pre>
   </div>
 </section>
 
+<section id="replicate" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>Build and run it</p>
+    <h2 class="hd" data-mask style="margin-bottom:0; max-width:640px;">
+      <span class="mask-l"><span data-line>The box, and the paperwork</span></span>
+      <span class="mask-l"><span data-line>for every run.</span></span>
+    </h2>
+    <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
+      <p class="eyebrow">The kit, flat</p>
+      <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans are in the box spec above.</p>
+      <div style="position:relative; max-width:760px;">
+        <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <g fill="none" style="stroke:var(--mascot-stroke);" stroke-width="2.5" stroke-linejoin="round">
+            <path d="M262 152 L262 62 L412 62 L412 152"></path>
+            <path d="M262 302 L262 392 L412 392 L412 302"></path>
+            <path d="M262 152 L112 152 L112 302 L262 302"></path>
+            <path d="M412 152 L712 152 L712 302 L412 302"></path>
+            <path d="M262 152 L412 152 M262 302 L412 302"></path>
+          </g>
+          <g fill="none" style="stroke:var(--brand-line-mid);" stroke-width="1.5" stroke-dasharray="6 6">
+            <path d="M262 152 L412 152"></path>
+            <path d="M262 302 L412 302"></path>
+            <path d="M262 152 L262 302"></path>
+            <path d="M412 152 L412 302"></path>
+            <path d="M562 152 L562 302"></path>
+          </g>
+          <rect x="140" y="196" width="56" height="16" rx="8" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></rect>
+          <rect x="450" y="196" width="74" height="58" fill="none" style="stroke:var(--accent);" stroke-width="2.5" stroke-dasharray="5 5"></rect>
+          <g style="stroke:var(--rule);" stroke-width="1">
+            <line x1="337" y1="62" x2="337" y2="32"></line>
+            <line x1="300" y1="290" x2="232" y2="344"></line>
+            <line x1="168" y1="212" x2="140" y2="122"></line>
+            <line x1="337" y1="392" x2="337" y2="432"></line>
+            <line x1="487" y1="254" x2="487" y2="336"></line>
+            <line x1="637" y1="152" x2="637" y2="104"></line>
+          </g>
+          <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+            <text x="337" y="26" text-anchor="middle">lid flap</text>
+            <text x="232" y="362" text-anchor="middle">face panel</text>
+            <text x="140" y="114" text-anchor="middle">handle cut</text>
+            <text x="337" y="450" text-anchor="middle">base</text>
+            <text x="487" y="354" text-anchor="middle">sensor pocket</text>
+            <text x="637" y="96" text-anchor="middle">back panel</text>
+          </g>
+        </svg>
+        <div class="mascot-slot" aria-hidden="true" style="position:absolute; left:35.5%; top:33.5%; width:17.5%;" data-state="neutral" data-bare></div>
+      </div>
+    </div>
+    <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
+      <h3 style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
+      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
+      <p class="packet-note"><strong>Nothing here leaves your browser.</strong> No endpoint, no upload, no storage. The packet is built on this page and is gone when you close the tab.</p>
+      <form class="packet-form" id="packetForm" autocomplete="off">
+        <label>Date<input type="date" name="date" required></label>
+        <label>Origin school<input type="text" name="origin" placeholder="e.g. Stuyvesant High School" required></label>
+        <label>Destination site<input type="text" name="destination" placeholder="receiving site" required></label>
+        <label>Box ID<input type="text" name="boxid" placeholder="e.g. 0447" required></label>
+        <label>Weight (lbs)<input type="number" name="weight" min="0" step="0.1" placeholder="e.g. 42" required></label>
+        <label class="span-all">Temperature readings<textarea name="temps" rows="4" placeholder="One per line: time, note, °F&#10;13:42, packed, 36&#10;14:05, in transit, 38&#10;14:28, street handoff, 43&#10;14:51, received, 39"></textarea></label>
+      </form>
+      <div class="packet-actions">
+        <button type="button" id="packetBuild" class="btn-sm solid">Generate packet</button>
+        <button type="button" id="packetPrint" class="btn-sm" disabled>Print packet</button>
+      </div>
+      <div id="runPacketOut" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
+    <p class="eyebrow" data-reveal>Open tech spec</p>
+    <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
+      <span class="mask-l"><span data-line>The hardware, for anyone</span></span>
+      <span class="mask-l"><span data-line>who wants to build one.</span></span>
+    </h2>
+    <p class="body-p" data-reveal style="margin:0 0 28px;">You do not need to read this to partner with us — it is here so a build team can copy the logger without asking us for anything.</p>
+    <div class="disclosure" data-disclosure id="techSpec">
+      <button type="button" class="doc-toggle" aria-expanded="false" aria-controls="techSpecPanel">Show the logger diagram <span class="doc-caret" aria-hidden="true">+</span></button>
+      <div class="doc-panel" id="techSpecPanel"><div>
+        <div style="padding-top:18px; max-width:760px;">
+<div>
+      <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <rect x="100" y="70" width="520" height="185" fill="none" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="7 6"></rect>
+        <rect x="140" y="105" width="150" height="68" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <g style="fill:var(--sensor-deep);"><rect x="152" y="117" width="34" height="20"></rect><rect x="152" y="147" width="18" height="14"></rect><rect x="196" y="117" width="12" height="44"></rect></g>
+        <g style="fill:var(--bg);"><rect x="222" y="117" width="56" height="8"></rect><rect x="222" y="131" width="56" height="8"></rect></g>
+        <rect x="140" y="190" width="150" height="48" rx="4" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <path d="M290 202 L306 202 M290 214 L306 214" style="stroke:var(--sensor-deep);" stroke-width="3"></path>
+        <rect x="330" y="110" width="110" height="58" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <rect x="344" y="124" width="30" height="18" style="fill:var(--sensor-deep);"></rect>
+        <rect x="386" y="124" width="40" height="8" style="fill:var(--bg);"></rect>
+        <path d="M440 200 C 476 200, 470 138, 506 132" fill="none" style="stroke:var(--sensor-deep);" stroke-width="5" stroke-linecap="round"></path>
+        <rect x="506" y="118" width="86" height="28" rx="14" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
+        <circle cx="580" cy="132" r="6" style="fill:var(--sensor-deep);"></circle>
+        <g style="stroke:var(--rule);" stroke-width="1">
+          <line x1="130" y1="70" x2="112" y2="44"></line>
+          <line x1="215" y1="105" x2="248" y2="48"></line>
+          <line x1="385" y1="110" x2="424" y2="48"></line>
+          <line x1="215" y1="238" x2="188" y2="292"></line>
+          <line x1="549" y1="146" x2="566" y2="292"></line>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
+          <text x="112" y="36" text-anchor="middle">printed enclosure</text>
+          <text x="248" y="40" text-anchor="middle">ESP32-C3 SuperMini</text>
+          <text x="424" y="40" text-anchor="middle">TP4056 charge module</text>
+          <text x="188" y="310" text-anchor="middle">LiPo cell</text>
+          <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
+        </g>
+      </svg>
+    </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
 <section id="join-cta" style="background:var(--tint); border-top:1px solid var(--brand-line-soft);">
   <div class="wrap" style="padding-top:88px; padding-bottom:88px;">
     <p class="eyebrow" data-reveal>Get involved</p>
@@ -429,10 +548,17 @@ that wasn't actually clean.</pre>
     </span>
     <span class="mono" style="font-weight:500;">Pre-launch · the log opens with the first delivery</span>
   </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+  </nav>
   <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
 
-<script src="assets/site.js?v=12"></script>
+<script src="assets/site.js?v=13"></script>
 <script>
 (function () {
   "use strict";
@@ -481,7 +607,7 @@ that wasn't actually clean.</pre>
      is built from the preview text itself, so the file and what is on screen
      can never drift apart. */
   $$("button.doc-toggle").forEach(function (btn) {
-    var card = btn.closest(".card");
+    var card = btn.closest("[data-disclosure]") || btn.closest(".card");
     if (!card) return;
     btn.addEventListener("click", function () {
       var open = card.classList.toggle("doc-open");
@@ -528,6 +654,89 @@ that wasn't actually clean.</pre>
   /* ---------- scroll reveal (shared — assets/site.js) ----------
      Registered after the step accordion above, so the JS-built .prow rows are
      in the DOM by the time initReveals() looks for them. */
+  /* ---------- 4. run packet generator ----------
+     Client-side only: no endpoint, no fetch, no storage. The generated
+     documents carry no mascot, in any theme and on paper — operational
+     paperwork is a record, not a brand surface. */
+  (function () {
+    var form = $("#packetForm"), out = $("#runPacketOut");
+    var buildBtn = $("#packetBuild"), printBtn = $("#packetPrint");
+    if (!form || !out) return;
+
+    function esc(v) {
+      return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function parseTemps(raw) {
+      return String(raw || "").split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean)
+        .map(function (l) {
+          var p = l.split(",").map(function (x) { return x.trim(); });
+          var f = parseFloat(p[p.length - 1]);
+          return { t: p[0] || "", note: p.length > 2 ? p.slice(1, -1).join(", ") : "", f: isNaN(f) ? null : f };
+        });
+    }
+
+    function build() {
+      if (!form.reportValidity()) return;
+      var d = {}; 
+      ["date", "origin", "destination", "boxid", "weight", "temps"].forEach(function (k) { d[k] = form.elements[k].value; });
+      var temps = parseTemps(d.temps);
+      var SAFE = 41;
+      var breaches = temps.filter(function (r) { return r.f !== null && r.f > SAFE; });
+
+      var manifest =
+        '<div class="packet-doc">' +
+          '<h3>Delivery manifest</h3>' +
+          '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
+          '<table class="kv"><tbody>' +
+            '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
+            '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
+            '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +
+            '<tr><th scope="row">Destination</th><td>' + esc(d.destination) + '</td></tr>' +
+            '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
+            '<tr><th scope="row">Readings</th><td class="num">' + temps.length + '</td></tr>' +
+          '</tbody></table>' +
+          '<div class="sign"><p>Released by (school): name, signature, time</p>' +
+          '<p>Received by (site): name, signature, time</p></div>' +
+        '</div>';
+
+      var log =
+        '<div class="packet-doc">' +
+          '<h3>Temperature log</h3>' +
+          '<p class="packet-sub">box ' + esc(d.boxid) + ' · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
+          (temps.length
+            ? '<table><thead><tr><th>Time</th><th>Note</th><th>Reading</th><th>Status</th></tr></thead><tbody>' +
+                temps.map(function (r) {
+                  var over = r.f !== null && r.f > SAFE;
+                  return '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.note) + '</td>' +
+                    '<td class="num">' + (r.f === null ? "not logged" : '<span data-degf="' + r.f + '"></span>') + '</td>' +
+                    '<td>' + (r.f === null ? "no reading" : (over ? "ABOVE THRESHOLD" : "in range")) + '</td></tr>';
+                }).join("") +
+              '</tbody></table>'
+            : '<p class="packet-sub" style="margin:0;">No readings entered. A box released without a temperature record has none; say so on the paperwork rather than leaving the row blank.</p>') +
+          (breaches.length
+            ? '<p class="packet-sub" style="margin:14px 0 0;">' + breaches.length + ' reading(s) above threshold. Flag this box at intake; do not close out the line until the receiving site has recorded a decision.</p>'
+            : "") +
+          '<div class="sign"><p>Logged by: name, signature</p><p>Checked at intake by: name, signature</p></div>' +
+        '</div>';
+
+      out.innerHTML = manifest + log;
+      STB.renderUnits(out);
+      out.classList.add("on");
+      printBtn.disabled = false;
+    }
+
+    buildBtn.addEventListener("click", build);
+    printBtn.addEventListener("click", function () {
+      /* Print the packet, not the website: the print stylesheet keys off this
+         class to hide everything except the generated documents. */
+      document.body.classList.add("print-packet");
+      var clear = function () { document.body.classList.remove("print-packet"); };
+      addEventListener("afterprint", clear, { once: true });
+      setTimeout(clear, 3000);          /* belt and braces where afterprint is unreliable */
+      print();
+    });
+  })();
+
   var FX = STB.initReveals();
   function fxLoop() {
     requestAnimationFrame(fxLoop);
@@ -543,19 +752,29 @@ that wasn't actually clean.</pre>
   STB.initOffline();
   STB.initPalette([
     { kind: "page", label: "Home", href: "index.html#top" },
-    { kind: "page", label: "Getting started", href: "getting-started.html" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "How it works", href: "index.html#how", keywords: "steps collect pack deliver log" },
+    { kind: "section", label: "Food safety: the ice pack", href: "index.html#sensors", keywords: "temperature cold chain ice pack logger" },
+    { kind: "section", label: "The map", href: "index.html#network", keywords: "map snap need boroughs districts" },
+    { kind: "section", label: "Work with us", href: "index.html#join", keywords: "contact signup form" },
     { kind: "section", label: "The sequence: six things in order", href: "#sequence", keywords: "steps order checklist" },
     { kind: "section", label: "Pickup cadence", href: "#cadence", keywords: "weekly daily schedule frequency" },
     { kind: "section", label: "What you'll need", href: "#needs", keywords: "people route partner logger agreement" },
     { kind: "section", label: "Source documents", href: "#documents", keywords: "templates documents copy download" },
     { kind: "section", label: "Get involved", href: "#join-cta", keywords: "contact signup" },
-    { kind: "section", label: "Planned operations", href: "index.html#sites", keywords: "schools in setup target" },
-    { kind: "section", label: "The delivery log", href: "index.html#tracker", keywords: "tracker manifest" },
+    { kind: "section", label: "School sites", href: "#sites", keywords: "schools in setup in conversation target" },
+    { kind: "section", label: "Build and run it", href: "#replicate", keywords: "box kit flat" },
+    { kind: "section", label: "Open tech spec", href: "#tech-spec", keywords: "hardware logger diagram build esp32" },
     { kind: "template", label: "Health code memo", href: "#doc-health", keywords: "food safety release records" },
     { kind: "template", label: "Box spec and firmware", href: "#doc-build", keywords: "insulated box cut sheet materials logger firmware" },
     { kind: "template", label: "Partner agreement", href: "#doc-agreement" },
     { kind: "template", label: "Intake workflow", href: "#doc-intake", keywords: "pantry receive confirm manifest" },
-    { kind: "tool", label: "Run packet generator", href: "index.html#runPacket", keywords: "print manifest temperature log" }
+    { kind: "tool", label: "Run packet generator", href: "#runPacket", keywords: "print manifest temperature log" },
+    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
   ]);
 })();
 </script>
