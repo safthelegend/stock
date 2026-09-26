@@ -1687,6 +1687,62 @@ function initMascotSlots(root) {
     navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function () {});
   }
 
+  /* ======================================================================
+     SCHOOL EMBLEM CAROUSEL (team page and home)
+     One entry per school our team comes from. To add an emblem: put the file
+     in assets/schools/, run `python3 tools/emblems.py` (it writes a
+     transparent one-colour copy to assets/schools/mask/), then set `logo` to
+     that copy's path. An SVG whose light areas are real holes can be used
+     directly. Every emblem is painted in the brand green whatever colour the
+     file is, and a school with no logo yet is left out of the carousel.
+     ====================================================================== */
+  var EMBLEMS = [
+    { name: "Stuyvesant", full: "Stuyvesant High School", logo: "assets/schools/Stuyvesant.svg" },
+    { name: "Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
+    { name: "James Madison", full: "James Madison High School", logo: "assets/schools/mask/james-madison.png" },
+    { name: "Midwood", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
+    { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
+    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "" },
+    { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" }
+  ];
+
+  function initEmblems() {
+    $$("[data-emblems]").forEach(function (track) {
+      var row = document.createElement("ul");
+      row.className = "emblem-row";
+      row.setAttribute("aria-label", "Schools our team comes from");
+      EMBLEMS.filter(function (s) { return s.logo; }).forEach(function (s) {
+        var li = document.createElement("li");
+        li.className = "emblem has-logo" + (s.wide ? " wide" : "");
+        /* Absolute, because the url() is used from assets/site.css and a
+           relative path would resolve against that folder, not the page. */
+        li.style.setProperty("--logo", "url(\"" + new URL(s.logo, document.baseURI).href + "\")");
+        li.innerHTML = '<span class="emblem-mark" aria-hidden="true"></span><span class="emblem-name"></span>';
+        var nm = li.querySelector(".emblem-name");
+        nm.textContent = s.name;
+        nm.title = s.full;
+        row.appendChild(li);
+      });
+      track.textContent = "";
+      track.appendChild(row);
+      /* Without motion the row simply wraps as a static strip. */
+      if (reduced) return;
+      var rail = document.createElement("div");
+      rail.className = "emblem-rail";
+      var copy = row.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      copy.removeAttribute("aria-label");
+      track.appendChild(rail);
+      rail.appendChild(row);
+      rail.appendChild(copy);
+      track.classList.add("is-moving");
+      /* Constant speed however many schools there are: ~40px per second. */
+      function pace() { track.style.setProperty("--dur", Math.max(20, row.scrollWidth / 40) + "s"); }
+      pace();
+      addEventListener("resize", pace, { passive: true });
+    });
+  }
+
   global.STB = {
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
@@ -1709,6 +1765,7 @@ function initMascotSlots(root) {
     SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
     RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
     siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
-    initScrollFx: initScrollFx
+    initScrollFx: initScrollFx,
+    EMBLEMS: EMBLEMS, initEmblems: initEmblems
   };
 })(window);

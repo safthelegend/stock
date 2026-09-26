@@ -19,7 +19,7 @@
    ============================================================================ */
 "use strict";
 
-var CACHE_VERSION = "v12";
+var CACHE_VERSION = "v13";
 var CACHE = "stb-" + CACHE_VERSION;
 
 /* Precached on install. Relative to the worker's scope, so this keeps working
@@ -28,15 +28,19 @@ var PRECACHE = [
   "./",
   "index.html",
   "getting-started.html",
+  "tracking.html",
+  "why.html",
+  "team.html",
+  "roles.html",
   "404.html",
-  "assets/site.css?v=12",
-  "assets/design.css?v=12",
-  "assets/site.js?v=12",
-  "assets/map.js?v=12",
-  "assets/vendor/leaflet/leaflet.js?v=12",
-  "assets/vendor/leaflet/leaflet.markercluster.js?v=12",
-  "assets/vendor/leaflet/MarkerCluster.css?v=12",
-  "assets/vendor/leaflet/leaflet.css?v=12",
+  "assets/site.css?v=13",
+  "assets/design.css?v=13",
+  "assets/site.js?v=13",
+  "assets/map.js?v=13",
+  "assets/vendor/leaflet/leaflet.js?v=13",
+  "assets/vendor/leaflet/leaflet.markercluster.js?v=13",
+  "assets/vendor/leaflet/MarkerCluster.css?v=13",
+  "assets/vendor/leaflet/leaflet.css?v=13",
   "assets/geo/nyc-cd.geojson",
   "assets/geo/sites.json",
   "sw.js"

@@ -22,9 +22,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=12">
-<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=12">
-<link rel="stylesheet" href="assets/site.css?v=12">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
+<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
+<link rel="stylesheet" href="assets/site.css?v=13">
 <style>
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
@@ -47,40 +47,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
   .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
   .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
-  /* Mid-page 3D container band. The section height and the sticky frame are
-     set from JS so the scroll length lives in one place. */
-  .box-band { background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft); overflow:hidden; }
-  .box-band-inner { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; width:100%; max-width:1100px; margin:0 auto; padding:0 24px; }
-  #midBox { display:block; width:100%; max-width:440px; height:auto; margin:0 auto; }
-  .box-band-copy [data-midcopy] { opacity:0; will-change:opacity, transform; }
-  @media (prefers-reduced-motion: reduce) { .box-band-copy [data-midcopy] { opacity:1 !important; transform:none !important; } }
-  @media (max-width:820px) {
-    .box-band-inner { grid-template-columns:minmax(0,1fr); gap:28px; text-align:center; }
-    .box-band-copy [data-midcopy] { margin-left:auto; margin-right:auto; }
-    #midBox { max-width:300px; }
-  }
-  .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
-  .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
-  .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
-  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
-  .mhead .left { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .mhead .right { display:flex; align-items:center; gap:16px; }
-  .mhead .verify { font-weight:500; color:var(--brand); text-decoration:underline; text-underline-offset:3px; }
-  #mascotMood { width:64px; display:block; transition:transform 200ms ease; }
-  #mascotMood.glance { transform:translate(0,3px); }
-  .thead { position:sticky; top:48px; z-index:10; background:var(--surface); display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:0 20px; border-bottom:1px solid var(--brand-line-soft); transition:box-shadow 200ms ease; }
-  .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
-  .thead .lab { cursor:default; }
-  .thead button:hover { color:var(--brand); }
-  .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
-  .mrow { display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:14px 20px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:14px; color:var(--text); transition:background-color 120ms ease; }
-  .mrow:hover { background:var(--tint); }
-  .mrow .lbs { font-variant-numeric:tabular-nums; transition:font-weight 120ms ease; }
-  .mrow:hover .lbs { font-weight:500; }
-  .mrow .st { font-weight:500; }
-  .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:56px 24px 60px; }
-  .empty-state .mascot-slot { width:96px; }
-  .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
   /* This block was one narrow column with the whole right half of the
      section empty. Now a fixed status card plus a chart that fills what is
      left, so the width the section actually has gets used. */
@@ -123,12 +89,21 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-sim-tag[hidden] { display:none; }
   .cold-reading { margin:8px 0 0; min-height:1.5em; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.5; color:var(--text-secondary); }
   .cold-reading b { font-weight:500; color:var(--text); }
-  .cold-ice { display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; min-height:40px; padding:0 14px;
-    border:1px solid var(--brand-line-mid); border-radius:999px; background:transparent; color:var(--brand); cursor:pointer;
-    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13.5px;
-    transition:background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
-  .cold-ice:hover { border-color:var(--brand); }
-  .cold-ice[aria-pressed="true"] { background:rgba(190,225,255,0.10); border-color:rgba(190,225,255,0.55); color:#D8ECFF; }
+  /* The ice pack is the point of this section, so its button is the loudest
+     thing in the panel: solid, larger, with a pulsing "Try it" cue that goes
+     away after the first press. */
+  .cold-ice { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:9px; margin-top:16px; min-height:48px; padding:0 22px;
+    border:1px solid var(--brand); border-radius:999px; background:var(--brand); color:var(--on-brand); cursor:pointer;
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:16px;
+    box-shadow:0 0 0 0 rgba(156,203,122,0.5), 0 6px 18px -6px rgba(156,203,122,0.6);
+    transition:background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+  .cold-ice:hover { background:var(--brand-press); border-color:var(--brand-press); transform:translateY(-1px); }
+  .cold-ice:not(.tried) { animation:icePulse 1.8s ease-out infinite; }
+  @keyframes icePulse { 0% { box-shadow:0 0 0 0 rgba(156,203,122,0.55), 0 6px 18px -6px rgba(156,203,122,0.6); } 70%, 100% { box-shadow:0 0 0 12px rgba(156,203,122,0), 0 6px 18px -6px rgba(156,203,122,0.6); } }
+  .cold-ice .try { position:absolute; top:-10px; right:-8px; padding:2px 8px; border-radius:999px; background:var(--accent); color:#1D1D1F;
+    font-size:11px; font-weight:700; letter-spacing:0.02em; line-height:1.5; }
+  .cold-ice.tried .try { display:none; }
+  .cold-ice[aria-pressed="true"] { background:rgba(190,225,255,0.14); border-color:rgba(190,225,255,0.6); color:#D8ECFF; box-shadow:none; }
   .cold-ice[hidden] { display:none; }
   .cold-ice svg { flex:none; }
   .cold-chart { grid-area:chart; align-self:center; position:relative; min-width:0; border-radius:10px; }
@@ -189,62 +164,59 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .cs-temp { font-size:11px; }
     .cs-threshold-lbl { font-size:10px; }
   }
-  /* Why-now stat figures and the section's closing line. */
-  .strip-term-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:700; font-size:clamp(24px,3.2vw,34px); line-height:1.05; letter-spacing:-0.02em; color:var(--accent-text); margin:0; }
-  .strip-term-fig sup { font-size:0.42em; }
-  .strip-term-cap { font-size:14px; line-height:1.5; color:var(--text-secondary); margin:8px 0 0; }
-  .strip-close { margin-top:64px !important; font-size:20px !important; line-height:1.6 !important; max-width:62ch; }
-  @media (max-width:760px) {
-    .strip-close { margin-top:44px !important; font-size:18px !important; }
-  }
-  /* ------------------------------------------------------------------
-     Why-now layout: headline and stats own the left column, the dot
-     field owns the right. Every dot is the same 250,000-person unit;
-     the 18 that are cut are the thing to notice, so they carry the
-     weight — solid accent orange at full opacity — while the ~150 that
-     remain sit back as a low-contrast field. That was inverted before
-     (cut units outlined, background units filled); this fixes it.
-     Two <symbol> defs, referenced by <use> for every mark, so the dot
-     path is never duplicated 168 times.
-     ------------------------------------------------------------------ */
-  .whynow-layout { display:grid; grid-template-columns:minmax(0,0.72fr) minmax(0,1fr); gap:5%; align-items:center; margin-top:8px; margin-bottom:56px; }
-  .whynow-col-left { display:flex; flex-direction:column; min-width:0; }
-  .whynow-col-right { display:flex; flex-direction:column; align-items:stretch; min-width:0; }
-  .dotfield-wrap { width:100%; }
-  .dotfield { display:block; width:100%; height:auto; overflow:visible; }
-  .whynow-stats { display:flex; flex-direction:column; gap:28px; margin-top:36px; }
-  .whynow-caption { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
-  .whynow-legend { margin-top:14px; }
-  /* Footnote weight: smaller and faded relative to the figure/label above
-     it, so a source reads as backup material, not a fourth line of body
-     copy competing with the stat itself. */
-  .whynow-stat-source { font-size:11px; line-height:1.4; color:var(--text-secondary); opacity:0.65; margin:4px 0 0; }
-  @media (max-width:860px) {
-    .whynow-layout { grid-template-columns:minmax(0,1fr); gap:36px; }
-  }
-  .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
-  .src-link:hover { color:var(--accent-text); text-decoration:underline; }
-  .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
-  .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
-  .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
-  .sources-list a:hover { color:var(--accent-text); }
-  .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
-  .limits-grid .lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
-  .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
   .cards-grid .card, .done-card { border-radius:8px; }
   .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
   .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
   .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
-  #team .name { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:19px; line-height:1.3; letter-spacing:-0.01em; color:var(--text); margin:0 0 8px; }
-  #team .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:24px 0 0; max-width:62ch; }
   .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
   .doc-toggle:hover { color:var(--accent-text); }
   .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
   .doc-open > .doc-panel { grid-template-rows:1fr; }
   .doc-panel > div { overflow:hidden; }
-  .disclosure > .doc-toggle { margin-top:0; }
+  /* 4% what-if slider: lives inside the big stat card and borrows its accent. */
+  .pct-whatif { margin-top:22px; padding-top:18px; border-top:1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+  .pct-whatif[hidden] { display:none; }
+  .pct-range { -webkit-appearance:none; appearance:none; display:block; width:100%; height:28px; margin:0; background:transparent; cursor:pointer; --fill:0%; }
+  .pct-range::-webkit-slider-runnable-track { height:6px; border-radius:999px;
+    background:linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill)); }
+  .pct-range::-moz-range-track { height:6px; border-radius:999px;
+    background:linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill)); }
+  .pct-range::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; margin-top:-9px; border-radius:50%;
+    background:var(--surface); border:3px solid var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.18); transition:transform 120ms ease; }
+  .pct-range::-moz-range-thumb { width:18px; height:18px; border-radius:50%;
+    background:var(--surface); border:3px solid var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+  .pct-range:active::-webkit-slider-thumb { transform:scale(1.12); }
+  .pct-range:focus-visible { outline:2px solid var(--accent); outline-offset:4px; border-radius:8px; }
+  .pct-scale { display:flex; justify-content:space-between; margin-top:2px;
+    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); }
+  .pct-result { margin:14px 0 0; font-size:15px; line-height:1.5; color:var(--text-secondary); min-height:3em; }
+  .pct-result b { display:block; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:800; font-size:clamp(22px,2.4vw,30px); line-height:1.15; letter-spacing:-0.02em; color:var(--accent-text); }
+  .pct-result .est { display:inline-block; margin-left:6px; padding:1px 7px; border:1px dashed var(--accent); border-radius:999px;
+    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--accent-text); vertical-align:2px; }
+  .statband .cite a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
+  /* "Learn more" cards: each one is a whole-card link to a deeper page. */
+  /* Four cards: 2×2 by default, one row on wide screens, one column on
+     phones. Never 3 + 1. */
+  .learn-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  @media (min-width:1180px) { .learn-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  @media (max-width:640px) { .learn-grid { grid-template-columns:minmax(0,1fr); } }
+  .learn-grid .card { position:relative; display:flex; flex-direction:column; transition:border-color 160ms ease, transform 160ms ease; }
+  .learn-grid .card:hover { border-color:var(--brand); transform:translateY(-2px); }
+  .learn-grid .card .body { flex:1; }
+  .learn-grid .card a.doc-toggle { text-decoration:none; }
+  .learn-grid .card a.doc-toggle::after { content:""; position:absolute; inset:0; border-radius:inherit; }
+  .learn-grid .card a.doc-toggle:focus-visible { outline:none; }
+  .learn-grid .card:focus-within { outline:2px solid var(--brand); outline-offset:2px; }
+  /* Map: one visible line of context, everything else folded away. */
+  .sites-summary { font-size:16px; line-height:1.6; color:var(--text); margin:20px 0 0; }
+  .sites-summary a { font-weight:600; white-space:nowrap; }
+  .map-about { margin:16px 0 0; max-width:70ch; }
+  .map-about summary { cursor:pointer; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--brand); }
+  .map-about summary:hover { color:var(--accent-text); }
+  .map-about p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:10px 0 0; }
+  .map-about .cite { font-size:13px; }
   .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
   @media (max-width:760px) {
     .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
@@ -265,7 +237,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     section { break-inside:avoid; }
   }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=12">
+<link rel="stylesheet" href="assets/design.css?v=13">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -277,11 +249,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       Stock the Block
     </a>
     <div class="links">
-      <a href="index.html#tracker">Tracker</a>
       <a href="index.html#how">How it works</a>
-      <a href="index.html#story">Story</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
       <a href="getting-started.html">Getting started</a>
-      <a href="index.html#join" class="cta">Partner with us</a>
+      <a href="index.html#join" class="cta">Work with us</a>
       <button id="themeToggle" type="button" aria-label="Colour theme">
         <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
         <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -296,18 +268,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <div id="heropin">
 <header id="top" class="wrap hero-grid">
   <div>
-    <p class="eyebrow" data-reveal>Student-run food recovery · NYC</p>
+    <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
     <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
-      Students move surplus cafeteria food from share tables to food banks.
-      <em>Every box, logged and checkable.</em>
+      Connecting schools’ leftover lunch food to local food banks.
+      <em>Every meal tracked.</em>
     </h1>
     <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
-      <p class="body-p" style="margin:20px 0 0;">Insulated boxes, short local routes inside one borough, and a delivery log anyone can audit.</p>
+      <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold, insulated boxes, walk it to a convenient food bank, and post the impact.</p>
       <div class="prelaunch" id="heroStatus">
-        <p class="prelaunch-tag">Pre-launch: the first run starts when our first receiving site signs.</p>
+        <p class="prelaunch-tag">In Development. Looking for food bank partners!</p>
       </div>
       <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
-        <a href="#join" class="btn solid">Partner with us</a>
+        <a href="#join" class="btn solid">Work with us</a>
         <a href="#how" class="btn line">How it works</a>
       </div>
     </div>
@@ -327,50 +299,58 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="grid">
       <div class="cell fade-in-up" data-stat>
         <p class="figure fig" id="statMeals">880,000</p>
-        <p class="cap">school meals served daily in NYC</p>
+        <p class="cap">school meals served every day in NYC</p>
       </div>
       <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
         <p class="figure fig" id="statPct">4%</p>
-        <p class="cap">of school buildings donate surplus food</p>
+        <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
+        <!-- What-if slider. Drag the share of buildings that donate and see the
+             food it would save. Every input is sourced in the cite line below. -->
+        <div class="pct-whatif" id="pctWhatIf" hidden>
+          <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
+                 aria-label="Share of NYC school buildings that donate leftover food">
+          <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
+          <p class="pct-result" id="pctResult"></p>
+        </div>
       </div>
       <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
         <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
-        <p class="cap">Boxes built, routes mapped, log live. We need receiving partners.</p>
+        <p class="cap">Boxes built and routes planned. Now we need food bank partners.</p>
       </div>
     </div>
-    <p class="cite fade-in-up" style="transition-delay:260ms">Meal and donation figures: NYC Comptroller, FY25.</p>
+    <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/" target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the average a school recovered in its first year of share tables in a <a href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025 study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
   </div>
 </section>
 
 <section id="how" class="wrap" style="padding-top:80px; padding-bottom:88px;">
-  <p class="eyebrow" data-reveal>Standard operating procedure</p>
+  <p class="eyebrow" data-reveal>How it works</p>
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four steps, the same every run,</span></span>
-    <span class="mask-l"><span data-line>all on the record.</span></span>
+    <span class="mask-l"><span data-line>Four simple steps,</span></span>
+    <span class="mask-l"><span data-line>the same every time.</span></span>
   </h2>
   <div id="steps" style="border-top:1px solid var(--line);"></div>
 </section>
 
 <div class="instrument">
 <section id="sensors" class="wrap" style="padding-top:96px; padding-bottom:88px;">
-  <p class="eyebrow" data-reveal>The instruments</p>
-  <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
-    <span class="mask-l"><span data-line>A school cannot release food</span></span>
-    <span class="mask-l"><span data-line>without a record.</span></span>
+  <p class="eyebrow" data-reveal>Food safety</p>
+  <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
+    <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
+    <span class="mask-l"><span data-line>safe to eat.</span></span>
   </h2>
-  <p class="body-p" data-reveal style="margin:0;">Nobody should have to take our word for it that the food arrived safe. Every box carries a temperature record from pack-out to hand-off, so a pantry can serve what we bring with confidence, and a school can show exactly what left its building.<sup><a class="src-link" href="#src-11">11</a></sup></p>
-  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">The fleet is designed around roughly three shared logger units rotating across routes, not one per box.</span> <span class="unverified">A run without a unit was to be checked against a thermal model built from logged runs on that route; no such model exists, because there are no logged runs.</span> Until there are, such a run has no temperature record and the manifest says so. There is no location sensor.</p>
-  <div class="cold-panel" data-reveal style="margin-top:40px;">
+  <p class="body-p" data-reveal style="margin:0;">Food has to stay at <span data-degf="41"></span> or colder. On this sample trip, the box got too warm at the handoff. Press <strong>Add ice pack</strong> to see how it stays safe.</p>
+  <div class="cold-panel" data-reveal style="margin-top:36px;">
     <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" style="width:100%;height:auto;display:block;overflow:visible;"><path d="M30 31 H270 L280 44 H20 Z" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--box-side);stroke:var(--mascot-stroke);"></path><rect x="20" y="44" width="260" height="195" rx="14" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect><path d="M20 153.2 H280 V225 Q280 239 266 239 H34 Q20 239 20 225 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M126.6 153.2 L173.4 153.2 L150.0 239.0 Z" fill="#2E5A22" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M100.6 153.2 L126.6 153.2 L147.4 219.5 L116.2 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M199.4 153.2 L173.4 153.2 L152.6 219.5 L183.8 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M53.8 172.7 L90.2 172.7 L90.2 188.3 L53.8 188.3 Z" fill="#E8871E" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 219.5 C228.0 242.9 272.2 244.8 289.1 225.4" fill="none" stroke="#6F7D6A" stroke-width="7.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#2E5A22" stroke-width="12.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#C9D1D8" stroke-width="7.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M202.0 188.3 L248.8 188.3 L248.8 219.5 L202.0 219.5 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><g data-squash style="transform-origin:150px 90px;"><g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;"><path d="M64.7 99.2 L96.9 72.1 L129.0 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 99.2 L203.1 72.1 L235.3 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M112.6 122.0 L118.9 125.3 L125.1 128.1 L131.3 130.2 L137.5 131.7 L143.8 132.6 L150.0 132.9 L156.2 132.6 L162.5 131.7 L168.7 130.2 L174.9 128.1 L181.1 125.3 L187.4 122.0" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g><g data-face="danger" style="opacity:1;transition:opacity 250ms ease;"><path d="M64.7 96.6 L96.9 90.5 L129.0 77.3" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 77.3 L203.1 90.5 L235.3 96.6" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M124.3 133.4 L127.5 135.6 L130.7 136.5 L133.9 135.6 L137.2 133.4 L140.4 131.2 L143.6 130.3 L146.8 131.2 L150.0 133.4 L153.2 135.6 L156.4 136.5 L159.6 135.6 L162.8 133.4 L166.1 131.2 L169.3 130.3 L172.5 131.2 L175.7 133.4" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g></g></svg></div>
     <div class="cold-status">
-      <p id="coldVerdict" class="cold-verdict is-danger">1 excursion · peak 43°F at 14:28</p>
-      <p id="coldSimTag" class="cold-sim-tag" hidden>what-if, not a measured effect</p>
+      <p id="coldVerdict" class="cold-verdict is-danger">Too warm once: 43°F at 2:28 pm</p>
+      <p id="coldSimTag" class="cold-sim-tag" hidden>simulated, not measured</p>
       <p id="coldReading" class="cold-reading" aria-live="polite"></p>
-      <p class="cold-run">Sample run · box 0447</p>
-      <p class="cold-tag">not a delivery record</p>
+      <p class="cold-run">Sample trip · box 0447</p>
+      <p class="cold-tag">an example, not a real delivery</p>
       <button type="button" id="coldIce" class="cold-ice" aria-pressed="false" hidden>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17l15.6-10"/><path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17l15.6-10"/><path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5"/></svg>
         <span class="cold-ice-lbl">Add ice pack</span>
+        <span class="try" aria-hidden="true">Try it</span>
       </button>
       <p id="coldIceStatus" class="vh" role="status" aria-live="polite"></p>
     </div>
@@ -378,635 +358,80 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <div id="coldSpark"></div>
       <noscript>
         <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447">
-          <div class="row"><span>13:42 packed</span><span class="temp">36°F</span></div>
-          <div class="row"><span>14:05 in transit</span><span class="temp">38°F</span></div>
-          <div class="row"><span>14:28 street handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
-          <div class="row"><span>14:51 received</span><span class="temp">39°F</span></div>
+          <div class="row"><span>1:42 pm packed</span><span class="temp">36°F</span></div>
+          <div class="row"><span>2:05 pm on the way</span><span class="temp">38°F</span></div>
+          <div class="row"><span>2:28 pm handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
+          <div class="row"><span>2:51 pm delivered</span><span class="temp">39°F</span></div>
         </div>
       </noscript>
     </div>
   </div>
-</section>
-
-<!-- The second instance of the hero's box, same renderer, different behaviour:
-     shut throughout, not draggable, and given the shine and the zoom instead.
-     Sizing and the sticky frame are set by initScrollScrub / initMidBox. -->
-<section id="boxpin" class="box-band">
-  <div id="boxpinSticky">
-    <div class="box-band-inner">
-      <canvas id="midBox" width="440" height="440" role="img"
-              aria-label="The insulated box, sealed and logged."></canvas>
-      <div class="box-band-copy">
-        <p class="eyebrow" data-midcopy>What actually moves</p>
-        <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
-        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="tracker">
-  <div class="wrap" style="padding-top:72px; padding-bottom:104px;">
-    <p class="eyebrow" data-reveal>The delivery log</p>
-    <h2 class="hd" data-mask style="max-width:620px;">
-      <span class="mask-l"><span data-line>Every delivery,</span></span>
-      <span class="mask-l"><span data-line>on the public record.</span></span>
-    </h2>
-    <p class="body-p" data-reveal style="margin:16px 0 0;">No annual report, no estimates. A public record of every box that moves — origin, destination, weight, temperature — sortable and filterable by anyone who wants to check our work. It opens with the first delivery and never closes.</p>
-    <div data-reveal style="margin-top:32px; max-width:700px;">
-      <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan's receiving site is in setup; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
-          <text x="8" y="16">borough cluster</text>
-          <text x="410" y="16">receiving site in that borough</text>
-        </g>
-        <g fill="none" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="2 8">
-          <path d="M170 56 L392 56"></path>
-          <path d="M170 110 L392 110"></path>
-          <path d="M170 164 L392 164"></path>
-          <path d="M170 218 L392 218"></path>
-        </g>
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13">
-          <g style="fill:var(--brand);" font-weight="500">
-            <text x="8" y="60">Manhattan</text>
-            <text x="8" y="114">Brooklyn</text>
-            <text x="8" y="168">Bronx</text>
-            <text x="8" y="222">Queens</text>
-          </g>
-          <g style="fill:var(--text-secondary);">
-            <text x="410" y="60">receiving site (in setup)</text>
-            <text x="410" y="114">to be identified</text>
-            <text x="410" y="168">to be identified</text>
-            <text x="410" y="222">to be identified</text>
-          </g>
-        </g>
-        <g fill="none" stroke-width="2.5">
-          <circle cx="150" cy="52" r="7" style="stroke:var(--brand);"></circle>
-          <circle cx="150" cy="106" r="7" style="stroke:var(--brand-line-mid);"></circle>
-          <circle cx="150" cy="160" r="7" style="stroke:var(--brand-line-mid);"></circle>
-          <circle cx="150" cy="214" r="7" style="stroke:var(--brand-line-mid);"></circle>
-        </g>
-        <g transform="translate(400, 52)"><circle cx="0" cy="0" r="7" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle></g>
-        <g fill="none" stroke-width="2.5" stroke-dasharray="3 5" style="stroke:var(--brand-line-mid);">
-          <circle cx="400" cy="106" r="7"></circle>
-          <circle cx="400" cy="160" r="7"></circle>
-          <circle cx="400" cy="214" r="7"></circle>
-        </g>
-      </svg>
-    </div>
-    <div class="sim-bar" data-reveal>
-      <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
-        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Live view</button>
-        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">See a sample delivery</button>
-      </div>
-      <p class="sim-note" id="simNote">Live view. The record opens with our first delivery.</p>
-    </div>
-    <div id="simBanner" class="sim-banner" hidden role="status">
-      <strong>SIMULATED PREVIEW — not a delivery record.</strong>
-      Every row, temperature and signature below is invented to show what the log will look like once boxes move. Nothing here has happened.
-    </div>
-    <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
-    <div class="manifest" id="manifest">
-      <div class="mhead">
-        <span class="left">
-          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST · <span id="filterLabel">RECENT</span></span>
-          <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
-        </span>
-        <span class="right">
-          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
-          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">pre-launch</span>
-          <span id="mascotMood" class="mascot-slot" data-state="empty"></span>
-        </span>
-      </div>
-      <div class="thead" id="thead">
-        <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="from" aria-sort="none">Origin <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="to" aria-sort="none">Destination <span class="caret" aria-hidden="true">▾</span></button>
-        <button type="button" data-key="lbs" aria-sort="none">Lbs <span class="caret" aria-hidden="true">▾</span></button>
-        <span class="lab">Status</span>
-      </div>
-      <div id="mempty" class="empty-state" style="display:none;">
-        <div class="mascot-slot" data-state="empty"></div>
-        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The record opens with our first delivery.</p>
-        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Your school could fill the first row.</p>
-      </div>
-      <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
-      <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
-    </div>
-  </div>
+  <a class="doc-toggle" data-reveal href="tracking.html" style="text-decoration:none; margin-top:24px;">How we track every box <span aria-hidden="true">→</span></a>
 </section>
 </div>
 
 <section id="network" style="background:var(--bg);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:64px;">
-    <p class="eyebrow" data-reveal>The network</p>
-    <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
-      <span class="mask-l"><span data-line>Where the need is,</span></span>
-      <span class="mask-l"><span data-line>and where we are.</span></span>
+  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>The map</p>
+    <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
+      <span class="mask-l"><span data-line>Where food help</span></span>
+      <span class="mask-l"><span data-line>is needed most.</span></span>
     </h2>
+    <p class="body-p" data-reveal style="margin:0 0 28px;">Darker areas have more people using SNAP (food stamps). Pins show the schools we’re working with. Press play to see what a citywide network could look like.</p>
 
     <div class="map-shell">
-      <div class="map-cta">
-        <span class="map-cta-text">Join the Movement</span>
-        <a class="map-cta-btn" href="#join">Get involved</a>
-      </div>
       <div id="networkMap" class="map-canvas" role="region" aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0"></div>
     </div>
 
     <div id="networkMapLegend" class="map-legend"></div>
 
-    <p class="sim-banner">
-      <strong>What you are watching.</strong>
-      The shading and the school counts are real and sourced. The spread that follows is a projection: it shows what a student-run recovery network could look like across the city, not anything that has happened. None of the pale dots is a real school.
-    </p>
+    <p class="sites-summary" id="sitesSummary">8 schools so far: 1 getting set up, 2 in talks, 5 we plan to reach. <a href="getting-started.html#sites">See the full list →</a></p>
 
-    <p class="map-caption">Shading shows percent of residents receiving SNAP by community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where Stock the Block operates. One receiving site is in setup, in Manhattan.</p>
-    <p class="cite" id="networkMapCite"></p>
-    <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
+    <details class="map-about">
+      <summary>About this map</summary>
+      <p>The shading and the school pins are real. The spread you see when you press play is a “what if”: it shows what a student-run network could look like across the city, not anything that has happened. None of the pale dots is a real school.</p>
+      <p>Shading shows the percent of residents getting SNAP in each community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where we operate. One food bank partner site is being set up, in Manhattan.</p>
+      <p class="cite" id="networkMapCite"></p>
+      <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
+    </details>
   </div>
 </section>
 
-<section aria-label="Planned operations" id="sites" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:64px; padding-bottom:80px;">
-    <p class="eyebrow">Our school network</p>
-    <p class="body-p" style="margin:0 0 24px; max-width:62ch; font-size:17px;">Eight schools, one honest status each. We say exactly where every conversation stands — no logos we have not earned.</p>
-
-    <div class="filter-bar">
-      <div class="filter-group">
-        <span class="filter-label" aria-hidden="true">Status</span>
-        <div id="sitesFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by status" aria-controls="sitesList"></div>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label" aria-hidden="true">Borough</span>
-        <div id="sitesBoroughFilter" class="site-filter" role="radiogroup" aria-label="Filter schools by borough, which also moves the map" aria-controls="sitesList"></div>
-      </div>
-    </div>
-
-    <div id="sitesList" class="sites-list" aria-live="polite">
-      <!-- Rendered by STB.initSites(). The rows below are the no-JS fallback and
-           are replaced on first render. -->
-      <noscript>
-        <ul class="site-rows">
-          <li class="site-row"><span class="nm">Stuyvesant High School</span> <span class="meta"><span class="boro">Manhattan</span></span> <span class="status s-setup">In setup</span></li>
-          <li class="site-row"><span class="nm">Midwood High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
-          <li class="site-row"><span class="nm">James Madison High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-conversation">In conversation</span></li>
-          <li class="site-row"><span class="nm">Brooklyn Technical High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Rachel Carson High School</span> <span class="meta"><span class="boro">Brooklyn</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Bronx High School of Science</span> <span class="meta"><span class="boro">Bronx</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Townsend Harris High School</span> <span class="meta"><span class="boro">Queens</span></span> <span class="status s-target">Target</span></li>
-          <li class="site-row"><span class="nm">Queens High School for the Sciences at York College</span> <span class="meta"><span class="boro">Queens</span><span class="tag">specialized</span></span> <span class="status s-target">Target</span></li>
-        </ul>
-      </noscript>
-    </div>
-
-    <p class="cite" id="sitesNote" style="font-size:13px; color:var(--text-secondary); margin:24px 0 0; padding-top:14px; border-top:1px solid var(--line-soft); max-width:62ch;">Every school carries an explicit status. Target sites are schools we intend to approach; they have not agreed to anything, and listing one here is not a claim that they have.</p>
-  </div>
-</section>
-
-<section id="whynow" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
-<div class="wrap pt-sec" style="padding-top:88px; padding-bottom:88px;">
-  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
-    <defs>
-      <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-b" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.031" numOctaves="3" seed="23" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-c" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="41" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-d" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.044" numOctaves="3" seed="67" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-      <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
-    </defs>
-  </svg>
-  <div class="whynow-layout">
-    <div class="whynow-col-left">
-      <p class="eyebrow" data-reveal>Why now</p>
-      <h2 class="hd" data-mask style="margin-bottom:0; max-width:520px;">
-        <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
-        <span class="mask-l"><span data-line>This is the scale of it.</span></span>
-      </h2>
-
-      <div class="whynow-stats" data-reveal>
-        <div class="whynow-stat">
-          <p class="strip-term-fig">$187 billion</p>
-          <p class="strip-term-cap">cut from SNAP over ten years</p>
-          <p class="whynow-stat-source">One Big Beautiful Bill Act, signed July 4, 2025 (CRS)<sup><a class="src-link" href="#src-1">1</a></sup></p>
-        </div>
-        <div class="whynow-stat">
-          <p class="strip-term-fig">~17%</p>
-          <p class="strip-term-cap">reduction in program benefit spending</p>
-          <p class="whynow-stat-source"><span class="unverified">CBO / CRS, not yet matched to a cited source</span></p>
-        </div>
-        <div class="whynow-stat">
-          <p class="strip-term-fig">$9 billion</p>
-          <p class="strip-term-cap">in new costs shifted onto states, a first for SNAP</p>
-          <p class="whynow-stat-source">CBPP<sup><a class="src-link" href="#src-4">4</a></sup></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="whynow-col-right" data-reveal>
-      <div class="dotfield-wrap">
-        <svg id="dotField" class="dotfield" viewBox="0 0 336 292" preserveAspectRatio="xMidYMid meet" role="img"
-             aria-label="A grid of 168 dots, 14 across and 12 down, grouped into blocks of 25. 150 dots are a low-contrast gray; the other 18 are solid accent orange, marking the share this cut removes from the count.">
-          <defs>
-            <symbol id="dot-present" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--text-secondary)" opacity="0.3"></circle></symbol>
-            <symbol id="dot-removed" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--accent)"></circle></symbol>
-          </defs>
-          <use href="#dot-present" x="6" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="6" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="28" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="50" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="72" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="94" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="128" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="150" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="172" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="194" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="250" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="272" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="294" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="316" y="216" width="14" height="14"></use>
-          <use href="#dot-present" x="6" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="28" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="50" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="72" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="94" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="128" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="150" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="172" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="194" y="250" width="14" height="14"></use>
-          <use href="#dot-present" x="216" y="250" width="14" height="14"></use>
-          <use href="#dot-removed" x="250" y="250" width="14" height="14"></use>
-          <use href="#dot-removed" x="272" y="250" width="14" height="14"></use>
-          <use href="#dot-removed" x="294" y="250" width="14" height="14"></use>
-          <use href="#dot-removed" x="316" y="250" width="14" height="14"></use>
-          <use href="#dot-removed" x="6" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="28" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="50" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="72" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="94" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="128" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="150" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="172" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="194" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="216" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="250" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="272" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="294" y="272" width="14" height="14"></use>
-          <use href="#dot-removed" x="316" y="272" width="14" height="14"></use>
-        </svg>
-        <p class="whynow-caption whynow-legend">18 dots = 4.5 million people<sup><a class="src-link" href="#src-8">8</a></sup></p>
-      </div>
-    </div>
-  </div>
-
-  <p class="body-p" data-reveal style="margin:0; max-width:62ch;">On October 1, 2026, federal reimbursement for state SNAP administration drops from 50 percent to 25 percent.<sup><a class="src-link" href="#src-10">10</a></sup></p>
-
-  <p class="body-p strip-close" data-reveal style="margin:0;">A benefit cut is measured in dollars of income. Recovered food is measured in pounds across a pantry table. Those are not the same unit, and food does not replace a benefits program.</p>
-</div>
-</section>
-
-<section id="story" class="wrap" style="padding-top:96px; padding-bottom:56px;">
-  <p class="eyebrow" data-reveal>Why we exist</p>
-  <div class="two-grid">
-    <h2 class="hd" data-mask>
-      <span class="mask-l"><span data-line>Built by the students who watched</span></span>
-      <span class="mask-l"><span data-line>the share table get thrown out.</span></span>
-    </h2>
-    <div>
-      <p class="body-p" data-reveal style="margin:0;">We started this because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the logger and the tracker, and will walk the routes and keep the logs.</p>
-      <p class="body-p" data-reveal style="margin:16px 0 0;">If your building has a share table and a receiving site within walking distance, it can run there too.</p>
-    </div>
-  </div>
-</section>
-
-<section id="team" class="wrap" style="padding-top:56px; padding-bottom:96px;">
-  <p class="eyebrow" data-reveal>Who runs this</p>
+<section id="learn" class="wrap" style="padding-top:72px; padding-bottom:88px; border-top:1px solid var(--line);">
+  <p class="eyebrow" data-reveal>Learn more</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
-    <span class="mask-l"><span data-line>12 students from 6 NYC high schools,</span></span>
-    <span class="mask-l"><span data-line>plus a college mentor.</span></span>
+    <span class="mask-l"><span data-line>Want the details?</span></span>
   </h2>
-  <div class="cards-grid">
+  <div class="cards-grid learn-grid">
     <div class="card" data-reveal>
-      <p class="name">Saif Iftikhar</p>
-      <p class="kicker">Founder</p>
-      <p class="meta">Stuyvesant High School</p>
+      <p class="kicker" data-icon="clipboard-check">How we track every box</p>
+      <p class="body">The sealed box, the temperature loggers, and the public delivery log anyone can check.</p>
+      <a class="doc-toggle" href="tracking.html">See the tracking <span aria-hidden="true">→</span></a>
     </div>
     <div class="card" data-reveal>
-      <p class="name">Savlatbek Narzilloev</p>
-      <p class="kicker">Mentor &amp; CUNY Expansion Lead</p>
-      <p class="meta">Queens College</p>
+      <p class="kicker" data-icon="shield-check">Why this matters now</p>
+      <p class="body">SNAP is being cut. What that means for NYC, and what rescued food can and can’t fix.</p>
+      <a class="doc-toggle" href="why.html">Read why <span aria-hidden="true">→</span></a>
     </div>
     <div class="card" data-reveal>
-      <p class="name">Bilal Baig</p>
-      <p class="kicker">Director of Logistics</p>
-      <p class="meta">James Madison High School</p>
+      <p class="kicker" data-icon="handshake">Meet the team</p>
+      <p class="body">The students behind this, the schools they come from, and what each role does.</p>
+      <a class="doc-toggle" href="team.html">Meet us <span aria-hidden="true">→</span></a>
     </div>
     <div class="card" data-reveal>
-      <p class="name">Sajid Rahman</p>
-      <p class="kicker">Director of Finance</p>
-      <p class="meta">Stuyvesant High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Haseeb Chaudhry</p>
-      <p class="kicker">Director of Outreach</p>
-      <p class="meta">Stuyvesant High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Mueez Manzoor</p>
-      <p class="kicker">Engineering Co-Lead</p>
-      <p class="meta">Midwood High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Sonam Tsephel</p>
-      <p class="kicker">Engineering Co-Lead</p>
-      <p class="meta">Stuyvesant High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Cesar Julian</p>
-      <p class="kicker">Health &amp; Safety Lead</p>
-      <p class="meta">Midwood High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Nafees Hye</p>
-      <p class="kicker">Communications Lead</p>
-      <p class="meta">The Springs School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Aditya Anand</p>
-      <p class="kicker">Transport Lead</p>
-      <p class="meta">Stuyvesant High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">David Arroliga</p>
-      <p class="kicker">Brooklyn Site Operator</p>
-      <p class="meta">Rachel Carson High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Reuben Rai</p>
-      <p class="kicker">Brooklyn Site Operator</p>
-      <p class="meta">Brooklyn Technical High School</p>
-    </div>
-    <div class="card" data-reveal>
-      <p class="name">Ahmet Sarisein</p>
-      <p class="kicker">Collection Coordinator</p>
-      <p class="meta">Stuyvesant High School</p>
-    </div>
-  </div>
-  <p class="cite">Students from six NYC high schools, plus a college mentor from Queens College. School affiliations are listed for identification only and do not indicate that any school has agreed to participate; see the school network section for each school’s actual status.</p>
-  <p class="cite"><a href="roles.html">See what each role does →</a></p>
-</section>
-
-<section id="limits" style="background:var(--surface); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>The limits</p>
-    <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-      <span class="mask-l"><span data-line>What this does not do.</span></span>
-      <span class="mask-l"><span data-line>Plainly.</span></span>
-    </h2>
-    <div class="limits-grid">
-      <div data-reveal>
-        <p class="lbl">the mechanism</p>
-        <p class="body">Surplus cafeteria food is a waste problem sitting next to a hunger problem. The system moves sealed, unserved items from a share table to a receiving site in the same borough, on foot, the same afternoon. That is what a borough cluster buys you; it is not a claim about crossing the city.</p>
-      </div>
-      <div data-reveal>
-        <p class="lbl">what it measurably changes</p>
-        <p class="body">Pounds diverted from a school's waste stream, food in front of people who came to a pantry that week, and a public record a school can point at when asked what happened to the surplus.</p>
-      </div>
-      <div data-reveal>
-        <p class="lbl">what it does not touch</p>
-        <p class="body">Income. SNAP enrollment. Rent, wages, or any of the reasons need exists in the first place. A pound recovered is not a benefit restored, and treating the two as interchangeable is how a real cut gets talked about as if it had been absorbed.</p>
-      </div>
-      <div data-reveal>
-        <p class="lbl">what would have to be true</p>
-        <p class="body">Many more buildings than the one we are setting up in. A signed receiving site in every borough we claim a cluster in; three of the four have none. Routes that survive graduation and staff turnover. A health department that finds the records sufficient. Sites with capacity for same-day perishable food.</p>
-      </div>
-      <div data-reveal>
-        <p class="lbl">what would show it is not working</p>
-        <p class="body">Pounds climbing while partner sites report no change in what they can hand out. Boxes arriving above the threshold. Gaps in the log, or corrections that outnumber clean entries. A cluster that never finds a receiving site and stays on the map anyway. We publish the log so this is checkable by someone other than us.</p>
-      </div>
+      <p class="kicker" data-icon="ruler">Start it at your school</p>
+      <p class="body">Step-by-step setup, the health code memo, the box plans and printable paperwork.</p>
+      <a class="doc-toggle" href="getting-started.html">Get started <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
 
-<section id="replicate" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>Run this yourself</p>
-    <h2 class="hd" data-mask style="margin-bottom:24px; max-width:640px;">
-      <span class="mask-l"><span data-line>Everything we use</span></span>
-      <span class="mask-l"><span data-line>is yours to copy.</span></span>
-    </h2>
-    <p class="body-p" data-reveal style="margin:0 0 32px; max-width:62ch;">Read the health code memo, then the box spec. Those two decide whether your building can run this; the rest follows from them.</p>
-    <div class="cards-grid">
-      <div class="card" data-reveal style="grid-column:1 / -1; background:var(--tint); border-color:var(--brand-line-mid);">
-        <p class="kicker" data-icon="shield-check" style="font-size:14px;">Health code memo: start here</p>
-        <p class="body" style="font-size:19px;">What a school may release, and the records it must keep to release it.</p>
-        <p class="meta">Food service directors and school administrators.</p>
-        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-health">Read the memo <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="ruler">Box spec and firmware</p>
-        <p class="body">Cut sheet, materials list and fold order for one insulated box, plus the logger firmware overview.</p>
-        <p class="meta">Whoever builds the first three boxes, and the student build team.</p>
-        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-build">Get the build files <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="handshake">Partner agreement</p>
-        <p class="body">One page between a school and a receiving site, signed before the first run.</p>
-        <p class="meta">School administrators and pantry directors.</p>
-        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-agreement">Read the agreement <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="clipboard-list">Intake workflow</p>
-        <p class="body">How a receiving site confirms a delivery and closes out the manifest line.</p>
-        <p class="meta">Pantry staff and volunteers.</p>
-        <a class="doc-toggle" style="text-decoration:none;" href="getting-started.html#doc-intake">Read the checklist <span aria-hidden="true">→</span></a>
-      </div>
-    </div>
-    <div style="margin-top:56px; border-top:1px solid var(--line); padding-top:32px;">
-      <p class="eyebrow">The kit, flat</p>
-      <p class="body-p" data-reveal style="margin:0 0 24px; max-width:60ch;">One box, cut and folded from a single sheet. The plans, route sheet and log template are yours to copy.</p>
-      <div style="position:relative; max-width:760px;">
-        <svg viewBox="0 0 760 470" role="img" aria-label="The insulated box shown flat: an unfolded net of six panels, labelled lid flap, face panel, base, handle cut, sensor pocket and back panel" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-          <g fill="none" style="stroke:var(--mascot-stroke);" stroke-width="2.5" stroke-linejoin="round">
-            <path d="M262 152 L262 62 L412 62 L412 152"></path>
-            <path d="M262 302 L262 392 L412 392 L412 302"></path>
-            <path d="M262 152 L112 152 L112 302 L262 302"></path>
-            <path d="M412 152 L712 152 L712 302 L412 302"></path>
-            <path d="M262 152 L412 152 M262 302 L412 302"></path>
-          </g>
-          <g fill="none" style="stroke:var(--brand-line-mid);" stroke-width="1.5" stroke-dasharray="6 6">
-            <path d="M262 152 L412 152"></path>
-            <path d="M262 302 L412 302"></path>
-            <path d="M262 152 L262 302"></path>
-            <path d="M412 152 L412 302"></path>
-            <path d="M562 152 L562 302"></path>
-          </g>
-          <rect x="140" y="196" width="56" height="16" rx="8" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></rect>
-          <rect x="450" y="196" width="74" height="58" fill="none" style="stroke:var(--accent);" stroke-width="2.5" stroke-dasharray="5 5"></rect>
-          <g style="stroke:var(--rule);" stroke-width="1">
-            <line x1="337" y1="62" x2="337" y2="32"></line>
-            <line x1="300" y1="290" x2="232" y2="344"></line>
-            <line x1="168" y1="212" x2="140" y2="122"></line>
-            <line x1="337" y1="392" x2="337" y2="432"></line>
-            <line x1="487" y1="254" x2="487" y2="336"></line>
-            <line x1="637" y1="152" x2="637" y2="104"></line>
-          </g>
-          <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
-            <text x="337" y="26" text-anchor="middle">lid flap</text>
-            <text x="232" y="362" text-anchor="middle">face panel</text>
-            <text x="140" y="114" text-anchor="middle">handle cut</text>
-            <text x="337" y="450" text-anchor="middle">base</text>
-            <text x="487" y="354" text-anchor="middle">sensor pocket</text>
-            <text x="637" y="96" text-anchor="middle">back panel</text>
-          </g>
-        </svg>
-        <div class="mascot-slot" aria-hidden="true" style="position:absolute; left:35.5%; top:33.5%; width:17.5%;" data-state="neutral" data-bare></div>
-      </div>
-    </div>
-    <div id="runPacket" style="margin-top:44px; padding-top:36px; border-top:1px solid var(--brand-line-soft);">
-      <h3 style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.02em; margin:0 0 8px; color:var(--brand);">Run packet generator</h3>
-      <p class="body-p" style="font-size:17px; margin:0; max-width:62ch;">Fill this in before a run and print it: a manifest and temperature log, on paper, for the box about to leave.</p>
-      <p class="packet-note"><strong>Nothing here leaves your browser.</strong> No endpoint, no upload, no storage. The packet is built on this page and is gone when you close the tab.</p>
-      <form class="packet-form" id="packetForm" autocomplete="off">
-        <label>Date<input type="date" name="date" required></label>
-        <label>Origin school<input type="text" name="origin" placeholder="e.g. Stuyvesant High School" required></label>
-        <label>Destination site<input type="text" name="destination" placeholder="receiving site" required></label>
-        <label>Box ID<input type="text" name="boxid" placeholder="e.g. 0447" required></label>
-        <label>Weight (lbs)<input type="number" name="weight" min="0" step="0.1" placeholder="e.g. 42" required></label>
-        <label class="span-all">Temperature readings<textarea name="temps" rows="4" placeholder="One per line: time, note, °F&#10;13:42, packed, 36&#10;14:05, in transit, 38&#10;14:28, street handoff, 43&#10;14:51, received, 39"></textarea></label>
-      </form>
-      <div class="packet-actions">
-        <button type="button" id="packetBuild" class="btn-sm solid">Generate packet</button>
-        <button type="button" id="packetPrint" class="btn-sm" disabled>Print packet</button>
-      </div>
-      <div id="runPacketOut" aria-live="polite"></div>
-    </div>
-
+<section id="schools" class="emblems" aria-labelledby="schoolsHd">
+  <div class="wrap">
+    <p class="eyebrow" id="schoolsHd">Where our team studies</p>
   </div>
+  <div class="emblem-track" data-emblems></div>
+  <p class="wrap emblem-note">Logos show where our team members go to school. They are not an endorsement by any school.</p>
 </section>
 
 <section id="join" style="background:var(--surface); border-top:1px solid var(--line);">
@@ -1015,13 +440,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="join-grid">
       <div>
         <h2 class="hd" data-mask>
-          <span class="mask-l"><span data-line>Bring Stock the Block</span></span>
-          <span class="mask-l"><span data-line>to your building.</span></span>
+          <span class="mask-l"><span data-line>Want to help?</span></span>
+          <span class="mask-l"><span data-line>Let’s talk.</span></span>
         </h2>
-        <p class="body-p" data-reveal style="margin:16px 0 0;">Tell us who you are and we'll send the playbook for your role, plus what a first run would look like at your site.</p>
+        <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school, or a food bank, tell us who you are and we’ll get back to you with next steps.</p>
         <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
           <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Student-run. Publicly logged.<br>One receiving site in setup, in Manhattan.</p>
+          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Run by students. Every delivery posted online.<br>Our first food bank partner site is being set up in Manhattan.</p>
         </div>
       </div>
       <div id="formWrap">
@@ -1044,85 +469,28 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="tech-spec" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" style="padding-top:56px; padding-bottom:56px;">
-    <p class="eyebrow" data-reveal>Open tech spec</p>
-    <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
-      <span class="mask-l"><span data-line>The hardware, for anyone</span></span>
-      <span class="mask-l"><span data-line>who wants to build one.</span></span>
-    </h2>
-    <p class="body-p" data-reveal style="margin:0 0 28px;">You do not need to read this to partner with us — it is here so a build team can copy the logger without asking us for anything.</p>
-    <div class="disclosure" data-disclosure id="techSpec">
-      <button type="button" class="doc-toggle" aria-expanded="false" aria-controls="techSpecPanel">Show the logger diagram <span class="doc-caret" aria-hidden="true">+</span></button>
-      <div class="doc-panel" id="techSpecPanel"><div>
-        <div style="padding-top:18px; max-width:760px;">
-<div>
-      <svg viewBox="0 0 760 340" role="img" aria-label="The logger unit: an ESP32-C3 SuperMini board, a TP4056 charge module, a LiPo cell and a DS18B20 probe inside a printed enclosure" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-        <rect x="100" y="70" width="520" height="185" fill="none" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="7 6"></rect>
-        <rect x="140" y="105" width="150" height="68" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <g style="fill:var(--sensor-deep);"><rect x="152" y="117" width="34" height="20"></rect><rect x="152" y="147" width="18" height="14"></rect><rect x="196" y="117" width="12" height="44"></rect></g>
-        <g style="fill:var(--bg);"><rect x="222" y="117" width="56" height="8"></rect><rect x="222" y="131" width="56" height="8"></rect></g>
-        <rect x="140" y="190" width="150" height="48" rx="4" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <path d="M290 202 L306 202 M290 214 L306 214" style="stroke:var(--sensor-deep);" stroke-width="3"></path>
-        <rect x="330" y="110" width="110" height="58" style="fill:var(--sensor-board); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <rect x="344" y="124" width="30" height="18" style="fill:var(--sensor-deep);"></rect>
-        <rect x="386" y="124" width="40" height="8" style="fill:var(--bg);"></rect>
-        <path d="M440 200 C 476 200, 470 138, 506 132" fill="none" style="stroke:var(--sensor-deep);" stroke-width="5" stroke-linecap="round"></path>
-        <rect x="506" y="118" width="86" height="28" rx="14" style="fill:var(--sensor-shell); stroke:var(--brand);" stroke-width="2.5"></rect>
-        <circle cx="580" cy="132" r="6" style="fill:var(--sensor-deep);"></circle>
-        <g style="stroke:var(--rule);" stroke-width="1">
-          <line x1="130" y1="70" x2="112" y2="44"></line>
-          <line x1="215" y1="105" x2="248" y2="48"></line>
-          <line x1="385" y1="110" x2="424" y2="48"></line>
-          <line x1="215" y1="238" x2="188" y2="292"></line>
-          <line x1="549" y1="146" x2="566" y2="292"></line>
-        </g>
-        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13" style="fill:var(--text-secondary);">
-          <text x="112" y="36" text-anchor="middle">printed enclosure</text>
-          <text x="248" y="40" text-anchor="middle">ESP32-C3 SuperMini</text>
-          <text x="424" y="40" text-anchor="middle">TP4056 charge module</text>
-          <text x="188" y="310" text-anchor="middle">LiPo cell</text>
-          <text x="566" y="310" text-anchor="middle">DS18B20 probe</text>
-        </g>
-      </svg>
-    </div>
-        </div>
-      </div></div>
-    </div>
-  </div>
-</section>
-
 <footer>
   <div class="wrap top">
     <span style="display:flex; align-items:center; gap:12px;">
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">Ready to run · seeking receiving partners</span>
+    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
   </div>
-  <div class="wrap" id="sources" style="padding:8px 24px 28px;">
-    <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
-    <ol class="sources-list">
-      <li id="src-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
-      <li id="src-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
-      <li id="src-3">3. Pew Charitable Trusts, "As SNAP Changes Shift Food Assistance Costs, States Face New Choices," January 2026</li>
-      <li id="src-4">4. Center on Budget and Policy Priorities, "States' First-Ever Bill for SNAP Benefits Could Cost Billions," June 2026</li>
-      <li id="src-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
-      <li id="src-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
-      <li id="src-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
-      <li id="src-8">8. CBPP, USDA data. "4.5 million" figure, national SNAP enrollment change</li>
-      <li id="src-9">9. NY OTDA. "March 1, 2026" ABAWD work requirement effective date</li>
-      <li id="src-10">10. Federal Register. "October 1, 2026" SNAP administrative cost-share change</li>
-      <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
-    </ol>
-  </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+  </nav>
   <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
 </footer>
 
-<script src="assets/vendor/leaflet/leaflet.js?v=12"></script>
-<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=12"></script>
-<script src="assets/site.js?v=12"></script>
-<script src="assets/map.js?v=12"></script>
+<script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
+<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script src="assets/map.js?v=13"></script>
 <script>
 (function () {
   "use strict";
@@ -1133,29 +501,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   var armed = STB.revealOnScroll && !reduced;
   var fmtN = function (n) { return n.toLocaleString("en-US"); };
 
-  /* Derived, not hard-coded — a stale literal would silently mislabel rows. */
-  var TODAY = new Date().toISOString().slice(0, 10);
-  /* Pre-launch: there is no delivery record yet, and none is invented here.
-     The manifest machinery below (sort, filter, empty state) runs off this
-     array, so it stays fully functional the moment real rows land. */
-  var ROWS = [];
   var STEPS = [
-    { num: "01", title: "Collect from share tables", body: "Students gather uneaten, packaged food from share tables at the end of lunch.", detail: "DOE wellness policy: items must be commercially packaged, unopened and temperature-safe before they leave the cafeteria.", state: "collect", icon: "package" },
-    { num: "02", title: "Pack the boxes", body: "Everything is weighed and packed into insulated boxes before it leaves the building.", detail: "Weight, contents category and packing time are recorded against the box ID, so every pound is traceable before the box leaves.", state: "pack", icon: "archive" },
-    { num: "03", title: "Deliver within the borough", body: "Student teams walk a short local route to a receiving site in the same borough, and recipients confirm receipt on the spot.", detail: "Each borough runs as its own cluster: schools walk to a site in that borough, not across the city. Routes are walked in pairs and take under thirty minutes, which is why same-afternoon delivery holds within a cluster and not between them. A recipient signature closes out each box.", state: "deliver", icon: "truck" },
-    { num: "04", title: "Log it publicly", body: "Every delivery posts to the log: date, origin, destination, pounds.", detail: "Entries post within minutes of drop-off and are never edited; corrections append as new lines. <span class=\"unverified\">Track the Box, the public log this feeds, is planned and not yet published.</span>", state: "record", icon: "clipboard-check" }
+    { num: "01", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", detail: "NYC school rules say food must be store-packaged, unopened and kept at a safe temperature before it can leave the cafeteria.", state: "collect", icon: "package" },
+    { num: "02", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box before it leaves the building.", detail: "Each box gets an ID number. We write down its weight, what’s inside and when it was packed, so every pound can be traced.", state: "pack", icon: "archive" },
+    { num: "03", title: "Walk it to a food bank", body: "Two students walk the box to a food bank in the same borough. The food bank signs for it.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
+    { num: "04", title: "Post it online", body: "Every delivery goes on a public log: the date, where it came from, where it went and how much it weighed.", detail: "Entries are never edited; fixes are added as new lines. <span class=\"unverified\">Track the Box, the public log, is planned and not live yet.</span>", state: "record", icon: "clipboard-check" }
   ];
   /* ---------- icon set (shared — assets/site.js) ---------- */
   var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
   initIcons();
   var COLD = [
-    { t: "13:42", note: "packed", temp: 36 },
-    { t: "14:05", note: "in transit", temp: 38 },
-    { t: "14:28", note: "street handoff", temp: 43 },
-    { t: "14:51", note: "received", temp: 39 }
+    { t: "1:42 pm", note: "packed", temp: 36 },
+    { t: "2:05 pm", note: "on the way", temp: 38 },
+    { t: "2:28 pm", note: "handoff", temp: 43 },
+    { t: "2:51 pm", note: "delivered", temp: 39 }
   ];
   var SAFE_MAX = 41;
-  var MOOD_LABEL = { idle: "all quiet", record: "record haul", confirmed: "all confirmed", empty: "pre-launch", active: "en route" };
 
   /* ---------- mascot component (shared — assets/site.js) ---------- */
   var mascotSVG = STB.mascotSVG, paintMascot = STB.paintMascot, initMascotSlots = STB.initMascotSlots;
@@ -1163,24 +524,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   /* ---------- theme ---------- */
   var getVar = STB.getVar;
-  STB.initTheme(function () { if (heroBox) heroBox.repaint(); if (midBox) midBox.repaint(); });
+  STB.initTheme(function () { if (heroBox) heroBox.repaint(); });
 
   /* ---------- nav ---------- */
   STB.initNav();
-
-  /* ---------- torn-paper responsive scale ---------- */
-  function tornResize() {
-    var narrow = innerWidth < 480;
-    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6, "torn-g": 8 };
-    Object.keys(base).forEach(function (id) {
-      var filt = document.getElementById(id);
-      if (!filt) return;
-      var dm = filt.querySelector("feDisplacementMap");
-      if (dm) dm.setAttribute("scale", String(narrow ? Math.round(base[id] * 0.5) : base[id]));
-    });
-  }
-  tornResize();
-  addEventListener("resize", tornResize, { passive: true });
 
   /* ---------- counters ---------- */
   function count(target, onTick, done) {
@@ -1204,10 +551,55 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         /* Only the two sourced NYC figures animate. The third cell is a
            pre-launch statement, not a number, so there is nothing to count. */
         count(880000, function (v) { $("#statMeals").textContent = fmtN(v); });
-        count(4, function (v) { $("#statPct").textContent = v + "%"; });
+        count(4, function (v) { if (!pctTouched) $("#statPct").textContent = v + "%"; });
       }
     }
   }
+
+  /* ---------- 4% what-if slider ----------
+     Every input is sourced in the statband cite line. The Comptroller counts
+     buildings, not pounds (NYCPS does not track donation weights), so pounds
+     come from a per-school recovery figure and are labelled an estimate. */
+  /* NYC Comptroller, FY25: 67 buildings donated, out of the 1,675 buildings
+     that serve school food. 67 of 1,675 is the 4%; the report also cites
+     1,319 buildings, but 67 of 1,319 would be 5%, so 1,675 is the base here. */
+  var BUILDINGS = 1675, DONATING = 67;
+  var LBS_PER_BUILDING = 2156;                  /* ≈978 kg/school/yr, 2025 share-table study */
+  var LBS_PER_MEAL = 1.2;                       /* Feeding America */
+  var pctTouched = false;
+  (function () {
+    var wrap = $("#pctWhatIf"), range = $("#pctRange"), cap = $("#pctCap"), out = $("#pctResult");
+    if (!wrap || !range) return;
+    wrap.hidden = false;
+    function big(n) {
+      if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, "") + " million";
+      if (n >= 1e4) return fmtN(Math.round(n / 1000) * 1000);
+      return fmtN(Math.round(n / 100) * 100);
+    }
+    function update() {
+      var p = +range.value;
+      var n = Math.round(BUILDINGS * p / 100);
+      var extraLbs = Math.max(0, n - DONATING) * LBS_PER_BUILDING;
+      var metric = STB.unitMode && STB.unitMode() === "metric";
+      var amount = metric ? big(extraLbs * 0.45359237) + " kg" : big(extraLbs) + " lbs";
+      var meals = big(extraLbs / LBS_PER_MEAL);
+      range.style.setProperty("--fill", ((p - 4) / 96 * 100).toFixed(2) + "%");
+      $("#statPct").textContent = p + "%";
+      if (p <= 4) {
+        cap.textContent = "of NYC school buildings donate their leftover food";
+        out.innerHTML = "That’s " + DONATING + " of " + fmtN(BUILDINGS) + " buildings. Drag to see what more schools could save.";
+        range.setAttribute("aria-valuetext", "4 percent, today: " + DONATING + " buildings donate.");
+      } else {
+        cap.textContent = "If this many NYC school buildings donated (" + fmtN(n) + " of " + fmtN(BUILDINGS) + ")";
+        out.innerHTML = "<b>about " + amount + "</b>more food saved each school year, about " + meals +
+          " meals.<span class=\"est\">estimate</span>";
+        range.setAttribute("aria-valuetext", p + " percent, " + fmtN(n) + " buildings: about " + amount +
+          " more food saved each school year, about " + meals + " meals. Estimate.");
+      }
+    }
+    range.addEventListener("input", function () { pctTouched = true; update(); });
+    update();
+  })();
 
   /* ---------- procedure rows ---------- */
   var stepsHost = $("#steps");
@@ -1362,16 +754,17 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     var peak = 0;
     temps.forEach(function (t, i) { if (t > temps[peak]) peak = i; });
     var safe = n === 0;
+    var times = n === 1 ? "once" : n + " times";
     if (cold.ice) {
-      /* Never a bare "in range" for invented numbers; the what-if tag sits on
+      /* Never a bare "safe" for invented numbers; the "simulated" tag sits on
          its own line under this. */
       v.innerHTML = safe
-        ? "Simulated · in range"
-        : "Simulated · " + n + " excursion" + (n === 1 ? "" : "s");
+        ? "With an ice pack: safe the whole trip"
+        : "With an ice pack: still too warm " + times;
       tag.hidden = false;
     } else {
-      v.innerHTML = safe ? "in range"
-        : n + " excursion" + (n === 1 ? "" : "s") + ' · peak <span data-degf="' + temps[peak] + '"></span> at ' + run[peak].t;
+      v.innerHTML = safe ? "Safe the whole trip"
+        : "Too warm " + times + ': <span data-degf="' + temps[peak] + '"></span> at ' + run[peak].t;
       tag.hidden = true;
     }
     v.className = "cold-verdict " + (safe ? "is-safe" : "is-danger");
@@ -1381,10 +774,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   function renderReading() {
     var r = $("#coldReading");
-    if (cold.sel < 0) { r.textContent = "Select a reading on the chart."; return; }
+    if (cold.sel < 0) { r.textContent = "Tap a point on the chart to see its reading."; return; }
     var run = cold.ice ? COLD_ICE : COLD, c = run[cold.sel];
     r.innerHTML = "<b>" + c.t + "</b> · " + c.note + " · <b><span data-degf=\"" + c.temp + "\"></span></b>" +
-      (cold.ice ? " simulated" : (c.temp > SAFE_MAX ? " · above <span data-degf=\"" + SAFE_MAX + "\"></span>" : ""));
+      (cold.ice ? " simulated" : (c.temp > SAFE_MAX ? " · too warm" : " · safe"));
     STB.renderUnits(r);
   }
 
@@ -1413,7 +806,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
     var svg = svgEl("svg", {
       viewBox: "0 0 " + W + " " + H, width: W, height: H, class: "cold-spark" + (cold.ice ? " is-ice" : ""), role: "group",
-      "aria-label": "Illustrative sample, not a delivery record. Cold-chain readings for box 0447: packed at 36 degrees, 38 in transit, 43 at the street handoff, received at 39. Safe at or below 41."
+      "aria-label": "Example trip, not a real delivery. Temperatures for box 0447: packed at 36 degrees, 38 on the way, 43 at the handoff, delivered at 39. Safe at 41 or below."
     });
     var defs = svgEl("defs", {});
     /* Hard colour stop at the threshold: above it accent, below it brand. */
@@ -1630,13 +1023,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     iceVisual(on);
     morphTo((on ? COLD_ICE : COLD).map(function (c) { return c.temp; }));
     $("#coldIceStatus").textContent = on
-      ? "Ice pack what-if on. Simulated run, every reading " + ICE_DROP_F + " degrees lower: in range. What-if, not a measured effect."
-      : "Ice pack what-if off. Recorded sample: " + $("#coldVerdict").textContent + ".";
+      ? "Ice pack added. " + $("#coldVerdict").textContent + ". Simulated trip, every reading " + ICE_DROP_F + " degrees colder, not measured."
+      : "Ice pack removed. Sample trip: " + $("#coldVerdict").textContent + ".";
   }
   (function () {
     var btn = $("#coldIce");
     btn.hidden = false;
-    btn.addEventListener("click", function () { setIce(!cold.ice); });
+    btn.addEventListener("click", function () { btn.classList.add("tried"); setIce(!cold.ice); });
   })();
 
   /* ---------- tilt ----------
@@ -1694,166 +1087,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     }, { passive: true });
   })();
 
-  /* ---------- chips + manifest ---------- */
-  var sortKey = "date", sortDir = "desc", filter = "All";
-  /* Filter chips are derived from the log itself rather than hard-coded, so a
-     school only ever appears here once it actually has a delivery on record.
-     Empty log, no chips — and the control reappears on its own when rows exist. */
-  var origins = ROWS.map(function (r) { return r.from; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort();
-  var schools = origins.length ? ["All"].concat(origins) : [];
-  var chipsHost = $("#chips");
-  schools.forEach(function (label) {
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.textContent = label;
-    b.setAttribute("aria-pressed", label === "All" ? "true" : "false");
-    b.addEventListener("click", function () {
-      filter = label;
-      $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === label ? "true" : "false"); });
-      render(); glance();
-    });
-    chipsHost.appendChild(b);
-  });
-  $$("#thead button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var k = b.getAttribute("data-key");
-      if (k === sortKey) sortDir = sortDir === "asc" ? "desc" : "asc";
-      else { sortKey = k; sortDir = (k === "date" || k === "lbs") ? "desc" : "asc"; }
-      render(); glance();
-    });
-  });
-  var glT;
-  function glance() {
-    if (reduced) return;
-    var svg = $("#mascotMood");
-    clearTimeout(glT);
-    svg.classList.add("glance");
-    glT = setTimeout(function () { svg.classList.remove("glance"); }, 400);
-  }
-  /* ---------- 5. deep-linkable manifest ----------
-     Filter and sort live in the URL hash so a view can be linked to, and are
-     written with replaceState so scrubbing filters does not stack up a dozen
-     history entries the back button has to walk out of. */
-  var hashLock = false;
-  function syncHash() {
-    if (hashLock) return;
-    var parts = [];
-    if (filter !== "All") parts.push("school=" + encodeURIComponent(filter));
-    if (sortKey !== "date" || sortDir !== "desc") parts.push("sort=" + sortKey + ":" + sortDir);
-    var want = parts.length ? "#log?" + parts.join("&") : "";
-    var base = location.pathname + location.search;
-    if ((location.hash || "") !== want && !/^#(?!log)/.test(location.hash || "")) {
-      history.replaceState(null, "", base + want);
-    }
-  }
-  function readHash() {
-    var m = /^#log\?(.*)$/.exec(location.hash || "");
-    if (!m) return;
-    hashLock = true;
-    m[1].split("&").forEach(function (kv) {
-      var i = kv.indexOf("="); if (i < 0) return;
-      var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
-      if (k === "school") filter = v;
-      else if (k === "sort") {
-        var p = v.split(":");
-        if (["date", "from", "to", "lbs"].indexOf(p[0]) > -1) sortKey = p[0];
-        if (p[1] === "asc" || p[1] === "desc") sortDir = p[1];
-      }
-    });
-    /* A filter naming a school that has nothing logged would silently show an
-       empty table for the wrong reason. Fall back to All. */
-    if (filter !== "All" && ROWS.every(function (r) { return r.from !== filter; })) filter = "All";
-    $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === filter ? "true" : "false"); });
-    hashLock = false;
-  }
-
-  /* ---------- 6. CSV export of the current filtered view ---------- */
-  function exportCSV() {
-    var rows = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
-    if (!rows.length) return;
-    var metric = STB.unitMode() === "metric";
-    var head = ["date", "origin", "destination", metric ? "kg" : "lbs", "status"];
-    var q = function (v) { return /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v); };
-    var body = rows.map(function (r) {
-      return [r.date, r.from, r.to, metric ? (r.lbs * 0.45359237).toFixed(2) : r.lbs, r.status].map(q).join(",");
-    });
-    var blob = new Blob([head.join(",") + "\n" + body.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "stock-the-block-manifest" + (filter === "All" ? "" : "-" + filter.toLowerCase().replace(/\s+/g, "-")) + ".csv";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-  }
-  if ($("#csvExport")) $("#csvExport").addEventListener("click", exportCSV);
-
-  var tableSeen = false;
-  function render() {
-    var filtered = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
-    var sorted = filtered.slice().sort(function (a, b) {
-      var va = a[sortKey], vb = b[sortKey];
-      var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
-      return sortDir === "asc" ? c : -c;
-    });
-    var label = !ROWS.length ? "PRE-LAUNCH" : (filter === "All" ? "RECENT" : filter.toUpperCase());
-    $("#mbody").innerHTML = sorted.map(function (r) {
-      var col = r.status === "RECEIVED" ? "var(--brand)" : "var(--accent)";
-      return '<div class="mrow"><span style="color:var(--text-secondary);">' + r.date + "</span><span>" + r.from + "</span><span>" + r.to + '</span><span class="lbs" data-lbs="' + r.lbs + '"></span><span class="st" style="color:' + col + ';">' + r.status + "</span></div>";
-    }).join("");
-    STB.renderUnits($("#mbody"));
-    $("#mempty").style.display = sorted.length ? "none" : "flex";
-    /* Two different empty states: nothing logged at all (pre-launch) versus a
-       filter that happens to match nothing. Don't conflate them. */
-    if (!ROWS.length) {
-      $("#emptyMsg").textContent = "The log opens with the first delivery.";
-      $("#emptySub").textContent = "These are the columns every delivery is recorded under. Nothing has moved yet.";
-    } else {
-      $("#emptyMsg").textContent = "no deliveries logged for " + label;
-      $("#emptySub").textContent = "clear the filter to see the full record";
-    }
-    /* No rows, no total. Never render a pounds figure the log cannot support. */
-    var total = filtered.reduce(function (t, r) { return t + r.lbs; }, 0);
-    var totalEl = $("#shownTotal");
-    if (filtered.length) { totalEl.setAttribute("data-lbs", total); STB.renderUnits(totalEl.parentNode); }
-    else { totalEl.removeAttribute("data-lbs"); totalEl.textContent = ""; }
-    /* 6. Export reflects the view on screen. With nothing logged there is
-       nothing to export, so the button says why rather than handing over an
-       empty file. */
-    var csv = $("#csvExport");
-    if (csv) {
-      csv.disabled = !filtered.length;
-      csv.title = filtered.length
-        ? "Download these " + filtered.length + " row(s) as CSV"
-        : "Nothing to export yet. The log opens with the first delivery";
-    }
-    syncHash();
-    $("#filterLabel").textContent = label;
-    $$("#thead button").forEach(function (b) {
-      var k = b.getAttribute("data-key"), on = k === sortKey;
-      b.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
-      var c = b.querySelector(".caret");
-      c.style.opacity = on ? "1" : "0";
-      c.style.transform = on && sortDir === "asc" ? "rotate(180deg)" : "rotate(0deg)";
-    });
-    var mood = "idle";
-    if (!filtered.length) mood = "empty";
-    else if (filtered.some(function (r) { return r.lbs >= 50; })) mood = "record";
-    else if (filtered.some(function (r) { return r.date === TODAY && r.status !== "RECEIVED"; })) mood = "active";
-    else if (filtered.every(function (r) { return r.status === "RECEIVED"; })) mood = "confirmed";
-    paintMascot($("#mascotMood svg"), mood);
-    $("#moodLabel").textContent = MOOD_LABEL[mood];
-    if (tableSeen && !reduced) {
-      requestAnimationFrame(function () {
-        $$(".mrow").forEach(function (el, i) {
-          el.style.animation = "none"; void el.offsetWidth;
-          el.style.animation = "rowUp 0.35s " + PRO + " " + (i * 40) + "ms both";
-        });
-      });
-    }
-  }
-  readHash();
-  render();
-  addEventListener("hashchange", function () { readHash(); render(); });
-
   /* ---------- join form ---------- */
   var form = $("#joinForm");
   form.addEventListener("submit", function (e) {
@@ -1861,20 +1094,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     $("#formWrap").innerHTML = '<div class="done-card"><h3 style="font-size:19px;font-weight:600;margin:0;color:var(--brand);">Logged. We’ll be in touch.</h3><p style="font-size:14px;color:var(--text);margin:8px 0 0;line-height:1.6;">Thanks, expect a reply within a few school days.</p></div>';
     paintMascot($("#mascotJoin svg"), "confirmed");
     setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
-  });
-
-  /* ---------- tech-spec disclosure ----------
-     The document templates live on getting-started.html now; the replicate
-     cards here are plain links, so only <button> toggles are wired. */
-  $$("button.doc-toggle").forEach(function (btn) {
-    var card = btn.closest("[data-disclosure]") || btn.closest(".card");
-    if (!card) return;
-    btn.addEventListener("click", function () {
-      var open = card.classList.toggle("doc-open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      var caret = btn.querySelector(".doc-caret");
-      if (caret) caret.textContent = open ? "−" : "+";
-    });
   });
 
   /* ---------- scroll FX ---------- */
@@ -1903,19 +1122,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       });
     });
   })();
-  shot($("#manifest"), function () { tableSeen = true; render(); });
 
   function fxLoop() {
     requestAnimationFrame(fxLoop);
     var vh = innerHeight;
     FX.tick();
     checkCounters();
-    var th = $("#thead");
-    if (th) {
-      var tr = th.getBoundingClientRect();
-      var mr = $("#manifest").getBoundingClientRect();
-      th.style.boxShadow = (tr.top <= 49 && mr.bottom > tr.bottom + 40) ? "0 4px 12px rgba(0,0,0,0.14)" : "none";
-    }
   }
   requestAnimationFrame(fxLoop);
 
@@ -1929,128 +1141,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      mid-page container below it. Both call the same createMascotBox and the
      same initScrollScrub; all that differs is the state each one feeds in. */
   var heroBox = STB.initHeroBox();
-  var midBox = STB.initMidBox();
 
-
-  /* ---------- 4. run packet generator ----------
-     Client-side only: no endpoint, no fetch, no storage. The generated
-     documents carry no mascot, in any theme and on paper — operational
-     paperwork is a record, not a brand surface. */
+  /* One-line school summary under the map, counted from the same table the
+     map and the full list read, so the numbers can never drift apart. */
   (function () {
-    var form = $("#packetForm"), out = $("#runPacketOut");
-    var buildBtn = $("#packetBuild"), printBtn = $("#packetPrint");
-    if (!form || !out) return;
-
-    function esc(v) {
-      return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-    function parseTemps(raw) {
-      return String(raw || "").split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean)
-        .map(function (l) {
-          var p = l.split(",").map(function (x) { return x.trim(); });
-          var f = parseFloat(p[p.length - 1]);
-          return { t: p[0] || "", note: p.length > 2 ? p.slice(1, -1).join(", ") : "", f: isNaN(f) ? null : f };
-        });
-    }
-
-    function build() {
-      if (!form.reportValidity()) return;
-      var d = {}; 
-      ["date", "origin", "destination", "boxid", "weight", "temps"].forEach(function (k) { d[k] = form.elements[k].value; });
-      var temps = parseTemps(d.temps);
-      var SAFE = 41;
-      var breaches = temps.filter(function (r) { return r.f !== null && r.f > SAFE; });
-
-      var manifest =
-        '<div class="packet-doc">' +
-          '<h3>Delivery manifest</h3>' +
-          '<p class="packet-sub">Stock the Block · box ' + esc(d.boxid) + ' · ' + esc(d.date) + '</p>' +
-          '<table class="kv"><tbody>' +
-            '<tr><th scope="row">Date</th><td>' + esc(d.date) + '</td></tr>' +
-            '<tr><th scope="row">Box ID</th><td>' + esc(d.boxid) + '</td></tr>' +
-            '<tr><th scope="row">Origin</th><td>' + esc(d.origin) + '</td></tr>' +
-            '<tr><th scope="row">Destination</th><td>' + esc(d.destination) + '</td></tr>' +
-            '<tr><th scope="row">Weight</th><td class="num"><span data-lbs="' + esc(d.weight) + '"></span></td></tr>' +
-            '<tr><th scope="row">Readings</th><td class="num">' + temps.length + '</td></tr>' +
-          '</tbody></table>' +
-          '<div class="sign"><p>Released by (school): name, signature, time</p>' +
-          '<p>Received by (site): name, signature, time</p></div>' +
-        '</div>';
-
-      var log =
-        '<div class="packet-doc">' +
-          '<h3>Temperature log</h3>' +
-          '<p class="packet-sub">box ' + esc(d.boxid) + ' · safe at or below <span data-degf="' + SAFE + '"></span></p>' +
-          (temps.length
-            ? '<table><thead><tr><th>Time</th><th>Note</th><th>Reading</th><th>Status</th></tr></thead><tbody>' +
-                temps.map(function (r) {
-                  var over = r.f !== null && r.f > SAFE;
-                  return '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.note) + '</td>' +
-                    '<td class="num">' + (r.f === null ? "not logged" : '<span data-degf="' + r.f + '"></span>') + '</td>' +
-                    '<td>' + (r.f === null ? "no reading" : (over ? "ABOVE THRESHOLD" : "in range")) + '</td></tr>';
-                }).join("") +
-              '</tbody></table>'
-            : '<p class="packet-sub" style="margin:0;">No readings entered. A box released without a temperature record has none; say so on the paperwork rather than leaving the row blank.</p>') +
-          (breaches.length
-            ? '<p class="packet-sub" style="margin:14px 0 0;">' + breaches.length + ' reading(s) above threshold. Flag this box at intake; do not close out the line until the receiving site has recorded a decision.</p>'
-            : "") +
-          '<div class="sign"><p>Logged by: name, signature</p><p>Checked at intake by: name, signature</p></div>' +
-        '</div>';
-
-      out.innerHTML = manifest + log;
-      STB.renderUnits(out);
-      out.classList.add("on");
-      printBtn.disabled = false;
-    }
-
-    buildBtn.addEventListener("click", build);
-    printBtn.addEventListener("click", function () {
-      /* Print the packet, not the website: the print stylesheet keys off this
-         class to hide everything except the generated documents. */
-      document.body.classList.add("print-packet");
-      var clear = function () { document.body.classList.remove("print-packet"); };
-      addEventListener("afterprint", clear, { once: true });
-      setTimeout(clear, 3000);          /* belt and braces where afterprint is unreliable */
-      print();
-    });
+    var el = $("#sitesSummary");
+    if (!el || !STB.SITES) return;
+    var n = function (k) { return STB.SITES.filter(function (s) { return s.status === k; }).length; };
+    el.innerHTML = STB.SITES.length + " schools so far: " + n("setup") + " getting set up, " + n("conversation") +
+      " in talks, " + n("target") + " we plan to reach. <a href=\"getting-started.html#sites\">See the full list →</a>";
   })();
-
-  /* ---------- Phase 5 shared features ---------- */
-
-  /* ---------- delivery log: real state vs a labelled preview ----------
-     SIM_ROWS are invented. They exist so a visitor can see the shape of the
-     record before there is a record, and they are never presented as one:
-     the banner stays up the whole time the preview is on, and the real state
-     is what the page loads with. */
-  var SIM_ROWS = [
-    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 42, status: "RECEIVED" },
-    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 31, status: "IN TRANSIT" },
-    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 55, status: "RECEIVED" }
-  ];
-  (function () {
-    var bPre = $("#simPrelaunch"), bLive = $("#simLive");
-    var banner = $("#simBanner"), note = $("#simNote");
-    if (!bPre || !bLive) return;
-    function apply(live) {
-      ROWS.length = 0;
-      if (live) SIM_ROWS.forEach(function (r) { ROWS.push(r); });
-      bLive.classList.toggle("is-on", live);
-      bPre.classList.toggle("is-on", !live);
-      bLive.setAttribute("aria-pressed", live ? "true" : "false");
-      bPre.setAttribute("aria-pressed", live ? "false" : "true");
-      banner.hidden = !live;
-      note.textContent = live
-        ? "Preview mode. Sample rows, so you can see exactly how a delivery will be recorded."
-        : "The log is empty because nothing has moved yet. This is the real state.";
-      filter = "All";
-      render(); glance();
-    }
-    bPre.addEventListener("click", function () { apply(false); });
-    bLive.addEventListener("click", function () { apply(true); });
-  })();
-
-  STB.initSites();
   if (STB.initNetworkMap) STB.initNetworkMap();
+  STB.initEmblems();
   STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();
@@ -2059,26 +1161,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initOffline();
   STB.initPalette([
     { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
     { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-    { kind: "section", label: "Standard operating procedure", href: "#how", keywords: "sop steps how it works collect pack deliver log" },
-    { kind: "section", label: "The instruments: cold chain", href: "#sensors", keywords: "logger temperature sensor esp32 probe" },
-    { kind: "section", label: "The delivery log", href: "#tracker", keywords: "tracker manifest track the box deliveries" },
-    { kind: "section", label: "The network map", href: "#network", keywords: "map snap need boroughs districts" },
-    { kind: "section", label: "Planned operations", href: "#sites", keywords: "schools sites in setup in conversation target stuyvesant midwood madison filter" },
-    { kind: "section", label: "Why now: the shape of the SNAP cut", href: "#whynow", keywords: "snap cuts funding scale" },
-    { kind: "section", label: "Why we exist", href: "#story" },
-    { kind: "section", label: "Who runs this", href: "#team", keywords: "team founder students who" },
-    { kind: "section", label: "The limits: what this does not do", href: "#limits", keywords: "honest caveats limitations" },
-    { kind: "section", label: "Run this yourself", href: "#replicate", keywords: "templates documents copy replicate" },
-    { kind: "section", label: "Partner with us", href: "#join", keywords: "contact signup form" },
-    { kind: "section", label: "Open tech spec", href: "#tech-spec", keywords: "hardware logger diagram build" },
+    { kind: "section", label: "How it works", href: "#how", keywords: "steps collect pack deliver log" },
+    { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
+    { kind: "section", label: "The map", href: "#network", keywords: "map snap need boroughs districts" },
+    { kind: "section", label: "Learn more", href: "#learn" },
+    { kind: "section", label: "Work with us", href: "#join", keywords: "contact signup form" },
     { kind: "template", label: "Health code memo", href: "getting-started.html#doc-health", keywords: "tcs food safety release records health department" },
     { kind: "template", label: "Box spec", href: "getting-started.html#doc-build", keywords: "insulated transport box cut sheet materials" },
     { kind: "template", label: "Partner agreement", href: "getting-started.html#doc-agreement", keywords: "one page signed school receiving site" },
-    { kind: "template", label: "Firmware repo", href: "getting-started.html#doc-build", keywords: "logger sketch state machine calibration" },
     { kind: "template", label: "Intake workflow", href: "getting-started.html#doc-intake", keywords: "pantry receive confirm close out manifest line" },
-    { kind: "tool", label: "Run packet generator", href: "#runPacket", keywords: "print manifest temperature log paperwork" },
-    { kind: "tool", label: "Sources", href: "#sources", keywords: "citations footnotes references" }
+    { kind: "tool", label: "Run packet generator", href: "getting-started.html#runPacket", keywords: "print manifest temperature log paperwork" },
+    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
   ]);
 })();
 </script>

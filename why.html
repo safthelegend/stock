@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Why now: Stock the Block</title>
+<meta name="description" content="Why a student food recovery network matters as SNAP is cut, and what it can and cannot do.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script>
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=13">
+<style>
+  html { scroll-behavior:smooth; }
+  .sources-list li, #sources { scroll-margin-top:64px; }
+  /* Why-now stat figures and the section's closing line. */
+  .strip-term-fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700; font-size:clamp(24px,3.2vw,34px); line-height:1.05; letter-spacing:-0.02em; color:var(--accent-text); margin:0; }
+  .strip-term-fig sup { font-size:0.42em; }
+  .strip-term-cap { font-size:14px; line-height:1.5; color:var(--text-secondary); margin:8px 0 0; }
+  .strip-close { margin-top:64px !important; font-size:20px !important; line-height:1.6 !important; max-width:62ch; }
+  @media (max-width:760px) {
+    .strip-close { margin-top:44px !important; font-size:18px !important; }
+  }
+  /* ------------------------------------------------------------------
+     Why-now layout: headline and stats own the left column, the dot
+     field owns the right. Every dot is the same 250,000-person unit;
+     the 18 that are cut are the thing to notice, so they carry the
+     weight — solid accent orange at full opacity — while the ~150 that
+     remain sit back as a low-contrast field. That was inverted before
+     (cut units outlined, background units filled); this fixes it.
+     Two <symbol> defs, referenced by <use> for every mark, so the dot
+     path is never duplicated 168 times.
+     ------------------------------------------------------------------ */
+  .whynow-layout { display:grid; grid-template-columns:minmax(0,0.72fr) minmax(0,1fr); gap:5%; align-items:center; margin-top:8px; margin-bottom:56px; }
+  .whynow-col-left { display:flex; flex-direction:column; min-width:0; }
+  .whynow-col-right { display:flex; flex-direction:column; align-items:stretch; min-width:0; }
+  .dotfield-wrap { width:100%; }
+  .dotfield { display:block; width:100%; height:auto; overflow:visible; }
+  .whynow-stats { display:flex; flex-direction:column; gap:28px; margin-top:36px; }
+  .whynow-caption { font-size:12px; line-height:1.4; color:var(--text-secondary); margin:2px 0 0; }
+  .whynow-legend { margin-top:14px; }
+  /* Footnote weight: smaller and faded relative to the figure/label above
+     it, so a source reads as backup material, not a fourth line of body
+     copy competing with the stat itself. */
+  .whynow-stat-source { font-size:11px; line-height:1.4; color:var(--text-secondary); opacity:0.65; margin:4px 0 0; }
+  @media (max-width:860px) {
+    .whynow-layout { grid-template-columns:minmax(0,1fr); gap:36px; }
+  }
+  .src-link { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
+  .src-link:hover { color:var(--accent-text); text-decoration:underline; }
+  .sources-list { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:13px; line-height:1.8; color:var(--text-secondary); list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
+  .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
+  .sources-list a:hover { color:var(--accent-text); }
+  .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
+  .limits-grid .lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
+  .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+<link rel="stylesheet" href="assets/design.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+
+<nav class="bar" id="nav">
+  <div class="wrap">
+    <a href="index.html#top" class="brand">
+      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+      Stock the Block
+    </a>
+    <div class="links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="index.html#join" class="cta">Work with us</a>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+
+<main>
+<header id="top" class="wrap page-head">
+  <a class="page-back" href="index.html#top">← Back to home</a>
+  <p class="eyebrow">Why this matters now</p>
+  <h1>Food help is being cut. Here’s what we can and can’t do about it.</h1>
+  <p class="body-p">In 2025, Congress cut SNAP, the program many families use to buy groceries. We can’t replace that help. What we can do is get good food that would be thrown out to people who need it.</p>
+</header>
+
+<section id="whynow" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<div class="wrap pt-sec" style="padding-top:88px; padding-bottom:88px;">
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;">
+    <defs>
+      <filter id="torn-a" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.024" numOctaves="3" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-b" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.031" numOctaves="3" seed="23" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-c" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="3" seed="41" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-d" x="-8%" y="-24%" width="116%" height="148%"><feTurbulence type="fractalNoise" baseFrequency="0.044" numOctaves="3" seed="67" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-e" x="-14%" y="-38%" width="128%" height="176%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="89" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+      <filter id="torn-g" x="-6%" y="-18%" width="112%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.027" numOctaves="3" seed="71" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+    </defs>
+  </svg>
+  <div class="whynow-layout">
+    <div class="whynow-col-left">
+      <p class="eyebrow" data-reveal>The numbers</p>
+      <h2 class="hd" data-mask style="margin-bottom:0; max-width:520px;">
+        <span class="mask-l"><span data-line>SNAP is being cut.</span></span>
+        <span class="mask-l"><span data-line>This is how big the cut is.</span></span>
+      </h2>
+
+      <div class="whynow-stats" data-reveal>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">$187 billion</p>
+          <p class="strip-term-cap">cut from SNAP over ten years</p>
+          <p class="whynow-stat-source">One Big Beautiful Bill Act, signed July 4, 2025 (CRS)<sup><a class="src-link" href="#src-1">1</a></sup></p>
+        </div>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">~17%</p>
+          <p class="strip-term-cap">less spent on food benefits</p>
+          <p class="whynow-stat-source"><span class="unverified">CBO / CRS, not yet matched to a cited source</span></p>
+        </div>
+        <div class="whynow-stat">
+          <p class="strip-term-fig">$9 billion</p>
+          <p class="strip-term-cap">in new costs pushed onto states, for the first time ever</p>
+          <p class="whynow-stat-source">CBPP<sup><a class="src-link" href="#src-4">4</a></sup></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="whynow-col-right" data-reveal>
+      <div class="dotfield-wrap">
+        <svg id="dotField" class="dotfield" viewBox="0 0 336 292" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="A grid of 168 dots, 14 across and 12 down, grouped into blocks of 25. 150 dots are a low-contrast gray; the other 18 are solid accent orange, marking the share this cut removes from the count.">
+          <defs>
+            <symbol id="dot-present" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--text-secondary)" opacity="0.3"></circle></symbol>
+            <symbol id="dot-removed" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="var(--accent)"></circle></symbol>
+          </defs>
+          <use href="#dot-present" x="6" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="6" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="28" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="50" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="72" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="94" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="128" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="150" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="172" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="194" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="250" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="272" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="294" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="316" y="216" width="14" height="14"></use>
+          <use href="#dot-present" x="6" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="28" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="50" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="72" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="94" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="128" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="150" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="172" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="194" y="250" width="14" height="14"></use>
+          <use href="#dot-present" x="216" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="250" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="272" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="294" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="316" y="250" width="14" height="14"></use>
+          <use href="#dot-removed" x="6" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="28" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="50" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="72" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="94" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="128" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="150" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="172" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="194" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="216" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="250" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="272" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="294" y="272" width="14" height="14"></use>
+          <use href="#dot-removed" x="316" y="272" width="14" height="14"></use>
+        </svg>
+        <p class="whynow-caption whynow-legend">18 dots = 4.5 million people<sup><a class="src-link" href="#src-8">8</a></sup></p>
+      </div>
+    </div>
+  </div>
+
+  <p class="body-p" data-reveal style="margin:0; max-width:62ch;">Starting October 1, 2026, the federal government will pay only 25 percent of the cost of running SNAP in each state, down from 50 percent.<sup><a class="src-link" href="#src-10">10</a></sup></p>
+
+  <p class="body-p strip-close" data-reveal style="margin:0;">To be clear: a benefit cut takes away money people use to buy food. Rescued food is a few boxes on a food bank table. One does not replace the other, and we never claim it does.</p>
+</div>
+</section>
+
+<section id="limits" style="background:var(--surface); border-top:1px solid var(--line);">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>The limits</p>
+    <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+      <span class="mask-l"><span data-line>What this does not do,</span></span>
+      <span class="mask-l"><span data-line>in plain words.</span></span>
+    </h2>
+    <div class="limits-grid">
+      <div data-reveal>
+        <p class="lbl">What we actually do</p>
+        <p class="body">Schools throw away good food while people nearby go hungry. We walk sealed, unopened food from a school’s share table to a food bank in the same borough, the same afternoon. We stay inside one borough on purpose; we do not cross the city.</p>
+      </div>
+      <div data-reveal>
+        <p class="lbl">What it changes</p>
+        <p class="body">Less food in the school’s trash, more food at the food bank that week, and a public record a school can point to when someone asks where its leftovers went.</p>
+      </div>
+      <div data-reveal>
+        <p class="lbl">What it can’t fix</p>
+        <p class="body">Income, SNAP benefits, rent, wages, or any of the reasons people go hungry in the first place. A pound of rescued food is not a benefit given back, and pretending it is makes a real cut sound smaller than it is.</p>
+      </div>
+      <div data-reveal>
+        <p class="lbl">What has to go right</p>
+        <p class="body">Many more schools than the one we are setting up in. A signed food bank partner in every borough we work in; three of the four have none yet. Routes that keep running after students graduate. A health department that accepts our records. Food banks that can take fresh food the same day.</p>
+      </div>
+      <div data-reveal>
+        <p class="lbl">How you’d know it isn’t working</p>
+        <p class="body">Pounds going up while food banks say nothing has changed. Boxes arriving too warm. Gaps in the log, or more corrections than clean entries. A borough that never finds a food bank partner but stays on the map anyway. We publish the log so anyone, not just us, can check.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sources-sec" style="background:var(--bg); border-top:1px solid var(--line);">
+  <div class="wrap" id="sources" style="padding-top:56px; padding-bottom:72px;">
+    <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
+    <ol class="sources-list">
+      <li id="src-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
+      <li id="src-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
+      <li id="src-3">3. Pew Charitable Trusts, "As SNAP Changes Shift Food Assistance Costs, States Face New Choices," January 2026</li>
+      <li id="src-4">4. Center on Budget and Policy Priorities, "States' First-Ever Bill for SNAP Benefits Could Cost Billions," June 2026</li>
+      <li id="src-5">5. One Big Beautiful Bill Act (P.L. 119-21), signed July 4, 2025</li>
+      <li id="src-6">6. Center on Budget and Policy Priorities, "SNAP Tracker: People Are Losing Food Assistance as the Harmful 2025 Republican Reconciliation Law Is Implemented," cbpp.org</li>
+      <li id="src-7">7. Center on Budget and Policy Priorities, cited in AZFamily reporting, June 2026</li>
+      <li id="src-8">8. CBPP, USDA data. "4.5 million" figure, national SNAP enrollment change</li>
+      <li id="src-9">9. NY OTDA. "March 1, 2026" ABAWD work requirement effective date</li>
+      <li id="src-10">10. Federal Register. "October 1, 2026" SNAP administrative cost-share change</li>
+      <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap top">
+    <span style="display:flex; align-items:center; gap:12px;">
+      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+    </span>
+    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+  </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+  </nav>
+  <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
+</footer>
+
+<script src="assets/site.js?v=13"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
+  STB.initIcons();
+  STB.initMascotSlots();
+  STB.initTheme();
+  STB.initNav();
+
+  /* ---------- torn-paper responsive scale ---------- */
+  function tornResize() {
+    var narrow = innerWidth < 480;
+    var base = { "torn-a": 8, "torn-b": 8, "torn-c": 7, "torn-d": 7, "torn-e": 6, "torn-g": 8 };
+    Object.keys(base).forEach(function (id) {
+      var filt = document.getElementById(id);
+      if (!filt) return;
+      var dm = filt.querySelector("feDisplacementMap");
+      if (dm) dm.setAttribute("scale", String(narrow ? Math.round(base[id] * 0.5) : base[id]));
+    });
+  }
+  tornResize();
+  addEventListener("resize", tornResize, { passive: true });
+
+  var FX = STB.initReveals();
+  var shot = FX.shot;
+  (function fxLoop() {
+    requestAnimationFrame(fxLoop);
+    FX.tick();
+  })();
+  STB.initScrollFx();
+  STB.initProgress();
+  STB.initAnchors();
+  STB.initSectionHighlight();
+  STB.initUnits();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "How it works", href: "index.html#how", keywords: "steps collect pack deliver log" },
+    { kind: "section", label: "Food safety: the ice pack", href: "index.html#sensors", keywords: "temperature cold chain ice pack logger" },
+    { kind: "section", label: "The map", href: "index.html#network", keywords: "map snap need boroughs districts" },
+    { kind: "section", label: "Work with us", href: "index.html#join", keywords: "contact signup form" },
+    { kind: "tool", label: "Run packet generator", href: "getting-started.html#runPacket", keywords: "print manifest temperature log paperwork" },
+    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
+  ]);
+})();
+</script>
+</body>
+</html>

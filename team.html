@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Meet the team: Stock the Block</title>
+<meta name="description" content="The students behind Stock the Block, the schools they come from, and why they started it.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script>
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=13">
+<style>
+  .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
+  @media (max-width:760px) { .two-grid { grid-template-columns:1fr; gap:36px; } }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
+  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
+  .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
+  #team .name { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:19px; line-height:1.3; letter-spacing:-0.01em; color:var(--text); margin:0 0 8px; }
+  #team .cite { font-size:13px; line-height:1.6; color:var(--text-secondary); margin:24px 0 0; max-width:62ch; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+<link rel="stylesheet" href="assets/design.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+
+<nav class="bar" id="nav">
+  <div class="wrap">
+    <a href="index.html#top" class="brand">
+      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+      Stock the Block
+    </a>
+    <div class="links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="index.html#join" class="cta">Work with us</a>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+
+<main>
+<header id="top" class="wrap page-head">
+  <a class="page-back" href="index.html#top">← Back to home</a>
+  <p class="eyebrow">Meet the team</p>
+  <h1>Built by students who watched good food get thrown out.</h1>
+  <p class="body-p">12 students from 6 NYC high schools, plus a college mentor, run every part of this: the boxes, the routes, the logs and this website.</p>
+</header>
+
+<section id="schools" class="emblems" aria-labelledby="schoolsHd">
+  <div class="wrap">
+    <p class="eyebrow" id="schoolsHd">Where our team studies</p>
+  </div>
+  <div class="emblem-track" data-emblems></div>
+  <p class="wrap emblem-note">Logos show where our team members go to school. They are not an endorsement by any school.</p>
+</section>
+
+<section id="story" class="wrap" style="padding-top:72px; padding-bottom:40px;">
+  <p class="eyebrow" data-reveal>Why we exist</p>
+  <div class="two-grid">
+    <h2 class="hd" data-mask>
+      <span class="mask-l"><span data-line>Built by the students who watched</span></span>
+      <span class="mask-l"><span data-line>the share table get thrown out.</span></span>
+    </h2>
+    <div>
+      <p class="body-p" data-reveal style="margin:0;">We started this because the food on our share tables was sealed, safe, and a short walk from people who needed it. Students built the boxes, the temperature logger and the tracker, and students will walk the routes and keep the logs.</p>
+      <p class="body-p" data-reveal style="margin:16px 0 0;">If your school has a share table and a food bank within walking distance, it can run there too.</p>
+    </div>
+  </div>
+</section>
+
+<section id="team" class="wrap" style="padding-top:40px; padding-bottom:96px;">
+  <p class="eyebrow" data-reveal>Who runs this</p>
+  <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
+    <span class="mask-l"><span data-line>12 students from 6 NYC high schools,</span></span>
+    <span class="mask-l"><span data-line>plus a college mentor.</span></span>
+  </h2>
+  <div class="cards-grid">
+    <div class="card" data-reveal>
+      <p class="name">Saif Iftikhar</p>
+      <p class="kicker">Founder</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Savlatbek Narzilloev</p>
+      <p class="kicker">Mentor &amp; CUNY Expansion Lead</p>
+      <p class="meta">Queens College</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Bilal Baig</p>
+      <p class="kicker">Director of Logistics</p>
+      <p class="meta">James Madison High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Sajid Rahman</p>
+      <p class="kicker">Director of Finance</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Haseeb Chaudhry</p>
+      <p class="kicker">Director of Outreach</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Mueez Manzoor</p>
+      <p class="kicker">Engineering Co-Lead</p>
+      <p class="meta">Midwood High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Sonam Tsephel</p>
+      <p class="kicker">Engineering Co-Lead</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Cesar Julian</p>
+      <p class="kicker">Health &amp; Safety Lead</p>
+      <p class="meta">Midwood High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Nafees Hye</p>
+      <p class="kicker">Communications Lead</p>
+      <p class="meta">The Springs School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Aditya Anand</p>
+      <p class="kicker">Transport Lead</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">David Arroliga</p>
+      <p class="kicker">Brooklyn Site Operator</p>
+      <p class="meta">Rachel Carson High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Reuben Rai</p>
+      <p class="kicker">Brooklyn Site Operator</p>
+      <p class="meta">Brooklyn Technical High School</p>
+    </div>
+    <div class="card" data-reveal>
+      <p class="name">Ahmet Sarisein</p>
+      <p class="kicker">Collection Coordinator</p>
+      <p class="meta">Stuyvesant High School</p>
+    </div>
+  </div>
+  <p class="cite">Students from six NYC high schools, plus a college mentor from Queens College. Schools are listed only to show where each person studies. It does not mean any school has agreed to take part; the <a href="getting-started.html#sites">school list</a> shows where each one actually stands.</p>
+  <p class="cite"><a href="roles.html">See what each role does →</a></p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap top">
+    <span style="display:flex; align-items:center; gap:12px;">
+      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+    </span>
+    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+  </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+  </nav>
+  <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
+</footer>
+
+<script src="assets/site.js?v=13"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
+  STB.initIcons();
+  STB.initMascotSlots();
+  STB.initTheme();
+  STB.initNav();
+
+  STB.initEmblems();
+
+  var FX = STB.initReveals();
+  var shot = FX.shot;
+  (function fxLoop() {
+    requestAnimationFrame(fxLoop);
+    FX.tick();
+  })();
+  STB.initScrollFx();
+  STB.initProgress();
+  STB.initAnchors();
+  STB.initSectionHighlight();
+  STB.initUnits();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "How it works", href: "index.html#how", keywords: "steps collect pack deliver log" },
+    { kind: "section", label: "Food safety: the ice pack", href: "index.html#sensors", keywords: "temperature cold chain ice pack logger" },
+    { kind: "section", label: "The map", href: "index.html#network", keywords: "map snap need boroughs districts" },
+    { kind: "section", label: "Work with us", href: "index.html#join", keywords: "contact signup form" },
+    { kind: "tool", label: "Run packet generator", href: "getting-started.html#runPacket", keywords: "print manifest temperature log paperwork" },
+    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
+  ]);
+})();
+</script>
+</body>
+</html>

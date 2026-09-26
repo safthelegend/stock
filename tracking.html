@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>How we track every box: Stock the Block</title>
+<meta name="description" content="How Stock the Block seals, temperature-checks and publicly logs every box of recovered school food.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script>
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=13">
+<style>
+  .page-head { padding-bottom:56px; }
+  /* Mid-page 3D container band. The section height and the sticky frame are
+     set from JS so the scroll length lives in one place. */
+  .box-band { background:var(--tint); border-top:1px solid var(--brand-line-soft); border-bottom:1px solid var(--brand-line-soft); overflow:hidden; }
+  .box-band-inner { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; width:100%; max-width:1100px; margin:0 auto; padding:0 24px; }
+  #midBox { display:block; width:100%; max-width:440px; height:auto; margin:0 auto; }
+  .box-band-copy [data-midcopy] { opacity:0; will-change:opacity, transform; }
+  @media (prefers-reduced-motion: reduce) { .box-band-copy [data-midcopy] { opacity:1 !important; transform:none !important; } }
+  @media (max-width:820px) {
+    .box-band-inner { grid-template-columns:minmax(0,1fr); gap:28px; text-align:center; }
+    .box-band-copy [data-midcopy] { margin-left:auto; margin-right:auto; }
+    #midBox { max-width:300px; }
+  }
+  .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background-color:var(--surface); background-image:linear-gradient(var(--brand),var(--brand)); background-repeat:no-repeat; background-position:left center; background-size:0% 100%; transition:background-size 180ms cubic-bezier(0.16,1,0.3,1),color 180ms ease,border-color 180ms ease; }
+  .chip[aria-pressed="true"] { background-size:100% 100%; color:var(--on-brand); border-color:var(--brand); }
+  .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); }
+  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
+  .mhead .left { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .mhead .right { display:flex; align-items:center; gap:16px; }
+  .mhead .verify { font-weight:500; color:var(--brand); text-decoration:underline; text-underline-offset:3px; }
+  #mascotMood { width:64px; display:block; transition:transform 200ms ease; }
+  #mascotMood.glance { transform:translate(0,3px); }
+  .thead { position:sticky; top:48px; z-index:10; background:var(--surface); display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:0 20px; border-bottom:1px solid var(--brand-line-soft); transition:box-shadow 200ms ease; }
+  .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
+  .thead .lab { cursor:default; }
+  .thead button:hover { color:var(--brand); }
+  .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
+  .mrow { display:grid; grid-template-columns:110px 1fr 1fr 80px 100px; gap:12px; padding:14px 20px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:14px; color:var(--text); transition:background-color 120ms ease; }
+  .mrow:hover { background:var(--tint); }
+  .mrow .lbs { font-variant-numeric:tabular-nums; transition:font-weight 120ms ease; }
+  .mrow:hover .lbs { font-weight:500; }
+  .mrow .st { font-weight:500; }
+  .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:56px 24px 60px; }
+  .empty-state .mascot-slot { width:96px; }
+  .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .src-link { font-size:11px; color:var(--text-secondary); text-decoration:none; vertical-align:super; }
+  .src-link:hover { color:var(--accent-text); text-decoration:underline; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+<link rel="stylesheet" href="assets/design.css?v=13">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+
+<nav class="bar" id="nav">
+  <div class="wrap">
+    <a href="index.html#top" class="brand">
+      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+      Stock the Block
+    </a>
+    <div class="links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="index.html#join" class="cta">Work with us</a>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+
+<main>
+<header id="top" class="wrap page-head">
+  <a class="page-back" href="index.html#sensors">← Back to home</a>
+  <p class="eyebrow">How we track every box</p>
+  <h1>Every box is sealed, temperature-checked and logged.</h1>
+  <p class="body-p">What actually moves on a delivery, and the public log where every trip will be recorded.</p>
+</header>
+
+<div class="instrument">
+<!-- The second instance of the hero's box, same renderer, different behaviour:
+     shut throughout, not draggable, and given the shine and the zoom instead.
+     Sizing and the sticky frame are set by initScrollScrub / initMidBox. -->
+<section id="boxpin" class="box-band">
+  <div id="boxpinSticky">
+    <div class="box-band-inner">
+      <canvas id="midBox" width="440" height="440" role="img"
+              aria-label="The insulated box, sealed and logged."></canvas>
+      <div class="box-band-copy">
+        <p class="eyebrow" data-midcopy>What actually moves</p>
+        <h2 class="hd" data-midcopy style="margin:0 0 16px; max-width:18ch;">One sealed box, one logged run.</h2>
+        <p class="body-p" data-midcopy style="margin:0; max-width:46ch;">The box leaves the cafeteria closed and arrives closed. Everything the log knows about a run is written on the outside.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tracker">
+  <div class="wrap" style="padding-top:72px; padding-bottom:104px;">
+    <p class="eyebrow" data-reveal>The delivery log</p>
+    <h2 class="hd" data-mask style="max-width:620px;">
+      <span class="mask-l"><span data-line>Every delivery,</span></span>
+      <span class="mask-l"><span data-line>on the public record.</span></span>
+    </h2>
+    <p class="body-p" data-reveal style="margin:16px 0 0;">Every box we move will be listed here: where it came from, where it went, how much it weighed and how cold it stayed. Anyone can sort it, filter it and check our work. The log starts with our first delivery.</p>
+    <div data-reveal style="margin-top:32px; max-width:700px;">
+      <svg viewBox="0 0 700 250" role="img" aria-label="Borough clusters: each borough runs its own short local routes from its schools to a receiving site in that same borough. Manhattan's receiving site is in setup; Brooklyn, the Bronx and Queens are planned." xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="12" style="fill:var(--text-secondary);">
+          <text x="8" y="16">borough cluster</text>
+          <text x="410" y="16">receiving site in that borough</text>
+        </g>
+        <g fill="none" stroke-linecap="round" style="stroke:var(--brand-line-mid);" stroke-width="2" stroke-dasharray="2 8">
+          <path d="M170 56 L392 56"></path>
+          <path d="M170 110 L392 110"></path>
+          <path d="M170 164 L392 164"></path>
+          <path d="M170 218 L392 218"></path>
+        </g>
+        <g font-family="DM Mono, ui-monospace, Menlo, monospace" font-size="13">
+          <g style="fill:var(--brand);" font-weight="500">
+            <text x="8" y="60">Manhattan</text>
+            <text x="8" y="114">Brooklyn</text>
+            <text x="8" y="168">Bronx</text>
+            <text x="8" y="222">Queens</text>
+          </g>
+          <g style="fill:var(--text-secondary);">
+            <text x="410" y="60">receiving site (in setup)</text>
+            <text x="410" y="114">to be identified</text>
+            <text x="410" y="168">to be identified</text>
+            <text x="410" y="222">to be identified</text>
+          </g>
+        </g>
+        <g fill="none" stroke-width="2.5">
+          <circle cx="150" cy="52" r="7" style="stroke:var(--brand);"></circle>
+          <circle cx="150" cy="106" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="160" r="7" style="stroke:var(--brand-line-mid);"></circle>
+          <circle cx="150" cy="214" r="7" style="stroke:var(--brand-line-mid);"></circle>
+        </g>
+        <g transform="translate(400, 52)"><circle cx="0" cy="0" r="7" fill="none" style="stroke:var(--accent);" stroke-width="2.5"></circle></g>
+        <g fill="none" stroke-width="2.5" stroke-dasharray="3 5" style="stroke:var(--brand-line-mid);">
+          <circle cx="400" cy="106" r="7"></circle>
+          <circle cx="400" cy="160" r="7"></circle>
+          <circle cx="400" cy="214" r="7"></circle>
+        </g>
+      </svg>
+    </div>
+    <div class="sim-bar" data-reveal>
+      <div class="sim-controls" role="group" aria-label="Delivery log preview mode">
+        <button type="button" id="simPrelaunch" class="sim-btn is-on" aria-pressed="true">Real log</button>
+        <button type="button" id="simLive" class="sim-btn" aria-pressed="false">See a sample delivery</button>
+      </div>
+      <p class="sim-note" id="simNote">Nothing has been delivered yet, so the real log is empty.</p>
+    </div>
+    <div id="simBanner" class="sim-banner" hidden role="status">
+      <strong>SIMULATED PREVIEW — not a delivery record.</strong>
+      Every row, temperature and signature below is invented to show what the log will look like once boxes move. Nothing here has happened.
+    </div>
+    <div id="chips" style="margin-top:28px; display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by school"></div>
+    <div class="manifest" id="manifest">
+      <div class="mhead">
+        <span class="left">
+          <span style="color:var(--brand); font-weight:500;">DELIVERY MANIFEST · <span id="filterLabel">RECENT</span></span>
+          <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;">Export CSV</button>
+        </span>
+        <span class="right">
+          <span style="color:var(--text); font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
+          <span aria-live="polite" id="moodLabel" style="color:var(--brand); font-weight:500;">pre-launch</span>
+          <span id="mascotMood" class="mascot-slot" data-state="empty"></span>
+        </span>
+      </div>
+      <div class="thead" id="thead">
+        <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="from" aria-sort="none">Origin <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="to" aria-sort="none">Destination <span class="caret" aria-hidden="true">▾</span></button>
+        <button type="button" data-key="lbs" aria-sort="none">Lbs <span class="caret" aria-hidden="true">▾</span></button>
+        <span class="lab">Status</span>
+      </div>
+      <div id="mempty" class="empty-state" style="display:none;">
+        <div class="mascot-slot" data-state="empty"></div>
+        <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">The record opens with our first delivery.</p>
+        <p style="font-weight:400; font-size:12px; color:var(--text-secondary); max-width:44ch; text-align:center;" id="emptySub">These are the columns every delivery is recorded under. Your school could fill the first row.</p>
+      </div>
+      <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the live manifest.</p></noscript></div>
+      <p class="manifest-foot"><span class="unverified">Track the Box, the planned public log this feeds, is not published yet.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="loggers" class="wrap" style="padding-top:24px; padding-bottom:96px;">
+  <p class="eyebrow" data-reveal>The fine print</p>
+  <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
+    <span class="mask-l"><span data-line>How the temperature</span></span>
+    <span class="mask-l"><span data-line>loggers work.</span></span>
+  </h2>
+  <p class="body-p" data-reveal style="margin:0;">Every box should carry a temperature record from packing to handoff, so a food bank can trust what we bring and a school can show exactly what left its building. NYC health rules require that record.<sup><a class="src-link" href="why.html#src-11">11</a></sup></p>
+  <p class="body-p" data-reveal style="margin:16px 0 0;"><span class="unverified">We plan to share about three temperature loggers across all routes, instead of one in every box.</span> A box that travels without a logger has no temperature record, and the log will say so. <span class="unverified">We had planned to estimate those trips from past data, but that is not possible until real trips have been logged.</span> The boxes do not track location.</p>
+  <p class="body-p" data-reveal style="margin:16px 0 0;">Want to build a logger yourself? The parts list and diagram are on the <a href="getting-started.html#tech-spec">Getting started</a> page.</p>
+</section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap top">
+    <span style="display:flex; align-items:center; gap:12px;">
+      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+    </span>
+    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+  </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+  </nav>
+  <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
+</footer>
+
+<script src="assets/site.js?v=13"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = STB.$, $$ = STB.$$;
+  var reduced = STB.reduced, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
+  STB.initIcons();
+  STB.initMascotSlots();
+  var paintMascot = STB.paintMascot;
+  var midBox = null;
+  STB.initTheme(function () { if (midBox) midBox.repaint(); });
+  STB.initNav();
+
+  /* Derived, not hard-coded — a stale literal would silently mislabel rows. */
+  var TODAY = new Date().toISOString().slice(0, 10);
+  /* Pre-launch: there is no delivery record yet, and none is invented here.
+     The manifest machinery below (sort, filter, empty state) runs off this
+     array, so it stays fully functional the moment real rows land. */
+  var ROWS = [];
+  var MOOD_LABEL = { idle: "all quiet", record: "record haul", confirmed: "all confirmed", empty: "pre-launch", active: "en route" };
+
+  /* ---------- chips + manifest ---------- */
+  var sortKey = "date", sortDir = "desc", filter = "All";
+  /* Filter chips are derived from the log itself rather than hard-coded, so a
+     school only ever appears here once it actually has a delivery on record.
+     Empty log, no chips — and the control reappears on its own when rows exist. */
+  var origins = ROWS.map(function (r) { return r.from; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort();
+  var schools = origins.length ? ["All"].concat(origins) : [];
+  var chipsHost = $("#chips");
+  schools.forEach(function (label) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = label;
+    b.setAttribute("aria-pressed", label === "All" ? "true" : "false");
+    b.addEventListener("click", function () {
+      filter = label;
+      $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === label ? "true" : "false"); });
+      render(); glance();
+    });
+    chipsHost.appendChild(b);
+  });
+  $$("#thead button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-key");
+      if (k === sortKey) sortDir = sortDir === "asc" ? "desc" : "asc";
+      else { sortKey = k; sortDir = (k === "date" || k === "lbs") ? "desc" : "asc"; }
+      render(); glance();
+    });
+  });
+  var glT;
+  function glance() {
+    if (reduced) return;
+    var svg = $("#mascotMood");
+    clearTimeout(glT);
+    svg.classList.add("glance");
+    glT = setTimeout(function () { svg.classList.remove("glance"); }, 400);
+  }
+  /* ---------- 5. deep-linkable manifest ----------
+     Filter and sort live in the URL hash so a view can be linked to, and are
+     written with replaceState so scrubbing filters does not stack up a dozen
+     history entries the back button has to walk out of. */
+  var hashLock = false;
+  function syncHash() {
+    if (hashLock) return;
+    var parts = [];
+    if (filter !== "All") parts.push("school=" + encodeURIComponent(filter));
+    if (sortKey !== "date" || sortDir !== "desc") parts.push("sort=" + sortKey + ":" + sortDir);
+    var want = parts.length ? "#log?" + parts.join("&") : "";
+    var base = location.pathname + location.search;
+    if ((location.hash || "") !== want && !/^#(?!log)/.test(location.hash || "")) {
+      history.replaceState(null, "", base + want);
+    }
+  }
+  function readHash() {
+    var m = /^#log\?(.*)$/.exec(location.hash || "");
+    if (!m) return;
+    hashLock = true;
+    m[1].split("&").forEach(function (kv) {
+      var i = kv.indexOf("="); if (i < 0) return;
+      var k = kv.slice(0, i), v = decodeURIComponent(kv.slice(i + 1));
+      if (k === "school") filter = v;
+      else if (k === "sort") {
+        var p = v.split(":");
+        if (["date", "from", "to", "lbs"].indexOf(p[0]) > -1) sortKey = p[0];
+        if (p[1] === "asc" || p[1] === "desc") sortDir = p[1];
+      }
+    });
+    /* A filter naming a school that has nothing logged would silently show an
+       empty table for the wrong reason. Fall back to All. */
+    if (filter !== "All" && ROWS.every(function (r) { return r.from !== filter; })) filter = "All";
+    $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === filter ? "true" : "false"); });
+    hashLock = false;
+  }
+
+  /* ---------- 6. CSV export of the current filtered view ---------- */
+  function exportCSV() {
+    var rows = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
+    if (!rows.length) return;
+    var metric = STB.unitMode() === "metric";
+    var head = ["date", "origin", "destination", metric ? "kg" : "lbs", "status"];
+    var q = function (v) { return /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v); };
+    var body = rows.map(function (r) {
+      return [r.date, r.from, r.to, metric ? (r.lbs * 0.45359237).toFixed(2) : r.lbs, r.status].map(q).join(",");
+    });
+    var blob = new Blob([head.join(",") + "\n" + body.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "stock-the-block-manifest" + (filter === "All" ? "" : "-" + filter.toLowerCase().replace(/\s+/g, "-")) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  if ($("#csvExport")) $("#csvExport").addEventListener("click", exportCSV);
+
+  var tableSeen = false;
+  function render() {
+    var filtered = ROWS.filter(function (r) { return filter === "All" || r.from === filter; });
+    var sorted = filtered.slice().sort(function (a, b) {
+      var va = a[sortKey], vb = b[sortKey];
+      var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
+      return sortDir === "asc" ? c : -c;
+    });
+    var label = !ROWS.length ? "PRE-LAUNCH" : (filter === "All" ? "RECENT" : filter.toUpperCase());
+    $("#mbody").innerHTML = sorted.map(function (r) {
+      var col = r.status === "RECEIVED" ? "var(--brand)" : "var(--accent)";
+      return '<div class="mrow"><span style="color:var(--text-secondary);">' + r.date + "</span><span>" + r.from + "</span><span>" + r.to + '</span><span class="lbs" data-lbs="' + r.lbs + '"></span><span class="st" style="color:' + col + ';">' + r.status + "</span></div>";
+    }).join("");
+    STB.renderUnits($("#mbody"));
+    $("#mempty").style.display = sorted.length ? "none" : "flex";
+    /* Two different empty states: nothing logged at all (pre-launch) versus a
+       filter that happens to match nothing. Don't conflate them. */
+    if (!ROWS.length) {
+      $("#emptyMsg").textContent = "The log opens with the first delivery.";
+      $("#emptySub").textContent = "These are the columns every delivery is recorded under. Nothing has moved yet.";
+    } else {
+      $("#emptyMsg").textContent = "no deliveries logged for " + label;
+      $("#emptySub").textContent = "clear the filter to see the full record";
+    }
+    /* No rows, no total. Never render a pounds figure the log cannot support. */
+    var total = filtered.reduce(function (t, r) { return t + r.lbs; }, 0);
+    var totalEl = $("#shownTotal");
+    if (filtered.length) { totalEl.setAttribute("data-lbs", total); STB.renderUnits(totalEl.parentNode); }
+    else { totalEl.removeAttribute("data-lbs"); totalEl.textContent = ""; }
+    /* 6. Export reflects the view on screen. With nothing logged there is
+       nothing to export, so the button says why rather than handing over an
+       empty file. */
+    var csv = $("#csvExport");
+    if (csv) {
+      csv.disabled = !filtered.length;
+      csv.title = filtered.length
+        ? "Download these " + filtered.length + " row(s) as CSV"
+        : "Nothing to export yet. The log opens with the first delivery";
+    }
+    syncHash();
+    $("#filterLabel").textContent = label;
+    $$("#thead button").forEach(function (b) {
+      var k = b.getAttribute("data-key"), on = k === sortKey;
+      b.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+      var c = b.querySelector(".caret");
+      c.style.opacity = on ? "1" : "0";
+      c.style.transform = on && sortDir === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+    });
+    var mood = "idle";
+    if (!filtered.length) mood = "empty";
+    else if (filtered.some(function (r) { return r.lbs >= 50; })) mood = "record";
+    else if (filtered.some(function (r) { return r.date === TODAY && r.status !== "RECEIVED"; })) mood = "active";
+    else if (filtered.every(function (r) { return r.status === "RECEIVED"; })) mood = "confirmed";
+    paintMascot($("#mascotMood svg"), mood);
+    $("#moodLabel").textContent = MOOD_LABEL[mood];
+    if (tableSeen && !reduced) {
+      requestAnimationFrame(function () {
+        $$(".mrow").forEach(function (el, i) {
+          el.style.animation = "none"; void el.offsetWidth;
+          el.style.animation = "rowUp 0.35s " + PRO + " " + (i * 40) + "ms both";
+        });
+      });
+    }
+  }
+  readHash();
+  render();
+  addEventListener("hashchange", function () { readHash(); render(); });
+
+  /* ---------- delivery log: real state vs a labelled preview ----------
+     SIM_ROWS are invented. They exist so a visitor can see the shape of the
+     record before there is a record, and they are never presented as one:
+     the banner stays up the whole time the preview is on, and the real state
+     is what the page loads with. */
+  var SIM_ROWS = [
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 42, status: "RECEIVED" },
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 31, status: "IN TRANSIT" },
+    { date: TODAY, from: "Stuyvesant High School", to: "Receiving site", lbs: 55, status: "RECEIVED" }
+  ];
+  (function () {
+    var bPre = $("#simPrelaunch"), bLive = $("#simLive");
+    var banner = $("#simBanner"), note = $("#simNote");
+    if (!bPre || !bLive) return;
+    function apply(live) {
+      ROWS.length = 0;
+      if (live) SIM_ROWS.forEach(function (r) { ROWS.push(r); });
+      bLive.classList.toggle("is-on", live);
+      bPre.classList.toggle("is-on", !live);
+      bLive.setAttribute("aria-pressed", live ? "true" : "false");
+      bPre.setAttribute("aria-pressed", live ? "false" : "true");
+      banner.hidden = !live;
+      note.textContent = live
+        ? "Preview mode. Sample rows, so you can see exactly how a delivery will be recorded."
+        : "The log is empty because nothing has moved yet. This is the real state.";
+      filter = "All";
+      render(); glance();
+    }
+    bPre.addEventListener("click", function () { apply(false); });
+    bLive.addEventListener("click", function () { apply(true); });
+  })();
+
+  var FX = STB.initReveals();
+  var shot = FX.shot;
+  (function fxLoop() {
+    requestAnimationFrame(fxLoop);
+    FX.tick();
+    var th = $("#thead");
+    if (th) {
+      var tr = th.getBoundingClientRect();
+      var mr = $("#manifest").getBoundingClientRect();
+      th.style.boxShadow = (tr.top <= 49 && mr.bottom > tr.bottom + 40) ? "0 4px 12px rgba(0,0,0,0.14)" : "none";
+    }
+  })();
+  shot($("#manifest"), function () { tableSeen = true; render(); });
+
+  /* The sealed box, shut and turning as you scroll (shared — assets/site.js). */
+  midBox = STB.initMidBox();
+  STB.initScrollFx();
+  STB.initProgress();
+  STB.initAnchors();
+  STB.initSectionHighlight();
+  STB.initUnits();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "How it works", href: "index.html#how", keywords: "steps collect pack deliver log" },
+    { kind: "section", label: "Food safety: the ice pack", href: "index.html#sensors", keywords: "temperature cold chain ice pack logger" },
+    { kind: "section", label: "The map", href: "index.html#network", keywords: "map snap need boroughs districts" },
+    { kind: "section", label: "Work with us", href: "index.html#join", keywords: "contact signup form" },
+    { kind: "tool", label: "Run packet generator", href: "getting-started.html#runPacket", keywords: "print manifest temperature log paperwork" },
+    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
+  ]);
+})();
+</script>
+</body>
+</html>
