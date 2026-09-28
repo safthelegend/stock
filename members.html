@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-auth>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <!-- Members-only: keep it out of search results. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Member portal: Stock the Block</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+  <script>
+    try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) { }
+  </script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css?v=13">
+  <link rel="stylesheet" href="assets/design.css?v=14">
+  <link rel="stylesheet" href="assets/portal.css?v=3">
+</head>
+
+<body class="portal">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="bar on" id="nav">
+    <div class="wrap">
+      <a href="index.html" class="brand">
+        <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+        Stock the Block
+      </a>
+      <div class="links">
+        <a href="index.html">Public site</a>
+        <button id="themeToggle" type="button" aria-label="Colour theme">
+          <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+          <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+          <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <rect x="3" y="5" width="18" height="15" rx="2" /><path d="M3 10h18" /><path d="M8 16l2-2 2 2" /><path d="M14 16l2-2 2 2" />
+          </svg>
+          <span class="theme-name">Light</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+
+  <main id="main" class="wrap portal-main portal-wide">
+    <header class="portal-head">
+      <h1>Member portal</h1>
+      <p class="p-lede">Log each delivery the day you make it. An admin checks it before it counts toward the public numbers.</p>
+    </header>
+
+    <!-- Sign-in or "no access" renders here (assets/portal.js). -->
+    <div id="gate"></div>
+
+    <div id="app" hidden>
+      <div class="p-hello">
+        <h2 id="hello">Hi</h2>
+        <p class="p-who">Signed in as <b data-who></b> <button type="button" class="p-link" data-signout>Sign out</button></p>
+      </div>
+
+      <div class="p-tabbar" role="tablist" aria-label="Member portal">
+        <button type="button" role="tab" id="t-log" data-tab="log" aria-controls="tab-log">Log a delivery</button>
+        <button type="button" role="tab" id="t-mine" data-tab="mine" aria-controls="tab-mine">My deliveries <span id="mineCount" class="p-badge"></span></button>
+        <!-- data-admin-only: portal.js hides this for anyone who isn't an admin. -->
+        <button type="button" role="tab" id="t-review" data-tab="review" aria-controls="tab-review" data-admin-only hidden>Review <span id="pendingCount" class="p-badge is-alert" title="Waiting for review"></span></button>
+      </div>
+
+      <section id="tab-log" role="tabpanel" aria-labelledby="t-log">
+        <div class="p-card p-formcard">
+          <form id="deliveryForm" class="p-form" novalidate>
+            <div id="deliveryFields"></div>
+
+            <label class="p-full">Photo of the food <span class="p-opt">optional</span>
+              <input type="file" id="photo" accept="image/*">
+            </label>
+            <div id="photoPreview" class="p-preview" hidden></div>
+
+            <p class="p-muted p-full">Temperature readings will be added automatically once the box sensors are ready.</p>
+
+            <div class="p-actions">
+              <button type="submit" id="deliverySubmit" class="btn-sm solid">Save delivery</button>
+            </div>
+            <p id="deliveryMsg" class="p-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="tab-mine" role="tabpanel" aria-labelledby="t-mine" hidden>
+        <div id="mine" class="d-list"></div>
+      </section>
+
+      <section id="tab-review" role="tabpanel" aria-labelledby="t-review" hidden>
+        <p class="p-muted p-tabintro">Accept a delivery once the log matches what arrived. Reject it with a note so the member can fix it and log it again.</p>
+        <div id="reviewFilters" class="p-tabs" role="group" aria-label="Show deliveries by status"></div>
+        <div id="queue" class="d-list" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="assets/firebase-init.js?v=3"></script>
+  <script src="assets/site.js?v=14"></script>
+  <script src="assets/portal.js?v=4"></script>
+  <script src="assets/admin.js?v=2"></script>
+  <script src="assets/members.js?v=2"></script>
+</body>
+</html>
