@@ -1,0 +1,2031 @@
+
+html {
+  scroll-behavior: smooth;
+}
+
+.sources-list li,
+#sources {
+  scroll-margin-top: 64px;
+}
+
+canvas:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+}
+
+@keyframes rowUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.8fr);
+  gap: 40px;
+  align-items: center;
+  padding-top: 104px;
+  padding-bottom: 88px;
+}
+
+.two-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.join-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.sensor-row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+
+.figure {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statband {
+  background: transparent;
+}
+
+/* Stat cards rather than a ruled row: three claims a partner can scan,
+ each one self-contained. */
+.statband .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  padding: 28px 0 20px;
+}
+
+.statband .cell {
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.statband .fig {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 3vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--text);
+}
+
+.statband .cap {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+  line-height: 1.55;
+}
+
+.statband .cite {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 12px 0 20px;
+}
+
+/* ---------- How it works: four animated stations on a conveyor ----------
+ Each step is a small scene starring the mascot box, and a belt with
+ rollers and passing parcels runs down through the stations in place of
+ divider lines. Every colour is a theme token, so the scenes switch with
+ light / dark / stock. Scenes only animate while on screen (.is-playing),
+ and reduced motion shows each scene's still frame. */
+#steps {
+  position: relative;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  column-gap: 44px;
+  align-items: center;
+  padding: 26px 0;
+  border-bottom: none;
+}
+
+.step .stage {
+  position: relative;
+  z-index: 1;
+  width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  border-radius: 14px;
+  padding: 6px 8px 2px;
+  box-shadow: 0 8px 24px -16px var(--paper-shadow);
+}
+
+.step-text>button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 24px;
+  grid-template-areas: "num ttl caret" ". bdy .";
+  gap: 6px 12px;
+  align-items: baseline;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+}
+
+.step .bdy {
+  grid-area: bdy;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 52ch;
+}
+
+.step .pdetail p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 8px 24px 6px 48px;
+  max-width: 60ch;
+}
+
+.belt {
+  position: absolute;
+  z-index: 0;
+  left: 128px;
+  width: 24px;
+  top: 0;
+  height: 0;
+  pointer-events: none;
+  border-left: 2px solid var(--brand-line-mid);
+  border-right: 2px solid var(--brand-line-mid);
+  background: repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
+  animation: beltRoll 0.8s linear infinite;
+}
+
+@keyframes beltRoll {
+  to {
+    background-position: 0 12px;
+  }
+}
+
+.belt .parcel {
+  position: absolute;
+  left: 3px;
+  top: -14px;
+  width: 14px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--mascot-fill);
+  border: 2px solid var(--mascot-stroke);
+  box-sizing: border-box;
+  animation: parcelRide 7.5s linear infinite;
+}
+
+.belt .parcel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 3px;
+  border-top: 2px solid var(--mascot-stroke);
+}
+
+.belt .parcel:nth-child(2) {
+  animation-delay: -2.5s;
+}
+
+.belt .parcel:nth-child(3) {
+  animation-delay: -5s;
+}
+
+@keyframes parcelRide {
+  from {
+    top: -14px;
+  }
+
+  to {
+    top: 100%;
+  }
+}
+
+#steps:not(.in-view) .belt,
+#steps:not(.in-view) .parcel {
+  animation-play-state: paused;
+}
+
+.scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  --play: paused;
+}
+
+.step.is-playing .scene {
+  --play: running;
+}
+
+.sc-table {
+  fill: var(--brand-line-mid);
+}
+
+.sc-leg,
+.sc-ground {
+  stroke: var(--brand-line-mid);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.sc-apple circle {
+  fill: #D9534F;
+  stroke: var(--mascot-stroke);
+  stroke-width: 2;
+}
+
+.sc-apple .leaf {
+  fill: var(--brand);
+}
+
+.sc-apple .stem,
+.sc-banana .tip {
+  stroke: var(--mascot-stroke);
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.sc-banana path.fruit {
+  fill: #F2C14E;
+  stroke: var(--mascot-stroke);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.sc-tape,
+.sc-spark,
+.sc-packet {
+  fill: var(--accent);
+}
+
+.sc-thermo .tube {
+  fill: var(--bg);
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+}
+
+.sc-thermo .bulb,
+.sc-thermo .mercury {
+  fill: var(--accent);
+}
+
+.sc-ice rect {
+  fill: var(--ice-soft);
+  stroke: var(--ice);
+  stroke-width: 2;
+}
+
+.sc-ice path,
+.sc-flakes path {
+  stroke: var(--ice);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.sc-readout {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 8.5px;
+  fill: var(--on-brand);
+  text-anchor: middle;
+}
+
+.sc-scale {
+  fill: var(--brand);
+}
+
+.sc-walker .limb {
+  stroke: var(--mascot-stroke);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.sc-walker .head {
+  fill: var(--bg);
+  stroke: var(--mascot-stroke);
+  stroke-width: 2.6;
+}
+
+.sc-bank .wall {
+  fill: var(--bg);
+  stroke: var(--mascot-stroke);
+  stroke-width: 2;
+}
+
+.sc-bank .roof {
+  fill: var(--brand);
+}
+
+.sc-bank .door {
+  fill: var(--brand-line-mid);
+}
+
+.sc-bank .heart {
+  fill: var(--accent);
+}
+
+.sc-check circle {
+  fill: var(--brand);
+}
+
+.sc-check path {
+  stroke: var(--on-brand);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.sc-screen .win {
+  fill: var(--bg);
+  stroke: var(--mascot-stroke);
+  stroke-width: 2;
+}
+
+.sc-screen .bar {
+  stroke: var(--brand-line-mid);
+  stroke-width: 1.5;
+}
+
+.sc-screen .dot,
+.sc-screen .base {
+  fill: var(--brand-line-mid);
+}
+
+.sc-rows rect {
+  fill: var(--line);
+}
+
+.sc-row-new .hi {
+  fill: color-mix(in srgb, var(--brand) 16%, transparent);
+}
+
+.sc-row-new .ln {
+  fill: var(--brand-line-mid);
+}
+
+.sc-row-new path {
+  stroke: var(--brand);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.sc-plus {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  fill: var(--accent-text);
+}
+
+/* Still frames (the base styles) are what reduced motion shows; the
+ keyframes below animate away from and back to them on a loop. */
+.sc-tape,
+.sc-spark,
+.sc-check,
+.sc-packet,
+.sc-plus {
+  opacity: 0;
+}
+
+.sc-tape {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.sc-spark,
+.sc-check,
+.sc-plus,
+.sc-flakes path {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sc-thermo .mercury {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.sc-walker .leg {
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+
+.sc-collect [data-lid-g] {
+  animation: lidCollect 6s ease-in-out infinite;
+}
+
+.sc-collect .sc-apple {
+  animation: appleIn 6s ease-in-out infinite;
+}
+
+.sc-collect .sc-banana {
+  animation: bananaIn 6s ease-in-out infinite;
+}
+
+.sc-collect .sc-tape {
+  animation: tapeOn 6s ease-in-out infinite;
+}
+
+.sc-collect .sc-spark {
+  animation: sparkPop 6s ease-out infinite;
+}
+
+.sc-collect .sc-box {
+  animation: boxHop 6s ease-in-out infinite;
+}
+
+@keyframes lidCollect {
+
+  0%,
+  4% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  10%,
+  58% {
+    transform: translateY(-9px) rotate(-13deg);
+  }
+
+  64%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes appleIn {
+
+  0%,
+  12% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+
+  21% {
+    transform: translate(42px, -96px);
+  }
+
+  29% {
+    transform: translate(84px, -80px);
+  }
+
+  35% {
+    transform: translate(84px, -30px);
+    opacity: 1;
+  }
+
+  36%,
+  90% {
+    transform: translate(84px, -30px);
+    opacity: 0;
+  }
+
+  91% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+
+  97%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes bananaIn {
+
+  0%,
+  30% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+
+  39% {
+    transform: translate(-42px, -96px);
+  }
+
+  47% {
+    transform: translate(-86px, -78px);
+  }
+
+  53% {
+    transform: translate(-86px, -30px);
+    opacity: 1;
+  }
+
+  54%,
+  90% {
+    transform: translate(-86px, -30px);
+    opacity: 0;
+  }
+
+  91% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+
+  97%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes tapeOn {
+
+  0%,
+  64% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  65% {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+
+  71%,
+  90% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  96%,
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sparkPop {
+
+  0%,
+  70% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+
+  75% {
+    opacity: 1;
+    transform: scale(1.1) rotate(20deg);
+  }
+
+  86% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6) rotate(60deg);
+  }
+}
+
+@keyframes boxHop {
+
+  0%,
+  70% {
+    transform: translateY(0);
+  }
+
+  74% {
+    transform: translateY(-5px);
+  }
+
+  78%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.sc-pack [data-lid-g] {
+  animation: lidPack 6s ease-in-out infinite;
+}
+
+.sc-pack .sc-ice {
+  animation: iceIn 6s ease-in-out infinite;
+}
+
+.sc-pack .sc-thermo .mercury {
+  animation: mercuryCool 6s ease-in-out infinite;
+}
+
+.sc-pack .sc-thermo .bulb {
+  animation: bulbCool 6s ease-in-out infinite;
+}
+
+.sc-pack .sc-flakes path {
+  animation: flakeTwinkle 6s ease-in-out infinite;
+}
+
+.sc-pack .sc-box {
+  animation: boxShiver 6s linear infinite;
+}
+
+@keyframes lidPack {
+
+  0%,
+  6% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  12%,
+  40% {
+    transform: translateY(-9px) rotate(-13deg);
+  }
+
+  46%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes iceIn {
+
+  0%,
+  14% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+
+  23% {
+    transform: translate(-44px, -98px);
+  }
+
+  31% {
+    transform: translate(-88px, -80px);
+  }
+
+  37% {
+    transform: translate(-88px, -32px);
+    opacity: 1;
+  }
+
+  38%,
+  90% {
+    transform: translate(-88px, -32px);
+    opacity: 0;
+  }
+
+  91% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+
+  97%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes mercuryCool {
+
+  0%,
+  44% {
+    transform: scaleY(1);
+    fill: var(--accent);
+  }
+
+  60%,
+  88% {
+    transform: scaleY(0.4);
+    fill: var(--ice);
+  }
+
+  98%,
+  100% {
+    transform: scaleY(1);
+    fill: var(--accent);
+  }
+}
+
+@keyframes bulbCool {
+
+  0%,
+  44% {
+    fill: var(--accent);
+  }
+
+  60%,
+  88% {
+    fill: var(--ice);
+  }
+
+  98%,
+  100% {
+    fill: var(--accent);
+  }
+}
+
+@keyframes flakeTwinkle {
+
+  0%,
+  46% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+
+  54% {
+    opacity: 1;
+    transform: scale(1.1) rotate(30deg);
+  }
+
+  70% {
+    opacity: 0.7;
+    transform: scale(0.9) rotate(60deg);
+  }
+
+  82% {
+    opacity: 1;
+    transform: scale(1) rotate(90deg);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(120deg);
+  }
+}
+
+@keyframes boxShiver {
+
+  0%,
+  48% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-1.5px);
+  }
+
+  52% {
+    transform: translateX(1.5px);
+  }
+
+  54% {
+    transform: translateX(-1.5px);
+  }
+
+  56% {
+    transform: translateX(1.5px);
+  }
+
+  58%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.sc-walk .sc-walker {
+  animation: walkAcross 6s ease-in-out infinite;
+}
+
+.sc-walk .leg-a {
+  animation: legSwing 0.5s ease-in-out infinite alternate;
+}
+
+.sc-walk .leg-b {
+  animation: legSwing 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.sc-walk .sc-check {
+  animation: checkPop 6s ease-out infinite;
+}
+
+@keyframes walkAcross {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  60%,
+  86% {
+    transform: translateX(104px);
+    opacity: 1;
+  }
+
+  92%,
+  100% {
+    transform: translateX(104px);
+    opacity: 0;
+  }
+}
+
+@keyframes legSwing {
+  from {
+    transform: rotate(-24deg);
+  }
+
+  to {
+    transform: rotate(24deg);
+  }
+}
+
+@keyframes checkPop {
+
+  0%,
+  62% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  68% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  72%,
+  86% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.sc-post .sc-packet {
+  animation: packetFly 6s ease-in-out infinite;
+}
+
+.sc-post .sc-rows {
+  animation: rowsShift 6s ease-in-out infinite;
+}
+
+.sc-post .sc-row-new {
+  animation: rowIn 6s ease-out infinite;
+}
+
+.sc-post .sc-plus {
+  animation: plusPop 6s ease-out infinite;
+}
+
+.sc-post .sc-box {
+  animation: boxCheer 6s ease-in-out infinite;
+}
+
+@keyframes packetFly {
+
+  0%,
+  6% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  22% {
+    transform: translate(22px, -28px);
+  }
+
+  32% {
+    opacity: 1;
+    transform: translate(48px, -8px);
+  }
+
+  36%,
+  100% {
+    opacity: 0;
+    transform: translate(48px, -8px);
+  }
+}
+
+@keyframes rowsShift {
+
+  0%,
+  32% {
+    transform: translateY(-17px);
+  }
+
+  40%,
+  90% {
+    transform: translateY(0);
+  }
+
+  97%,
+  100% {
+    transform: translateY(-17px);
+  }
+}
+
+@keyframes rowIn {
+
+  0%,
+  34% {
+    opacity: 0;
+  }
+
+  42%,
+  90% {
+    opacity: 1;
+  }
+
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes plusPop {
+
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.6);
+  }
+
+  48% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.1);
+  }
+
+  54%,
+  84% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(1);
+  }
+}
+
+@keyframes boxCheer {
+
+  0%,
+  44% {
+    transform: translateY(0);
+  }
+
+  49% {
+    transform: translateY(-7px);
+  }
+
+  54% {
+    transform: translateY(0);
+  }
+
+  58% {
+    transform: translateY(-4px);
+  }
+
+  62%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Every scene animation pauses while its step is off screen. Placed last so
+ it wins over the shorthands above. */
+.scene * {
+  animation-play-state: var(--play) !important;
+  animation-delay: var(--d, 0s) !important;
+}
+
+/* A relay: each station runs a quarter-cycle after the one above it, so the
+ action rolls down the belt instead of every scene peaking at once. */
+.sc-pack {
+  --d: 1.5s;
+}
+
+.sc-walk {
+  --d: 3s;
+}
+
+.sc-post {
+  --d: 4.5s;
+}
+
+/* This block was one narrow column with the whole right half of the
+ section empty. Now a fixed status card plus a chart that fills what is
+ left, so the width the section actually has gets used. */
+/* One instrument readout: identity and verdict on the left, the trace on
+ the right, both centred on the same axis so they read as one unit. */
+.cold-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-areas: "mascot chart" "status chart";
+  column-gap: 28px;
+  row-gap: 4px;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  border-radius: 12px;
+  padding: 14px 20px 16px;
+  transform-origin: 50% 50%;
+}
+
+.cold-status {
+  grid-area: status;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* The mascot. Its own palette, per spec: a light tinted body in light and
+ stock, a lifted sage in dark, read by both the flat SVG and the 3D box
+ (which is told to take its colours from here). */
+.cold-mascot {
+  grid-area: mascot;
+  position: relative;
+  width: 220px;
+  justify-self: center;
+  --mascot-fill: #EAF2DE;
+  --mascot-stroke: #2E5A22;
+  --box-side: #D3E3C1;
+  --box-interior: #BFD4A8;
+  --cm-glow: color-mix(in srgb, var(--brand) 34%, transparent);
+}
+
+:root[data-theme="dark"] .cold-mascot {
+  --mascot-fill: #2A3A22;
+  --mascot-stroke: #9CCB7A;
+  --box-side: #223019;
+  --box-interior: #18230F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .cold-mascot {
+    --mascot-fill: #2A3A22;
+    --mascot-stroke: #9CCB7A;
+    --box-side: #223019;
+    --box-interior: #18230F;
+  }
+}
+
+.cold-mascot.is-danger {
+  --cm-glow: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* A tight, soft glow: small blur, low opacity. */
+.cold-mascot>svg,
+.cold-mascot>canvas {
+  filter: drop-shadow(0 0 3px var(--cm-glow));
+  transition: filter 250ms ease;
+}
+
+.cold-mascot>canvas {
+  display: block;
+  width: 100%;
+}
+
+.cold-mascot.is-3d>svg {
+  display: none !important;
+}
+
+/* The canvas is square; the box sits in its middle band, so the frame is
+ cropped to the box and the empty sky above it is not layout. */
+.cold-mascot.is-3d {
+  height: 200px;
+}
+
+/* At least 20px between the bottom of the model and the verdict. */
+.cold-mascot {
+  margin-bottom: 10px;
+}
+
+.cold-mascot.is-3d>canvas {
+  margin-top: -12px;
+}
+
+.cold-run {
+  margin: 10px 0 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.cold-tag {
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.cold-verdict {
+  margin: 2px 0 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.cold-verdict.is-danger {
+  color: var(--accent-text);
+}
+
+.cold-verdict.is-safe {
+  color: var(--brand);
+}
+
+.cold-sim-tag {
+  display: block;
+  width: max-content;
+  margin: 6px 0 0;
+  padding: 2px 8px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--accent-text);
+  white-space: nowrap;
+}
+
+.cold-sim-tag[hidden] {
+  display: none;
+}
+
+.cold-reading {
+  margin: 8px 0 0;
+  min-height: 1.5em;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.cold-reading b {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* The ice pack is the point of this section, so its button is the loudest
+ thing in the panel: solid, larger, with a pulsing "Try it" cue that goes
+ away after the first press. */
+.cold-ice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 16px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 50%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.cold-ice:hover {
+  background: var(--brand-press);
+  border-color: var(--brand-press);
+  transform: translateY(-1px);
+}
+
+.cold-ice:not(.tried) {
+  animation: icePulse 1.8s ease-out infinite;
+}
+
+@keyframes icePulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 55%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--brand) 0%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
+  }
+}
+
+.cold-ice .try {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1D1D1F;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+.cold-ice.tried .try {
+  display: none;
+}
+
+.cold-ice[aria-pressed="true"] {
+  background: var(--ice-soft);
+  border-color: var(--ice);
+  color: var(--ice);
+  box-shadow: none;
+}
+
+.cold-ice[hidden] {
+  display: none;
+}
+
+.cold-ice svg {
+  flex: none;
+}
+
+.cold-chart {
+  grid-area: chart;
+  align-self: center;
+  position: relative;
+  min-width: 0;
+  border-radius: 10px;
+}
+
+/* Frosted inner glow while the what-if is on. */
+.cold-chart::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 28px color-mix(in srgb, var(--ice) 22%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ice) 18%, transparent);
+  transition: opacity 500ms ease;
+}
+
+.cold-chart.is-frost::after {
+  opacity: 1;
+}
+
+.cold-rows .row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.cold-rows .row .temp {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.cold-spark {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.cs-zone {
+  fill: var(--accent);
+  opacity: 0.08;
+  transition: opacity 800ms ease;
+}
+
+.cs-zone.cs-pulse {
+  animation: csPulse 700ms ease-out 1;
+}
+
+@keyframes csPulse {
+  0% {
+    opacity: 0.08;
+  }
+
+  35% {
+    opacity: 0.26;
+  }
+
+  100% {
+    opacity: 0.08;
+  }
+}
+
+.is-ice .cs-zone {
+  opacity: 0;
+}
+
+.cs-threshold {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.cs-threshold-lbl {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  fill: var(--accent-text);
+  letter-spacing: 0.04em;
+}
+
+.cs-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cs-ghost {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.is-ice .cs-ghost {
+  opacity: 0.45;
+}
+
+.cs-dot {
+  fill: var(--brand);
+  stroke: var(--surface);
+  stroke-width: 2;
+  r: 4;
+  transition: r 140ms ease;
+}
+
+.cs-dot.danger {
+  fill: var(--accent);
+}
+
+.cs-xlabel {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  fill: var(--text-secondary);
+}
+
+.cs-xlabel .cs-note {
+  fill: var(--text-secondary);
+  opacity: 0.75;
+}
+
+.cs-temp {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-temp.danger {
+  fill: var(--accent-text);
+}
+
+.cs-pt {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 260ms ease;
+}
+
+.cs-pt.cs-pending {
+  opacity: 0;
+}
+
+.cs-hit {
+  fill: transparent;
+}
+
+.cs-pt:focus-visible .cs-dot,
+.cs-pt:hover .cs-dot,
+.cs-pt.active .cs-dot {
+  r: 6;
+}
+
+.cs-pt:focus-visible .cs-hit {
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* One focus ring, on the point itself, not a second box around the group. */
+#coldSpark .cs-pt:focus-visible {
+  outline: none;
+}
+
+/* Ice pack: drops in, sits on the chart; frost particles burst and fade. */
+.cold-icepack {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 24px;
+  margin: -12px 0 0 -15px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cold-icepack.is-in {
+  opacity: 1;
+  animation: iceDrop 720ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.cold-icepack.is-out {
+  animation: iceLift 320ms ease-in both;
+}
+
+@keyframes iceDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--drop, -120px)) rotate(-12deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes iceLift {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+.cold-frost {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.cold-frost i {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ice);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--ice) 80%, transparent);
+  animation: frostOut 600ms ease-out both;
+}
+
+.cold-frost i.flake {
+  width: 9px;
+  height: 9px;
+  left: -4.5px;
+  top: -4.5px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  background-image: linear-gradient(var(--ice), var(--ice)), linear-gradient(var(--ice), var(--ice));
+  background-size: 9px 1.5px, 1.5px 9px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@keyframes frostOut {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.4) rotate(90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cold-panel {
+    transform: none !important;
+  }
+
+  .cold-icepack.is-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .cold-frost {
+    display: none;
+  }
+}
+
+@media (max-width:640px) {
+  .cold-panel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "status" "mascot" "chart";
+    row-gap: 12px;
+    padding: 16px 16px 12px;
+  }
+
+  .cold-mascot {
+    width: 160px;
+    margin-bottom: 0;
+  }
+
+  .cold-mascot.is-3d {
+    height: 144px;
+  }
+
+  .cold-mascot.is-3d>canvas {
+    margin-top: -8px;
+  }
+
+  .cold-ice {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .cs-xlabel {
+    font-size: 10px;
+  }
+
+  .cs-temp {
+    font-size: 11px;
+  }
+
+  .cs-threshold-lbl {
+    font-size: 10px;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.cards-grid .card,
+.done-card {
+  border-radius: 8px;
+}
+
+.cards-grid .card {
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  padding: 28px;
+}
+
+.cards-grid .card .kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--brand);
+  margin: 0 0 10px;
+}
+
+.cards-grid .card .meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+}
+
+.doc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.doc-toggle:hover {
+  color: var(--accent-text);
+}
+
+.doc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms ease;
+}
+
+.doc-open>.doc-panel {
+  grid-template-rows: 1fr;
+}
+
+.doc-panel>div {
+  overflow: hidden;
+}
+
+/* 4% what-if slider: lives inside the big stat card and borrows its accent. */
+.pct-whatif {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.pct-whatif[hidden] {
+  display: none;
+}
+
+.pct-range {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  --fill: 0%;
+}
+
+.pct-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill));
+}
+
+.pct-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill));
+}
+
+.pct-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition: transform 120ms ease;
+}
+
+.pct-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.pct-range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.pct-range:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.pct-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.pct-result {
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  min-height: 3em;
+}
+
+.pct-result b {
+  display: block;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--accent-text);
+}
+
+.pct-result .est {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--accent-text);
+  vertical-align: 2px;
+}
+
+.statband .cite a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* "Learn more" cards: each one is a whole-card link to a deeper page. */
+/* Four cards: 2×2 by default, one row on wide screens, one column on
+ phones. Never 3 + 1. */
+.learn-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width:1180px) {
+  .learn-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width:640px) {
+  .learn-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.learn-grid .card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.learn-grid .card:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+
+.learn-grid .card .body {
+  flex: 1;
+}
+
+.learn-grid .card a.doc-toggle {
+  text-decoration: none;
+}
+
+.learn-grid .card a.doc-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.learn-grid .card a.doc-toggle:focus-visible {
+  outline: none;
+}
+
+.learn-grid .card:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Map: one visible line of context, everything else folded away. */
+.sites-summary {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 20px 0 0;
+}
+
+.sites-summary a {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.map-about {
+  margin: 16px 0 0;
+  max-width: 70ch;
+}
+
+.map-about summary {
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--brand);
+}
+
+.map-about summary:hover {
+  color: var(--accent-text);
+}
+
+.map-about p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+}
+
+.map-about .cite {
+  font-size: 13px;
+}
+
+.done-card {
+  border: 1px solid var(--brand-line);
+  background: var(--tint);
+  padding: 32px;
+}
+
+/* The join section now sits on the page background, so its fields take the
+ card colour to stay visible as fields. */
+#join form.join input,
+#join form.join select,
+#join form.join textarea {
+  background: var(--surface);
+}
+
+@media (max-width:760px) {
+
+  .hero-grid,
+  .two-grid,
+  .join-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .hero-grid>.visual {
+    order: -1;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .sensor-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .sensor-row>div:first-child {
+    max-width: 150px;
+  }
+
+  /* Phones: each station sits above its text, and the belt becomes a rail
+   down the left edge with a short arm into each station. */
+  .step {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 10px;
+    padding: 18px 0 18px 34px;
+  }
+
+  .step .stage {
+    width: min(100%, 280px);
+  }
+
+  .step .stage::before {
+    content: "";
+    position: absolute;
+    left: -21px;
+    top: 50%;
+    width: 20px;
+    border-top: 2px solid var(--brand-line-mid);
+  }
+
+  .belt {
+    left: 2px;
+    width: 20px;
+  }
+
+  .belt .parcel {
+    left: 1px;
+    width: 14px;
+  }
+
+  .step-text>button {
+    grid-template-columns: 30px minmax(0, 1fr) 24px;
+  }
+
+  .step .bdy {
+    font-size: 17px;
+  }
+
+  .step .pdetail p {
+    padding-left: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+
+  nav.bar,
+  .skip-link,
+  .box-band,
+  #heroBoxWrap,
+  #formWrap {
+    display: none !important;
+  }
+
+  #heropin {
+    height: auto !important;
+  }
+
+  #top,
+  .thead {
+    position: static !important;
+    min-height: 0 !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  a.verify::after {
+    content: " (" attr(href) ")";
+    font-weight: 400;
+  }
+
+  section {
+    break-inside: avoid;
+  }
+}
+/* Honeypot: moves the spam-trap field off-screen so people never see it. */
+.hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }

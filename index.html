@@ -1,1399 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Stock the Block: student-run food recovery, NYC</title>
-<meta name="description" content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks, with a temperature record for every box.">
-<meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
-<meta property="og:description" content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks.">
-<meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://safthelegend.github.io/stock/">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<script>
-/* Applies the saved theme before first paint, so switching modes never flashes
-   the default palette. Kept inline and tiny on purpose — an external file would
-   be a second round trip and the flash would be back. */
-try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
-</script>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
-<link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-<link rel="stylesheet" href="assets/site.css?v=13">
-<style>
-  html { scroll-behavior:smooth; }
-  .sources-list li, #sources { scroll-margin-top:64px; }
-  canvas:focus-visible { outline:2px solid var(--brand); outline-offset:4px; }
-  @keyframes rowUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .hero-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(240px,0.8fr); gap:40px; align-items:center; padding-top:104px; padding-bottom:88px; }
-  .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
-  .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
-  .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
-  .figure { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
-  .statband { background:transparent; }
-  /* Stat cards rather than a ruled row: three claims a partner can scan,
-     each one self-contained. */
-  .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; padding:28px 0 20px; }
-  .statband .cell { background:var(--surface); border:1px solid var(--brand-line); border-radius:8px; padding:22px; }
-  .statband .fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(30px,3vw,40px); line-height:1.05; letter-spacing:-0.03em; margin:0; color:var(--text); }
-  .statband .cap { font-size:14px; color:var(--text-secondary); margin:10px 0 0; line-height:1.55; }
-  .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; }
-  /* ---------- How it works: four animated stations on a conveyor ----------
-     Each step is a small scene starring the mascot box, and a belt with
-     rollers and passing parcels runs down through the stations in place of
-     divider lines. Every colour is a theme token, so the scenes switch with
-     light / dark / stock. Scenes only animate while on screen (.is-playing),
-     and reduced motion shows each scene's still frame. */
-  #steps { position:relative; }
-  .step { position:relative; display:grid; grid-template-columns:280px minmax(0,1fr); column-gap:44px; align-items:center; padding:26px 0; border-bottom:none; }
-  .step .stage { position:relative; z-index:1; width:280px; background:var(--surface); border:1px solid var(--brand-line);
-    border-radius:14px; padding:6px 8px 2px; box-shadow:0 8px 24px -16px var(--paper-shadow); }
-  .step-text > button { width:100%; display:grid; grid-template-columns:36px minmax(0,1fr) 24px;
-    grid-template-areas:"num ttl caret" ". bdy ."; gap:6px 12px; align-items:baseline; padding:6px 0; background:none; border:none;
-    cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
-  .step .bdy { grid-area:bdy; font-size:18px; line-height:1.6; color:var(--text); max-width:52ch; }
-  .step .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:8px 24px 6px 48px; max-width:60ch; }
-  .belt { position:absolute; z-index:0; left:128px; width:24px; top:0; height:0; pointer-events:none;
-    border-left:2px solid var(--brand-line-mid); border-right:2px solid var(--brand-line-mid);
-    background:repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
-    animation:beltRoll 0.8s linear infinite; }
-  @keyframes beltRoll { to { background-position:0 12px; } }
-  .belt .parcel { position:absolute; left:3px; top:-14px; width:14px; height:12px; border-radius:3px;
-    background:var(--mascot-fill); border:2px solid var(--mascot-stroke); box-sizing:border-box;
-    animation:parcelRide 7.5s linear infinite; }
-  .belt .parcel::after { content:""; position:absolute; left:0; right:0; top:3px; border-top:2px solid var(--mascot-stroke); }
-  .belt .parcel:nth-child(2) { animation-delay:-2.5s; }
-  .belt .parcel:nth-child(3) { animation-delay:-5s; }
-  @keyframes parcelRide { from { top:-14px; } to { top:100%; } }
-  #steps:not(.in-view) .belt, #steps:not(.in-view) .parcel { animation-play-state:paused; }
-
-  .scene { display:block; width:100%; height:auto; overflow:visible; --play:paused; }
-  .step.is-playing .scene { --play:running; }
-  .sc-table { fill:var(--brand-line-mid); }
-  .sc-leg, .sc-ground { stroke:var(--brand-line-mid); stroke-width:3; stroke-linecap:round; fill:none; }
-  .sc-apple circle { fill:#D9534F; stroke:var(--mascot-stroke); stroke-width:2; }
-  .sc-apple .leaf { fill:var(--brand); }
-  .sc-apple .stem, .sc-banana .tip { stroke:var(--mascot-stroke); stroke-width:2; stroke-linecap:round; fill:none; }
-  .sc-banana path.fruit { fill:#F2C14E; stroke:var(--mascot-stroke); stroke-width:2; stroke-linejoin:round; }
-  .sc-tape, .sc-spark, .sc-packet { fill:var(--accent); }
-  .sc-thermo .tube { fill:var(--bg); stroke:var(--text-secondary); stroke-width:2; }
-  .sc-thermo .bulb, .sc-thermo .mercury { fill:var(--accent); }
-  .sc-ice rect { fill:var(--ice-soft); stroke:var(--ice); stroke-width:2; }
-  .sc-ice path, .sc-flakes path { stroke:var(--ice); stroke-width:1.8; stroke-linecap:round; fill:none; }
-  .sc-readout { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:8.5px; fill:var(--on-brand); text-anchor:middle; }
-  .sc-scale { fill:var(--brand); }
-  .sc-walker .limb { stroke:var(--mascot-stroke); stroke-width:3.2; stroke-linecap:round; fill:none; }
-  .sc-walker .head { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2.6; }
-  .sc-bank .wall { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2; }
-  .sc-bank .roof { fill:var(--brand); }
-  .sc-bank .door { fill:var(--brand-line-mid); }
-  .sc-bank .heart { fill:var(--accent); }
-  .sc-check circle { fill:var(--brand); }
-  .sc-check path { stroke:var(--on-brand); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; fill:none; }
-  .sc-screen .win { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2; }
-  .sc-screen .bar { stroke:var(--brand-line-mid); stroke-width:1.5; }
-  .sc-screen .dot, .sc-screen .base { fill:var(--brand-line-mid); }
-  .sc-rows rect { fill:var(--line); }
-  .sc-row-new .hi { fill:color-mix(in srgb, var(--brand) 16%, transparent); }
-  .sc-row-new .ln { fill:var(--brand-line-mid); }
-  .sc-row-new path { stroke:var(--brand); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; fill:none; }
-  .sc-plus { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:12px; fill:var(--accent-text); }
-
-  /* Still frames (the base styles) are what reduced motion shows; the
-     keyframes below animate away from and back to them on a loop. */
-  .sc-tape, .sc-spark, .sc-check, .sc-packet, .sc-plus { opacity:0; }
-  .sc-tape { transform-box:fill-box; transform-origin:left center; }
-  .sc-spark, .sc-check, .sc-plus, .sc-flakes path { transform-box:fill-box; transform-origin:center; }
-  .sc-thermo .mercury { transform-box:fill-box; transform-origin:center bottom; }
-  .sc-walker .leg { transform-box:fill-box; transform-origin:center top; }
-
-  .sc-collect [data-lid-g] { animation:lidCollect 6s ease-in-out infinite; }
-  .sc-collect .sc-apple { animation:appleIn 6s ease-in-out infinite; }
-  .sc-collect .sc-banana { animation:bananaIn 6s ease-in-out infinite; }
-  .sc-collect .sc-tape { animation:tapeOn 6s ease-in-out infinite; }
-  .sc-collect .sc-spark { animation:sparkPop 6s ease-out infinite; }
-  .sc-collect .sc-box { animation:boxHop 6s ease-in-out infinite; }
-  @keyframes lidCollect { 0%, 4% { transform:translateY(0) rotate(0deg); } 10%, 58% { transform:translateY(-9px) rotate(-13deg); } 64%, 100% { transform:translateY(0) rotate(0deg); } }
-  @keyframes appleIn { 0%, 12% { transform:translate(0,0); opacity:1; } 21% { transform:translate(42px,-96px); } 29% { transform:translate(84px,-80px); } 35% { transform:translate(84px,-30px); opacity:1; } 36%, 90% { transform:translate(84px,-30px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
-  @keyframes bananaIn { 0%, 30% { transform:translate(0,0); opacity:1; } 39% { transform:translate(-42px,-96px); } 47% { transform:translate(-86px,-78px); } 53% { transform:translate(-86px,-30px); opacity:1; } 54%, 90% { transform:translate(-86px,-30px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
-  @keyframes tapeOn { 0%, 64% { opacity:0; transform:scaleX(0); } 65% { opacity:1; transform:scaleX(0); } 71%, 90% { opacity:1; transform:scaleX(1); } 96%, 100% { opacity:0; transform:scaleX(1); } }
-  @keyframes sparkPop { 0%, 70% { opacity:0; transform:scale(0.2) rotate(0deg); } 75% { opacity:1; transform:scale(1.1) rotate(20deg); } 86% { opacity:1; transform:scale(1) rotate(45deg); } 92%, 100% { opacity:0; transform:scale(0.6) rotate(60deg); } }
-  @keyframes boxHop { 0%, 70% { transform:translateY(0); } 74% { transform:translateY(-5px); } 78%, 100% { transform:translateY(0); } }
-
-  .sc-pack [data-lid-g] { animation:lidPack 6s ease-in-out infinite; }
-  .sc-pack .sc-ice { animation:iceIn 6s ease-in-out infinite; }
-  .sc-pack .sc-thermo .mercury { animation:mercuryCool 6s ease-in-out infinite; }
-  .sc-pack .sc-thermo .bulb { animation:bulbCool 6s ease-in-out infinite; }
-  .sc-pack .sc-flakes path { animation:flakeTwinkle 6s ease-in-out infinite; }
-  .sc-pack .sc-box { animation:boxShiver 6s linear infinite; }
-  @keyframes lidPack { 0%, 6% { transform:translateY(0) rotate(0deg); } 12%, 40% { transform:translateY(-9px) rotate(-13deg); } 46%, 100% { transform:translateY(0) rotate(0deg); } }
-  @keyframes iceIn { 0%, 14% { transform:translate(0,0); opacity:1; } 23% { transform:translate(-44px,-98px); } 31% { transform:translate(-88px,-80px); } 37% { transform:translate(-88px,-32px); opacity:1; } 38%, 90% { transform:translate(-88px,-32px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
-  @keyframes mercuryCool { 0%, 44% { transform:scaleY(1); fill:var(--accent); } 60%, 88% { transform:scaleY(0.4); fill:var(--ice); } 98%, 100% { transform:scaleY(1); fill:var(--accent); } }
-  @keyframes bulbCool { 0%, 44% { fill:var(--accent); } 60%, 88% { fill:var(--ice); } 98%, 100% { fill:var(--accent); } }
-  @keyframes flakeTwinkle { 0%, 46% { opacity:0; transform:scale(0.3) rotate(0deg); } 54% { opacity:1; transform:scale(1.1) rotate(30deg); } 70% { opacity:0.7; transform:scale(0.9) rotate(60deg); } 82% { opacity:1; transform:scale(1) rotate(90deg); } 92%, 100% { opacity:0; transform:scale(0.4) rotate(120deg); } }
-  @keyframes boxShiver { 0%, 48% { transform:translateX(0); } 50% { transform:translateX(-1.5px); } 52% { transform:translateX(1.5px); } 54% { transform:translateX(-1.5px); } 56% { transform:translateX(1.5px); } 58%, 100% { transform:translateX(0); } }
-
-  .sc-walk .sc-walker { animation:walkAcross 6s ease-in-out infinite; }
-  .sc-walk .leg-a { animation:legSwing 0.5s ease-in-out infinite alternate; }
-  .sc-walk .leg-b { animation:legSwing 0.5s ease-in-out infinite alternate-reverse; }
-  .sc-walk .sc-check { animation:checkPop 6s ease-out infinite; }
-  @keyframes walkAcross { 0% { transform:translateX(0); opacity:0; } 5% { opacity:1; } 60%, 86% { transform:translateX(104px); opacity:1; } 92%, 100% { transform:translateX(104px); opacity:0; } }
-  @keyframes legSwing { from { transform:rotate(-24deg); } to { transform:rotate(24deg); } }
-  @keyframes checkPop { 0%, 62% { opacity:0; transform:scale(0.3); } 68% { opacity:1; transform:scale(1.15); } 72%, 86% { opacity:1; transform:scale(1); } 92%, 100% { opacity:0; transform:scale(1); } }
-
-  .sc-post .sc-packet { animation:packetFly 6s ease-in-out infinite; }
-  .sc-post .sc-rows { animation:rowsShift 6s ease-in-out infinite; }
-  .sc-post .sc-row-new { animation:rowIn 6s ease-out infinite; }
-  .sc-post .sc-plus { animation:plusPop 6s ease-out infinite; }
-  .sc-post .sc-box { animation:boxCheer 6s ease-in-out infinite; }
-  @keyframes packetFly { 0%, 6% { opacity:0; transform:translate(0,0); } 10% { opacity:1; transform:translate(0,0); } 22% { transform:translate(22px,-28px); } 32% { opacity:1; transform:translate(48px,-8px); } 36%, 100% { opacity:0; transform:translate(48px,-8px); } }
-  @keyframes rowsShift { 0%, 32% { transform:translateY(-17px); } 40%, 90% { transform:translateY(0); } 97%, 100% { transform:translateY(-17px); } }
-  @keyframes rowIn { 0%, 34% { opacity:0; } 42%, 90% { opacity:1; } 96%, 100% { opacity:0; } }
-  @keyframes plusPop { 0%, 42% { opacity:0; transform:translateY(4px) scale(0.6); } 48% { opacity:1; transform:translateY(-2px) scale(1.1); } 54%, 84% { opacity:1; transform:translateY(0) scale(1); } 92%, 100% { opacity:0; transform:translateY(-6px) scale(1); } }
-  @keyframes boxCheer { 0%, 44% { transform:translateY(0); } 49% { transform:translateY(-7px); } 54% { transform:translateY(0); } 58% { transform:translateY(-4px); } 62%, 100% { transform:translateY(0); } }
-
-  /* Every scene animation pauses while its step is off screen. Placed last so
-     it wins over the shorthands above. */
-  .scene * { animation-play-state:var(--play) !important; animation-delay:var(--d, 0s) !important; }
-  /* A relay: each station runs a quarter-cycle after the one above it, so the
-     action rolls down the belt instead of every scene peaking at once. */
-  .sc-pack { --d:1.5s; } .sc-walk { --d:3s; } .sc-post { --d:4.5s; }
-  /* This block was one narrow column with the whole right half of the
-     section empty. Now a fixed status card plus a chart that fills what is
-     left, so the width the section actually has gets used. */
-  /* One instrument readout: identity and verdict on the left, the trace on
-     the right, both centred on the same axis so they read as one unit. */
-  .cold-panel { position:relative; display:grid; grid-template-columns:260px minmax(0,1fr);
-    grid-template-areas:"mascot chart" "status chart"; column-gap:28px; row-gap:4px; align-items:start;
-    background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:14px 20px 16px;
-    transform-origin:50% 50%; }
-  .cold-status { grid-area:status; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
-  /* The mascot. Its own palette, per spec: a light tinted body in light and
-     stock, a lifted sage in dark, read by both the flat SVG and the 3D box
-     (which is told to take its colours from here). */
-  .cold-mascot { grid-area:mascot; position:relative; width:220px; justify-self:center;
-    --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22; --box-side:#D3E3C1; --box-interior:#BFD4A8;
-    --cm-glow:color-mix(in srgb, var(--brand) 34%, transparent); }
-  :root[data-theme="dark"] .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
-  }
-  .cold-mascot.is-danger { --cm-glow:color-mix(in srgb, var(--accent) 40%, transparent); }
-  /* A tight, soft glow: small blur, low opacity. */
-  .cold-mascot > svg, .cold-mascot > canvas { filter:drop-shadow(0 0 3px var(--cm-glow)); transition:filter 250ms ease; }
-  .cold-mascot > canvas { display:block; width:100%; }
-  .cold-mascot.is-3d > svg { display:none !important; }
-  /* The canvas is square; the box sits in its middle band, so the frame is
-     cropped to the box and the empty sky above it is not layout. */
-  .cold-mascot.is-3d { height:200px; }
-  /* At least 20px between the bottom of the model and the verdict. */
-  .cold-mascot { margin-bottom:10px; }
-  .cold-mascot.is-3d > canvas { margin-top:-12px; }
-  .cold-run { margin:10px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; }
-  .cold-tag { display:inline-block; margin:6px 0 0; padding:2px 8px; border:1px solid var(--line); border-radius:999px;
-    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:0.02em; color:var(--text-secondary); white-space:nowrap; }
-  .cold-verdict { margin:2px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; line-height:1.3; letter-spacing:-0.01em; }
-  .cold-verdict.is-danger { color:var(--accent-text); }
-  .cold-verdict.is-safe { color:var(--brand); }
-  .cold-sim-tag { display:block; width:max-content; margin:6px 0 0; padding:2px 8px; border:1px dashed var(--accent); border-radius:999px;
-    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--accent-text); white-space:nowrap; }
-  .cold-sim-tag[hidden] { display:none; }
-  .cold-reading { margin:8px 0 0; min-height:1.5em; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; line-height:1.5; color:var(--text-secondary); }
-  .cold-reading b { font-weight:500; color:var(--text); }
-  /* The ice pack is the point of this section, so its button is the loudest
-     thing in the panel: solid, larger, with a pulsing "Try it" cue that goes
-     away after the first press. */
-  .cold-ice { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:9px; margin-top:16px; min-height:48px; padding:0 22px;
-    border:1px solid var(--brand); border-radius:999px; background:var(--brand); color:var(--on-brand); cursor:pointer;
-    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:16px;
-    box-shadow:0 0 0 0 color-mix(in srgb, var(--brand) 50%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
-    transition:background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; }
-  .cold-ice:hover { background:var(--brand-press); border-color:var(--brand-press); transform:translateY(-1px); }
-  .cold-ice:not(.tried) { animation:icePulse 1.8s ease-out infinite; }
-  @keyframes icePulse { 0% { box-shadow:0 0 0 0 color-mix(in srgb, var(--brand) 55%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent); } 70%, 100% { box-shadow:0 0 0 12px color-mix(in srgb, var(--brand) 0%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent); } }
-  .cold-ice .try { position:absolute; top:-10px; right:-8px; padding:2px 8px; border-radius:999px; background:var(--accent); color:#1D1D1F;
-    font-size:11px; font-weight:700; letter-spacing:0.02em; line-height:1.5; }
-  .cold-ice.tried .try { display:none; }
-  .cold-ice[aria-pressed="true"] { background:var(--ice-soft); border-color:var(--ice); color:var(--ice); box-shadow:none; }
-  .cold-ice[hidden] { display:none; }
-  .cold-ice svg { flex:none; }
-  .cold-chart { grid-area:chart; align-self:center; position:relative; min-width:0; border-radius:10px; }
-  /* Frosted inner glow while the what-if is on. */
-  .cold-chart::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
-    box-shadow:inset 0 0 28px color-mix(in srgb, var(--ice) 22%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ice) 18%, transparent); transition:opacity 500ms ease; }
-  .cold-chart.is-frost::after { opacity:1; }
-  .cold-rows .row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:baseline; width:100%; padding:7px 8px; border:none; border-bottom:1px solid var(--line-soft); background:transparent; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); text-align:left; }
-  .cold-rows .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
-  .cold-spark { width:100%; height:auto; display:block; overflow:visible; }
-  .cs-zone { fill:var(--accent); opacity:0.08; transition:opacity 800ms ease; }
-  .cs-zone.cs-pulse { animation:csPulse 700ms ease-out 1; }
-  @keyframes csPulse { 0% { opacity:0.08; } 35% { opacity:0.26; } 100% { opacity:0.08; } }
-  .is-ice .cs-zone { opacity:0; }
-  .cs-threshold { stroke:var(--accent); stroke-width:1.5; stroke-dasharray:4 4; }
-  .cs-threshold-lbl { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; fill:var(--accent-text); letter-spacing:0.04em; }
-  .cs-line { fill:none; stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round; }
-  .cs-ghost { fill:none; stroke:var(--accent); stroke-width:1.5; stroke-dasharray:3 5; opacity:0; transition:opacity 500ms ease; }
-  .is-ice .cs-ghost { opacity:0.45; }
-  .cs-dot { fill:var(--brand); stroke:var(--surface); stroke-width:2; r:4; transition:r 140ms ease; }
-  .cs-dot.danger { fill:var(--accent); }
-  .cs-xlabel { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; fill:var(--text-secondary); }
-  .cs-xlabel .cs-note { fill:var(--text-secondary); opacity:0.75; }
-  .cs-temp { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; font-weight:500; fill:var(--brand); font-variant-numeric:tabular-nums; }
-  .cs-temp.danger { fill:var(--accent-text); }
-  .cs-pt { cursor:pointer; outline:none; transition:opacity 260ms ease; }
-  .cs-pt.cs-pending { opacity:0; }
-  .cs-hit { fill:transparent; }
-  .cs-pt:focus-visible .cs-dot, .cs-pt:hover .cs-dot, .cs-pt.active .cs-dot { r:6; }
-  .cs-pt:focus-visible .cs-hit { stroke:var(--accent); stroke-width:2; fill:none; }
-  /* One focus ring, on the point itself, not a second box around the group. */
-  #coldSpark .cs-pt:focus-visible { outline:none; }
-  /* Ice pack: drops in, sits on the chart; frost particles burst and fade. */
-  .cold-icepack { position:absolute; z-index:3; left:0; top:0; width:30px; height:24px; margin:-12px 0 0 -15px; pointer-events:none; opacity:0; }
-  .cold-icepack.is-in { opacity:1; animation:iceDrop 720ms cubic-bezier(0.34,1.4,0.64,1) both; }
-  .cold-icepack.is-out { animation:iceLift 320ms ease-in both; }
-  @keyframes iceDrop { 0% { opacity:0; transform:translateY(var(--drop,-120px)) rotate(-12deg); } 30% { opacity:1; } 100% { opacity:1; transform:none; } }
-  @keyframes iceLift { from { opacity:1; transform:none; } to { opacity:0; transform:translateY(-28px); } }
-  .cold-frost { position:absolute; z-index:2; left:0; top:0; width:0; height:0; pointer-events:none; }
-  .cold-frost i { position:absolute; left:-3px; top:-3px; width:6px; height:6px; border-radius:50%;
-    background:var(--ice); box-shadow:0 0 6px color-mix(in srgb, var(--ice) 80%, transparent); animation:frostOut 600ms ease-out both; }
-  .cold-frost i.flake { width:9px; height:9px; left:-4.5px; top:-4.5px; border-radius:0; background:none; box-shadow:none;
-    background-image:linear-gradient(var(--ice),var(--ice)), linear-gradient(var(--ice),var(--ice));
-    background-size:9px 1.5px, 1.5px 9px; background-position:center; background-repeat:no-repeat; }
-  @keyframes frostOut { from { opacity:1; transform:translate(0,0) scale(1) rotate(0); } to { opacity:0; transform:translate(var(--dx),var(--dy)) scale(0.4) rotate(90deg); } }
-  @media (prefers-reduced-motion: reduce) {
-    .cold-panel { transform:none !important; }
-    .cold-icepack.is-in { animation:none; opacity:1; }
-    .cold-frost { display:none; }
-  }
-  @media (max-width:640px) {
-    .cold-panel { grid-template-columns:minmax(0,1fr); grid-template-areas:"status" "mascot" "chart"; row-gap:12px; padding:16px 16px 12px; }
-    .cold-mascot { width:160px; margin-bottom:0; }
-    .cold-mascot.is-3d { height:144px; }
-    .cold-mascot.is-3d > canvas { margin-top:-8px; }
-    .cold-ice { width:100%; min-height:44px; }
-    .cs-xlabel { font-size:10px; }
-    .cs-temp { font-size:11px; }
-    .cs-threshold-lbl { font-size:10px; }
-  }
-  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-  .cards-grid .card, .done-card { border-radius:8px; }
-  .cards-grid .card { background:var(--surface); border:1px solid var(--brand-line); padding:28px; }
-  .cards-grid .card .kicker { display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:13px; letter-spacing:0; text-transform:none; color:var(--brand); margin:0 0 10px; }
-  .cards-grid .card .meta { font-size:13px; color:var(--text-secondary); margin:10px 0 0; }
-  .doc-toggle { display:inline-flex; align-items:center; gap:6px; margin-top:14px; background:none; border:none; padding:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--brand); cursor:pointer; }
-  .doc-toggle:hover { color:var(--accent-text); }
-  .doc-panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms ease; }
-  .doc-open > .doc-panel { grid-template-rows:1fr; }
-  .doc-panel > div { overflow:hidden; }
-  /* 4% what-if slider: lives inside the big stat card and borrows its accent. */
-  .pct-whatif { margin-top:22px; padding-top:18px; border-top:1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
-  .pct-whatif[hidden] { display:none; }
-  .pct-range { -webkit-appearance:none; appearance:none; display:block; width:100%; height:28px; margin:0; background:transparent; cursor:pointer; --fill:0%; }
-  .pct-range::-webkit-slider-runnable-track { height:6px; border-radius:999px;
-    background:linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill)); }
-  .pct-range::-moz-range-track { height:6px; border-radius:999px;
-    background:linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill)); }
-  .pct-range::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; margin-top:-9px; border-radius:50%;
-    background:var(--surface); border:3px solid var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.18); transition:transform 120ms ease; }
-  .pct-range::-moz-range-thumb { width:18px; height:18px; border-radius:50%;
-    background:var(--surface); border:3px solid var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.18); }
-  .pct-range:active::-webkit-slider-thumb { transform:scale(1.12); }
-  .pct-range:focus-visible { outline:2px solid var(--accent); outline-offset:4px; border-radius:8px; }
-  .pct-scale { display:flex; justify-content:space-between; margin-top:2px;
-    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; color:var(--text-secondary); }
-  .pct-result { margin:14px 0 0; font-size:15px; line-height:1.5; color:var(--text-secondary); min-height:3em; }
-  .pct-result b { display:block; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    font-weight:800; font-size:clamp(22px,2.4vw,30px); line-height:1.15; letter-spacing:-0.02em; color:var(--accent-text); }
-  .pct-result .est { display:inline-block; margin-left:6px; padding:1px 7px; border:1px dashed var(--accent); border-radius:999px;
-    font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--accent-text); vertical-align:2px; }
-  .statband .cite a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
-  /* "Learn more" cards: each one is a whole-card link to a deeper page. */
-  /* Four cards: 2×2 by default, one row on wide screens, one column on
-     phones. Never 3 + 1. */
-  .learn-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  @media (min-width:1180px) { .learn-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
-  @media (max-width:640px) { .learn-grid { grid-template-columns:minmax(0,1fr); } }
-  .learn-grid .card { position:relative; display:flex; flex-direction:column; transition:border-color 160ms ease, transform 160ms ease; }
-  .learn-grid .card:hover { border-color:var(--brand); transform:translateY(-2px); }
-  .learn-grid .card .body { flex:1; }
-  .learn-grid .card a.doc-toggle { text-decoration:none; }
-  .learn-grid .card a.doc-toggle::after { content:""; position:absolute; inset:0; border-radius:inherit; }
-  .learn-grid .card a.doc-toggle:focus-visible { outline:none; }
-  .learn-grid .card:focus-within { outline:2px solid var(--brand); outline-offset:2px; }
-  /* Map: one visible line of context, everything else folded away. */
-  .sites-summary { font-size:16px; line-height:1.6; color:var(--text); margin:20px 0 0; }
-  .sites-summary a { font-weight:600; white-space:nowrap; }
-  .map-about { margin:16px 0 0; max-width:70ch; }
-  .map-about summary { cursor:pointer; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--brand); }
-  .map-about summary:hover { color:var(--accent-text); }
-  .map-about p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:10px 0 0; }
-  .map-about .cite { font-size:13px; }
-  .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
-  /* The join section now sits on the page background, so its fields take the
-     card colour to stay visible as fields. */
-  #join form.join input, #join form.join select, #join form.join textarea { background:var(--surface); }
-  @media (max-width:760px) {
-    .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
-    .hero-grid > .visual { order:-1; max-width:240px; margin:0 auto; }
-    .sensor-row { grid-template-columns:1fr; gap:24px; }
-    .sensor-row > div:first-child { max-width:150px; }
-    /* Phones: each station sits above its text, and the belt becomes a rail
-       down the left edge with a short arm into each station. */
-    .step { grid-template-columns:minmax(0,1fr); row-gap:10px; padding:18px 0 18px 34px; }
-    .step .stage { width:min(100%, 280px); }
-    .step .stage::before { content:""; position:absolute; left:-21px; top:50%; width:20px; border-top:2px solid var(--brand-line-mid); }
-    .belt { left:2px; width:20px; }
-    .belt .parcel { left:1px; width:14px; }
-    .step-text > button { grid-template-columns:30px minmax(0,1fr) 24px; }
-    .step .bdy { font-size:17px; }
-    .step .pdetail p { padding-left:42px; }
-  }
-  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
-  @media print {
-    nav.bar, .skip-link, .box-band, #heroBoxWrap, #formWrap { display:none !important; }
-    #heropin { height:auto !important; }
-    #top, .thead { position:static !important; min-height:0 !important; }
-    * { animation:none !important; transition:none !important; box-shadow:none !important; }
-    body { background:#fff; color:#000; }
-    a.verify::after { content:" (" attr(href) ")"; font-weight:400; }
-    section { break-inside:avoid; }
-  }
-</style>
-<link rel="stylesheet" href="assets/design.css?v=13">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Stock the Block: student-run food recovery, NYC</title>
+  <meta name="description"
+    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks, with a temperature record for every box.">
+  <meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
+  <meta property="og:description"
+    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks.">
+  <meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://safthelegend.github.io/stock/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <script>
+    /* Applies the saved theme before first paint, so switching modes never flashes
+       the default palette. Kept inline and tiny on purpose — an external file would
+       be a second round trip and the flash would be back. */
+    try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) { }
+  </script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
+  <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
+  <link rel="stylesheet" href="assets/site.css?v=14">
+  <link rel="stylesheet" href="assets/mainpage.css?v=3">
+  <link rel="stylesheet" href="assets/design.css?v=15">
 </head>
+
 <body>
-<a class="skip-link" href="#top">Skip to content</a>
+  <a class="skip-link" href="#top">Skip to content</a>
 
-<nav class="bar" id="nav">
-  <div class="wrap">
-    <a href="index.html#top" class="brand" aria-current="page">
-      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-      Stock the Block
-    </a>
-    <div class="links">
-      <a href="index.html#how">How it works</a>
-      <a href="index.html#sensors">Food safety</a>
-      <a href="index.html#network">Map</a>
-      <a href="getting-started.html">Getting started</a>
-      <a href="index.html#join" class="cta">Work with us</a>
-      <button id="themeToggle" type="button" aria-label="Colour theme">
-        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
-        <span class="theme-name">Light</span>
-      </button>
-    </div>
-  </div>
-</nav>
-<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
-
-<div id="heropin">
-<header id="top" class="wrap hero-grid">
-  <div>
-    <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
-    <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
-      Connecting schools’ leftover lunch food to local food banks.
-      <em>Every meal tracked.</em>
-    </h1>
-    <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
-      <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold, insulated boxes, walk it to a convenient food bank, and post the impact.</p>
-      <div class="prelaunch" id="heroStatus">
-        <p class="prelaunch-tag">In Development. Looking for food bank partners!</p>
-      </div>
-      <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
-        <a href="#join" class="btn solid">Work with us</a>
-        <a href="#how" class="btn line">How it works</a>
+  <nav class="bar" id="nav">
+    <div class="wrap">
+      <a href="index.html#top" class="brand" aria-current="page">
+        <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+        Stock the Block
+      </a>
+      <div class="links">
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#sensors">Food safety</a>
+        <a href="index.html#network">Map</a>
+        <a href="getting-started.html">Getting started</a>
+        <a href="index.html#join" class="cta">Work with us</a>
+        <a href="members.html" class="login">Sign in</a>
+        <button id="themeToggle" type="button" aria-label="Colour theme">
+          <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+          <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+          <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+            <rect x="3" y="5" width="18" height="15" rx="2" />
+            <path d="M3 10h18" />
+            <path d="M8 16l2-2 2 2" />
+            <path d="M14 16l2-2 2 2" />
+          </svg>
+          <span class="theme-name">Light</span>
+        </button>
       </div>
     </div>
-  </div>
-  <div class="visual" style="display:flex; justify-content:center; align-items:center;">
-    <div id="heroBoxWrap">
-      <canvas id="heroBox" width="420" height="420" role="img"
-              aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
-      <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
-    </div>
-  </div>
-</header>
-</div>
-
-<section class="statband" id="statband">
-  <div class="wrap">
-    <div class="grid">
-      <div class="cell fade-in-up" data-stat>
-        <p class="figure fig" id="statMeals">880,000</p>
-        <p class="cap">school meals served every day in NYC</p>
-      </div>
-      <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
-        <p class="figure fig" id="statPct">4%</p>
-        <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
-        <!-- What-if slider. Drag the share of buildings that donate and see the
-             food it would save. Every input is sourced in the cite line below. -->
-        <div class="pct-whatif" id="pctWhatIf" hidden>
-          <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
-                 aria-label="Share of NYC school buildings that donate leftover food">
-          <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
-          <p class="pct-result" id="pctResult"></p>
-        </div>
-      </div>
-      <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to launch</p>
-        <p class="cap">Currently building connections between schools &amp; community fridges to launch.</p>
-      </div>
-    </div>
-    <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/" target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the average a school recovered in its first year of share tables in a <a href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025 study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
-  </div>
-</section>
-
-<section id="how" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-  <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four simple steps</span></span>
-  </h2>
-  <div id="steps"></div>
-</section>
-
-<div class="instrument">
-<section id="sensors" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-  <p class="eyebrow" data-reveal>Food safety</p>
-  <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
-    <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
-    <span class="mask-l"><span data-line>safe to eat.</span></span>
-  </h2>
-  <p class="body-p" data-reveal style="margin:0;">Food has to stay at <span data-degf="41"></span> or colder. On this sample trip, the box got too warm at the handoff. Press <strong>Add ice pack</strong> to see how it stays safe.</p>
-  <div class="cold-panel" data-reveal style="margin-top:36px;">
-    <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" style="width:100%;height:auto;display:block;overflow:visible;"><path d="M30 31 H270 L280 44 H20 Z" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--box-side);stroke:var(--mascot-stroke);"></path><rect x="20" y="44" width="260" height="195" rx="14" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect><path d="M20 153.2 H280 V225 Q280 239 266 239 H34 Q20 239 20 225 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M126.6 153.2 L173.4 153.2 L150.0 239.0 Z" fill="#2E5A22" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M100.6 153.2 L126.6 153.2 L147.4 219.5 L116.2 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M199.4 153.2 L173.4 153.2 L152.6 219.5 L183.8 184.4 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M53.8 172.7 L90.2 172.7 L90.2 188.3 L53.8 188.3 Z" fill="#E8871E" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 219.5 C228.0 242.9 272.2 244.8 289.1 225.4" fill="none" stroke="#6F7D6A" stroke-width="7.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#2E5A22" stroke-width="12.23" stroke-linecap="round" stroke-linejoin="round"></path><path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#C9D1D8" stroke-width="7.78" stroke-linecap="round" stroke-linejoin="round"></path><path d="M202.0 188.3 L248.8 188.3 L248.8 219.5 L202.0 219.5 Z" fill="#FFFFFF" stroke="#2E5A22" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path><g data-squash style="transform-origin:150px 90px;"><g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;"><path d="M64.7 99.2 L96.9 72.1 L129.0 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 99.2 L203.1 72.1 L235.3 99.2" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M112.6 122.0 L118.9 125.3 L125.1 128.1 L131.3 130.2 L137.5 131.7 L143.8 132.6 L150.0 132.9 L156.2 132.6 L162.5 131.7 L168.7 130.2 L174.9 128.1 L181.1 125.3 L187.4 122.0" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g><g data-face="danger" style="opacity:1;transition:opacity 250ms ease;"><path d="M64.7 96.6 L96.9 90.5 L129.0 77.3" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M171.0 77.3 L203.1 90.5 L235.3 96.6" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path><path d="M124.3 133.4 L127.5 135.6 L130.7 136.5 L133.9 135.6 L137.2 133.4 L140.4 131.2 L143.6 130.3 L146.8 131.2 L150.0 133.4 L153.2 135.6 L156.4 136.5 L159.6 135.6 L162.8 133.4 L166.1 131.2 L169.3 130.3 L172.5 131.2 L175.7 133.4" fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--accent);"></path></g></g></svg></div>
-    <div class="cold-status">
-      <p id="coldVerdict" class="cold-verdict is-danger">Too warm once: 43°F at 2:28 pm</p>
-      <p id="coldSimTag" class="cold-sim-tag" hidden>simulated, not measured</p>
-      <p id="coldReading" class="cold-reading" aria-live="polite"></p>
-      <p class="cold-run">Sample trip · box 0447</p>
-      <p class="cold-tag">an example, not a real delivery</p>
-      <button type="button" id="coldIce" class="cold-ice" aria-pressed="false" hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.2 7l15.6 10M4.2 17l15.6-10"/><path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5"/></svg>
-        <span class="cold-ice-lbl">Add ice pack</span>
-        <span class="try" aria-hidden="true">Try it</span>
-      </button>
-      <p id="coldIceStatus" class="vh" role="status" aria-live="polite"></p>
-    </div>
-    <div class="cold-chart">
-      <div id="coldSpark"></div>
-      <noscript>
-        <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447">
-          <div class="row"><span>1:42 pm packed</span><span class="temp">36°F</span></div>
-          <div class="row"><span>2:05 pm on the way</span><span class="temp">38°F</span></div>
-          <div class="row"><span>2:28 pm handoff</span><span class="temp" style="color:var(--accent-text);">43°F</span></div>
-          <div class="row"><span>2:51 pm delivered</span><span class="temp">39°F</span></div>
-        </div>
-      </noscript>
-    </div>
-  </div>
-  <a class="doc-toggle" data-reveal href="tracking.html" style="text-decoration:none; margin-top:24px;">How we track every box <span aria-hidden="true">→</span></a>
-</section>
-</div>
-
-<section id="network">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>The map</p>
-    <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
-      <span class="mask-l"><span data-line>Where food help</span></span>
-      <span class="mask-l"><span data-line>is needed most.</span></span>
-    </h2>
-    <p class="body-p" data-reveal style="margin:0 0 28px;">Darker areas have more people using SNAP (food stamps). Pins show the schools we’re working with. Press play to see what a citywide network could look like.</p>
-
-    <div class="map-shell">
-      <div id="networkMap" class="map-canvas" role="region" aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0"></div>
-    </div>
-
-    <div id="networkMapLegend" class="map-legend"></div>
-
-    <p class="sites-summary" id="sitesSummary">8 schools so far: 1 getting set up, 2 in talks, 5 we plan to reach. <a href="getting-started.html#sites">See the full list →</a></p>
-
-    <details class="map-about">
-      <summary>About this map</summary>
-      <p>The shading and the school pins are real. The spread you see when you press play is a “what if”: it shows what a student-run network could look like across the city, not anything that has happened. None of the pale dots is a real school.</p>
-      <p>Shading shows the percent of residents getting SNAP in each community district, from NYC Council Data Team analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is not a map of where we operate. One food bank partner site is being set up, in Manhattan.</p>
-      <p class="cite" id="networkMapCite"></p>
-      <p class="cite">School pins are placed from public campus addresses and have not been checked against a geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s exact location is not published, so its pin is borough-level.</p>
-    </details>
-  </div>
-</section>
-
-<section id="learn" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-  <p class="eyebrow" data-reveal>Learn more</p>
-  <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
-    <span class="mask-l"><span data-line>Want the details?</span></span>
-  </h2>
-  <div class="cards-grid learn-grid">
-    <div class="card" data-reveal>
-      <p class="kicker" data-icon="clipboard-check">How we track every box</p>
-      <p class="body">The sealed box, the temperature loggers, and the public delivery log anyone can check.</p>
-      <a class="doc-toggle" href="tracking.html">See the tracking <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="card" data-reveal>
-      <p class="kicker" data-icon="shield-check">Why this matters now</p>
-      <p class="body">SNAP is being cut. What that means for NYC, and what rescued food can and can’t fix.</p>
-      <a class="doc-toggle" href="why.html">Read why <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="card" data-reveal>
-      <p class="kicker" data-icon="handshake">Meet the team</p>
-      <p class="body">The students behind this, the schools they come from, and what each role does.</p>
-      <a class="doc-toggle" href="team.html">Meet us <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="card" data-reveal>
-      <p class="kicker" data-icon="ruler">Start it at your school</p>
-      <p class="body">Step-by-step setup, the health code memo, the box plans and printable paperwork.</p>
-      <a class="doc-toggle" href="getting-started.html">Get started <span aria-hidden="true">→</span></a>
-    </div>
-  </div>
-</section>
-
-<section id="schools" class="emblems" aria-labelledby="schoolsHd">
-  <div class="wrap">
-    <p class="emblems-title" id="schoolsHd">Built by students from:</p>
-  </div>
-  <div class="emblem-track" data-emblems></div>
-</section>
-
-<section id="join">
-  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>Get involved</p>
-    <div class="join-grid">
-      <div>
-        <h2 class="hd" data-mask>
-          <span class="mask-l"><span data-line>Want to help?</span></span>
-          <span class="mask-l"><span data-line>Let’s talk.</span></span>
-        </h2>
-        <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school, or a food bank, tell us who you are and we’ll get back to you with next steps.</p>
-        <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
-          <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-          <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Run by students. Every delivery posted online.<br>Our first food bank partner site is being set up in Manhattan.</p>
-        </div>
-      </div>
-      <div id="formWrap">
-        <form class="join" id="joinForm">
-          <input data-ff required type="text" placeholder="Name" aria-label="Name">
-          <input data-ff required type="email" placeholder="Email" aria-label="Email">
-          <select data-ff class="span2" aria-label="Your role">
-            <option>School administrator</option>
-            <option>Cafeteria staff</option>
-            <option>Student, I want to join</option>
-            <option>Partner organization / food bank</option>
-            <option>Press</option>
-          </select>
-          <input data-ff class="span2" type="text" placeholder="School or organization" aria-label="School or organization">
-          <textarea data-ff class="span2" placeholder="Anything we should know?" aria-label="Message" rows="3"></textarea>
-          <button data-ff data-ffb type="submit">Get in touch</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap top">
-    <span style="display:flex; align-items:center; gap:12px;">
-      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
-      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
-    </span>
-    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
-  </div>
-  <nav class="wrap foot-links" aria-label="More pages">
-    <a href="tracking.html">How we track</a>
-    <a href="why.html">Why now</a>
-    <a href="team.html">Team</a>
-    <a href="getting-started.html">Getting started</a>
-    <a href="why.html#sources">Sources</a>
   </nav>
-  <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device. One exception, and it is worth naming: the map on this page loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you are viewing to those services. Everything else here is served from this site.</div>
-</footer>
+  <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
 
-<script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
-<script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
-<script src="assets/site.js?v=13"></script>
-<script src="assets/map.js?v=13"></script>
-<script>
-(function () {
-  "use strict";
-  var $ = STB.$, $$ = STB.$$;
-  var reduced = STB.reduced, mob = STB.mob, f = STB.f, EXP = STB.EXP, PRO = STB.PRO;
-  /* Mirrors REVEAL_ON_SCROLL in assets/site.js: when reveals are off,
-     nothing on this page pre-hides itself either. */
-  var armed = STB.revealOnScroll && !reduced;
-  var fmtN = function (n) { return n.toLocaleString("en-US"); };
+  <div id="heropin">
+    <header id="top" class="wrap hero-grid">
+      <div>
+        <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
+        <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
+          Connecting schools’ leftover lunch food to local food banks.
+          <em>Every meal tracked.</em>
+        </h1>
+        <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
+          <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
+            insulated boxes, walk it to a convenient food bank, and post the impact.</p>
+          <div class="prelaunch" id="heroStatus">
+            <p class="prelaunch-tag">In Development. Looking for food bank partners!</p>
+          </div>
+          <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
+            <a href="#join" class="btn solid">Work with us</a>
+            <a href="#how" class="btn line">How it works</a>
+          </div>
+        </div>
+      </div>
+      <div class="visual" style="display:flex; justify-content:center; align-items:center;">
+        <div id="heroBoxWrap">
+          <canvas id="heroBox" width="420" height="420" role="img"
+            aria-label="Stock the Block mascot: an insulated delivery box with a smiling face. Its lid opens as you scroll. Once fully open you can drag it, or use the left and right arrow keys while it is focused, to turn it."></canvas>
+          <p id="heroBoxHint" aria-hidden="true">drag to turn · ← →</p>
+        </div>
+      </div>
+    </header>
+  </div>
 
-  var STEPS = [
-    { num: "01", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", detail: "NYC school rules say food must be store-packaged, unopened and kept at a safe temperature before it can leave the cafeteria.", state: "collect", icon: "package" },
-    { num: "02", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box before it leaves the building.", detail: "Each box gets an ID number. We write down its weight, what’s inside and when it was packed, so every pound can be traced.", state: "pack", icon: "archive" },
-    { num: "03", title: "Walk it to a food bank", body: "Two students walk the box to a food bank in the same borough. The food bank signs for it.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
-    { num: "04", title: "Post it online", body: "Every delivery goes on a public log: the date, where it came from, where it went and how much it weighed.", detail: "Entries are never edited; fixes are added as new lines. <span class=\"unverified\">Track the Box, the public log, is planned and not live yet.</span>", state: "record", icon: "clipboard-check" }
-  ];
-  /* ---------- icon set (shared — assets/site.js) ---------- */
-  var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
-  initIcons();
-  var COLD = [
-    { t: "1:42 pm", note: "packed", temp: 36 },
-    { t: "2:05 pm", note: "on the way", temp: 38 },
-    { t: "2:28 pm", note: "handoff", temp: 43 },
-    { t: "2:51 pm", note: "delivered", temp: 39 }
-  ];
-  var SAFE_MAX = 41;
+  <section class="statband" id="statband">
+    <div class="wrap">
+      <div class="grid">
+        <div class="cell fade-in-up" data-stat>
+          <p class="figure fig" id="statMeals">880,000</p>
+          <p class="cap">school meals served every day in NYC</p>
+        </div>
+        <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
+          <p class="figure fig" id="statPct">4%</p>
+          <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
+          <!-- What-if slider. Drag the share of buildings that donate and see the
+             food it would save. Every input is sourced in the cite line below. -->
+          <div class="pct-whatif" id="pctWhatIf" hidden>
+            <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
+              aria-label="Share of NYC school buildings that donate leftover food">
+            <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
+            <p class="pct-result" id="pctResult"></p>
+          </div>
+        </div>
+        <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
+          <p class="figure fig" id="statLbs"
+            style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to launch</p>
+          <p class="cap">Currently building connections between schools &amp; community fridges to launch.</p>
+        </div>
+      </div>
+      <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a
+          href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/"
+          target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food
+        donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the
+        average a school recovered in its first year of share tables in a <a
+          href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025
+          study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
+    </div>
+  </section>
 
-  /* ---------- mascot component (shared — assets/site.js) ---------- */
-  var mascotSVG = STB.mascotSVG, paintMascot = STB.paintMascot, initMascotSlots = STB.initMascotSlots;
-  initMascotSlots();
+  <section id="how" class="wrap" style="padding-top:72px; padding-bottom:72px;">
+    <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
+      <span class="mask-l"><span data-line>Four simple steps</span></span>
+    </h2>
+    <div id="steps"></div>
+  </section>
 
-  /* ---------- theme ---------- */
-  var getVar = STB.getVar;
-  STB.initTheme(function () { if (heroBox) heroBox.repaint(); });
+  <div class="instrument">
+    <section id="sensors" class="wrap" style="padding-top:72px; padding-bottom:72px;">
+      <p class="eyebrow" data-reveal>Food safety</p>
+      <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
+        <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
+        <span class="mask-l"><span data-line>safe to eat.</span></span>
+      </h2>
+      <p class="body-p" data-reveal style="margin:0;">Food has to stay at <span data-degf="41"></span> or colder. On
+        this sample trip, the box got too warm at the handoff. Press <strong>Add ice pack</strong> to see how it stays
+        safe.</p>
+      <div class="cold-panel" data-reveal style="margin-top:36px;">
+        <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid
+            data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+            role="presentation" style="width:100%;height:auto;display:block;overflow:visible;">
+            <path d="M30 31 H270 L280 44 H20 Z" stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"
+              style="fill:var(--box-side);stroke:var(--mascot-stroke);"></path>
+            <rect x="20" y="44" width="260" height="195" rx="14" stroke-width="2.78" stroke-linecap="round"
+              stroke-linejoin="round" style="fill:var(--mascot-fill);stroke:var(--mascot-stroke);"></rect>
+            <path d="M20 153.2 H280 V225 Q280 239 266 239 H34 Q20 239 20 225 Z" fill="#FFFFFF" stroke="#2E5A22"
+              stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M126.6 153.2 L173.4 153.2 L150.0 239.0 Z" fill="#2E5A22" stroke="#2E5A22" stroke-width="2.78"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M100.6 153.2 L126.6 153.2 L147.4 219.5 L116.2 184.4 Z" fill="#FFFFFF" stroke="#2E5A22"
+              stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M199.4 153.2 L173.4 153.2 L152.6 219.5 L183.8 184.4 Z" fill="#FFFFFF" stroke="#2E5A22"
+              stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M53.8 172.7 L90.2 172.7 L90.2 188.3 L53.8 188.3 Z" fill="#E8871E" stroke="#2E5A22"
+              stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M228.0 219.5 C228.0 242.9 272.2 244.8 289.1 225.4" fill="none" stroke="#6F7D6A" stroke-width="7.23"
+              stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#2E5A22" stroke-width="12.23" stroke-linecap="round"
+              stroke-linejoin="round"></path>
+            <path d="M228.0 200.0 L228.0 158.1" fill="none" stroke="#C9D1D8" stroke-width="7.78" stroke-linecap="round"
+              stroke-linejoin="round"></path>
+            <path d="M202.0 188.3 L248.8 188.3 L248.8 219.5 L202.0 219.5 Z" fill="#FFFFFF" stroke="#2E5A22"
+              stroke-width="2.78" stroke-linecap="round" stroke-linejoin="round"></path>
+            <g data-squash style="transform-origin:150px 90px;">
+              <g data-face="inrange" style="opacity:0;transition:opacity 250ms ease;">
+                <path d="M64.7 99.2 L96.9 72.1 L129.0 99.2" fill="none" stroke-width="13.2" stroke-linecap="round"
+                  stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path>
+                <path d="M171.0 99.2 L203.1 72.1 L235.3 99.2" fill="none" stroke-width="13.2" stroke-linecap="round"
+                  stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path>
+                <path
+                  d="M112.6 122.0 L118.9 125.3 L125.1 128.1 L131.3 130.2 L137.5 131.7 L143.8 132.6 L150.0 132.9 L156.2 132.6 L162.5 131.7 L168.7 130.2 L174.9 128.1 L181.1 125.3 L187.4 122.0"
+                  fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round"
+                  style="stroke:var(--accent);"></path>
+              </g>
+              <g data-face="danger" style="opacity:1;transition:opacity 250ms ease;">
+                <path d="M64.7 96.6 L96.9 90.5 L129.0 77.3" fill="none" stroke-width="13.2" stroke-linecap="round"
+                  stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path>
+                <path d="M171.0 77.3 L203.1 90.5 L235.3 96.6" fill="none" stroke-width="13.2" stroke-linecap="round"
+                  stroke-linejoin="round" style="stroke:var(--mascot-stroke);"></path>
+                <path
+                  d="M124.3 133.4 L127.5 135.6 L130.7 136.5 L133.9 135.6 L137.2 133.4 L140.4 131.2 L143.6 130.3 L146.8 131.2 L150.0 133.4 L153.2 135.6 L156.4 136.5 L159.6 135.6 L162.8 133.4 L166.1 131.2 L169.3 130.3 L172.5 131.2 L175.7 133.4"
+                  fill="none" stroke-width="13.2" stroke-linecap="round" stroke-linejoin="round"
+                  style="stroke:var(--accent);"></path>
+              </g>
+            </g>
+          </svg></div>
+        <div class="cold-status">
+          <p id="coldVerdict" class="cold-verdict is-danger">Too warm once: 43°F at 2:28 pm</p>
+          <p id="coldSimTag" class="cold-sim-tag" hidden>simulated, not measured</p>
+          <p id="coldReading" class="cold-reading" aria-live="polite"></p>
+          <p class="cold-run">Sample trip · box 0447</p>
+          <p class="cold-tag">an example, not a real delivery</p>
+          <button type="button" id="coldIce" class="cold-ice" aria-pressed="false" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" aria-hidden="true">
+              <path d="M12 2v20M4.2 7l15.6 10M4.2 17l15.6-10" />
+              <path d="M9.5 3.5 12 6l2.5-2.5M9.5 20.5 12 18l2.5 2.5" />
+            </svg>
+            <span class="cold-ice-lbl">Add ice pack</span>
+            <span class="try" aria-hidden="true">Try it</span>
+          </button>
+          <p id="coldIceStatus" class="vh" role="status" aria-live="polite"></p>
+        </div>
+        <div class="cold-chart">
+          <div id="coldSpark"></div>
+          <noscript>
+            <div class="cold-rows" role="group" aria-label="Cold-chain readings for box 0447">
+              <div class="row"><span>1:42 pm packed</span><span class="temp">36°F</span></div>
+              <div class="row"><span>2:05 pm on the way</span><span class="temp">38°F</span></div>
+              <div class="row"><span>2:28 pm handoff</span><span class="temp"
+                  style="color:var(--accent-text);">43°F</span></div>
+              <div class="row"><span>2:51 pm delivered</span><span class="temp">39°F</span></div>
+            </div>
+          </noscript>
+        </div>
+      </div>
+      <a class="doc-toggle" data-reveal href="tracking.html" style="text-decoration:none; margin-top:24px;">How we track
+        every box <span aria-hidden="true">→</span></a>
+    </section>
+  </div>
 
-  /* ---------- nav ---------- */
-  STB.initNav();
+  <section id="network">
+    <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+      <p class="eyebrow" data-reveal>The map</p>
+      <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
+        <span class="mask-l"><span data-line>Where food help</span></span>
+        <span class="mask-l"><span data-line>is needed most.</span></span>
+      </h2>
+      <p class="body-p" data-reveal style="margin:0 0 28px;">Darker areas have more people using SNAP (food stamps).
+        Pins show the schools we’re working with. Press play to see what a citywide network could look like.</p>
 
-  /* ---------- counters ---------- */
-  function count(target, onTick, done) {
-    if (reduced) { onTick(target); if (done) done(); return; }
-    var t0 = performance.now(), dur = 1200;
-    (function tick(now) {
-      var p = Math.min((now - t0) / dur, 1);
-      var v = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      onTick(v);
-      if (p < 1) requestAnimationFrame(tick); else if (done) done();
-    })(t0);
-  }
-  var heroDone = false, bandDone = false;
-  function checkCounters() {
-    var vh = innerHeight;
-    if (!heroDone) { heroDone = true; }
-    if (!bandDone) {
-      var r2 = $("#statband").getBoundingClientRect();
-      if (r2.top < vh * 0.9 && r2.bottom > 0) {
-        bandDone = true;
-        /* Only the two sourced NYC figures animate. The third cell is a
-           pre-launch statement, not a number, so there is nothing to count. */
-        count(880000, function (v) { $("#statMeals").textContent = fmtN(v); });
-        count(4, function (v) { if (!pctTouched) $("#statPct").textContent = v + "%"; });
-      }
-    }
-  }
+      <div class="map-shell">
+        <div id="networkMap" class="map-canvas" role="region"
+          aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0">
+        </div>
+      </div>
 
-  /* ---------- 4% what-if slider ----------
-     Every input is sourced in the statband cite line. The Comptroller counts
-     buildings, not pounds (NYCPS does not track donation weights), so pounds
-     come from a per-school recovery figure and are labelled an estimate. */
-  /* NYC Comptroller, FY25: 67 buildings donated, out of the 1,675 buildings
-     that serve school food. 67 of 1,675 is the 4%; the report also cites
-     1,319 buildings, but 67 of 1,319 would be 5%, so 1,675 is the base here. */
-  var BUILDINGS = 1675, DONATING = 67;
-  var LBS_PER_BUILDING = 2156;                  /* ≈978 kg/school/yr, 2025 share-table study */
-  var LBS_PER_MEAL = 1.2;                       /* Feeding America */
-  var pctTouched = false;
-  (function () {
-    var wrap = $("#pctWhatIf"), range = $("#pctRange"), cap = $("#pctCap"), out = $("#pctResult");
-    if (!wrap || !range) return;
-    wrap.hidden = false;
-    function big(n) {
-      if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, "") + " million";
-      if (n >= 1e4) return fmtN(Math.round(n / 1000) * 1000);
-      return fmtN(Math.round(n / 100) * 100);
-    }
-    function update() {
-      var p = +range.value;
-      var n = Math.round(BUILDINGS * p / 100);
-      var extraLbs = Math.max(0, n - DONATING) * LBS_PER_BUILDING;
-      var metric = STB.unitMode && STB.unitMode() === "metric";
-      var amount = metric ? big(extraLbs * 0.45359237) + " kg" : big(extraLbs) + " lbs";
-      var meals = big(extraLbs / LBS_PER_MEAL);
-      range.style.setProperty("--fill", ((p - 4) / 96 * 100).toFixed(2) + "%");
-      $("#statPct").textContent = p + "%";
-      if (p <= 4) {
-        cap.textContent = "of NYC school buildings donate their leftover food";
-        out.innerHTML = "That’s " + DONATING + " of " + fmtN(BUILDINGS) + " buildings. Drag to see what more schools could save.";
-        range.setAttribute("aria-valuetext", "4 percent, today: " + DONATING + " buildings donate.");
-      } else {
-        cap.textContent = "If this many NYC school buildings donated (" + fmtN(n) + " of " + fmtN(BUILDINGS) + ")";
-        out.innerHTML = "<b>about " + amount + "</b>more food saved each school year, about " + meals +
-          " meals.<span class=\"est\">estimate</span>";
-        range.setAttribute("aria-valuetext", p + " percent, " + fmtN(n) + " buildings: about " + amount +
-          " more food saved each school year, about " + meals + " meals. Estimate.");
-      }
-    }
-    range.addEventListener("input", function () { pctTouched = true; update(); });
-    update();
-  })();
+      <div id="networkMapLegend" class="map-legend"></div>
 
-  /* ---------- how it works: four animated stations on a conveyor ----------
-     Each scene is a 240×150 drawing starring the flat mascot (the same
-     mascotSVG the rest of the site uses, with its per-step mood), placed as a
-     nested <svg> so its own lid animation keeps its coordinates. Items that
-     "go into" the box are drawn behind it, so they vanish as they drop in. */
-  function sceneMascot(state, x, y, w) {
-    var svg = mascotSVG(state, {});
-    var inner = svg.slice(svg.indexOf(">") + 1, svg.lastIndexOf("</svg>"));
-    return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 260 / 300).toFixed(1) +
-      '" viewBox="0 0 300 260" overflow="visible">' + inner + "</svg>";
-  }
-  var SCENES = {
-    /* 01: an apple and a banana hop off the share table into the box; the
-       lid shuts and a strip of tape seals it. */
-    collect:
-      '<rect class="sc-table" x="14" y="128" width="212" height="7" rx="3"/>' +
-      '<path class="sc-leg" d="M32 135 V148 M208 135 V148"/>' +
-      '<g class="sc-apple"><path class="stem" d="M36 108 V102"/><path class="leaf" d="M37 104 Q42 96 49 99 Q45 106 37 104 Z"/><circle cx="36" cy="118" r="10"/></g>' +
-      '<g class="sc-banana"><path class="fruit" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/><path class="tip" d="M188 112 L185 108"/></g>' +
-      '<g class="sc-box">' + sceneMascot("collect", 65, 47, 110) + "</g>" +
-      '<rect class="sc-tape" x="109" y="77" width="22" height="8" rx="2"/>' +
-      '<path class="sc-spark" d="M176 48 L179 56 L187 59 L179 62 L176 70 L173 62 L165 59 L173 56 Z"/>',
-    /* 02: on the scale, an ice pack drops in; snowflakes, and the
-       thermometer cools from warm orange to ice blue. */
-    pack:
-      '<g class="sc-thermo"><rect class="tube" x="20" y="42" width="14" height="76" rx="7"/><rect class="mercury" x="24" y="56" width="6" height="62" rx="3"/><circle class="bulb" cx="27" cy="122" r="10"/></g>' +
-      '<rect class="sc-table" x="58" y="128" width="124" height="7" rx="3"/>' +
-      '<rect class="sc-scale" x="98" y="135" width="44" height="13" rx="3"/><text class="sc-readout" x="120" y="144.5">12 lb</text>' +
-      '<g class="sc-ice"><rect x="193" y="110" width="30" height="20" rx="5"/><path d="M208 113 V127 M202 116.5 L214 123.5 M202 123.5 L214 116.5"/></g>' +
-      '<g class="sc-box">' + sceneMascot("pack", 65, 47, 110) + "</g>" +
-      '<g class="sc-flakes"><path d="M60 40 V52 M54 43 L66 49 M54 49 L66 43"/><path d="M186 58 V68 M181 60.5 L191 65.5 M181 65.5 L191 60.5"/><path d="M150 22 V32 M145 24.5 L155 29.5 M145 29.5 L155 24.5"/></g>',
-    /* 03: a student carries the box to a food bank; a check pops at the door. */
-    walk:
-      '<path class="sc-ground" d="M6 136 H234"/>' +
-      '<g class="sc-bank"><path class="roof" d="M170 80 L201 56 L232 80 Z"/><rect class="wall" x="175" y="80" width="52" height="56"/><rect class="door" x="194" y="106" width="14" height="30" rx="2"/><path class="heart" d="M201 97 C197 93 192 95 192 89.5 C192 86.5 195 85 197.5 86.5 C199 87.5 200 88.5 201 90 C202 88.5 203 87.5 204.5 86.5 C207 85 210 86.5 210 89.5 C210 95 205 93 201 97 Z"/></g>' +
-      '<g class="sc-walker">' +
-        '<path class="limb leg leg-a" d="M40 112 L40 134"/><path class="limb leg leg-b" d="M40 112 L40 134"/>' +
-        '<path class="limb" d="M40 94 L40 112"/><circle class="head" cx="40" cy="85" r="7.5"/>' +
-        sceneMascot("deliver", 44, 78, 42) +
-        '<path class="limb" d="M40 98 L50 104"/>' +
-      "</g>" +
-      '<g class="sc-check"><circle cx="201" cy="42" r="10"/><path d="M196 42 L199.5 45.5 L206 38.5"/></g>',
-    /* 04: a dot flies from the box to the laptop and a new row lands in the
-       public log with a check; the box cheers. */
-    post:
-      '<path class="sc-ground" d="M6 136 H92"/>' +
-      '<g class="sc-screen"><rect class="win" x="98" y="20" width="128" height="94" rx="8"/><path class="bar" d="M98 36 H226"/>' +
-        '<circle class="dot" cx="108" cy="28" r="2.6"/><circle class="dot" cx="116" cy="28" r="2.6"/><circle class="dot" cx="124" cy="28" r="2.6"/>' +
-        '<g class="sc-rows"><rect x="106" y="62" width="112" height="11" rx="3"/><rect x="106" y="79" width="112" height="11" rx="3"/><rect x="106" y="96" width="112" height="11" rx="3"/></g>' +
-        '<g class="sc-row-new"><rect class="hi" x="106" y="43" width="112" height="13" rx="3"/><path d="M111 49.5 L114 52.5 L119 46.5"/><rect class="ln" x="124" y="47.5" width="56" height="4.5" rx="2"/><rect class="ln" x="190" y="47.5" width="22" height="4.5" rx="2"/></g>' +
-        '<path class="base" d="M88 116 H236 L228 124 H96 Z"/>' +
-      "</g>" +
-      '<text class="sc-plus" x="214" y="16">+1</text>' +
-      '<circle class="sc-packet" cx="58" cy="70" r="4.5"/>' +
-      '<g class="sc-box">' + sceneMascot("confirmed", 4, 69, 80) + "</g>"
-  };
-  var SCENE_FOR = { collect: "collect", pack: "pack", deliver: "walk", record: "post" };
+      <p class="sites-summary" id="sitesSummary">8 schools so far: 1 getting set up, 2 in talks, 5 we plan to reach. <a
+          href="getting-started.html#sites">See the full list →</a></p>
 
-  var stepsHost = $("#steps");
-  var belt = document.createElement("div");
-  belt.className = "belt";
-  belt.setAttribute("aria-hidden", "true");
-  belt.innerHTML = '<span class="parcel"></span><span class="parcel"></span><span class="parcel"></span>';
-  stepsHost.appendChild(belt);
-  STEPS.forEach(function (s) {
-    var key = SCENE_FOR[s.state];
-    var d = document.createElement("div");
-    d.className = "prow step";
-    d.setAttribute("data-prow", "");
-    d.innerHTML =
-      '<div class="stage" aria-hidden="true"><svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg></div>" +
-      '<div class="step-text"><button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button>' +
-      '<div class="pdetail"><div><p>' + s.detail + "</p></div></div></div>";
-    var btn = d.querySelector("button");
-    btn.addEventListener("click", function () {
-      var open = d.classList.toggle("open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      btn.querySelector(".caret").textContent = open ? "−" : "+";
-    });
-    stepsHost.appendChild(d);
-  });
+      <details class="map-about">
+        <summary>About this map</summary>
+        <p>The shading and the school pins are real. The spread you see when you press play is a “what if”: it shows
+          what a student-run network could look like across the city, not anything that has happened. None of the pale
+          dots is a real school.</p>
+        <p>Shading shows the percent of residents getting SNAP in each community district, from NYC Council Data Team
+          analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is
+          not a map of where we operate. One food bank partner site is being set up, in Manhattan.</p>
+        <p class="cite" id="networkMapCite"></p>
+        <p class="cite">School pins are placed from public campus addresses and have not been checked against a
+          geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s
+          exact location is not published, so its pin is borough-level.</p>
+      </details>
+    </div>
+  </section>
 
-  /* The belt runs from the first station's centre to the last one's, behind
-     the stations, so parcels ride down and disappear into each one. Re-measured
-     whenever the list changes size (a step opening, a resize). */
-  function layoutBelt() {
-    var stages = $$(".stage", stepsHost);
-    if (stages.length < 2) return;
-    var host = stepsHost.getBoundingClientRect();
-    var a = stages[0].getBoundingClientRect(), b = stages[stages.length - 1].getBoundingClientRect();
-    var top = a.top + a.height / 2 - host.top;
-    belt.style.top = top.toFixed(1) + "px";
-    belt.style.height = (b.top + b.height / 2 - host.top - top).toFixed(1) + "px";
-  }
-  layoutBelt();
-  if ("ResizeObserver" in window) new ResizeObserver(layoutBelt).observe(stepsHost);
-  addEventListener("resize", layoutBelt, { passive: true });
+  <section id="learn" class="wrap" style="padding-top:72px; padding-bottom:72px;">
+    <p class="eyebrow" data-reveal>Learn more</p>
+    <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
+      <span class="mask-l"><span data-line>Want the details?</span></span>
+    </h2>
+    <div class="cards-grid learn-grid">
+      <div class="card" data-reveal>
+        <p class="kicker" data-icon="clipboard-check">How we track every box</p>
+        <p class="body">The sealed box, the temperature loggers, and the public delivery log anyone can check.</p>
+        <a class="doc-toggle" href="tracking.html">See the tracking <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="card" data-reveal>
+        <p class="kicker" data-icon="shield-check">Why this matters now</p>
+        <p class="body">SNAP is being cut. What that means for NYC, and what rescued food can and can’t fix.</p>
+        <a class="doc-toggle" href="why.html">Read why <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="card" data-reveal>
+        <p class="kicker" data-icon="handshake">Meet the team</p>
+        <p class="body">The students behind this, the schools they come from, and what each role does.</p>
+        <a class="doc-toggle" href="team.html">Meet us <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="card" data-reveal>
+        <p class="kicker" data-icon="ruler">Start it at your school</p>
+        <p class="body">Step-by-step setup, the health code memo, the box plans and printable paperwork.</p>
+        <a class="doc-toggle" href="getting-started.html">Get started <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
 
-  /* Scenes only animate while their step is on screen. */
-  (function () {
-    var steps = $$(".step", stepsHost);
-    if (!("IntersectionObserver" in window)) { steps.forEach(function (el) { el.classList.add("is-playing"); }); return; }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { en.target.classList.toggle("is-playing", en.isIntersecting); });
-      stepsHost.classList.toggle("in-view", steps.some(function (el) { return el.classList.contains("is-playing"); }));
-    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.2 });
-    steps.forEach(function (el) { io.observe(el); });
-  })();
+  <section id="schools" class="emblems" aria-labelledby="schoolsHd">
+    <div class="wrap">
+      <p class="emblems-title" id="schoolsHd">Built by students from:</p>
+    </div>
+    <div class="emblem-track" data-emblems></div>
+  </section>
 
-  /* ---------- cold-chain readout ----------
-     One instrument readout for one sample run. The status column states the
-     whole run's verdict (how many excursions, and the peak); selecting a point
-     only adds a secondary line and never changes that verdict.
+  <section id="join">
+    <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
+      <p class="eyebrow" data-reveal>Get involved</p>
+      <div class="join-grid">
+        <div>
+          <h2 class="hd" data-mask>
+            <span class="mask-l"><span data-line>Want to help?</span></span>
+            <span class="mask-l"><span data-line>Let’s talk.</span></span>
+          </h2>
+          <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school,
+            or a food bank, tell us who you are and we’ll get back to you with next steps.</p>
+          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail">stockingtheblock@gmail.com</a></p>
+          <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
+            <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;"
+              data-state="idle"></span>
+            <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Run by students. Every
+              delivery posted online.<br>Our first food bank partner site is being set up in Manhattan.</p>
+          </div>
+        </div>
+        <div id="formWrap">
+          <form class="join" id="joinForm">
+            <input data-ff name="name" required type="text" maxlength="200" placeholder="Name" aria-label="Name">
+            <input data-ff name="email" required type="email" maxlength="320" placeholder="Email" aria-label="Email">
+            <select data-ff name="role" class="span2" aria-label="Your role">
+              <option>School administrator</option>
+              <option>Cafeteria staff</option>
+              <option>Student, I want to join</option>
+              <option>Partner organization / food bank</option>
+              <option>Press</option>
+            </select>
+            <input data-ff name="org" class="span2" type="text" maxlength = "200" placeholder="School or organization"
+              aria-label="School or organization">
+            <textarea data-ff name="message" class="span2"  maxlength="5000" placeholder="Anything we should know?" aria-label="Message"
+              rows="3"></textarea>
+            <div class="hp" aria-hidden="true">
+              <label>Leave this empty <input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <button data-ff data-ffb type="submit">Get in touch</button>
+            <p id="joinFormError" hidden role="alert"
+              style="grid-column:span 2; color:var(--accent-text); font-size:14px; margin:4px 0 0; line-height:1.5;">
+              Something went wrong sending this. Try again in a moment, or email <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 
-     The trace is a single path stroked with a gradient that switches colour at
-     the SAFE_MAX line, so any stretch above the threshold is accent and any
-     stretch below is brand — including mid-morph, when the ice-pack what-if
-     slides every reading down. COLD is never modified: the what-if lives in
-     COLD_ICE, and the recorded run stays on screen as a dashed ghost while it
-     is shown. */
-  var ICE_DROP_F = 4;
-  var COLD_ICE = COLD.map(function (c) { return { t: c.t, note: c.note, temp: c.temp - ICE_DROP_F }; });
-  var coldSparkHost = $("#coldSpark");
-  var coldPanel = coldSparkHost.closest(".cold-panel");
-  var coldChart = coldSparkHost.closest(".cold-chart");
+  <footer>
+    <div class="wrap top">
+      <span style="display:flex; align-items:center; gap:12px;">
+        <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+        <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+      </span>
+      <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+    </div>
+    <nav class="wrap foot-links" aria-label="More pages">
+      <a href="tracking.html">How we track</a>
+      <a href="why.html">Why now</a>
+      <a href="team.html">Team</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="why.html#sources">Sources</a>
+    </nav>
+    <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores up to two small notes in this browser's localStorage, and neither ever leaves your device: your colour-theme choice, and, only if you're a Stock the Block member who has signed in here, a note that turns the Sign in button into My portal. Signing out removes it. The member sign-in itself runs on Google Firebase and loads only on the member portal, never on the public pages; while you're signed in there, Firebase keeps your sign-in in this browser until you sign out. Two outside services are involved on this page, and they're worth naming. The map loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you're viewing to those services. The contact form is run by Google Firebase: this page loads Firebase's code from Google's servers, and anything you send through the form is stored in our Firebase database, where only our team can read it. Everything else here is served from this site.</div>
+  </footer>
 
-  /* ---------- the panel's mascot ----------
-     3D by default: the shared box renderer with the opt-in goggles face,
-     probe and ice pack, idling through ±15° and paused while offscreen. The
-     solid flat SVG is the fallback for reduced motion, no JS (it ships in the
-     markup) and a renderer failure. Either way, mood() crossfades the face. */
-  var coldMascot = (function () {
-    var host = $("#coldMascot");
-    host.innerHTML = STB.mascotSVG("danger", { solid: true });
-    var svg = host.querySelector("svg"), mood = "danger", faceFrom = "danger", faceT0 = -1e9;
-    var api = { is3D: false, onLand: null };
-    var kick = function () {};
-    api.mood = function (m) {
-      m = m === "danger" ? "danger" : "inrange";
-      if (m === mood) return;
-      faceFrom = mood; mood = m; faceT0 = performance.now();
-      host.classList.toggle("is-danger", m === "danger");
-      paintMascot(svg, m);
-      kick();
-    };
-    api.ice = function () {};
-    if (reduced || !STB.createMascotBox) return api;
-
-    var canvas = null, box = null, SCALE = 1.3;
-    try {
-      canvas = document.createElement("canvas");
-      host.appendChild(canvas);
-      box = STB.createMascotBox(canvas, { reduced: false, varsFrom: canvas, face: "mid", coat: true, probe: "pocket", lidThick: 0.012, frameY: -0.1 });
-      box.render({ yaw: 0, lid: 0, scale: SCALE, face: { from: mood, to: mood, t: 1 } });
-    } catch (err) {
-      if (canvas) canvas.remove();
-      return api;
-    }
-    host.classList.add("is-3d");
-    api.is3D = true;
-
-    var YAW = 15 * Math.PI / 180, PERIOD = 6000, LID_OPEN = 50 * Math.PI / 180;
-    var ICE_TOP = 1.55, ICE_REST = -0.52;
-    var t0 = performance.now(), raf = 0, visible = false, lid = 0, iceY = null, seq = null;
-    function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-    /* Falls under "gravity" (k²) and lands with one small bounce. */
-    function drop(e, from) {
-      var fall = clamp01((e - 160) / 460);
-      if (fall < 1) return from + (ICE_REST - from) * fall * fall;
-      var b = clamp01((e - 620) / 160);
-      return ICE_REST + 0.09 * Math.sin(Math.PI * b) * (1 - b);
-    }
-    /* Lid lifts (0-240ms), the pack drops in or climbs out (160-680ms), the
-       lid settles shut (700-960ms). A re-toggle mid-flight starts from where
-       everything is, so fast toggling never jumps. */
-    function step(now) {
-      var e = now - seq.t0;
-      lid = e < 700 ? seq.lid0 + (LID_OPEN - seq.lid0) * easeOut(clamp01(e / 240))
-                    : LID_OPEN * (1 - easeOut(clamp01((e - 700) / 260)));
-      var k = clamp01((e - 160) / 520);
-      iceY = seq.on ? drop(e, seq.ice0) : seq.ice0 + (ICE_TOP - seq.ice0) * k * k;
-      if (seq.on && !seq.landed && e >= 620) { seq.landed = true; if (api.onLand) api.onLand(); }
-      if (e >= 960) { lid = 0; if (!seq.on) iceY = null; seq = null; }
-    }
-    function frame(now) {
-      raf = 0;
-      if (seq) step(now);
-      box.render({
-        scale: SCALE,
-        yaw: YAW * Math.sin((now - t0) / PERIOD * Math.PI * 2),
-        lid: lid,
-        face: { from: faceFrom, to: mood, t: clamp01((now - faceT0) / 250) },
-        iceY: iceY
-      });
-      if (visible) raf = requestAnimationFrame(frame);
-    }
-    kick = function () { if (visible && !raf) raf = requestAnimationFrame(frame); };
-    api.ice = function (on) {
-      seq = { on: on, t0: performance.now(), lid0: lid, ice0: iceY === null ? ICE_TOP : iceY, landed: false };
-      kick();
-    };
-    api.mouth = function () {   /* where the frost bursts from, in panel coordinates */
-      var r = canvas.getBoundingClientRect(), pr = coldPanel.getBoundingClientRect();
-      return { x: r.left - pr.left + r.width / 2, y: r.top - pr.top + r.height * 0.4 };
-    };
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) {
-        visible = es[es.length - 1].isIntersecting;
-        if (visible) kick();
-      }).observe(host);
-    } else { visible = true; kick(); }
-    return api;
-  })();
-  var cold = {
-    sel: -1,                       /* selected point, or -1 */
-    ice: false,                    /* what-if on */
-    vals: COLD.map(function (c) { return c.temp; }),   /* values on screen now */
-    drawn: false,                  /* draw-on finished (or skipped) */
-    morph: 0, draw: 0,             /* rAF ids */
-    g: null                        /* geometry + element refs for the current build */
-  };
-
-  function svgEl(name, attrs) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg", name);
-    for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
-    return el;
-  }
-  function easeOut(u) { return 1 - Math.pow(1 - u, 3); }
-  function excursions(vals) {
-    var n = 0;
-    for (var i = 0; i < vals.length; i++) if (vals[i] > SAFE_MAX && (i === 0 || vals[i - 1] <= SAFE_MAX)) n++;
-    return n;
-  }
-
-  /* ---------- verdict + secondary reading ---------- */
-  function renderVerdict() {
-    var v = $("#coldVerdict"), tag = $("#coldSimTag");
-    var run = cold.ice ? COLD_ICE : COLD;
-    var temps = run.map(function (c) { return c.temp; });
-    var n = excursions(temps);
-    var peak = 0;
-    temps.forEach(function (t, i) { if (t > temps[peak]) peak = i; });
-    var safe = n === 0;
-    var times = n === 1 ? "once" : n + " times";
-    if (cold.ice) {
-      /* Never a bare "safe" for invented numbers; the "simulated" tag sits on
-         its own line under this. */
-      v.innerHTML = safe
-        ? "With an ice pack: safe the whole trip"
-        : "With an ice pack: still too warm " + times;
-      tag.hidden = false;
-    } else {
-      v.innerHTML = safe ? "Safe the whole trip"
-        : "Too warm " + times + ': <span data-degf="' + temps[peak] + '"></span> at ' + run[peak].t;
-      tag.hidden = true;
-    }
-    v.className = "cold-verdict " + (safe ? "is-safe" : "is-danger");
-    STB.renderUnits(v);
-    coldMascot.mood(safe ? "inrange" : "danger");
-    renderReading();
-  }
-  function renderReading() {
-    var r = $("#coldReading");
-    if (cold.sel < 0) { r.textContent = "Tap a point on the chart to see its reading."; return; }
-    var run = cold.ice ? COLD_ICE : COLD, c = run[cold.sel];
-    r.innerHTML = "<b>" + c.t + "</b> · " + c.note + " · <b><span data-degf=\"" + c.temp + "\"></span></b>" +
-      (cold.ice ? " simulated" : (c.temp > SAFE_MAX ? " · too warm" : " · safe"));
-    STB.renderUnits(r);
-  }
-
-  /* ---------- build ----------
-     Drawn at the host's real pixel width, so text is set in real pixels at
-     every size instead of a 640-wide drawing scaled down to 5px type. */
-  function buildCold() {
-    var W = Math.max(280, Math.round(coldSparkHost.clientWidth || 640));
-    var narrow = W < 480;
-    /* Desktop: the chart is as tall as the column beside it, so neither side
-       has dead space; never shorter than 220. */
-    var side = 0;
-    if (!narrow && matchMedia("(min-width:641px)").matches) {
-      var mEl = $("#coldMascot"), sEl = coldPanel.querySelector(".cold-status");
-      side = mEl.getBoundingClientRect().height + sEl.getBoundingClientRect().height + 4;
-    }
-    var H = Math.round(Math.max(220, Math.min(380, side)));
-    var PAD_T = 18, PAD_B = narrow ? 58 : 48;
-    var PAD_X = narrow ? 40 : 56;           /* room for centred two-line x labels */
-    var all = COLD.concat(COLD_ICE).map(function (c) { return c.temp; }).concat([SAFE_MAX]);
-    var lo = Math.min.apply(null, all) - 2, hi = Math.max.apply(null, all) + 2;
-    var plotB = H - PAD_B, plotH = plotB - PAD_T, plotW = W - PAD_X * 2;
-    function px(i) { return PAD_X + i * plotW / (COLD.length - 1); }
-    function py(t) { return PAD_T + (hi - t) / (hi - lo) * plotH; }
-    var yr = py(SAFE_MAX);
-
-    var svg = svgEl("svg", {
-      viewBox: "0 0 " + W + " " + H, width: W, height: H, class: "cold-spark" + (cold.ice ? " is-ice" : ""), role: "group",
-      "aria-label": "Example trip, not a real delivery. Temperatures for box 0447: packed at 36 degrees, 38 on the way, 43 at the handoff, delivered at 39. Safe at 41 or below."
-    });
-    var defs = svgEl("defs", {});
-    /* Hard colour stop at the threshold: above it accent, below it brand. */
-    var grad = svgEl("linearGradient", { id: "csGrad", gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: 0, y2: H });
-    var f = (yr / H).toFixed(4);
-    grad.appendChild(svgEl("stop", { offset: 0, style: "stop-color:var(--accent)" }));
-    grad.appendChild(svgEl("stop", { offset: f, style: "stop-color:var(--accent)" }));
-    grad.appendChild(svgEl("stop", { offset: f, style: "stop-color:var(--brand)" }));
-    grad.appendChild(svgEl("stop", { offset: 1, style: "stop-color:var(--brand)" }));
-    defs.appendChild(grad);
-    svg.appendChild(defs);
-
-    var zone = svgEl("rect", { x: 0, y: 0, width: W, height: yr, class: "cs-zone" });
-    svg.appendChild(zone);
-    svg.appendChild(svgEl("line", { x1: 0, x2: W, y1: yr, y2: yr, class: "cs-threshold" }));
-    var ruleLbl = svgEl("text", { x: W - 6, y: yr - 8, class: "cs-threshold-lbl", "text-anchor": "end" });
-    ruleLbl.appendChild(document.createTextNode("safe ≤ "));
-    ruleLbl.appendChild(svgEl("tspan", { "data-degf": SAFE_MAX }));
-    svg.appendChild(ruleLbl);
-
-    function pathFor(vals) {
-      return vals.map(function (t, i) { return (i ? "L" : "M") + px(i).toFixed(1) + " " + py(t).toFixed(1); }).join(" ");
-    }
-    var ghost = svgEl("path", { d: pathFor(COLD.map(function (c) { return c.temp; })), class: "cs-ghost" });
-    svg.appendChild(ghost);
-    var line = svgEl("path", { d: pathFor(cold.vals), class: "cs-line", stroke: "url(#csGrad)" });
-    svg.appendChild(line);
-
-    var pts = COLD.map(function (c, i) {
-      var g = svgEl("g", { class: "cs-pt", tabindex: "0", role: "button", "aria-pressed": "false" });
-      var hit = svgEl("circle", { cx: px(i), cy: 0, r: 16, class: "cs-hit" });
-      var dot = svgEl("circle", { cx: px(i), cy: 0, class: "cs-dot" });
-      var tl = svgEl("text", { x: px(i), y: 0, class: "cs-temp", "text-anchor": "middle" });
-      var xl = svgEl("text", { x: px(i), y: plotB + 12 + 9, class: "cs-xlabel", "text-anchor": "middle" });
-      var t1 = svgEl("tspan", { x: px(i) }); t1.textContent = c.t;
-      xl.appendChild(t1);
-      /* On a phone the four notes cannot sit side by side at a readable size,
-         so each multi-word note stacks one word per line. */
-      (narrow ? c.note.split(" ") : [c.note]).forEach(function (word, k) {
-        var t2 = svgEl("tspan", { x: px(i), dy: k ? 12 : 14, class: "cs-note" }); t2.textContent = word;
-        xl.appendChild(t2);
-      });
-      g.appendChild(hit); g.appendChild(dot); g.appendChild(tl); g.appendChild(xl);
-      function select() { cold.sel = i; syncSelection(); renderReading(); }
-      g.addEventListener("click", select);
-      g.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); select(); }
-      });
-      svg.appendChild(g);
-      return { g: g, hit: hit, dot: dot, tl: tl };
-    });
-
-    coldSparkHost.innerHTML = "";
-    coldSparkHost.appendChild(svg);
-    STB.renderUnits(coldSparkHost);
-    /* Measured after it is in the DOM, for label collision checks. */
-    var rl = ruleLbl.getBBox();
-    cold.g = { W: W, H: H, px: px, py: py, yr: yr, plotB: plotB, PAD_T: PAD_T, svg: svg, line: line, zone: zone,
-      pts: pts, pathFor: pathFor, ruleBox: { x: rl.x - 3, y: rl.y - 2, w: rl.width + 6, h: rl.height + 4 } };
-    place(cold.vals);
-    syncSelection();
-  }
-
-  /* Temp labels: above a point under the threshold, below one over it; flip
-     if that would touch the threshold line or its label. */
-  function labelY(i, t, y) {
-    var G = cold.g, x = G.px(i), halfW = 18, asc = 9, desc = 3;
-    function clash(base) {
-      var top = base - asc, bot = base + desc;
-      if (top < G.yr + 3 && bot > G.yr - 3) return true;                          /* the line */
-      var r = G.ruleBox;
-      if (x + halfW > r.x && x - halfW < r.x + r.w && bot > r.y && top < r.y + r.h) return true; /* its label */
-      if (top < 2 || bot > G.plotB + 8) return true;                                 /* off the plot */
-      return false;
-    }
-    var above = y - 11, below = y + 19;
-    var first = t <= SAFE_MAX ? above : below, second = t <= SAFE_MAX ? below : above;
-    return !clash(first) ? first : (!clash(second) ? second : first);
-  }
-  function place(vals) {
-    var G = cold.g; if (!G) return;
-    G.line.setAttribute("d", G.pathFor(vals));
-    vals.forEach(function (t, i) {
-      var p = G.pts[i], y = G.py(t), danger = t > SAFE_MAX, shown = Math.round(t);
-      p.dot.setAttribute("cy", y.toFixed(1)); p.hit.setAttribute("cy", y.toFixed(1));
-      p.dot.setAttribute("class", "cs-dot" + (danger ? " danger" : ""));
-      p.tl.setAttribute("y", labelY(i, t, y).toFixed(1));
-      p.tl.setAttribute("class", "cs-temp" + (danger ? " danger" : ""));
-      if (p.tl.getAttribute("data-degf") !== String(shown)) { p.tl.setAttribute("data-degf", shown); STB.renderUnits(p.g); }
-      var c = (cold.ice ? COLD_ICE : COLD)[i];
-      p.g.setAttribute("aria-label", c.t + " " + c.note + ", " + c.temp + " degrees" + (cold.ice ? ", simulated" : "") + (c.temp > SAFE_MAX ? ", above threshold" : ""));
-    });
-  }
-  function syncSelection() {
-    if (!cold.g) return;
-    cold.g.pts.forEach(function (p, i) {
-      p.g.classList.toggle("active", i === cold.sel);
-      p.g.setAttribute("aria-pressed", i === cold.sel ? "true" : "false");
-    });
-  }
-
-  /* ---------- draw-on ----------
-     Traces left to right with stroke-dashoffset; each point and its labels
-     fade in as the line reaches it, and the danger band pulses once as the
-     line first crosses SAFE_MAX. */
-  function finishDraw() {
-    cancelAnimationFrame(cold.draw);
-    cold.drawn = true;
-    if (!cold.g) return;
-    cold.g.line.style.strokeDasharray = ""; cold.g.line.style.strokeDashoffset = "";
-    cold.g.pts.forEach(function (p) { p.g.classList.remove("cs-pending"); });
-  }
-  function startDraw() {
-    if (cold.drawn || !cold.g) return;
-    if (reduced) { finishDraw(); return; }
-    var G = cold.g, L = G.line.getTotalLength();
-    /* Where along the path each vertex, and the first threshold crossing, sit. */
-    var vx = [0], acc = 0, cross = -1;
-    for (var i = 1; i < cold.vals.length; i++) {
-      var ax = G.px(i - 1), ay = G.py(cold.vals[i - 1]), bx = G.px(i), by = G.py(cold.vals[i]);
-      var seg = Math.hypot(bx - ax, by - ay);
-      if (cross < 0 && (cold.vals[i - 1] <= SAFE_MAX) !== (cold.vals[i] <= SAFE_MAX)) {
-        cross = (acc + seg * (SAFE_MAX - cold.vals[i - 1]) / (cold.vals[i] - cold.vals[i - 1])) / L;
-      }
-      acc += seg; vx.push(acc / L);
-    }
-    G.line.style.strokeDasharray = L; G.line.style.strokeDashoffset = L;
-    var t0 = performance.now(), dur = 1200, pulsed = false;
-    (function tick(now) {
-      var p = easeOut(Math.min(1, (now - t0) / dur));
-      G.line.style.strokeDashoffset = (L * (1 - p)).toFixed(1);
-      vx.forEach(function (fr, k) { if (p >= fr - 0.001) G.pts[k].g.classList.remove("cs-pending"); });
-      if (!pulsed && cross >= 0 && p >= cross) {
-        pulsed = true; G.zone.classList.remove("cs-pulse"); void G.zone.getBBox(); G.zone.classList.add("cs-pulse");
-      }
-      if (p < 1) cold.draw = requestAnimationFrame(tick); else finishDraw();
-    })(t0);
-  }
-
-  /* ---------- ice-pack what-if ---------- */
-  function morphTo(target) {
-    cancelAnimationFrame(cold.morph);
-    if (reduced) { cold.vals = target.slice(); place(cold.vals); return; }
-    var from = cold.vals.slice(), t0 = performance.now(), dur = 800;
-    (function tick(now) {
-      var p = easeOut(Math.min(1, (now - t0) / dur));
-      cold.vals = from.map(function (v, i) { return v + (target[i] - v) * p; });
-      place(cold.vals);
-      if (p < 1) cold.morph = requestAnimationFrame(tick);
-      else { cold.vals = target.slice(); place(cold.vals); }
-    })(t0);
-  }
-  var icePack = null, frostTimer = 0;
-  function dropPoint() {
-    /* Just above the run's peak, in panel coordinates. */
-    var G = cold.g, peak = 0;
-    COLD.forEach(function (c, i) { if (c.temp > COLD[peak].temp) peak = i; });
-    var sr = G.svg.getBoundingClientRect(), pr = coldPanel.getBoundingClientRect(), k = sr.width / G.W;
-    return { x: sr.left - pr.left + G.px(peak) * k, y: sr.top - pr.top + Math.max(12, (G.PAD_T - 2)) * k, top: sr.top - pr.top };
-  }
-  function frostBurst(x, y) {
-    /* One burst at a time: a fast re-toggle replaces the last one, so nothing
-       is ever left behind. */
-    var old = coldPanel.querySelector(".cold-frost"); if (old) old.remove();
-    clearTimeout(frostTimer);
-    if (reduced) return;
-    var burst = document.createElement("span");
-    burst.className = "cold-frost"; burst.setAttribute("aria-hidden", "true");
-    burst.style.left = x.toFixed(1) + "px"; burst.style.top = y.toFixed(1) + "px";
-    for (var n = 0; n < 10; n++) {
-      var a = (n / 10) * Math.PI * 2 + Math.random() * 0.5, r = 22 + Math.random() * 22;
-      var s = document.createElement("i");
-      if (n % 3 === 0) s.className = "flake";
-      s.style.setProperty("--dx", (Math.cos(a) * r).toFixed(1) + "px");
-      s.style.setProperty("--dy", (Math.sin(a) * r).toFixed(1) + "px");
-      s.style.animationDelay = (Math.random() * 60).toFixed(0) + "ms";
-      burst.appendChild(s);
-    }
-    coldPanel.appendChild(burst);
-    frostTimer = setTimeout(function () { burst.remove(); }, 720);
-  }
-  coldMascot.onLand = function () { var m = coldMascot.mouth(); frostBurst(m.x, m.y); };
-  function iceVisual(on) {
-    coldChart.classList.toggle("is-frost", on);
-    var old = coldPanel.querySelector(".cold-frost"); if (old) old.remove();
-    clearTimeout(frostTimer);
-    /* 3D: the pack drops into the mascot's box, and the frost bursts from
-       its opening as it lands. */
-    if (coldMascot.is3D) { coldMascot.ice(on); return; }
-    /* Reduced motion: the state swaps and nothing drops. */
-    if (reduced) return;
-    /* Flat fallback: a small pack drops onto the chart instead. */
-    if (!icePack) {
-      icePack = document.createElement("span");
-      icePack.className = "cold-icepack"; icePack.setAttribute("aria-hidden", "true");
-      icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" style="fill:var(--ice-soft);stroke:var(--ice)" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" style="stroke:var(--ice)" stroke-width="1.5" stroke-linecap="round"/></svg>';
-      coldPanel.appendChild(icePack);
-    }
-    var d = dropPoint();
-    icePack.style.left = d.x.toFixed(1) + "px"; icePack.style.top = d.y.toFixed(1) + "px";
-    icePack.style.setProperty("--drop", (-(d.y + 24)).toFixed(0) + "px");
-    icePack.classList.remove("is-in", "is-out"); void icePack.offsetWidth;
-    icePack.classList.add(on ? "is-in" : "is-out");
-    if (on) frostBurst(d.x, d.y + 8);
-  }
-  function setIce(on) {
-    cold.ice = on;
-    finishDraw();
-    var btn = $("#coldIce");
-    btn.setAttribute("aria-pressed", on ? "true" : "false");
-    btn.querySelector(".cold-ice-lbl").textContent = on ? "Remove ice pack" : "Add ice pack";
-    cold.g.svg.classList.toggle("is-ice", on);
-    renderVerdict();
-    iceVisual(on);
-    morphTo((on ? COLD_ICE : COLD).map(function (c) { return c.temp; }));
-    $("#coldIceStatus").textContent = on
-      ? "Ice pack added. " + $("#coldVerdict").textContent + ". Simulated trip, every reading " + ICE_DROP_F + " degrees colder, not measured."
-      : "Ice pack removed. Sample trip: " + $("#coldVerdict").textContent + ".";
-  }
-  (function () {
-    var btn = $("#coldIce");
-    btn.hidden = false;
-    btn.addEventListener("click", function () { btn.classList.add("tried"); setIce(!cold.ice); });
-  })();
-
-  /* ---------- tilt ----------
-     Pointer-follow perspective on the panel only; the SVG inside stays a flat
-     plane. Mouse and pen only, never touch, never under reduced motion. */
-  (function () {
-    if (reduced || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    var MAX = 4, raf = 0, rx = 0, ry = 0;
-    function apply() { raf = 0; coldPanel.style.transform = "perspective(1200px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)"; }
-    coldPanel.addEventListener("pointermove", function (e) {
-      if (e.pointerType === "touch") return;
-      var r = coldPanel.getBoundingClientRect();
-      var nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
-      ry = Math.max(-MAX, Math.min(MAX, nx * 2 * MAX));
-      rx = Math.max(-MAX, Math.min(MAX, -ny * 2 * MAX));
-      coldPanel.style.transition = "transform 120ms ease-out";
-      if (!raf) raf = requestAnimationFrame(apply);
-    });
-    coldPanel.addEventListener("pointerleave", function () {
-      cancelAnimationFrame(raf); raf = 0; rx = 0; ry = 0;
-      coldPanel.style.transition = "transform 600ms cubic-bezier(0.16,1,0.3,1)";
-      coldPanel.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg)";
-    });
-  })();
-
-  function renderCold() {
-    buildCold();
-    renderVerdict();
-    if (!cold.drawn && !reduced) cold.g.pts.forEach(function (p) { p.g.classList.add("cs-pending"); });
-    if (!cold.drawn && !reduced) { cold.g.line.style.strokeDasharray = 1e5; cold.g.line.style.strokeDashoffset = 1e5; }
-    if (reduced) cold.drawn = true;
-  }
-  renderCold();
-  if (!cold.drawn) {
-    if ("IntersectionObserver" in window) {
-      var coldIO = new IntersectionObserver(function (es) {
-        es.forEach(function (e) { if (e.isIntersecting) { coldIO.disconnect(); startDraw(); } });
-      }, { threshold: 0.35 });
-      coldIO.observe(coldPanel);
-    } else finishDraw();
-  }
-  /* Rebuilt at the new width on resize, keeping state. */
-  (function () {
-    var lastW = coldSparkHost.clientWidth, t = 0;
-    addEventListener("resize", function () {
-      clearTimeout(t);
-      t = setTimeout(function () {
-        var w = coldSparkHost.clientWidth;
-        if (Math.abs(w - lastW) < 2) return;
-        lastW = w; finishDraw(); cancelAnimationFrame(cold.morph);
-        cold.vals = (cold.ice ? COLD_ICE : COLD).map(function (c) { return c.temp; });
-        buildCold();
-        if (icePack && cold.ice) { var d = dropPoint(); icePack.style.left = d.x + "px"; icePack.style.top = d.y + "px"; }
-      }, 150);
-    }, { passive: true });
-  })();
-
-  /* ---------- join form ---------- */
-  var form = $("#joinForm");
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    $("#formWrap").innerHTML = '<div class="done-card"><h3 style="font-size:19px;font-weight:600;margin:0;color:var(--brand);">Logged. We’ll be in touch.</h3><p style="font-size:14px;color:var(--text);margin:8px 0 0;line-height:1.6;">Thanks, expect a reply within a few school days.</p></div>';
-    paintMascot($("#mascotJoin svg"), "confirmed");
-    setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
-  });
-
-  /* ---------- scroll FX ---------- */
-  var FX = STB.initReveals();
-  var shot = FX.shot;
-  (function () {
-    var items = $$("[data-stat]");
-    if (armed) items.forEach(function (el) { el.style.opacity = "0"; el.style.transform = "translateY(" + 32 * f + "px) scale(0.97)"; });
-    shot($("#statband"), function () {
-      items.forEach(function (el, i) {
-        el.style.transition = "opacity 600ms " + EXP + " " + i * 90 + "ms, transform 600ms " + EXP + " " + i * 90 + "ms";
-        el.style.opacity = "1"; el.style.transform = "translateY(0) scale(1)";
-      });
-    });
-  })();
-  (function () {
-    var fields = $$("[data-ff]");
-    if (armed) fields.forEach(function (el) {
-      el.style.opacity = "0";
-      el.style.transform = el.hasAttribute("data-ffb") ? "scale(0.96)" : "translateY(" + 14 * f + "px)";
-    });
-    shot($("#formWrap"), function () {
-      fields.forEach(function (el, i) {
-        el.style.transition = "opacity 450ms " + PRO + " " + i * 50 + "ms, transform 450ms " + PRO + " " + i * 50 + "ms";
-        el.style.opacity = "1"; el.style.transform = "none";
-      });
-    });
-  })();
-
-  function fxLoop() {
-    requestAnimationFrame(fxLoop);
-    var vh = innerHeight;
-    FX.tick();
-    checkCounters();
-  }
-  requestAnimationFrame(fxLoop);
-
-  /* ---------- hero box: scroll scrub + drag (shared — assets/site.js) ----------
-     Replaces the previous WebGL hero and the cafeteria-fridge transition. The
-     box geometry, camera and rear-edge lid hinge are carried over unchanged;
-     the renderer no longer needs Three.js from a CDN, which also means the box
-     now appears for everyone rather than only for readers who can reach it.
-
-     Two scroll-driven sections on this page, and only two: this one and the
-     mid-page container below it. Both call the same createMascotBox and the
-     same initScrollScrub; all that differs is the state each one feeds in. */
-  var heroBox = STB.initHeroBox();
-
-  /* One-line school summary under the map, counted from the same table the
-     map and the full list read, so the numbers can never drift apart. */
-  (function () {
-    var el = $("#sitesSummary");
-    if (!el || !STB.SITES) return;
-    var n = function (k) { return STB.SITES.filter(function (s) { return s.status === k; }).length; };
-    el.innerHTML = STB.SITES.length + " schools so far: " + n("setup") + " getting set up, " + n("conversation") +
-      " in talks, " + n("target") + " we plan to reach. <a href=\"getting-started.html#sites\">See the full list →</a>";
-  })();
-  if (STB.initNetworkMap) STB.initNetworkMap();
-  STB.initEmblems();
-  STB.initSmoothScroll();
-  STB.initScrollFx();
-  STB.initProgress();
-  STB.initAnchors();
-  STB.initSectionHighlight();
-  STB.initUnits();
-  STB.initOffline();
-  STB.initPalette([
-    { kind: "page", label: "Home", href: "index.html#top" },
-    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
-    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
-    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
-    { kind: "page", label: "Team roles", href: "roles.html" },
-    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-    { kind: "section", label: "How it works", href: "#how", keywords: "steps collect pack deliver log" },
-    { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
-    { kind: "section", label: "The map", href: "#network", keywords: "map snap need boroughs districts" },
-    { kind: "section", label: "Learn more", href: "#learn" },
-    { kind: "section", label: "Work with us", href: "#join", keywords: "contact signup form" },
-    { kind: "template", label: "Health code memo", href: "getting-started.html#doc-health", keywords: "tcs food safety release records health department" },
-    { kind: "template", label: "Box spec", href: "getting-started.html#doc-build", keywords: "insulated transport box cut sheet materials" },
-    { kind: "template", label: "Partner agreement", href: "getting-started.html#doc-agreement", keywords: "one page signed school receiving site" },
-    { kind: "template", label: "Intake workflow", href: "getting-started.html#doc-intake", keywords: "pantry receive confirm close out manifest line" },
-    { kind: "tool", label: "Run packet generator", href: "getting-started.html#runPacket", keywords: "print manifest temperature log paperwork" },
-    { kind: "tool", label: "Sources", href: "why.html#sources", keywords: "citations footnotes references" }
-  ]);
-})();
-</script>
+  <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
+  <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
+  <script type="module" src="assets/firebase-init.js?v=3"></script>
+  <script src="assets/site.js?v=15"></script>
+  <script src="assets/map.js?v=13"></script>
+  <script src="assets/mainpage.js?v=3"></script>
+  
 </body>
 </html>

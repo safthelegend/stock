@@ -19,7 +19,7 @@
    ============================================================================ */
 "use strict";
 
-var CACHE_VERSION = "v13";
+var CACHE_VERSION = "v17";
 var CACHE = "stb-" + CACHE_VERSION;
 
 /* Precached on install. Relative to the worker's scope, so this keeps working
@@ -33,10 +33,13 @@ var PRECACHE = [
   "team.html",
   "roles.html",
   "404.html",
-  "assets/site.css?v=13",
-  "assets/design.css?v=13",
-  "assets/site.js?v=13",
+  "assets/site.css?v=14",
+  "assets/design.css?v=15",
+  "assets/site.js?v=15",
   "assets/map.js?v=13",
+  "assets/mainpage.css?v=3",
+  "assets/mainpage.js?v=3",
+  "assets/firebase-init.js?v=3",
   "assets/vendor/leaflet/leaflet.js?v=13",
   "assets/vendor/leaflet/leaflet.markercluster.js?v=13",
   "assets/vendor/leaflet/MarkerCluster.css?v=13",
@@ -120,6 +123,7 @@ self.addEventListener("fetch", function (e) {
   /* Leave anything that is not http(s) alone — extension and data URLs are
      not ours to cache. */
   if (url.protocol !== "http:" && url.protocol !== "https:") return;
+  if (/(^|\.)(firestore|identitytoolkit|securetoken)\.googleapis\.com$/.test(url.hostname)) return;
 
   if (isHTML(req)) { e.respondWith(networkFirst(e)); return; }
   if (isStatic(url)) { e.respondWith(cacheFirst(e)); return; }

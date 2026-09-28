@@ -333,6 +333,15 @@ function initMascotSlots(root) {
      the same effect, just triggered by arrival instead of by scrolling. */
   if (!REVEAL_ON_SCROLL) document.documentElement.classList.add("no-reveal");
 
+    /* Nav "Sign in" button: says "My portal" for someone who's signed in as a
+     member in this browser. Reads the note portal.js leaves; never loads
+     Firebase on public pages. */
+     try {
+      if (localStorage.getItem("stb-member") === "1") {
+        $$("nav.bar a.login").forEach(function (a) { a.textContent = "My portal"; });
+      }
+    } catch (e) {}
+
   /* ---------- scroll reveal ----------
      initReveals() registers the three reveal patterns both pages share and
      hands back { shot, tick }. Call it AFTER any JS-built rows exist. Pages
