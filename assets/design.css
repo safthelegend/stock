@@ -34,7 +34,7 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
 @media (max-width:700px) {
   /* The link row was 377px wide on a 390px phone and pushed the page sideways.
      The in-page links are one tap away in the page itself; the CTA stays. */
-  nav.bar .links a:not(.cta) { display:none; }
+  nav.bar .links a:not(.cta):not(.login) { display:none; }
   nav.bar .links { gap:6px; }
   #themeToggle .theme-name { display:none; }
 }
@@ -204,3 +204,13 @@ form.join input, form.join select, form.join textarea { width:100%; min-width:0;
 footer { background:var(--surface); }
 footer .wrap.top { padding-top:40px; }
 .sources-list li { padding-left:2.2em; text-indent:-2.2em; }
+
+/* --- nav always visible, with a Sign in button --------------------------
+   The nav used to stay invisible until you scrolled 100px, which would hide
+   the Sign in button at the top of the page. It now shows from the start:
+   transparent at the top, frosted once you scroll (.on, from initNav). */
+   nav.bar { opacity:1; pointer-events:auto; }
+   nav.bar .links a.login { padding:6px 14px; border:1.5px solid var(--brand-line-mid); border-radius:999px;
+     background-image:none; font-weight:600; color:var(--brand); transition:border-color 160ms ease, background-color 160ms ease; }
+   nav.bar .links a.login:hover, nav.bar .links a.login:focus-visible { border-color:var(--brand); background-color:var(--surface); }
+   @media (max-width:700px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }

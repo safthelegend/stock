@@ -1,0 +1,1095 @@
+
+html {
+  scroll-behavior: smooth;
+}
+
+.sources-list li,
+#sources {
+  scroll-margin-top: 64px;
+}
+
+canvas:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+}
+
+@keyframes rowUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.8fr);
+  gap: 40px;
+  align-items: center;
+  padding-top: 104px;
+  padding-bottom: 88px;
+}
+
+.two-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.join-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.sensor-row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+
+.figure {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statband {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+/* Stat cards rather than a ruled row: three claims a partner can scan,
+ each one self-contained. */
+.statband .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  padding: 28px 0 20px;
+}
+
+.statband .cell {
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.statband .fig {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 3vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--text);
+}
+
+.statband .cap {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+  line-height: 1.55;
+}
+
+.statband .cite {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 12px 0 20px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.prow>button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px 44px minmax(140px, 0.6fr) 1fr 24px;
+  grid-template-areas: "num pmasc ttl bdy caret";
+  gap: 20px;
+  align-items: baseline;
+  padding: 24px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+}
+
+.prow .pmasc {
+  grid-area: pmasc;
+  width: 44px;
+  display: block;
+  align-self: center;
+}
+
+.prow .bdy {
+  grid-area: bdy;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 60ch;
+}
+
+.prow .pdetail p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 0 24px 24px 100px;
+  max-width: 60ch;
+}
+
+/* This block was one narrow column with the whole right half of the
+ section empty. Now a fixed status card plus a chart that fills what is
+ left, so the width the section actually has gets used. */
+/* One instrument readout: identity and verdict on the left, the trace on
+ the right, both centred on the same axis so they read as one unit. */
+.cold-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-areas: "mascot chart" "status chart";
+  column-gap: 28px;
+  row-gap: 4px;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  border-radius: 12px;
+  padding: 14px 20px 16px;
+  transform-origin: 50% 50%;
+}
+
+.cold-status {
+  grid-area: status;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* The mascot. Its own palette, per spec: a light tinted body in light and
+ stock, a lifted sage in dark, read by both the flat SVG and the 3D box
+ (which is told to take its colours from here). */
+.cold-mascot {
+  grid-area: mascot;
+  position: relative;
+  width: 220px;
+  justify-self: center;
+  --mascot-fill: #EAF2DE;
+  --mascot-stroke: #2E5A22;
+  --box-side: #D3E3C1;
+  --box-interior: #BFD4A8;
+  --cm-glow: rgba(156, 203, 122, 0.34);
+}
+
+:root[data-theme="dark"] .cold-mascot {
+  --mascot-fill: #2A3A22;
+  --mascot-stroke: #9CCB7A;
+  --box-side: #223019;
+  --box-interior: #18230F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .cold-mascot {
+    --mascot-fill: #2A3A22;
+    --mascot-stroke: #9CCB7A;
+    --box-side: #223019;
+    --box-interior: #18230F;
+  }
+}
+
+.cold-mascot.is-danger {
+  --cm-glow: rgba(240, 160, 64, 0.4);
+}
+
+/* A tight, soft glow: small blur, low opacity. */
+.cold-mascot>svg,
+.cold-mascot>canvas {
+  filter: drop-shadow(0 0 3px var(--cm-glow));
+  transition: filter 250ms ease;
+}
+
+.cold-mascot>canvas {
+  display: block;
+  width: 100%;
+}
+
+.cold-mascot.is-3d>svg {
+  display: none !important;
+}
+
+/* The canvas is square; the box sits in its middle band, so the frame is
+ cropped to the box and the empty sky above it is not layout. */
+.cold-mascot.is-3d {
+  height: 200px;
+}
+
+/* At least 20px between the bottom of the model and the verdict. */
+.cold-mascot {
+  margin-bottom: 10px;
+}
+
+.cold-mascot.is-3d>canvas {
+  margin-top: -12px;
+}
+
+.cold-run {
+  margin: 10px 0 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.cold-tag {
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.cold-verdict {
+  margin: 2px 0 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.cold-verdict.is-danger {
+  color: var(--accent-text);
+}
+
+.cold-verdict.is-safe {
+  color: var(--brand);
+}
+
+.cold-sim-tag {
+  display: block;
+  width: max-content;
+  margin: 6px 0 0;
+  padding: 2px 8px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--accent-text);
+  white-space: nowrap;
+}
+
+.cold-sim-tag[hidden] {
+  display: none;
+}
+
+.cold-reading {
+  margin: 8px 0 0;
+  min-height: 1.5em;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.cold-reading b {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* The ice pack is the point of this section, so its button is the loudest
+ thing in the panel: solid, larger, with a pulsing "Try it" cue that goes
+ away after the first press. */
+.cold-ice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 16px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 0 0 0 rgba(156, 203, 122, 0.5), 0 6px 18px -6px rgba(156, 203, 122, 0.6);
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.cold-ice:hover {
+  background: var(--brand-press);
+  border-color: var(--brand-press);
+  transform: translateY(-1px);
+}
+
+.cold-ice:not(.tried) {
+  animation: icePulse 1.8s ease-out infinite;
+}
+
+@keyframes icePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(156, 203, 122, 0.55), 0 6px 18px -6px rgba(156, 203, 122, 0.6);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px rgba(156, 203, 122, 0), 0 6px 18px -6px rgba(156, 203, 122, 0.6);
+  }
+}
+
+.cold-ice .try {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1D1D1F;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+.cold-ice.tried .try {
+  display: none;
+}
+
+.cold-ice[aria-pressed="true"] {
+  background: rgba(190, 225, 255, 0.14);
+  border-color: rgba(190, 225, 255, 0.6);
+  color: #D8ECFF;
+  box-shadow: none;
+}
+
+.cold-ice[hidden] {
+  display: none;
+}
+
+.cold-ice svg {
+  flex: none;
+}
+
+.cold-chart {
+  grid-area: chart;
+  align-self: center;
+  position: relative;
+  min-width: 0;
+  border-radius: 10px;
+}
+
+/* Frosted inner glow while the what-if is on. */
+.cold-chart::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 28px rgba(200, 232, 255, 0.22), inset 0 0 0 1px rgba(200, 232, 255, 0.16);
+  transition: opacity 500ms ease;
+}
+
+.cold-chart.is-frost::after {
+  opacity: 1;
+}
+
+.cold-rows .row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-bottom: 1px solid var(--line-soft);
+  background: transparent;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.cold-rows .row .temp {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.cold-spark {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.cs-zone {
+  fill: var(--accent);
+  opacity: 0.08;
+  transition: opacity 800ms ease;
+}
+
+.cs-zone.cs-pulse {
+  animation: csPulse 700ms ease-out 1;
+}
+
+@keyframes csPulse {
+  0% {
+    opacity: 0.08;
+  }
+
+  35% {
+    opacity: 0.26;
+  }
+
+  100% {
+    opacity: 0.08;
+  }
+}
+
+.is-ice .cs-zone {
+  opacity: 0;
+}
+
+.cs-threshold {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.cs-threshold-lbl {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  fill: var(--accent-text);
+  letter-spacing: 0.04em;
+}
+
+.cs-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cs-ghost {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.is-ice .cs-ghost {
+  opacity: 0.45;
+}
+
+.cs-dot {
+  fill: var(--brand);
+  stroke: var(--surface);
+  stroke-width: 2;
+  r: 4;
+  transition: r 140ms ease;
+}
+
+.cs-dot.danger {
+  fill: var(--accent);
+}
+
+.cs-xlabel {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  fill: var(--text-secondary);
+}
+
+.cs-xlabel .cs-note {
+  fill: var(--text-secondary);
+  opacity: 0.75;
+}
+
+.cs-temp {
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-temp.danger {
+  fill: var(--accent-text);
+}
+
+.cs-pt {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 260ms ease;
+}
+
+.cs-pt.cs-pending {
+  opacity: 0;
+}
+
+.cs-hit {
+  fill: transparent;
+}
+
+.cs-pt:focus-visible .cs-dot,
+.cs-pt:hover .cs-dot,
+.cs-pt.active .cs-dot {
+  r: 6;
+}
+
+.cs-pt:focus-visible .cs-hit {
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* One focus ring, on the point itself, not a second box around the group. */
+#coldSpark .cs-pt:focus-visible {
+  outline: none;
+}
+
+/* Ice pack: drops in, sits on the chart; frost particles burst and fade. */
+.cold-icepack {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 24px;
+  margin: -12px 0 0 -15px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cold-icepack.is-in {
+  opacity: 1;
+  animation: iceDrop 720ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.cold-icepack.is-out {
+  animation: iceLift 320ms ease-in both;
+}
+
+@keyframes iceDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--drop, -120px)) rotate(-12deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes iceLift {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+.cold-frost {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.cold-frost i {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(225, 242, 255, 0.95);
+  box-shadow: 0 0 6px rgba(200, 232, 255, 0.9);
+  animation: frostOut 600ms ease-out both;
+}
+
+.cold-frost i.flake {
+  width: 9px;
+  height: 9px;
+  left: -4.5px;
+  top: -4.5px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  background-image: linear-gradient(rgba(225, 242, 255, 0.95), rgba(225, 242, 255, 0.95)), linear-gradient(rgba(225, 242, 255, 0.95), rgba(225, 242, 255, 0.95));
+  background-size: 9px 1.5px, 1.5px 9px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@keyframes frostOut {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.4) rotate(90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cold-panel {
+    transform: none !important;
+  }
+
+  .cold-icepack.is-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .cold-frost {
+    display: none;
+  }
+}
+
+@media (max-width:640px) {
+  .cold-panel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "status" "mascot" "chart";
+    row-gap: 12px;
+    padding: 16px 16px 12px;
+  }
+
+  .cold-mascot {
+    width: 160px;
+    margin-bottom: 0;
+  }
+
+  .cold-mascot.is-3d {
+    height: 144px;
+  }
+
+  .cold-mascot.is-3d>canvas {
+    margin-top: -8px;
+  }
+
+  .cold-ice {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .cs-xlabel {
+    font-size: 10px;
+  }
+
+  .cs-temp {
+    font-size: 11px;
+  }
+
+  .cs-threshold-lbl {
+    font-size: 10px;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.cards-grid .card,
+.done-card {
+  border-radius: 8px;
+}
+
+.cards-grid .card {
+  background: var(--surface);
+  border: 1px solid var(--brand-line);
+  padding: 28px;
+}
+
+.cards-grid .card .kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--brand);
+  margin: 0 0 10px;
+}
+
+.cards-grid .card .meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+}
+
+.doc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.doc-toggle:hover {
+  color: var(--accent-text);
+}
+
+.doc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms ease;
+}
+
+.doc-open>.doc-panel {
+  grid-template-rows: 1fr;
+}
+
+.doc-panel>div {
+  overflow: hidden;
+}
+
+/* 4% what-if slider: lives inside the big stat card and borrows its accent. */
+.pct-whatif {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.pct-whatif[hidden] {
+  display: none;
+}
+
+.pct-range {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  --fill: 0%;
+}
+
+.pct-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill));
+}
+
+.pct-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) var(--fill), var(--brand-line) var(--fill));
+}
+
+.pct-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition: transform 120ms ease;
+}
+
+.pct-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.pct-range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.pct-range:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.pct-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.pct-result {
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  min-height: 3em;
+}
+
+.pct-result b {
+  display: block;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--accent-text);
+}
+
+.pct-result .est {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--accent-text);
+  vertical-align: 2px;
+}
+
+.statband .cite a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* "Learn more" cards: each one is a whole-card link to a deeper page. */
+/* Four cards: 2×2 by default, one row on wide screens, one column on
+ phones. Never 3 + 1. */
+.learn-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width:1180px) {
+  .learn-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width:640px) {
+  .learn-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.learn-grid .card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.learn-grid .card:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+
+.learn-grid .card .body {
+  flex: 1;
+}
+
+.learn-grid .card a.doc-toggle {
+  text-decoration: none;
+}
+
+.learn-grid .card a.doc-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.learn-grid .card a.doc-toggle:focus-visible {
+  outline: none;
+}
+
+.learn-grid .card:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Map: one visible line of context, everything else folded away. */
+.sites-summary {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 20px 0 0;
+}
+
+.sites-summary a {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.map-about {
+  margin: 16px 0 0;
+  max-width: 70ch;
+}
+
+.map-about summary {
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--brand);
+}
+
+.map-about summary:hover {
+  color: var(--accent-text);
+}
+
+.map-about p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+}
+
+.map-about .cite {
+  font-size: 13px;
+}
+
+.done-card {
+  border: 1px solid var(--brand-line);
+  background: var(--tint);
+  padding: 32px;
+}
+
+@media (max-width:760px) {
+
+  .hero-grid,
+  .two-grid,
+  .join-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .hero-grid>.visual {
+    order: -1;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .sensor-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .sensor-row>div:first-child {
+    max-width: 150px;
+  }
+
+  .prow>button {
+    grid-template-columns: 32px 36px 1fr 24px;
+    grid-template-areas: "num pmasc ttl caret" "bdy bdy bdy bdy";
+    row-gap: 8px;
+  }
+
+  .prow .pdetail p {
+    padding-left: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+
+  nav.bar,
+  .skip-link,
+  .box-band,
+  #heroBoxWrap,
+  #formWrap {
+    display: none !important;
+  }
+
+  #heropin {
+    height: auto !important;
+  }
+
+  #top,
+  .thead {
+    position: static !important;
+    min-height: 0 !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  a.verify::after {
+    content: " (" attr(href) ")";
+    font-weight: 400;
+  }
+
+  section {
+    break-inside: avoid;
+  }
+}
+/* Honeypot: moves the spam-trap field off-screen so people never see it. */
+.hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
