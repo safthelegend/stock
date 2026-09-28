@@ -35,18 +35,134 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .join-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:48px; align-items:start; }
   .sensor-row { display:grid; grid-template-columns:210px minmax(0,1fr); gap:40px; align-items:center; }
   .figure { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.04em; font-variant-numeric:tabular-nums; }
-  .statband { border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg); }
+  .statband { background:transparent; }
   /* Stat cards rather than a ruled row: three claims a partner can scan,
      each one self-contained. */
   .statband .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; padding:28px 0 20px; }
   .statband .cell { background:var(--surface); border:1px solid var(--brand-line); border-radius:8px; padding:22px; }
   .statband .fig { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(30px,3vw,40px); line-height:1.05; letter-spacing:-0.03em; margin:0; color:var(--text); }
   .statband .cap { font-size:14px; color:var(--text-secondary); margin:10px 0 0; line-height:1.55; }
-  .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; border-top:1px solid var(--line-soft); }
-  .prow > button { width:100%; display:grid; grid-template-columns:36px 44px minmax(140px,0.6fr) 1fr 24px; grid-template-areas:"num pmasc ttl bdy caret"; gap:20px; align-items:baseline; padding:24px 0; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
-  .prow .pmasc { grid-area:pmasc; width:44px; display:block; align-self:center; }
-  .prow .bdy { grid-area:bdy; font-size:19px; line-height:1.6; color:var(--text); max-width:60ch; }
-  .prow .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:0 24px 24px 100px; max-width:60ch; }
+  .statband .cite { font-size:13px; color:var(--text-secondary); margin:0; padding:12px 0 20px; }
+  /* ---------- How it works: four animated stations on a conveyor ----------
+     Each step is a small scene starring the mascot box, and a belt with
+     rollers and passing parcels runs down through the stations in place of
+     divider lines. Every colour is a theme token, so the scenes switch with
+     light / dark / stock. Scenes only animate while on screen (.is-playing),
+     and reduced motion shows each scene's still frame. */
+  #steps { position:relative; }
+  .step { position:relative; display:grid; grid-template-columns:280px minmax(0,1fr); column-gap:44px; align-items:center; padding:26px 0; border-bottom:none; }
+  .step .stage { position:relative; z-index:1; width:280px; background:var(--surface); border:1px solid var(--brand-line);
+    border-radius:14px; padding:6px 8px 2px; box-shadow:0 8px 24px -16px var(--paper-shadow); }
+  .step-text > button { width:100%; display:grid; grid-template-columns:36px minmax(0,1fr) 24px;
+    grid-template-areas:"num ttl caret" ". bdy ."; gap:6px 12px; align-items:baseline; padding:6px 0; background:none; border:none;
+    cursor:pointer; text-align:left; font-family:inherit; color:inherit; }
+  .step .bdy { grid-area:bdy; font-size:18px; line-height:1.6; color:var(--text); max-width:52ch; }
+  .step .pdetail p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; padding:8px 24px 6px 48px; max-width:60ch; }
+  .belt { position:absolute; z-index:0; left:128px; width:24px; top:0; height:0; pointer-events:none;
+    border-left:2px solid var(--brand-line-mid); border-right:2px solid var(--brand-line-mid);
+    background:repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
+    animation:beltRoll 0.8s linear infinite; }
+  @keyframes beltRoll { to { background-position:0 12px; } }
+  .belt .parcel { position:absolute; left:3px; top:-14px; width:14px; height:12px; border-radius:3px;
+    background:var(--mascot-fill); border:2px solid var(--mascot-stroke); box-sizing:border-box;
+    animation:parcelRide 7.5s linear infinite; }
+  .belt .parcel::after { content:""; position:absolute; left:0; right:0; top:3px; border-top:2px solid var(--mascot-stroke); }
+  .belt .parcel:nth-child(2) { animation-delay:-2.5s; }
+  .belt .parcel:nth-child(3) { animation-delay:-5s; }
+  @keyframes parcelRide { from { top:-14px; } to { top:100%; } }
+  #steps:not(.in-view) .belt, #steps:not(.in-view) .parcel { animation-play-state:paused; }
+
+  .scene { display:block; width:100%; height:auto; overflow:visible; --play:paused; }
+  .step.is-playing .scene { --play:running; }
+  .sc-table { fill:var(--brand-line-mid); }
+  .sc-leg, .sc-ground { stroke:var(--brand-line-mid); stroke-width:3; stroke-linecap:round; fill:none; }
+  .sc-apple circle { fill:#D9534F; stroke:var(--mascot-stroke); stroke-width:2; }
+  .sc-apple .leaf { fill:var(--brand); }
+  .sc-apple .stem, .sc-banana .tip { stroke:var(--mascot-stroke); stroke-width:2; stroke-linecap:round; fill:none; }
+  .sc-banana path.fruit { fill:#F2C14E; stroke:var(--mascot-stroke); stroke-width:2; stroke-linejoin:round; }
+  .sc-tape, .sc-spark, .sc-packet { fill:var(--accent); }
+  .sc-thermo .tube { fill:var(--bg); stroke:var(--text-secondary); stroke-width:2; }
+  .sc-thermo .bulb, .sc-thermo .mercury { fill:var(--accent); }
+  .sc-ice rect { fill:var(--ice-soft); stroke:var(--ice); stroke-width:2; }
+  .sc-ice path, .sc-flakes path { stroke:var(--ice); stroke-width:1.8; stroke-linecap:round; fill:none; }
+  .sc-readout { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:8.5px; fill:var(--on-brand); text-anchor:middle; }
+  .sc-scale { fill:var(--brand); }
+  .sc-walker .limb { stroke:var(--mascot-stroke); stroke-width:3.2; stroke-linecap:round; fill:none; }
+  .sc-walker .head { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2.6; }
+  .sc-bank .wall { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2; }
+  .sc-bank .roof { fill:var(--brand); }
+  .sc-bank .door { fill:var(--brand-line-mid); }
+  .sc-bank .heart { fill:var(--accent); }
+  .sc-check circle { fill:var(--brand); }
+  .sc-check path { stroke:var(--on-brand); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; fill:none; }
+  .sc-screen .win { fill:var(--bg); stroke:var(--mascot-stroke); stroke-width:2; }
+  .sc-screen .bar { stroke:var(--brand-line-mid); stroke-width:1.5; }
+  .sc-screen .dot, .sc-screen .base { fill:var(--brand-line-mid); }
+  .sc-rows rect { fill:var(--line); }
+  .sc-row-new .hi { fill:color-mix(in srgb, var(--brand) 16%, transparent); }
+  .sc-row-new .ln { fill:var(--brand-line-mid); }
+  .sc-row-new path { stroke:var(--brand); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; fill:none; }
+  .sc-plus { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:12px; fill:var(--accent-text); }
+
+  /* Still frames (the base styles) are what reduced motion shows; the
+     keyframes below animate away from and back to them on a loop. */
+  .sc-tape, .sc-spark, .sc-check, .sc-packet, .sc-plus { opacity:0; }
+  .sc-tape { transform-box:fill-box; transform-origin:left center; }
+  .sc-spark, .sc-check, .sc-plus, .sc-flakes path { transform-box:fill-box; transform-origin:center; }
+  .sc-thermo .mercury { transform-box:fill-box; transform-origin:center bottom; }
+  .sc-walker .leg { transform-box:fill-box; transform-origin:center top; }
+
+  .sc-collect [data-lid-g] { animation:lidCollect 6s ease-in-out infinite; }
+  .sc-collect .sc-apple { animation:appleIn 6s ease-in-out infinite; }
+  .sc-collect .sc-banana { animation:bananaIn 6s ease-in-out infinite; }
+  .sc-collect .sc-tape { animation:tapeOn 6s ease-in-out infinite; }
+  .sc-collect .sc-spark { animation:sparkPop 6s ease-out infinite; }
+  .sc-collect .sc-box { animation:boxHop 6s ease-in-out infinite; }
+  @keyframes lidCollect { 0%, 4% { transform:translateY(0) rotate(0deg); } 10%, 58% { transform:translateY(-9px) rotate(-13deg); } 64%, 100% { transform:translateY(0) rotate(0deg); } }
+  @keyframes appleIn { 0%, 12% { transform:translate(0,0); opacity:1; } 21% { transform:translate(42px,-96px); } 29% { transform:translate(84px,-80px); } 35% { transform:translate(84px,-30px); opacity:1; } 36%, 90% { transform:translate(84px,-30px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
+  @keyframes bananaIn { 0%, 30% { transform:translate(0,0); opacity:1; } 39% { transform:translate(-42px,-96px); } 47% { transform:translate(-86px,-78px); } 53% { transform:translate(-86px,-30px); opacity:1; } 54%, 90% { transform:translate(-86px,-30px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
+  @keyframes tapeOn { 0%, 64% { opacity:0; transform:scaleX(0); } 65% { opacity:1; transform:scaleX(0); } 71%, 90% { opacity:1; transform:scaleX(1); } 96%, 100% { opacity:0; transform:scaleX(1); } }
+  @keyframes sparkPop { 0%, 70% { opacity:0; transform:scale(0.2) rotate(0deg); } 75% { opacity:1; transform:scale(1.1) rotate(20deg); } 86% { opacity:1; transform:scale(1) rotate(45deg); } 92%, 100% { opacity:0; transform:scale(0.6) rotate(60deg); } }
+  @keyframes boxHop { 0%, 70% { transform:translateY(0); } 74% { transform:translateY(-5px); } 78%, 100% { transform:translateY(0); } }
+
+  .sc-pack [data-lid-g] { animation:lidPack 6s ease-in-out infinite; }
+  .sc-pack .sc-ice { animation:iceIn 6s ease-in-out infinite; }
+  .sc-pack .sc-thermo .mercury { animation:mercuryCool 6s ease-in-out infinite; }
+  .sc-pack .sc-thermo .bulb { animation:bulbCool 6s ease-in-out infinite; }
+  .sc-pack .sc-flakes path { animation:flakeTwinkle 6s ease-in-out infinite; }
+  .sc-pack .sc-box { animation:boxShiver 6s linear infinite; }
+  @keyframes lidPack { 0%, 6% { transform:translateY(0) rotate(0deg); } 12%, 40% { transform:translateY(-9px) rotate(-13deg); } 46%, 100% { transform:translateY(0) rotate(0deg); } }
+  @keyframes iceIn { 0%, 14% { transform:translate(0,0); opacity:1; } 23% { transform:translate(-44px,-98px); } 31% { transform:translate(-88px,-80px); } 37% { transform:translate(-88px,-32px); opacity:1; } 38%, 90% { transform:translate(-88px,-32px); opacity:0; } 91% { transform:translate(0,0); opacity:0; } 97%, 100% { transform:translate(0,0); opacity:1; } }
+  @keyframes mercuryCool { 0%, 44% { transform:scaleY(1); fill:var(--accent); } 60%, 88% { transform:scaleY(0.4); fill:var(--ice); } 98%, 100% { transform:scaleY(1); fill:var(--accent); } }
+  @keyframes bulbCool { 0%, 44% { fill:var(--accent); } 60%, 88% { fill:var(--ice); } 98%, 100% { fill:var(--accent); } }
+  @keyframes flakeTwinkle { 0%, 46% { opacity:0; transform:scale(0.3) rotate(0deg); } 54% { opacity:1; transform:scale(1.1) rotate(30deg); } 70% { opacity:0.7; transform:scale(0.9) rotate(60deg); } 82% { opacity:1; transform:scale(1) rotate(90deg); } 92%, 100% { opacity:0; transform:scale(0.4) rotate(120deg); } }
+  @keyframes boxShiver { 0%, 48% { transform:translateX(0); } 50% { transform:translateX(-1.5px); } 52% { transform:translateX(1.5px); } 54% { transform:translateX(-1.5px); } 56% { transform:translateX(1.5px); } 58%, 100% { transform:translateX(0); } }
+
+  .sc-walk .sc-walker { animation:walkAcross 6s ease-in-out infinite; }
+  .sc-walk .leg-a { animation:legSwing 0.5s ease-in-out infinite alternate; }
+  .sc-walk .leg-b { animation:legSwing 0.5s ease-in-out infinite alternate-reverse; }
+  .sc-walk .sc-check { animation:checkPop 6s ease-out infinite; }
+  @keyframes walkAcross { 0% { transform:translateX(0); opacity:0; } 5% { opacity:1; } 60%, 86% { transform:translateX(104px); opacity:1; } 92%, 100% { transform:translateX(104px); opacity:0; } }
+  @keyframes legSwing { from { transform:rotate(-24deg); } to { transform:rotate(24deg); } }
+  @keyframes checkPop { 0%, 62% { opacity:0; transform:scale(0.3); } 68% { opacity:1; transform:scale(1.15); } 72%, 86% { opacity:1; transform:scale(1); } 92%, 100% { opacity:0; transform:scale(1); } }
+
+  .sc-post .sc-packet { animation:packetFly 6s ease-in-out infinite; }
+  .sc-post .sc-rows { animation:rowsShift 6s ease-in-out infinite; }
+  .sc-post .sc-row-new { animation:rowIn 6s ease-out infinite; }
+  .sc-post .sc-plus { animation:plusPop 6s ease-out infinite; }
+  .sc-post .sc-box { animation:boxCheer 6s ease-in-out infinite; }
+  @keyframes packetFly { 0%, 6% { opacity:0; transform:translate(0,0); } 10% { opacity:1; transform:translate(0,0); } 22% { transform:translate(22px,-28px); } 32% { opacity:1; transform:translate(48px,-8px); } 36%, 100% { opacity:0; transform:translate(48px,-8px); } }
+  @keyframes rowsShift { 0%, 32% { transform:translateY(-17px); } 40%, 90% { transform:translateY(0); } 97%, 100% { transform:translateY(-17px); } }
+  @keyframes rowIn { 0%, 34% { opacity:0; } 42%, 90% { opacity:1; } 96%, 100% { opacity:0; } }
+  @keyframes plusPop { 0%, 42% { opacity:0; transform:translateY(4px) scale(0.6); } 48% { opacity:1; transform:translateY(-2px) scale(1.1); } 54%, 84% { opacity:1; transform:translateY(0) scale(1); } 92%, 100% { opacity:0; transform:translateY(-6px) scale(1); } }
+  @keyframes boxCheer { 0%, 44% { transform:translateY(0); } 49% { transform:translateY(-7px); } 54% { transform:translateY(0); } 58% { transform:translateY(-4px); } 62%, 100% { transform:translateY(0); } }
+
+  /* Every scene animation pauses while its step is off screen. Placed last so
+     it wins over the shorthands above. */
+  .scene * { animation-play-state:var(--play) !important; animation-delay:var(--d, 0s) !important; }
+  /* A relay: each station runs a quarter-cycle after the one above it, so the
+     action rolls down the belt instead of every scene peaking at once. */
+  .sc-pack { --d:1.5s; } .sc-walk { --d:3s; } .sc-post { --d:4.5s; }
   /* This block was one narrow column with the whole right half of the
      section empty. Now a fixed status card plus a chart that fills what is
      left, so the width the section actually has gets used. */
@@ -62,12 +178,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      (which is told to take its colours from here). */
   .cold-mascot { grid-area:mascot; position:relative; width:220px; justify-self:center;
     --mascot-fill:#EAF2DE; --mascot-stroke:#2E5A22; --box-side:#D3E3C1; --box-interior:#BFD4A8;
-    --cm-glow:rgba(156,203,122,0.34); }
+    --cm-glow:color-mix(in srgb, var(--brand) 34%, transparent); }
   :root[data-theme="dark"] .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .cold-mascot { --mascot-fill:#2A3A22; --mascot-stroke:#9CCB7A; --box-side:#223019; --box-interior:#18230F; }
   }
-  .cold-mascot.is-danger { --cm-glow:rgba(240,160,64,0.4); }
+  .cold-mascot.is-danger { --cm-glow:color-mix(in srgb, var(--accent) 40%, transparent); }
   /* A tight, soft glow: small blur, low opacity. */
   .cold-mascot > svg, .cold-mascot > canvas { filter:drop-shadow(0 0 3px var(--cm-glow)); transition:filter 250ms ease; }
   .cold-mascot > canvas { display:block; width:100%; }
@@ -95,21 +211,21 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .cold-ice { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:9px; margin-top:16px; min-height:48px; padding:0 22px;
     border:1px solid var(--brand); border-radius:999px; background:var(--brand); color:var(--on-brand); cursor:pointer;
     font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:16px;
-    box-shadow:0 0 0 0 rgba(156,203,122,0.5), 0 6px 18px -6px rgba(156,203,122,0.6);
+    box-shadow:0 0 0 0 color-mix(in srgb, var(--brand) 50%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
     transition:background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease; }
   .cold-ice:hover { background:var(--brand-press); border-color:var(--brand-press); transform:translateY(-1px); }
   .cold-ice:not(.tried) { animation:icePulse 1.8s ease-out infinite; }
-  @keyframes icePulse { 0% { box-shadow:0 0 0 0 rgba(156,203,122,0.55), 0 6px 18px -6px rgba(156,203,122,0.6); } 70%, 100% { box-shadow:0 0 0 12px rgba(156,203,122,0), 0 6px 18px -6px rgba(156,203,122,0.6); } }
+  @keyframes icePulse { 0% { box-shadow:0 0 0 0 color-mix(in srgb, var(--brand) 55%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent); } 70%, 100% { box-shadow:0 0 0 12px color-mix(in srgb, var(--brand) 0%, transparent), 0 6px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent); } }
   .cold-ice .try { position:absolute; top:-10px; right:-8px; padding:2px 8px; border-radius:999px; background:var(--accent); color:#1D1D1F;
     font-size:11px; font-weight:700; letter-spacing:0.02em; line-height:1.5; }
   .cold-ice.tried .try { display:none; }
-  .cold-ice[aria-pressed="true"] { background:rgba(190,225,255,0.14); border-color:rgba(190,225,255,0.6); color:#D8ECFF; box-shadow:none; }
+  .cold-ice[aria-pressed="true"] { background:var(--ice-soft); border-color:var(--ice); color:var(--ice); box-shadow:none; }
   .cold-ice[hidden] { display:none; }
   .cold-ice svg { flex:none; }
   .cold-chart { grid-area:chart; align-self:center; position:relative; min-width:0; border-radius:10px; }
   /* Frosted inner glow while the what-if is on. */
   .cold-chart::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
-    box-shadow:inset 0 0 28px rgba(200,232,255,0.22), inset 0 0 0 1px rgba(200,232,255,0.16); transition:opacity 500ms ease; }
+    box-shadow:inset 0 0 28px color-mix(in srgb, var(--ice) 22%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ice) 18%, transparent); transition:opacity 500ms ease; }
   .cold-chart.is-frost::after { opacity:1; }
   .cold-rows .row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:baseline; width:100%; padding:7px 8px; border:none; border-bottom:1px solid var(--line-soft); background:transparent; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:400; font-size:12px; color:var(--text-secondary); text-align:left; }
   .cold-rows .row .temp { font-variant-numeric:tabular-nums; font-weight:500; }
@@ -144,9 +260,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   @keyframes iceLift { from { opacity:1; transform:none; } to { opacity:0; transform:translateY(-28px); } }
   .cold-frost { position:absolute; z-index:2; left:0; top:0; width:0; height:0; pointer-events:none; }
   .cold-frost i { position:absolute; left:-3px; top:-3px; width:6px; height:6px; border-radius:50%;
-    background:rgba(225,242,255,0.95); box-shadow:0 0 6px rgba(200,232,255,0.9); animation:frostOut 600ms ease-out both; }
+    background:var(--ice); box-shadow:0 0 6px color-mix(in srgb, var(--ice) 80%, transparent); animation:frostOut 600ms ease-out both; }
   .cold-frost i.flake { width:9px; height:9px; left:-4.5px; top:-4.5px; border-radius:0; background:none; box-shadow:none;
-    background-image:linear-gradient(rgba(225,242,255,0.95),rgba(225,242,255,0.95)), linear-gradient(rgba(225,242,255,0.95),rgba(225,242,255,0.95));
+    background-image:linear-gradient(var(--ice),var(--ice)), linear-gradient(var(--ice),var(--ice));
     background-size:9px 1.5px, 1.5px 9px; background-position:center; background-repeat:no-repeat; }
   @keyframes frostOut { from { opacity:1; transform:translate(0,0) scale(1) rotate(0); } to { opacity:0; transform:translate(var(--dx),var(--dy)) scale(0.4) rotate(90deg); } }
   @media (prefers-reduced-motion: reduce) {
@@ -218,13 +334,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .map-about p { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:10px 0 0; }
   .map-about .cite { font-size:13px; }
   .done-card { border:1px solid var(--brand-line); background:var(--tint); padding:32px; }
+  /* The join section now sits on the page background, so its fields take the
+     card colour to stay visible as fields. */
+  #join form.join input, #join form.join select, #join form.join textarea { background:var(--surface); }
   @media (max-width:760px) {
     .hero-grid, .two-grid, .join-grid { grid-template-columns:1fr; gap:36px; }
     .hero-grid > .visual { order:-1; max-width:240px; margin:0 auto; }
     .sensor-row { grid-template-columns:1fr; gap:24px; }
     .sensor-row > div:first-child { max-width:150px; }
-    .prow > button { grid-template-columns:32px 36px 1fr 24px; grid-template-areas:"num pmasc ttl caret" "bdy bdy bdy bdy"; row-gap:8px; }
-    .prow .pdetail p { padding-left:24px; }
+    /* Phones: each station sits above its text, and the belt becomes a rail
+       down the left edge with a short arm into each station. */
+    .step { grid-template-columns:minmax(0,1fr); row-gap:10px; padding:18px 0 18px 34px; }
+    .step .stage { width:min(100%, 280px); }
+    .step .stage::before { content:""; position:absolute; left:-21px; top:50%; width:20px; border-top:2px solid var(--brand-line-mid); }
+    .belt { left:2px; width:20px; }
+    .belt .parcel { left:1px; width:14px; }
+    .step-text > button { grid-template-columns:30px minmax(0,1fr) 24px; }
+    .step .bdy { font-size:17px; }
+    .step .pdetail p { padding-left:42px; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   @media print {
@@ -314,25 +441,23 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         </div>
       </div>
       <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
-        <p class="cap">Boxes built and routes planned. Now we need food bank partners.</p>
+        <p class="figure fig" id="statLbs" style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to launch</p>
+        <p class="cap">Currently building connections between schools &amp; community fridges to launch.</p>
       </div>
     </div>
     <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/" target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the average a school recovered in its first year of share tables in a <a href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025 study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
   </div>
 </section>
 
-<section id="how" class="wrap" style="padding-top:80px; padding-bottom:88px;">
-  <p class="eyebrow" data-reveal>How it works</p>
+<section id="how" class="wrap" style="padding-top:72px; padding-bottom:72px;">
   <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-    <span class="mask-l"><span data-line>Four simple steps,</span></span>
-    <span class="mask-l"><span data-line>the same every time.</span></span>
+    <span class="mask-l"><span data-line>Four simple steps</span></span>
   </h2>
-  <div id="steps" style="border-top:1px solid var(--line);"></div>
+  <div id="steps"></div>
 </section>
 
 <div class="instrument">
-<section id="sensors" class="wrap" style="padding-top:96px; padding-bottom:88px;">
+<section id="sensors" class="wrap" style="padding-top:72px; padding-bottom:72px;">
   <p class="eyebrow" data-reveal>Food safety</p>
   <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
     <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
@@ -370,8 +495,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </section>
 </div>
 
-<section id="network" style="background:var(--bg);">
-  <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
+<section id="network">
+  <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>The map</p>
     <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
       <span class="mask-l"><span data-line>Where food help</span></span>
@@ -397,7 +522,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="learn" class="wrap" style="padding-top:72px; padding-bottom:88px; border-top:1px solid var(--line);">
+<section id="learn" class="wrap" style="padding-top:72px; padding-bottom:72px;">
   <p class="eyebrow" data-reveal>Learn more</p>
   <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
     <span class="mask-l"><span data-line>Want the details?</span></span>
@@ -428,13 +553,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
 <section id="schools" class="emblems" aria-labelledby="schoolsHd">
   <div class="wrap">
-    <p class="eyebrow" id="schoolsHd">Where our team studies</p>
+    <p class="emblems-title" id="schoolsHd">Built by students from:</p>
   </div>
   <div class="emblem-track" data-emblems></div>
-  <p class="wrap emblem-note">Logos show where our team members go to school. They are not an endorsement by any school.</p>
 </section>
 
-<section id="join" style="background:var(--surface); border-top:1px solid var(--line);">
+<section id="join">
   <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Get involved</p>
     <div class="join-grid">
@@ -601,24 +725,114 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     update();
   })();
 
-  /* ---------- procedure rows ---------- */
+  /* ---------- how it works: four animated stations on a conveyor ----------
+     Each scene is a 240×150 drawing starring the flat mascot (the same
+     mascotSVG the rest of the site uses, with its per-step mood), placed as a
+     nested <svg> so its own lid animation keeps its coordinates. Items that
+     "go into" the box are drawn behind it, so they vanish as they drop in. */
+  function sceneMascot(state, x, y, w) {
+    var svg = mascotSVG(state, {});
+    var inner = svg.slice(svg.indexOf(">") + 1, svg.lastIndexOf("</svg>"));
+    return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 260 / 300).toFixed(1) +
+      '" viewBox="0 0 300 260" overflow="visible">' + inner + "</svg>";
+  }
+  var SCENES = {
+    /* 01: an apple and a banana hop off the share table into the box; the
+       lid shuts and a strip of tape seals it. */
+    collect:
+      '<rect class="sc-table" x="14" y="128" width="212" height="7" rx="3"/>' +
+      '<path class="sc-leg" d="M32 135 V148 M208 135 V148"/>' +
+      '<g class="sc-apple"><path class="stem" d="M36 108 V102"/><path class="leaf" d="M37 104 Q42 96 49 99 Q45 106 37 104 Z"/><circle cx="36" cy="118" r="10"/></g>' +
+      '<g class="sc-banana"><path class="fruit" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/><path class="tip" d="M188 112 L185 108"/></g>' +
+      '<g class="sc-box">' + sceneMascot("collect", 65, 47, 110) + "</g>" +
+      '<rect class="sc-tape" x="109" y="77" width="22" height="8" rx="2"/>' +
+      '<path class="sc-spark" d="M176 48 L179 56 L187 59 L179 62 L176 70 L173 62 L165 59 L173 56 Z"/>',
+    /* 02: on the scale, an ice pack drops in; snowflakes, and the
+       thermometer cools from warm orange to ice blue. */
+    pack:
+      '<g class="sc-thermo"><rect class="tube" x="20" y="42" width="14" height="76" rx="7"/><rect class="mercury" x="24" y="56" width="6" height="62" rx="3"/><circle class="bulb" cx="27" cy="122" r="10"/></g>' +
+      '<rect class="sc-table" x="58" y="128" width="124" height="7" rx="3"/>' +
+      '<rect class="sc-scale" x="98" y="135" width="44" height="13" rx="3"/><text class="sc-readout" x="120" y="144.5">12 lb</text>' +
+      '<g class="sc-ice"><rect x="193" y="110" width="30" height="20" rx="5"/><path d="M208 113 V127 M202 116.5 L214 123.5 M202 123.5 L214 116.5"/></g>' +
+      '<g class="sc-box">' + sceneMascot("pack", 65, 47, 110) + "</g>" +
+      '<g class="sc-flakes"><path d="M60 40 V52 M54 43 L66 49 M54 49 L66 43"/><path d="M186 58 V68 M181 60.5 L191 65.5 M181 65.5 L191 60.5"/><path d="M150 22 V32 M145 24.5 L155 29.5 M145 29.5 L155 24.5"/></g>',
+    /* 03: a student carries the box to a food bank; a check pops at the door. */
+    walk:
+      '<path class="sc-ground" d="M6 136 H234"/>' +
+      '<g class="sc-bank"><path class="roof" d="M170 80 L201 56 L232 80 Z"/><rect class="wall" x="175" y="80" width="52" height="56"/><rect class="door" x="194" y="106" width="14" height="30" rx="2"/><path class="heart" d="M201 97 C197 93 192 95 192 89.5 C192 86.5 195 85 197.5 86.5 C199 87.5 200 88.5 201 90 C202 88.5 203 87.5 204.5 86.5 C207 85 210 86.5 210 89.5 C210 95 205 93 201 97 Z"/></g>' +
+      '<g class="sc-walker">' +
+        '<path class="limb leg leg-a" d="M40 112 L40 134"/><path class="limb leg leg-b" d="M40 112 L40 134"/>' +
+        '<path class="limb" d="M40 94 L40 112"/><circle class="head" cx="40" cy="85" r="7.5"/>' +
+        sceneMascot("deliver", 44, 78, 42) +
+        '<path class="limb" d="M40 98 L50 104"/>' +
+      "</g>" +
+      '<g class="sc-check"><circle cx="201" cy="42" r="10"/><path d="M196 42 L199.5 45.5 L206 38.5"/></g>',
+    /* 04: a dot flies from the box to the laptop and a new row lands in the
+       public log with a check; the box cheers. */
+    post:
+      '<path class="sc-ground" d="M6 136 H92"/>' +
+      '<g class="sc-screen"><rect class="win" x="98" y="20" width="128" height="94" rx="8"/><path class="bar" d="M98 36 H226"/>' +
+        '<circle class="dot" cx="108" cy="28" r="2.6"/><circle class="dot" cx="116" cy="28" r="2.6"/><circle class="dot" cx="124" cy="28" r="2.6"/>' +
+        '<g class="sc-rows"><rect x="106" y="62" width="112" height="11" rx="3"/><rect x="106" y="79" width="112" height="11" rx="3"/><rect x="106" y="96" width="112" height="11" rx="3"/></g>' +
+        '<g class="sc-row-new"><rect class="hi" x="106" y="43" width="112" height="13" rx="3"/><path d="M111 49.5 L114 52.5 L119 46.5"/><rect class="ln" x="124" y="47.5" width="56" height="4.5" rx="2"/><rect class="ln" x="190" y="47.5" width="22" height="4.5" rx="2"/></g>' +
+        '<path class="base" d="M88 116 H236 L228 124 H96 Z"/>' +
+      "</g>" +
+      '<text class="sc-plus" x="214" y="16">+1</text>' +
+      '<circle class="sc-packet" cx="58" cy="70" r="4.5"/>' +
+      '<g class="sc-box">' + sceneMascot("confirmed", 4, 69, 80) + "</g>"
+  };
+  var SCENE_FOR = { collect: "collect", pack: "pack", deliver: "walk", record: "post" };
+
   var stepsHost = $("#steps");
-  STEPS.forEach(function (s, idx) {
+  var belt = document.createElement("div");
+  belt.className = "belt";
+  belt.setAttribute("aria-hidden", "true");
+  belt.innerHTML = '<span class="parcel"></span><span class="parcel"></span><span class="parcel"></span>';
+  stepsHost.appendChild(belt);
+  STEPS.forEach(function (s) {
+    var key = SCENE_FOR[s.state];
     var d = document.createElement("div");
-    d.className = "prow";
+    d.className = "prow step";
     d.setAttribute("data-prow", "");
-    d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
-    var maskHost = d.querySelector(".pmasc");
-    maskHost.innerHTML = mascotSVG("idle", {});
+    d.innerHTML =
+      '<div class="stage" aria-hidden="true"><svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg></div>" +
+      '<div class="step-text"><button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button>' +
+      '<div class="pdetail"><div><p>' + s.detail + "</p></div></div></div>";
     var btn = d.querySelector("button");
     btn.addEventListener("click", function () {
       var open = d.classList.toggle("open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
       btn.querySelector(".caret").textContent = open ? "−" : "+";
-      paintMascot(maskHost.querySelector("svg"), open ? s.state : "idle");
     });
     stepsHost.appendChild(d);
   });
+
+  /* The belt runs from the first station's centre to the last one's, behind
+     the stations, so parcels ride down and disappear into each one. Re-measured
+     whenever the list changes size (a step opening, a resize). */
+  function layoutBelt() {
+    var stages = $$(".stage", stepsHost);
+    if (stages.length < 2) return;
+    var host = stepsHost.getBoundingClientRect();
+    var a = stages[0].getBoundingClientRect(), b = stages[stages.length - 1].getBoundingClientRect();
+    var top = a.top + a.height / 2 - host.top;
+    belt.style.top = top.toFixed(1) + "px";
+    belt.style.height = (b.top + b.height / 2 - host.top - top).toFixed(1) + "px";
+  }
+  layoutBelt();
+  if ("ResizeObserver" in window) new ResizeObserver(layoutBelt).observe(stepsHost);
+  addEventListener("resize", layoutBelt, { passive: true });
+
+  /* Scenes only animate while their step is on screen. */
+  (function () {
+    var steps = $$(".step", stepsHost);
+    if (!("IntersectionObserver" in window)) { steps.forEach(function (el) { el.classList.add("is-playing"); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { en.target.classList.toggle("is-playing", en.isIntersecting); });
+      stepsHost.classList.toggle("in-view", steps.some(function (el) { return el.classList.contains("is-playing"); }));
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.2 });
+    steps.forEach(function (el) { io.observe(el); });
+  })();
 
   /* ---------- cold-chain readout ----------
      One instrument readout for one sample run. The status column states the
@@ -1002,7 +1216,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     if (!icePack) {
       icePack = document.createElement("span");
       icePack.className = "cold-icepack"; icePack.setAttribute("aria-hidden", "true");
-      icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" fill="rgba(200,232,255,0.18)" stroke="#CFE8FF" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" stroke="#E6F4FF" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" style="fill:var(--ice-soft);stroke:var(--ice)" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" style="stroke:var(--ice)" stroke-width="1.5" stroke-linecap="round"/></svg>';
       coldPanel.appendChild(icePack);
     }
     var d = dropPoint();
@@ -1153,6 +1367,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   })();
   if (STB.initNetworkMap) STB.initNetworkMap();
   STB.initEmblems();
+  STB.initSmoothScroll();
   STB.initScrollFx();
   STB.initProgress();
   STB.initAnchors();

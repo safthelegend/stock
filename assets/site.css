@@ -35,6 +35,9 @@
   --box-side:#D6E5C4; --box-interior:#C6D9B0;
   /* The specular sweep. White at low alpha so it lifts whatever it crosses. */
   --box-shine:rgba(255,255,255,0.72);
+  /* Ice: the what-if ice pack and its frost. A cold blue that reads on each
+     theme's ground; the only non-brand hue, and only on the food-safety chart. */
+  --ice:#2F6FA8; --ice-soft:rgba(47,111,168,0.10);
 }
 /* Three modes: light (above, untouched), dark, and stock. The system
    preference decides only when the reader has made no explicit choice — hence
@@ -53,6 +56,7 @@
     --box-side:#1D2216; --box-interior:#141810;
     --box-shine:rgba(240,242,236,0.30);
     --placeholder:#9BA093;
+    --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
   }
 }
 :root[data-theme="dark"] {
@@ -67,6 +71,7 @@
   --box-side:#1D2216; --box-interior:#141810;
   --box-shine:rgba(240,242,236,0.30);
   --placeholder:#9BA093;
+  --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
 /* Stock — brand mode. Forest-green ground, cream text, orange accent.
    The hues are the site's own two brand colours; nothing new is introduced.
@@ -89,6 +94,7 @@
   --box-side:#1B3612; --box-interior:#132608;
   --box-shine:rgba(234,242,222,0.32);
   --placeholder:#B9BFB0;
+  --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
 @media (prefers-contrast: more) {
   :root {
@@ -832,8 +838,9 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
    A marquee: the row is cloned once by script and the pair slides left by
    exactly one row's width, so the loop is seamless. Emblems are masks
    filled with the brand green, so every logo matches in every theme. */
-.emblems { padding:8px 0 24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); }
-.emblems .eyebrow { margin:28px 0 8px; }
+.emblems { padding:24px 0 40px; }
+.emblems-title { margin:8px 0 10px; text-align:center; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700; font-size:clamp(17px,1.7vw,20px); letter-spacing:-0.01em; color:var(--text); }
 .emblem-track { overflow:hidden; padding:12px 0; }
 .emblem-row { list-style:none; margin:0; padding:0 12px; display:flex; flex-wrap:wrap; justify-content:center; gap:16px 48px; }
 .emblem { flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-width:140px; min-height:112px; }
@@ -849,4 +856,3 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .emblem-track.is-moving .emblem { margin-right:56px; }
 .emblem-track.is-moving:hover .emblem-rail, .emblem-track.is-moving:focus-within .emblem-rail { animation-play-state:paused; }
 @keyframes emblemScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-.emblem-note { font-size:12px; color:var(--text-secondary); margin:4px auto 16px; text-align:center; }
