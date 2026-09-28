@@ -16,7 +16,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=13">
+<link rel="stylesheet" href="assets/site.css?v=14">
 <style>
   html { scroll-behavior:smooth; }
   .sources-list li, #sources { scroll-margin-top:64px; }
@@ -60,12 +60,33 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .sources-list li { padding-left:1.8em; text-indent:-1.8em; }
   .sources-list a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
   .sources-list a:hover { color:var(--accent-text); }
+  .sources-list li { border-radius:6px; transition:background-color 300ms ease; }
+  .sources-list li.is-target { background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--text); }
+  /* Sources: one underlined link at the foot of the page, the list in a popup. */
+  .sources-row { padding-top:28px; padding-bottom:44px; }
+  .sources-trigger { background:none; border:none; padding:0; cursor:pointer;
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:15px;
+    color:var(--text-secondary); text-decoration:underline; text-underline-offset:3px; }
+  .sources-trigger:hover { color:var(--accent-text); }
+  .sources-trigger:focus-visible { outline:2px solid var(--brand); outline-offset:3px; border-radius:4px; }
+  .sources-dialog { width:min(720px, calc(100vw - 32px)); max-height:min(80vh, 640px); padding:0; margin:auto;
+    border:1px solid var(--brand-line); border-radius:12px; background:var(--surface); color:var(--text);
+    box-shadow:0 18px 50px var(--paper-shadow); overflow:hidden; }
+  .sources-dialog[open] { display:flex; flex-direction:column; animation:sdIn 160ms ease both; }
+  .sources-dialog::backdrop { background:rgba(0,0,0,0.42); }
+  @keyframes sdIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .sd-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px 14px 20px; border-bottom:1px solid var(--line); }
+  .sd-title { margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; color:var(--brand); }
+  .sd-close { flex:none; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:transparent;
+    color:var(--text-secondary); font-size:20px; line-height:1; cursor:pointer; }
+  .sd-close:hover { color:var(--text); border-color:var(--brand-line-mid); }
+  .sd-body { overflow:auto; padding:14px 20px 20px; }
   .limits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px 56px; max-width:980px; }
   .limits-grid .lbl { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:14px; color:var(--text-secondary); margin:0 0 8px; }
   .limits-grid p.body { font-size:17px; line-height:1.65; color:var(--text); margin:0; max-width:46ch; text-wrap:pretty; }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=14">
+<link rel="stylesheet" href="assets/design.css?v=15">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -361,9 +382,19 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   </div>
 </section>
 
-<section id="sources-sec" style="background:var(--bg); border-top:1px solid var(--line);">
-  <div class="wrap" id="sources" style="padding-top:56px; padding-bottom:72px;">
-    <p class="eyebrow" style="margin-bottom:14px;">Sources</p>
+<div class="wrap sources-row">
+  <button type="button" class="sources-trigger" id="sourcesOpen" aria-haspopup="dialog" aria-controls="sources">Sources</button>
+</div>
+
+<!-- Sources live in a popup rather than a long list at the foot of the page.
+     The ¹ footnote links, the footer's "Sources" link and why.html#sources /
+     why.html#src-N all open it; a numbered link also highlights that entry. -->
+<dialog class="sources-dialog" id="sources" aria-labelledby="sourcesTitle">
+  <div class="sd-head">
+    <p class="sd-title" id="sourcesTitle">Sources</p>
+    <button type="button" class="sd-close" aria-label="Close sources">×</button>
+  </div>
+  <div class="sd-body">
     <ol class="sources-list">
       <li id="src-1">1. Congressional Research Service, "Supplemental Nutrition Assistance Program (SNAP) and Related Nutrition Programs in P.L. 119-21," <a href="https://www.congress.gov/crs-product/R48552" target="_blank" rel="noopener">congress.gov/crs-product/R48552</a></li>
       <li id="src-2">2. Commonwealth Fund, "How Medicaid, SNAP Cutbacks Would Trigger Job Losses Across States," June 2025</li>
@@ -378,7 +409,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <li id="src-11">11. NYC Health Code § 81.10, DOHMH. Time as a public health control</li>
     </ol>
   </div>
-</section>
+</dialog>
 </main>
 
 <footer>
@@ -387,7 +418,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+    <span class="mono" style="font-weight:500;">Ready to launch · seeking food bank/community fridge partners</span>
   </div>
   <nav class="wrap foot-links" aria-label="More pages">
     <a href="tracking.html">How we track</a>
@@ -399,7 +430,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
 
-<script src="assets/site.js?v=14"></script>
+<script src="assets/site.js?v=15"></script>
 <script>
 (function () {
   "use strict";
@@ -409,6 +440,43 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initMascotSlots();
   STB.initTheme();
   STB.initNav();
+
+  /* ---------- sources popup ----------
+     Opened by the "Sources" link, by any ¹ footnote (which also highlights
+     its entry), and on arrival at #sources or #src-N from another page.
+     A native <dialog>: Escape, focus trapping and the backdrop come free. */
+  (function () {
+    var dlg = $("#sources");
+    if (!dlg || typeof dlg.showModal !== "function") return;
+    function open(targetId) {
+      if (!dlg.open) dlg.showModal();
+      $$(".sources-list li.is-target", dlg).forEach(function (li) { li.classList.remove("is-target"); });
+      var li = targetId && document.getElementById(targetId);
+      if (li && dlg.contains(li)) {
+        li.classList.add("is-target");
+        li.scrollIntoView({ block: "center" });
+      }
+    }
+    $("#sourcesOpen").addEventListener("click", function () { open(); });
+    $(".sd-close", dlg).addEventListener("click", function () { dlg.close(); });
+    /* A click on the dim backdrop lands on the <dialog> itself; the content
+       sits in children, so this only closes on a click outside the box. */
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+    $$('a[href^="#src-"]').forEach(function (a) {
+      a.addEventListener("click", function (e) { e.preventDefault(); open(a.getAttribute("href").slice(1)); });
+    });
+    function fromHash() {
+      var h = (location.hash || "").slice(1);
+      if (h === "sources") open();
+      else if (/^src-\d+$/.test(h)) open(h);
+    }
+    fromHash();
+    addEventListener("hashchange", fromHash);
+    /* Clear the hash on close, so the footer's Sources link opens it again. */
+    dlg.addEventListener("close", function () {
+      if (/^#(sources|src-\d+)$/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+    });
+  })();
 
   /* ---------- torn-paper responsive scale ---------- */
   function tornResize() {

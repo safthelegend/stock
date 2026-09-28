@@ -16,7 +16,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=13">
+<link rel="stylesheet" href="assets/site.css?v=14">
 <style>
   .two-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:start; }
   @media (max-width:760px) { .two-grid { grid-template-columns:1fr; gap:36px; } }
@@ -29,7 +29,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   #team .board-tag { display:inline-block; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:10px; line-height:1.4; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; color:var(--brand); border:1.5px solid var(--brand); border-radius:999px; padding:4px 10px; margin:14px 0 0; }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=14">
+<link rel="stylesheet" href="assets/design.css?v=15">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -68,10 +68,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
 <section id="schools" class="emblems" aria-labelledby="schoolsHd">
   <div class="wrap">
-    <p class="eyebrow" id="schoolsHd">Where our team studies</p>
+    <p class="emblems-title" id="schoolsHd">Built by students from:</p>
   </div>
   <div class="emblem-track" data-emblems></div>
-  <p class="wrap emblem-note">Logos show where our team members go to school. They are not an endorsement by any school.</p>
 </section>
 
 <section id="story" class="wrap" style="padding-top:72px; padding-bottom:40px;">
@@ -182,7 +181,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
       <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
     </span>
-    <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+    <span class="mono" style="font-weight:500;">Ready to launch · seeking food bank/community fridge partners</span>
   </div>
   <nav class="wrap foot-links" aria-label="More pages">
     <a href="tracking.html">How we track</a>
@@ -194,7 +193,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="privacy">This site collects nothing: no analytics, no cookies, no trackers. It stores your colour-theme choice in this browser’s localStorage, which never leaves your device.</div>
 </footer>
 
-<script src="assets/site.js?v=14"></script>
+<script src="assets/site.js?v=15"></script>
 <script>
 (function () {
   "use strict";

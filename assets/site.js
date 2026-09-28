@@ -865,12 +865,14 @@ function initMascotSlots(root) {
       polys.push({ sv: [h1, h2], depth: (h1[2] + h2[2]) / 2, hinge: true });
       if (opts.probe === "pocket") pushPocketProbe(polys, yaw, strokeW);
       if (typeof state.iceY === "number") pushIce(polys, yaw, state.iceY);
+      if (state.items && state.items.length) pushItems(polys, yaw, state.items);
 
       polys.sort(function (p, q) { return q.depth - p.depth; });   /* far to near */
 
       ctx.lineJoin = "round"; ctx.lineCap = "round";
       for (i = 0; i < polys.length; i++) {
         var pl = polys[i];
+        if (pl.item) { drawItem(pl, edge, strokeW); continue; }
         if (pl.hinge) {
           ctx.beginPath();
           ctx.moveTo(pl.sv[0][0], pl.sv[0][1]); ctx.lineTo(pl.sv[1][0], pl.sv[1][1]);
@@ -941,6 +943,64 @@ function initMascotSlots(root) {
 
     }
 
+    /* Opt-in items (the hero's apples and bananas). Each is a flat sprite at a
+       point in the box's own space, depth-sorted with the faces: while it is
+       inside, the front wall is nearer and hides it; once it rises past the
+       rim it draws over everything behind it. Because it lives in box space
+       it turns with the box's yaw, drag included.
+         items: [{ kind: "apple" | "banana", p: [x, y, z], size, rot }]
+       size is in box units (the body is 1.6 wide). */
+    function pushItems(polys, yaw, items) {
+      for (var j = 0; j < items.length; j++) {
+        var it = items[j], pr = project(it.p, yaw);
+        polys.push({ item: true, kind: it.kind, x: pr[0], y: pr[1], depth: pr[2],
+          s: scale * focal * it.size / pr[2], rot: it.rot || 0 });
+      }
+    }
+    function drawItem(pl, edge, strokeW) {
+      var R = pl.s / 2;
+      ctx.save();
+      ctx.translate(pl.x, pl.y);
+      ctx.rotate(pl.rot);
+      ctx.lineWidth = strokeW * 0.85;
+      ctx.strokeStyle = edge;
+      if (pl.kind === "banana") {
+        ctx.beginPath();
+        ctx.moveTo(-R * 0.95, -R * 0.3);
+        ctx.quadraticCurveTo(0, R * 1.62, R * 0.95, -R * 0.45);
+        ctx.quadraticCurveTo(0, R * 0.78, -R * 0.95, -R * 0.3);
+        ctx.closePath();
+        ctx.fillStyle = "#F2C14E"; ctx.fill(); ctx.stroke();
+        ctx.beginPath();                          /* stalk */
+        ctx.moveTo(R * 0.93, -R * 0.44); ctx.lineTo(R * 1.1, -R * 0.66);
+        ctx.lineWidth = strokeW * 1.4; ctx.stroke();
+      } else {
+        ctx.beginPath();                          /* two-lobed apple body */
+        ctx.moveTo(0, -R * 0.62);
+        ctx.bezierCurveTo(R * 0.55, -R * 1.05, R * 1.15, -R * 0.45, R * 0.92, R * 0.25);
+        ctx.bezierCurveTo(R * 0.75, R * 0.85, R * 0.3, R * 1.0, 0, R * 0.82);
+        ctx.bezierCurveTo(-R * 0.3, R * 1.0, -R * 0.75, R * 0.85, -R * 0.92, R * 0.25);
+        ctx.bezierCurveTo(-R * 1.15, -R * 0.45, -R * 0.55, -R * 1.05, 0, -R * 0.62);
+        ctx.closePath();
+        ctx.fillStyle = "#D9534F"; ctx.fill(); ctx.stroke();
+        ctx.beginPath();                          /* shine */
+        ctx.arc(-R * 0.38, -R * 0.1, R * 0.26, Math.PI * 1.05, Math.PI * 1.55);
+        ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = strokeW * 0.9; ctx.stroke();
+        ctx.strokeStyle = edge;
+        ctx.beginPath();                          /* stem */
+        ctx.moveTo(0, -R * 0.6); ctx.quadraticCurveTo(R * 0.04, -R * 0.95, R * 0.18, -R * 1.12);
+        ctx.lineWidth = strokeW; ctx.stroke();
+        ctx.beginPath();                          /* leaf */
+        ctx.moveTo(R * 0.1, -R * 0.86);
+        ctx.quadraticCurveTo(R * 0.55, -R * 1.36, R * 0.9, -R * 0.98);
+        ctx.quadraticCurveTo(R * 0.46, -R * 0.66, R * 0.1, -R * 0.86);
+        ctx.closePath();
+        ctx.fillStyle = gv("--brand") || "#2E5A22"; ctx.fill();
+        ctx.lineWidth = strokeW * 0.6; ctx.stroke();
+      }
+      ctx.restore();
+    }
+
     function facing(v, n, yaw) { return facingPts(v, rotYaw(n, yaw), yaw); }
     function facingPts(v, n, yaw) {
       var c = [0, 0, 0], i;
@@ -991,6 +1051,34 @@ function initMascotSlots(root) {
        be seen at all. */
     var SCROLL_YAW = 18 * Math.PI / 180;
     function scrollYaw(p) { return (-1 + 2 * clamp01(p)) * SCROLL_YAW; }
+
+    /* Apples and bananas pop out as the lid opens and fan out above the box.
+       Every position is a pure function of scroll progress, so scrolling back
+       up drops them back in, in reverse, before the lid shuts. Each starts
+       only once the lid is well open (~40 degrees at p 0.22), so none is ever
+       drawn through a closed lid; after that they rise from inside, arc out
+       past the rim, overshoot a touch and settle. `at` staggers them. */
+    var HERO_ITEMS = [
+      { kind: "apple",  from: [-0.25, 0.1, 0.15], to: [-1.24, 0.98, 0.40], size: 0.34, spin: -0.5, at: 0.22 },
+      { kind: "banana", from: [-0.05, 0.1, 0.12], to: [-0.58, 1.9, 0.20],  size: 0.40, spin: 0.7, at: 0.29 },
+      { kind: "apple",  from: [0.12, 0.1, 0.12],  to: [0.58, 1.9, 0.20],   size: 0.30, spin: 0.45, at: 0.36 },
+      { kind: "banana", from: [0.28, 0.1, 0.15],  to: [1.24, 0.95, 0.40],  size: 0.42, spin: -0.7, at: 0.43 }
+    ];
+    function heroItems(p) {
+      var now = performance.now(), out = [];
+      for (var j = 0; j < HERO_ITEMS.length; j++) {
+        var it = HERO_ITEMS[j];
+        var t = clamp01((p - it.at) / 0.36);
+        if (t <= 0) continue;
+        var e = 1 - Math.pow(1 - t, 3), u = 1 - e;
+        /* Up first, then out: the control point sits above the start. */
+        var c = [it.from[0], it.to[1] + (it.to[1] > 1.5 ? 0.12 : 0.3), (it.from[2] + it.to[2]) / 2];
+        var pos = [0, 1, 2].map(function (k) { return u * u * it.from[k] + 2 * u * e * c[k] + e * e * it.to[k]; });
+        pos[1] += Math.sin(now / 700 + j * 1.7) * 0.035 * e;    /* a gentle bob once out */
+        out.push({ kind: it.kind, p: pos, size: it.size * (0.75 + 0.25 * e), rot: it.spin * e });
+      }
+      return out;
+    }
 
     /* Two contributions, kept separate: the scroll's yaw, and the reader's
        drag offset on top of it. Drag is armed only at progress 1.0, where the
@@ -1153,7 +1241,8 @@ function initMascotSlots(root) {
              of the scrub. The mid-page container gets a tighter, slower one so
              the two do not read as the same effect twice. */
           shine: sub(progress, 0.15, 0.45),
-          shineWidth: 0.6
+          shineWidth: 0.6,
+          items: heroItems(progress)
         });
       }
     });
@@ -1175,7 +1264,7 @@ function initMascotSlots(root) {
        Left unbuilt: it would mean image downloads, which this phase forbids.
        ------------------------------------------------------------------ */
 
-    return { repaint: function () { box.render({ lid: box.lidAngle(progress), yaw: yaw }); }, scrub: scrub };
+    return { repaint: function () { box.render({ lid: box.lidAngle(progress), yaw: yaw, items: heroItems(progress) }); }, scrub: scrub };
   }
 
   /* ======================================================================
@@ -1697,6 +1786,91 @@ function initMascotSlots(root) {
   }
 
   /* ======================================================================
+     SMOOTH SCROLL
+     Wheel and trackpad input glide to their target instead of stepping,
+     and same-page links (#how, index.html#network) glide there too rather
+     than jumping or reloading the page. The page still scrolls natively —
+     only the wheel's steps are eased — so sticky sections, the scroll scrub,
+     keyboard, scrollbar and touch all keep working as they are.
+     Left alone: reduced motion, pinch-zoom, sideways swipes, and anything
+     that scrolls on its own (an engaged map, the palette, a popup).
+     ====================================================================== */
+  function initSmoothScroll(opts) {
+    if (reduced) return null;
+    opts = opts || {};
+    var EASE = opts.ease || 0.11;          /* share of the gap closed per 60Hz frame */
+    var root = document.documentElement;
+    var target = scrollY, current = scrollY, raf = 0, last = 0, ours = false;
+    /* The browser must jump to each eased step; its own smoothing would fight. */
+    root.style.scrollBehavior = "auto";
+
+    function maxY() { return root.scrollHeight - innerHeight; }
+    function clamp(v) { return Math.max(0, Math.min(maxY(), v)); }
+    function frame(now) {
+      var dt = last ? Math.min(64, now - last) : 16.7;
+      last = now;
+      current += (target - current) * (1 - Math.pow(1 - EASE, dt / 16.7));
+      if (Math.abs(target - current) < 0.5) current = target;
+      ours = true;
+      scrollTo(0, current);
+      if (current !== target) raf = requestAnimationFrame(frame);
+      else { raf = 0; last = 0; }
+    }
+    function run() { if (!raf) { last = 0; raf = requestAnimationFrame(frame); } }
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; target = current = scrollY; }
+
+    function scrollsItself(el) {
+      for (; el && el.nodeType === 1 && el !== document.body; el = el.parentNode) {
+        if (el.matches(".leaflet-container.is-engaged, dialog, #palette, select, textarea")) return true;
+        var oy = getComputedStyle(el).overflowY;
+        if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight + 1) return true;
+      }
+      return false;
+    }
+    addEventListener("wheel", function (e) {
+      if (e.defaultPrevented || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || scrollsItself(e.target)) return;
+      e.preventDefault();
+      if (!raf) target = current = scrollY;
+      var unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1;
+      target = clamp(target + e.deltaY * unit);
+      run();
+    }, { passive: false });
+    /* Any scroll we did not cause (keyboard, scrollbar, find-in-page) wins. */
+    addEventListener("scroll", function () {
+      if (ours) { ours = false; return; }
+      if (!raf) target = current = scrollY;
+    }, { passive: true });
+    addEventListener("keydown", function (e) {
+      if (/^(Arrow|Page|Home|End| )/.test(e.key) || e.key === " ") stop();
+    });
+    addEventListener("touchstart", stop, { passive: true });
+
+    /* Same-page links glide, update the address, and move focus with them. */
+    function glideTo(el) {
+      var nav = document.getElementById("nav");
+      var offset = (nav ? nav.offsetHeight : 0) + 16;
+      if (!raf) current = scrollY;
+      target = clamp(el.getBoundingClientRect().top + scrollY - offset);
+      run();
+      if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1");
+      el.focus({ preventScroll: true });
+    }
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href*='#']");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target) return;
+      var url = new URL(a.href, location.href);
+      var here = location.pathname.replace(/index\.html$/, ""), there = url.pathname.replace(/index\.html$/, "");
+      if (url.origin !== location.origin || there !== here || url.hash.length < 2) return;
+      var el = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+      if (!el) return;
+      e.preventDefault();
+      history.pushState(null, "", location.pathname + location.search + url.hash);
+      glideTo(el);
+    });
+    return { glideTo: glideTo, stop: stop };
+  }
+
+  /* ======================================================================
      SCHOOL EMBLEM CAROUSEL (team page and home)
      One entry per school our team comes from. To add an emblem: put the file
      in assets/schools/, run `python3 tools/emblems.py` (it writes a
@@ -1775,6 +1949,7 @@ function initMascotSlots(root) {
     RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
     siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
     initScrollFx: initScrollFx,
-    EMBLEMS: EMBLEMS, initEmblems: initEmblems
+    EMBLEMS: EMBLEMS, initEmblems: initEmblems,
+    initSmoothScroll: initSmoothScroll
   };
 })(window);

@@ -10,7 +10,7 @@
     var STEPS = [
         { num: "01", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", detail: "NYC school rules say food must be store-packaged, unopened and kept at a safe temperature before it can leave the cafeteria.", state: "collect", icon: "package" },
         { num: "02", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box before it leaves the building.", detail: "Each box gets an ID number. We write down its weight, what’s inside and when it was packed, so every pound can be traced.", state: "pack", icon: "archive" },
-        { num: "03", title: "Walk it to a food bank", body: "Two students walk the box to a food bank in the same borough. The food bank signs for it.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
+        { num: "03", title: "Walk it to a food bank/community fridge", body: "Two students walk the box to a food bank/community fridge in the same borough, and the drop-off is confirmed on the spot.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
         { num: "04", title: "Post it online", body: "Every delivery goes on a public log: the date, where it came from, where it went and how much it weighed.", detail: "Entries are never edited; fixes are added as new lines. <span class=\"unverified\">Track the Box, the public log, is planned and not live yet.</span>", state: "record", icon: "clipboard-check" }
     ];
     /* ---------- icon set (shared — assets/site.js) ---------- */
@@ -107,24 +107,114 @@
         update();
     })();
 
-    /* ---------- procedure rows ---------- */
+    /* ---------- how it works: four animated stations on a conveyor ----------
+       Each scene is a 240×150 drawing starring the flat mascot (the same
+       mascotSVG the rest of the site uses, with its per-step mood), placed as a
+       nested <svg> so its own lid animation keeps its coordinates. Items that
+       "go into" the box are drawn behind it, so they vanish as they drop in. */
+    function sceneMascot(state, x, y, w) {
+        var svg = mascotSVG(state, {});
+        var inner = svg.slice(svg.indexOf(">") + 1, svg.lastIndexOf("</svg>"));
+        return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 260 / 300).toFixed(1) +
+            '" viewBox="0 0 300 260" overflow="visible">' + inner + "</svg>";
+    }
+    var SCENES = {
+        /* 01: an apple and a banana hop off the share table into the box; the
+           lid shuts and a strip of tape seals it. */
+        collect:
+            '<rect class="sc-table" x="14" y="128" width="212" height="7" rx="3"/>' +
+            '<path class="sc-leg" d="M32 135 V148 M208 135 V148"/>' +
+            '<g class="sc-apple"><path class="stem" d="M36 108 V102"/><path class="leaf" d="M37 104 Q42 96 49 99 Q45 106 37 104 Z"/><circle cx="36" cy="118" r="10"/></g>' +
+            '<g class="sc-banana"><path class="fruit" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/><path class="tip" d="M188 112 L185 108"/></g>' +
+            '<g class="sc-box">' + sceneMascot("collect", 65, 47, 110) + "</g>" +
+            '<rect class="sc-tape" x="109" y="77" width="22" height="8" rx="2"/>' +
+            '<path class="sc-spark" d="M176 48 L179 56 L187 59 L179 62 L176 70 L173 62 L165 59 L173 56 Z"/>',
+        /* 02: on the scale, an ice pack drops in; snowflakes, and the
+           thermometer cools from warm orange to ice blue. */
+        pack:
+            '<g class="sc-thermo"><rect class="tube" x="20" y="42" width="14" height="76" rx="7"/><rect class="mercury" x="24" y="56" width="6" height="62" rx="3"/><circle class="bulb" cx="27" cy="122" r="10"/></g>' +
+            '<rect class="sc-table" x="58" y="128" width="124" height="7" rx="3"/>' +
+            '<rect class="sc-scale" x="98" y="135" width="44" height="13" rx="3"/><text class="sc-readout" x="120" y="144.5">12 lb</text>' +
+            '<g class="sc-ice"><rect x="193" y="110" width="30" height="20" rx="5"/><path d="M208 113 V127 M202 116.5 L214 123.5 M202 123.5 L214 116.5"/></g>' +
+            '<g class="sc-box">' + sceneMascot("pack", 65, 47, 110) + "</g>" +
+            '<g class="sc-flakes"><path d="M60 40 V52 M54 43 L66 49 M54 49 L66 43"/><path d="M186 58 V68 M181 60.5 L191 65.5 M181 65.5 L191 60.5"/><path d="M150 22 V32 M145 24.5 L155 29.5 M145 29.5 L155 24.5"/></g>',
+        /* 03: a student carries the box to a food bank/community fridge; a check pops at the door. */
+        walk:
+            '<path class="sc-ground" d="M6 136 H234"/>' +
+            '<g class="sc-bank"><path class="roof" d="M170 80 L201 56 L232 80 Z"/><rect class="wall" x="175" y="80" width="52" height="56"/><rect class="door" x="194" y="106" width="14" height="30" rx="2"/><path class="heart" d="M201 97 C197 93 192 95 192 89.5 C192 86.5 195 85 197.5 86.5 C199 87.5 200 88.5 201 90 C202 88.5 203 87.5 204.5 86.5 C207 85 210 86.5 210 89.5 C210 95 205 93 201 97 Z"/></g>' +
+            '<g class="sc-walker">' +
+                '<path class="limb leg leg-a" d="M40 112 L40 134"/><path class="limb leg leg-b" d="M40 112 L40 134"/>' +
+                '<path class="limb" d="M40 94 L40 112"/><circle class="head" cx="40" cy="85" r="7.5"/>' +
+                sceneMascot("deliver", 44, 78, 42) +
+                '<path class="limb" d="M40 98 L50 104"/>' +
+            "</g>" +
+            '<g class="sc-check"><circle cx="201" cy="42" r="10"/><path d="M196 42 L199.5 45.5 L206 38.5"/></g>',
+        /* 04: a dot flies from the box to the laptop and a new row lands in the
+           public log with a check; the box cheers. */
+        post:
+            '<path class="sc-ground" d="M6 136 H92"/>' +
+            '<g class="sc-screen"><rect class="win" x="98" y="20" width="128" height="94" rx="8"/><path class="bar" d="M98 36 H226"/>' +
+                '<circle class="dot" cx="108" cy="28" r="2.6"/><circle class="dot" cx="116" cy="28" r="2.6"/><circle class="dot" cx="124" cy="28" r="2.6"/>' +
+                '<g class="sc-rows"><rect x="106" y="62" width="112" height="11" rx="3"/><rect x="106" y="79" width="112" height="11" rx="3"/><rect x="106" y="96" width="112" height="11" rx="3"/></g>' +
+                '<g class="sc-row-new"><rect class="hi" x="106" y="43" width="112" height="13" rx="3"/><path d="M111 49.5 L114 52.5 L119 46.5"/><rect class="ln" x="124" y="47.5" width="56" height="4.5" rx="2"/><rect class="ln" x="190" y="47.5" width="22" height="4.5" rx="2"/></g>' +
+                '<path class="base" d="M88 116 H236 L228 124 H96 Z"/>' +
+            "</g>" +
+            '<text class="sc-plus" x="214" y="16">+1</text>' +
+            '<circle class="sc-packet" cx="58" cy="70" r="4.5"/>' +
+            '<g class="sc-box">' + sceneMascot("confirmed", 4, 69, 80) + "</g>"
+    };
+    var SCENE_FOR = { collect: "collect", pack: "pack", deliver: "walk", record: "post" };
+
     var stepsHost = $("#steps");
-    STEPS.forEach(function (s, idx) {
+    var belt = document.createElement("div");
+    belt.className = "belt";
+    belt.setAttribute("aria-hidden", "true");
+    belt.innerHTML = '<span class="parcel"></span><span class="parcel"></span><span class="parcel"></span>';
+    stepsHost.appendChild(belt);
+    STEPS.forEach(function (s) {
+        var key = SCENE_FOR[s.state];
         var d = document.createElement("div");
-        d.className = "prow";
+        d.className = "prow step";
         d.setAttribute("data-prow", "");
-        d.innerHTML = '<button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="pmasc"></span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button><div class="pdetail"><div><p>' + s.detail + "</p></div></div>";
-        var maskHost = d.querySelector(".pmasc");
-        maskHost.innerHTML = mascotSVG("idle", {});
+        d.innerHTML =
+            '<div class="stage" aria-hidden="true"><svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg></div>" +
+            '<div class="step-text"><button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button>' +
+            '<div class="pdetail"><div><p>' + s.detail + "</p></div></div></div>";
         var btn = d.querySelector("button");
         btn.addEventListener("click", function () {
             var open = d.classList.toggle("open");
             btn.setAttribute("aria-expanded", open ? "true" : "false");
             btn.querySelector(".caret").textContent = open ? "−" : "+";
-            paintMascot(maskHost.querySelector("svg"), open ? s.state : "idle");
         });
         stepsHost.appendChild(d);
     });
+
+    /* The belt runs from the first station's centre to the last one's, behind
+       the stations, so parcels ride down and disappear into each one. Re-measured
+       whenever the list changes size (a step opening, a resize). */
+    function layoutBelt() {
+        var stages = $$(".stage", stepsHost);
+        if (stages.length < 2) return;
+        var host = stepsHost.getBoundingClientRect();
+        var a = stages[0].getBoundingClientRect(), b = stages[stages.length - 1].getBoundingClientRect();
+        var top = a.top + a.height / 2 - host.top;
+        belt.style.top = top.toFixed(1) + "px";
+        belt.style.height = (b.top + b.height / 2 - host.top - top).toFixed(1) + "px";
+    }
+    layoutBelt();
+    if ("ResizeObserver" in window) new ResizeObserver(layoutBelt).observe(stepsHost);
+    addEventListener("resize", layoutBelt, { passive: true });
+
+    /* Scenes only animate while their step is on screen. */
+    (function () {
+        var steps = $$(".step", stepsHost);
+        if (!("IntersectionObserver" in window)) { steps.forEach(function (el) { el.classList.add("is-playing"); }); return; }
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) { en.target.classList.toggle("is-playing", en.isIntersecting); });
+            stepsHost.classList.toggle("in-view", steps.some(function (el) { return el.classList.contains("is-playing"); }));
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.2 });
+        steps.forEach(function (el) { io.observe(el); });
+    })();
 
     /* ---------- cold-chain readout ----------
        One instrument readout for one sample run. The status column states the
@@ -510,7 +600,7 @@
         if (!icePack) {
             icePack = document.createElement("span");
             icePack.className = "cold-icepack"; icePack.setAttribute("aria-hidden", "true");
-            icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" fill="rgba(200,232,255,0.18)" stroke="#CFE8FF" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" stroke="#E6F4FF" stroke-width="1.5" stroke-linecap="round"/></svg>';
+            icePack.innerHTML = '<svg viewBox="0 0 30 24" width="30" height="24"><rect x="1.5" y="3" width="27" height="19" rx="5" style="fill:var(--ice-soft);stroke:var(--ice)" stroke-width="1.5"/><path d="M15 7v11M10.2 9.7l9.6 5.6M10.2 15.3l9.6-5.6" style="stroke:var(--ice)" stroke-width="1.5" stroke-linecap="round"/></svg>';
             coldPanel.appendChild(icePack);
         }
         var d = dropPoint();
@@ -705,6 +795,7 @@
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();
+    STB.initSmoothScroll();
     STB.initScrollFx();
     STB.initProgress();
     STB.initAnchors();
