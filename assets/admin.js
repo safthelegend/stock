@@ -169,6 +169,45 @@
       host.replaceChildren(...rows.map((d) => d.id === editing ? (open || editCard(d)) : viewCard(d)));
     }
   
+    /* ---------- the public log (log.html) ----------
+       publicLog holds a trimmed copy of every pending or accepted delivery
+       (P.publicEntry). Members add their own entry when they log a delivery;
+       from then on it's kept in step here, from the admin's side: accepting,
+       editing, rejecting or deleting a delivery changes or removes its entry,
+       and deliveries logged before the public log existed get one. Only the
+       differences are written, so once it's in step this writes nothing. */
+    let pub = null;          // publicLog entries by id, once loaded
+    let loaded = false;      // true once the deliveries have loaded
+    let syncing = false, syncAgain = false;
+    const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status;
+
+    async function syncPublicLog() {
+      if (!ctx || !pub || !loaded) return;
+      if (syncing) { syncAgain = true; return; }
+      syncing = true;
+      try {
+        const { fb } = ctx;
+        const want = {};
+        all.forEach((d) => { const e = P.publicEntry(d); if (e) want[d.id] = e; });
+        const ops = [];
+        Object.keys(want).forEach((id) => { if (!sameEntry(pub[id], want[id])) ops.push({ id, value: want[id] }); });
+        Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
+        for (let i = 0; i < ops.length; i += 400) {   // a batch takes up to 500 writes
+          const b = fb.writeBatch(fb.db);
+          ops.slice(i, i + 400).forEach((op) => {
+            const ref = fb.doc(fb.db, "publicLog", op.id);
+            if (op.value) b.set(ref, op.value); else b.delete(ref);
+          });
+          await b.commit();
+        }
+      } catch (err) {
+        console.error("Couldn't update the public delivery log:", err);
+      } finally {
+        syncing = false;
+        if (syncAgain) { syncAgain = false; syncPublicLog(); }
+      }
+    }
+
     window.STBA = {
       // start(ctx, { onPending(n) }) begins listening; returns a stop function.
       start: (c, hooks) => {
@@ -177,13 +216,20 @@
         const q = c.fb.query(c.fb.collection(c.fb.db, "deliveries"), c.fb.orderBy("createdAt", "desc"));
         const stop = c.fb.onSnapshot(q, (snap) => {
           all = snap.docs.map((d) => ({ id: d.id, ...d.data({ serverTimestamps: "estimate" }) }));
+          loaded = true;
           if (editing && !all.some((d) => d.id === editing)) editing = null;
           render();
+          syncPublicLog();
         }, (err) => {
           console.error(err);
           $("#queue").replaceChildren(el("p", { className: "p-msg is-err" }, "Couldn't load deliveries: " + err.code));
         });
-        return () => { stop(); ctx = null; all = []; editing = null; };
+        const stopPub = c.fb.onSnapshot(c.fb.collection(c.fb.db, "publicLog"), (snap) => {
+          pub = {};
+          snap.docs.forEach((d) => { pub[d.id] = d.data(); });
+          syncPublicLog();
+        }, (err) => console.error("Couldn't read the public delivery log:", err));
+        return () => { stop(); stopPub(); ctx = null; all = []; pub = null; loaded = false; editing = null; };
       }
     };
   })();

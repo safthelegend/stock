@@ -342,6 +342,54 @@ function initMascotSlots(root) {
       }
     } catch (e) {}
 
+  /* ---------- phone menu ----------
+     On phones the bar only has room for the logo, Sign in and the theme
+     switch, so the rest of the links used to vanish. A hamburger button opens
+     a drop-down with every link the desktop bar shows. The links are copied
+     from the bar itself, so there is one list to edit per page. The member
+     portal has its own short bar and is left alone. */
+  (function initMenu() {
+    var nav = $("nav.bar");
+    if (!nav || document.body.classList.contains("portal")) return;
+    var wrap = nav.querySelector(".wrap"), links = nav.querySelectorAll(".links a");
+    if (!wrap || !links.length) return;
+
+    var panel = document.createElement("div");
+    panel.className = "nav-menu";
+    panel.id = "navMenu";
+    panel.hidden = true;
+    Array.prototype.forEach.call(links, function (a) {
+      var c = a.cloneNode(true);
+      c.removeAttribute("id");
+      panel.appendChild(c);
+    });
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "nav-burger";
+    btn.setAttribute("aria-controls", "navMenu");
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "Menu");
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="nb-top" d="M4 7h16"/><path class="nb-mid" d="M4 12h16"/><path class="nb-bot" d="M4 17h16"/></svg>';
+    nav.querySelector(".links").appendChild(btn);
+    nav.appendChild(panel);
+
+    function set(open) {
+      panel.hidden = !open;
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Close menu" : "Menu");
+      nav.classList.toggle("menu-open", open);
+    }
+    btn.addEventListener("click", function () { set(panel.hidden); });
+    /* Any link closes it, including in-page anchors that don't navigate. */
+    panel.addEventListener("click", function (e) { if (e.target.closest("a")) set(false); });
+    document.addEventListener("click", function (e) { if (!panel.hidden && !nav.contains(e.target)) set(false); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) { set(false); btn.focus(); }
+    });
+    matchMedia("(min-width:701px)").addEventListener("change", function (m) { if (m.matches) set(false); });
+  })();
+
   /* ---------- scroll reveal ----------
      initReveals() registers the three reveal patterns both pages share and
      hands back { shot, tick }. Call it AFTER any JS-built rows exist. Pages
