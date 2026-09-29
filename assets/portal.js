@@ -123,6 +123,8 @@
         host.replaceChildren(el("div", { className: "p-card p-narrow" },
           el("h2", { className: "p-h2" }, "Sign in"),
           el("p", { className: "p-muted" }, "Sign in with your Google account. The first time, you'll need an admin to approve you before you can log deliveries."),
+          el("p", { className: "p-muted" }, "We receive your name and email address from Google, never your password. Members must be 13 or older. ",
+            el("a", { href: "privacy.html#collect-members" }, "Privacy Policy")),
           el("div", { className: "p-actions" }, btn),
           msg));
         show("gate");

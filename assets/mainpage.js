@@ -806,6 +806,7 @@
         { kind: "page", label: "Home", href: "index.html#top" },
         { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
         { kind: "page", label: "Delivery log", href: "log.html", keywords: "tracker manifest delivery log deliveries weight status record" },
+        { kind: "page", label: "Privacy Policy", href: "privacy.html", keywords: "privacy data personal information cookies policy legal" },
         { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
         { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
         { kind: "page", label: "Team roles", href: "roles.html" },
