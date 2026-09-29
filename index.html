@@ -29,7 +29,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=16">
+  <link rel="stylesheet" href="assets/site.css?v=17">
   <link rel="stylesheet" href="assets/mainpage.css?v=3">
   <link rel="stylesheet" href="assets/design.css?v=16">
 </head>
@@ -325,7 +325,7 @@
             <span class="mask-l"><span data-line>Let’s talk.</span></span>
           </h2>
           <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school, or a food bank/community fridge, tell us who you are and we’ll get back to you with next steps.</p>
-          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail">stockingtheblock@gmail.com</a></p>
+          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a></p>
           <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
             <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;"
               data-state="idle"></span>
@@ -352,6 +352,8 @@
               <label>Leave this empty <input name="website" type="text" tabindex="-1" autocomplete="off"></label>
             </div>
             <button data-ff data-ffb type="submit">Get in touch</button>
+            <p class="join-notice" style="grid-column:1 / -1; font-size:13px; line-height:1.55; color:var(--text-secondary); margin:2px 0 0;">
+              We use what you send only to reply to you. See our <a href="privacy.html#collect-contact">Privacy Policy</a>. Under 13? Please ask a parent, guardian or teacher to contact us for you.</p>
             <p id="joinFormError" hidden role="alert"
               style="grid-column:span 2; color:var(--accent-text); font-size:14px; margin:4px 0 0; line-height:1.5;">
               Something went wrong sending this. Try again in a moment, or email <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
@@ -376,8 +378,9 @@
       <a href="team.html">Team</a>
       <a href="getting-started.html">Getting started</a>
       <a href="why.html#sources">Sources</a>
+      <a href="privacy.html">Privacy</a>
     </nav>
-    <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores up to two small notes in this browser's localStorage, and neither ever leaves your device: your colour-theme choice, and, only if you're a Stock the Block member who has signed in here, a note that turns the Sign in button into My portal. Signing out removes it. The member sign-in itself runs on Google Firebase and loads only on the member portal, never on the public pages; while you're signed in there, Firebase keeps your sign-in in this browser until you sign out. Two outside services are involved on this page, and they're worth naming. The map loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you're viewing to those services. The contact form is run by Google Firebase: this page loads Firebase's code from Google's servers, and anything you send through the form is stored in our Firebase database, where only our team can read it. Everything else here is served from this site.</div>
+    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
   </footer>
 
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
@@ -385,7 +388,7 @@
   <script type="module" src="assets/firebase-init.js?v=3"></script>
   <script src="assets/site.js?v=16"></script>
   <script src="assets/map.js?v=13"></script>
-  <script src="assets/mainpage.js?v=4"></script>
+  <script src="assets/mainpage.js?v=5"></script>
   
 </body>
 </html>

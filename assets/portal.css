@@ -134,4 +134,6 @@
 .p-badge:empty { display:none; }
 .p-badge.is-alert { background:var(--accent); color:#1D1D1F; }
 .p-formcard { max-width:760px; margin-bottom:0; }
-.p-tabintro { margin:0 0 16px; max-width:62ch; }
+.p-tabintro { margin:0 0 16px; max-width:62ch; }.p-card .p-muted + .p-muted { margin-top:10px; }
+.p-card .p-muted a { color:var(--brand); font-weight:600; }
+.p-card .p-muted + .p-actions { margin-top:16px; }
