@@ -212,3 +212,116 @@ footer .wrap.top { padding-top:56px; }
      background-image:none; font-weight:600; color:var(--brand); transition:border-color 160ms ease, background-color 160ms ease; }
    nav.bar .links a.login:hover, nav.bar .links a.login:focus-visible { border-color:var(--brand); background-color:var(--surface); }
    @media (max-width:700px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
+
+/* ============================================================================
+   PHONES — a calmer, less cluttered layout
+   ----------------------------------------------------------------------------
+   Every rule below sits inside a phone-width media query, so the desktop
+   layout is untouched. This file loads last, which is why the home page's
+   phone rules live here too: at equal specificity they must come after the
+   desktop rules above (and after assets/mainpage.css) to win.
+   ========================================================================= */
+@media (max-width:700px) {
+  /* Menu bar on one line: the logo, Sign in and the theme switch. "Work with
+     us" is dropped from the bar on phones only; the hero button and the join
+     section both carry it on every phone screen that matters. */
+  nav.bar a.brand { white-space:nowrap; }
+  nav.bar .links a.cta { display:none; }
+  nav.bar .links { gap:4px; }
+  nav.bar .links a.login { white-space:nowrap; }
+  #themeToggle { width:40px; height:40px; }
+
+  /* Type sized for a phone, not a monitor: 20px body copy and 30px headings
+     made every paragraph a wall and orphaned words in two-line headings. */
+  .body-p { font-size:17px; line-height:1.6; }
+  h2.hd { font-size:27px; line-height:1.12; text-wrap:balance; }
+  /* Headings are written as two fixed lines for desktop; on a phone the first
+     line can't fit, which left one word stranded on a line of its own. Here
+     they flow as one sentence and balance, so no line ends up a lone word. */
+  h2.hd .mask-l, h2.hd .mask-l > span { display:inline; }
+  footer .wrap.top { padding-top:40px; }
+
+  /* Home hero (#heropin exists only there; other pages also use #top for
+     their header): fits one screen, so the pinned lid-and-fruit scroll plays
+     with the whole hero in view instead of scrolling past empty space. */
+  #heropin #top { min-height:100svh !important; }
+  .hero-grid { padding-top:56px; padding-bottom:16px; gap:20px; }
+  .hero-grid > .visual { max-width:150px; }
+  .hero-h1 { font-size:31px; line-height:1.08; max-width:none; }
+  .hero-h1 em { margin-top:0.12em; }
+  #heroStatus { margin-top:18px; }
+  #heropin #top .btn { flex:1 1 0; min-width:0; text-align:center; font-size:16px; padding:12px 14px; }
+
+  /* One spacing rhythm for phones: 48px between sections, not 72. The
+     sections carry their desktop padding inline, hence !important. */
+  #how, #sensors, #learn { padding-top:48px !important; padding-bottom:48px !important; }
+  #network > .wrap, #join > .wrap { padding-top:48px !important; padding-bottom:48px !important; }
+  .emblems { padding:8px 0 24px; }
+
+  /* Stats: snugger cards and a quieter source note. */
+  .statband .grid { padding:24px 0 12px; gap:12px; }
+  .statband .cell:nth-child(2) { padding:22px 20px 24px; }
+  .statband .cite { font-size:12px; line-height:1.5; }
+
+  /* Food safety: a smaller mascot keeps the panel from towering. */
+  .cold-mascot { width:130px; }
+  .cold-mascot.is-3d { height:118px; }
+
+  /* Learn-more cards and the join form. */
+  .cards-grid .card { padding:20px; }
+  .cards-grid .card p.body { font-size:16px; }
+  .learn-grid { gap:12px; }
+  .join-grid { gap:24px; }
+
+  /* Map: the floating legend covered half the map on a phone. Here it is a
+     thin strip across the top, and the caption underneath is quieter. */
+  .map-shell .map-legend-card { left:8px; right:8px; top:8px; bottom:auto; max-width:none;
+    display:flex; flex-wrap:wrap; align-items:center; gap:3px 10px; padding:6px 10px; }
+  .map-shell .map-legend-card .lg-title { font-size:9px; }
+  .map-shell .map-legend-card .lg-item { font-size:10px; }
+  .map-shell .map-legend-card .lg-sep { display:none; }
+  .map-shell .map-legend-card .lg-sw { width:10px; height:10px; }
+  .hud-caption { font-size:12px; }
+  .hud-stat b { font-size:16px; }
+
+  /* School emblems a size down, so more of the strip shows at once. */
+  .emblem { min-width:104px; min-height:90px; }
+  .emblem-mark { width:64px; height:64px; }
+  .emblem.wide .emblem-mark { width:112px; }
+  .emblem-track.is-moving .emblem { margin-right:36px; }
+
+  /* Form fields at 16px: below that, iPhones zoom the whole page in when a
+     field is tapped. Covers the join form and the member portal's forms. */
+  form.join input, form.join select, form.join textarea { font-size:16px; }
+  body .portal input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+  body .portal select, body .portal textarea { font-size:16px; }
+}
+
+/* Short phones (iPhone SE and similar): a more compact hero so it still fits
+   one screen. */
+@media (max-width:700px) and (max-height:780px) {
+  .hero-grid { padding-top:52px; gap:12px; }
+  .hero-grid > .visual { max-width:112px; }
+  .hero-h1 { font-size:26px; }
+  #heropin #top .body-p { font-size:15.5px; line-height:1.5; }
+  #heropin #top .eyebrow { margin-bottom:8px; font-size:13px; }
+  #heroStatus { margin-top:12px; }
+  #heropin #top .btn { padding:10px 12px; }
+}
+
+/* How it works on phones: each station full width with its text beneath,
+   number and title on one line, the body un-indented. The side rail is
+   replaced by a short rolling conveyor between stations. */
+@media (max-width:760px) {
+  .step { padding:14px 0; row-gap:12px; }
+  .step .stage { width:100%; }
+  .step .stage::before, .belt { display:none; }
+  .step-text > button { grid-template-columns:28px minmax(0,1fr) 20px; grid-template-areas:"num ttl caret" "bdy bdy bdy"; row-gap:6px; }
+  .step .ttl { font-size:17px; }
+  .step .bdy { font-size:16px; }
+  .step .pdetail p { padding:6px 0 4px; }
+  .step:not(:last-child)::after { content:""; justify-self:center; width:22px; height:28px; margin-top:6px;
+    border-left:2px solid var(--brand-line-mid); border-right:2px solid var(--brand-line-mid);
+    background:repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
+    animation:beltRoll 0.8s linear infinite; }
+}

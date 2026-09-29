@@ -149,6 +149,14 @@ nav.bar .links a[aria-current="true"]:hover { background-size:0% 1px; }
 nav.bar .links a.cta { color:var(--brand); font-weight:600;
   background-image:linear-gradient(var(--brand), var(--brand)); }
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
+/* Phones: the menu bar on one line on every page, including the ones that
+   don't load design.css — logo, Sign in and the theme switch only. */
+@media (max-width:700px) {
+  nav.bar .links a:not(.login) { display:none; }
+  nav.bar .links { gap:4px; }
+  nav.bar a.brand, nav.bar .links a { white-space:nowrap; }
+  #themeToggle .theme-name { display:none; }
+}
 .eyebrow { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
 h1, h2 { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
 h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
