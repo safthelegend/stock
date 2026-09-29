@@ -78,6 +78,12 @@
           batch.set(fb.doc(fb.db, "deliveryPhotos", ref.id), { memberUid: user.uid, dataUrl: photoData });
         }
         await batch.commit();
+        /* The public log (log.html) gets a trimmed copy: no names, schools,
+           sites, notes or photo. See firestore.rules, publicLog. It's written
+           on its own, after the delivery, so a problem here never loses the
+           delivery; an admin's portal fills in any entry that's missing. */
+        fb.setDoc(fb.doc(fb.db, "publicLog", ref.id), P.publicEntry({ ...data, status: "pending" }))
+          .catch((err) => console.warn("Public log entry not written yet:", err.code || err));
         resetForm();
         say("Delivery saved. You can follow it under My deliveries.", "ok");
       } catch (err) {

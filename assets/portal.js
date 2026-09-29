@@ -208,14 +208,18 @@
       (v.items && v.items.length ? v.items : [{}]).forEach(addRow);
       addBtn.addEventListener("click", () => addRow({}).focus());
   
+      /* The label is a grid, so its text and "optional" are wrapped in one
+         span; left loose they became two rows and pushed that field lower
+         than its neighbour. */
+      const cap = (text, opt) => el("span", {}, text, opt ? el("span", { className: "p-opt" }, " optional") : null);
       host.replaceChildren(schools, el("div", { className: "p-grid" },
-        el("label", {}, "Delivery date", date),
-        el("label", {}, "Box ID ", el("span", { className: "p-opt" }, "optional"), box),
-        el("label", {}, "Picked up from", from),
-        el("label", {}, "Delivered to", to),
-        el("label", {}, "Total weight (lbs)", weight)),
+        el("label", {}, cap("Delivery date"), date),
+        el("label", {}, cap("Box ID", true), box),
+        el("label", {}, cap("Picked up from"), from),
+        el("label", {}, cap("Delivered to"), to),
+        el("label", {}, cap("Total weight (lbs)"), weight)),
         el("fieldset", { className: "p-fieldset" }, el("legend", {}, "What was in the box"), itemsList, addBtn),
-        el("label", { className: "p-full" }, "Notes ", el("span", { className: "p-opt" }, "optional"), notes));
+        el("label", { className: "p-full" }, cap("Notes", true), notes));
   
       function read() {
         const items = Array.from(itemsList.children).map((row) => {
@@ -284,7 +288,16 @@
       }
     }
   
-    window.STBP = { ready, el, today, fmtTime, fmtDate, statusPill, say, gate, buildFields, deliveryDetails, compressImage };
+    /* ---------- the public log's copy of a delivery ----------
+       Only what's safe to publish: the date, weight, how many kinds of food,
+       and the status. Returns null for a delivery that shouldn't be listed
+       (rejected ones). The fields must match firestore.rules, publicLog. */
+    function publicEntry(d) {
+      if (d.status !== "pending" && d.status !== "accepted") return null;
+      return { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
+    }
+
+    window.STBP = { ready, el, today, fmtTime, fmtDate, statusPill, say, gate, buildFields, deliveryDetails, compressImage, publicEntry };
   
     STB.initTheme();
     STB.initMascotSlots();
