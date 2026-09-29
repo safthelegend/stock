@@ -19,7 +19,7 @@
    ============================================================================ */
 "use strict";
 
-var CACHE_VERSION = "v20";
+var CACHE_VERSION = "v21";
 var CACHE = "stb-" + CACHE_VERSION;
 
 /* Precached on install. Relative to the worker's scope, so this keeps working
@@ -38,7 +38,7 @@ var PRECACHE = [
   "assets/site.css?v=17",
   "assets/design.css?v=16",
   "assets/site.js?v=16",
-  "assets/map.js?v=13",
+  "assets/map.js?v=14",
   "assets/mainpage.css?v=3",
   "assets/mainpage.js?v=5",
   "assets/firebase-init.js?v=3",

@@ -98,6 +98,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <li><a href="#security">Security</a></li>
       <li><a href="#children">Children and students</a></li>
       <li><a href="#rights">Your choices and rights</a></li>
+      <li><a href="#links">Links to other websites</a></li>
       <li><a href="#changes">Changes to this policy</a></li>
       <li><a href="#contact">Contact us</a></li>
     </ol>
@@ -113,7 +114,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>If you send the contact form, we store what you type so we can reply.</li>
     <li>If you are a member and sign in with Google, we store your name, email address and the deliveries you log.</li>
     <li>The public delivery log shows only a delivery's date, weight, number of food types and review status. It never shows names, schools, locations, notes or photos.</li>
-    <li>Some parts of the Site load content from outside services (Google, CARTO, and GitHub, which hosts the Site). Those services receive basic technical information, such as your IP address, when your browser contacts them.</li>
+    <li>Some parts of the Site load content from outside services (GitHub, which hosts the Site, and Google). The map's street background comes from CARTO, but only after you tap the map. These services receive basic technical information, such as your IP address, when your browser contacts them.</li>
     <li>We never sell or rent personal information.</li>
   </ul>
 
@@ -124,7 +125,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <ul>
     <li><b>Website hosting (GitHub Pages).</b> The Site is hosted by GitHub. When you load a page, GitHub receives your IP address and standard request details (such as browser type and the page requested), and may log visitor IP addresses for security purposes. We do not have access to these logs.</li>
     <li><b>Fonts (Google Fonts).</b> Our pages load typefaces from Google Fonts, so your browser sends your IP address and browser details to Google.</li>
-    <li><b>Map (CARTO and OpenStreetMap).</b> The map on the home page loads its background images (“tiles”) from CARTO, using map data from OpenStreetMap. Your browser sends your IP address and the map area being viewed to CARTO.</li>
+    <li><b>Map (CARTO and OpenStreetMap).</b> The map on the home page shows districts and school locations from files stored on the Site. The street background (“tiles”) comes from CARTO, using map data from OpenStreetMap, and loads only after you tap, click or select the map. From then on, your browser sends your IP address and the map area being viewed to CARTO.</li>
     <li><b>Database (Google Firebase).</b> The home page (for the contact form), the delivery log and the member portal load code from Google's servers and connect to our Google Firebase database. Google receives your IP address and browser details when this happens.</li>
   </ul>
 
@@ -179,7 +180,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <tr><td>GitHub Pages (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy</a>)</td><td>Hosts the Site</td><td>IP address and request details</td></tr>
       <tr><td>Google Firebase (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacy</a>)</td><td>Database and member sign-in</td><td>Contact form messages, member accounts, delivery records and photos, public log; IP address and browser details</td></tr>
       <tr><td>Google Fonts (<a href="https://developers.google.com/fonts/faq/privacy" rel="noopener">privacy</a>)</td><td>Provides the Site's typefaces</td><td>IP address and browser details</td></tr>
-      <tr><td>CARTO (<a href="https://carto.com/privacy" rel="noopener">privacy</a>), with OpenStreetMap data</td><td>Provides map images</td><td>IP address and the map area viewed</td></tr>
+      <tr><td>CARTO (<a href="https://carto.com/privacy" rel="noopener">privacy</a>), with OpenStreetMap data</td><td>Provides the map's street background, after you tap the map</td><td>IP address and the map area viewed</td></tr>
     </tbody>
   </table>
   </div>
@@ -210,19 +211,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <p>You can delete all of these at any time by clearing this site's data in your browser settings.</p>
 
   <h2 id="retention">9. How long we keep information</h2>
-  <ul>
-    <li><b>Contact form messages and emails:</b> kept while we are in contact with you, then deleted within 12 months after the conversation ends, unless you become a partner or member.</li>
-    <li><b>Member accounts:</b> kept while you are an active member. When you leave the program, we remove your member access and, on request, delete your account information.</li>
-    <li><b>Delivery records and photos:</b> kept while the program runs, as a food-safety and impact record. If you ask us to delete your information, we remove your name and email address from your delivery records and delete your photos, but may keep the rest of the record (such as the date, weight and foods) without your personal information.</li>
-    <li><b>Public delivery log:</b> kept while the program runs. It contains no personal information.</li>
-  </ul>
+  <p>We keep personal information only for as long as we need it for the purposes described in this policy. Delivery records may be kept for as long as the program runs, as a record of the food we have moved. When information is no longer needed, we delete it or remove the details that identify you. We may keep information longer where the law requires it.</p>
 
   <h2 id="security">10. Security</h2>
   <p>We take reasonable steps to protect the information we hold. Database access is controlled by security rules that let a member see only their own deliveries and let only approved administrators see contact messages and all delivery records. Sign-in is handled by Google, so we never hold passwords. All connections to the Site and our database are encrypted (HTTPS). No system is perfectly secure, however, and we cannot guarantee the security of information sent over the internet. If we learn of a security breach that affects your personal information, we will notify you as required by law.</p>
 
   <h2 id="children">11. Children and students</h2>
   <p>The Site is meant for school staff, partner organizations and high school students. It is not directed to children under 13, and we do not knowingly collect personal information from children under 13. If you are under 13, please do not send us your information; ask a parent, guardian or teacher to contact us for you. If we learn that we have collected personal information from a child under 13, we will delete it promptly. If you believe this has happened, please <a href="#contact">contact us</a>.</p>
-  <p>Student members must be at least 13 years old. Members under 18 should have permission from a parent or guardian to take part in the program.</p>
+  <p>Member accounts are only for people who are at least 13 years old.</p>
   <p>We do not receive student records from schools. The only student information we hold is what a student member or other person gives us directly through the Site or by email.</p>
 
   <h2 id="rights">12. Your choices and rights</h2>
@@ -233,13 +229,16 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>ask us to delete your information; or</li>
     <li>withdraw from the member program.</li>
   </ul>
-  <p>We will respond within 30 days. We may need to confirm your identity before acting on a request, for example by replying to the email address we have on file. A parent or guardian may make these requests on behalf of their child.</p>
+  <p>We will respond as soon as we reasonably can. We may need to confirm your identity before acting on a request, for example by replying to the email address we have on file. A parent or guardian may make these requests on behalf of their child. We may keep some information where we need it for a legitimate reason, such as a record of a delivery, or where the law requires it.</p>
   <p>You can also choose not to use the contact form or the member portal. All public pages work without them.</p>
 
-  <h2 id="changes">13. Changes to this policy</h2>
-  <p>We may update this policy when the Site or our program changes. When we do, we will change the “Last updated” date at the top of this page. If a change significantly affects how we use personal information we already hold, we will let affected members and contacts know before it takes effect.</p>
+  <h2 id="links">13. Links to other websites</h2>
+  <p>The Site links to other websites, such as the sources we cite and our service providers' policies. We are not responsible for the content or privacy practices of those websites. Their own privacy policies apply when you visit them.</p>
 
-  <h2 id="contact">14. Contact us</h2>
+  <h2 id="changes">14. Changes to this policy</h2>
+  <p>We may update this policy from time to time. When we do, we will post the new version on this page and change the “Last updated” date at the top. Changes take effect when they are posted. By continuing to use the Site after a change, you accept the updated policy.</p>
+
+  <h2 id="contact">15. Contact us</h2>
   <p>For questions about this policy or to make a request about your information, email us at <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
 </article>
 </main>
