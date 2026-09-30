@@ -152,12 +152,22 @@
     }
   
     /* ---------- the list ---------- */
+    /* The search box narrows whichever status is showing, by box ID, school,
+       drop-off site or member email, so a box can be found from its label. */
+    const search = $("#reviewSearch");
+    if (search) search.addEventListener("input", () => render());
+    function matches(d, q) {
+      return [d.boxId, d.fromSchool, d.toSite, d.memberEmail].join(" ").toLowerCase().includes(q);
+    }
+
     function render() {
       renderTabs();
-      const rows = filter === "all" ? all : all.filter((d) => d.status === filter);
+      const q = search ? search.value.trim().toLowerCase() : "";
+      const rows = (filter === "all" ? all : all.filter((d) => d.status === filter)).filter((d) => !q || matches(d, q));
       const host = $("#queue");
       if (!rows.length) {
         host.replaceChildren(el("p", { className: "p-muted p-empty" },
+          q ? "No delivery here matches \u201c" + search.value.trim() + "\u201d." + (filter === "all" ? "" : " Try the All filter.") :
           filter === "pending" ? "Nothing waiting. New deliveries show up here as soon as members log them." : "No deliveries here."));
         return;
       }
