@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light dark">
   <title>Stock the Block: student-run food recovery, NYC</title>
   <meta name="description"
-    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks, with a temperature record for every box.">
+    content="A student-run program moving sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges, with every delivery on a public log.">
   <meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
   <meta property="og:description"
-    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks.">
+    content="A student-run program moving sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges.">
   <meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://safthelegend.github.io/stock/">
@@ -29,9 +29,9 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=13">
-  <link rel="stylesheet" href="assets/mainpage.css?v=2">
-  <link rel="stylesheet" href="assets/design.css?v=14">
+  <link rel="stylesheet" href="assets/site.css?v=17">
+  <link rel="stylesheet" href="assets/mainpage.css?v=3">
+  <link rel="stylesheet" href="assets/design.css?v=17">
 </head>
 
 <body>
@@ -48,6 +48,7 @@
         <a href="index.html#sensors">Food safety</a>
         <a href="index.html#network">Map</a>
         <a href="getting-started.html">Getting started</a>
+        <a href="log.html">Delivery log</a>
         <a href="index.html#join" class="cta">Work with us</a>
         <a href="members.html" class="login">Sign in</a>
         <button id="themeToggle" type="button" aria-label="Colour theme">
@@ -77,17 +78,17 @@
 
   <div id="heropin">
     <header id="top" class="wrap hero-grid">
-      <div>
+      <div class="hero-text">
         <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
         <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
-          Connecting schools’ leftover lunch food to local food banks.
+          Connecting schools’ leftover lunch food to local food banks/community fridges.
           <em>Every meal tracked.</em>
         </h1>
         <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
           <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
-            insulated boxes, walk it to a convenient food bank, and post the impact.</p>
-          <div class="prelaunch" id="heroStatus">
-            <p class="prelaunch-tag">In Development. Looking for food bank partners!</p>
+            insulated boxes, walk it to a convenient food bank/community fridge, and post the impact.</p>
+          <div class="prelaunch is-live" id="heroStatus">
+            <p class="prelaunch-tag">Now delivering with 2 partner schools. Looking for more schools to join!</p>
           </div>
           <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
             <a href="#join" class="btn solid">Work with us</a>
@@ -95,6 +96,17 @@
           </div>
         </div>
       </div>
+      <!-- Live impact counter. The numbers in the markup are the last known
+           totals, shown until (or unless) the live log loads; mainpage.js then
+           keeps them in step with the public delivery log (log.html). -->
+      <section class="impact" id="impact" aria-labelledby="impactLabel">
+        <p class="impact-live" id="impactLive"><span class="live-dot" aria-hidden="true"></span><span id="impactLiveText">Updating live</span></p>
+        <p class="impact-fig"><span class="impact-num" id="impactLbs">55</span><span class="impact-unit"> lbs</span></p>
+        <h2 class="impact-label" id="impactLabel">of food waste eliminated</h2>
+        <p class="impact-meta"><span id="impactCount">3</span> <span id="impactCountWord">verified deliveries</span> · as of <span id="impactDate">October 1st, 2026</span></p>
+        <a class="impact-link" href="log.html">See every delivery <span aria-hidden="true">→</span></a>
+        <p class="vh" id="impactSR" aria-live="polite"></p>
+      </section>
       <div class="visual" style="display:flex; justify-content:center; align-items:center;">
         <div id="heroBoxWrap">
           <canvas id="heroBox" width="420" height="420" role="img"
@@ -125,9 +137,8 @@
           </div>
         </div>
         <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-          <p class="figure fig" id="statLbs"
-            style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to run</p>
-          <p class="cap">Boxes built and routes planned. Now we need food bank partners.</p>
+          <p class="figure fig" id="statSchools">2</p>
+          <p class="cap">partner schools delivering with us now, and we’re looking for more</p>
         </div>
       </div>
       <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a
@@ -140,17 +151,15 @@
     </div>
   </section>
 
-  <section id="how" class="wrap" style="padding-top:80px; padding-bottom:88px;">
-    <p class="eyebrow" data-reveal>How it works</p>
+  <section id="how" class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-      <span class="mask-l"><span data-line>Four simple steps,</span></span>
-      <span class="mask-l"><span data-line>the same every time.</span></span>
+      <span class="mask-l"><span data-line>Four simple steps</span></span>
     </h2>
-    <div id="steps" style="border-top:1px solid var(--line);"></div>
+    <div id="steps"></div>
   </section>
 
   <div class="instrument">
-    <section id="sensors" class="wrap" style="padding-top:96px; padding-bottom:88px;">
+    <section id="sensors" class="wrap" style="padding-top:72px; padding-bottom:72px;">
       <p class="eyebrow" data-reveal>Food safety</p>
       <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
         <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
@@ -243,8 +252,8 @@
     </section>
   </div>
 
-  <section id="network" style="background:var(--bg);">
-    <div class="wrap" style="padding-top:88px; padding-bottom:72px;">
+  <section id="network">
+    <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
       <p class="eyebrow" data-reveal>The map</p>
       <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
         <span class="mask-l"><span data-line>Where food help</span></span>
@@ -271,7 +280,7 @@
           dots is a real school.</p>
         <p>Shading shows the percent of residents getting SNAP in each community district, from NYC Council Data Team
           analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is
-          not a map of where we operate. One food bank partner site is being set up, in Manhattan.</p>
+          not a map of where we operate. One food bank/community fridge partner site is being set up, in Manhattan.</p>
         <p class="cite" id="networkMapCite"></p>
         <p class="cite">School pins are placed from public campus addresses and have not been checked against a
           geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s
@@ -280,7 +289,7 @@
     </div>
   </section>
 
-  <section id="learn" class="wrap" style="padding-top:72px; padding-bottom:88px; border-top:1px solid var(--line);">
+  <section id="learn" class="wrap" style="padding-top:72px; padding-bottom:72px;">
     <p class="eyebrow" data-reveal>Learn more</p>
     <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
       <span class="mask-l"><span data-line>Want the details?</span></span>
@@ -311,11 +320,9 @@
 
   <section id="schools" class="emblems" aria-labelledby="schoolsHd">
     <div class="wrap">
-      <p class="eyebrow" id="schoolsHd">Where our team studies</p>
+      <p class="emblems-title" id="schoolsHd">Built by students from:</p>
     </div>
     <div class="emblem-track" data-emblems></div>
-    <p class="wrap emblem-note">Logos show where our team members go to school. They are not an endorsement by any
-      school.</p>
   </section>
 
   <section id="gallery" class="photo-band" aria-labelledby="galleryHd" hidden>
@@ -328,7 +335,7 @@
     <div class="photo-track" data-gallery></div>
   </section>
 
-  <section id="join" style="background:var(--surface); border-top:1px solid var(--line);">
+  <section id="join">
     <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
       <p class="eyebrow" data-reveal>Get involved</p>
       <div class="join-grid">
@@ -337,14 +344,13 @@
             <span class="mask-l"><span data-line>Want to help?</span></span>
             <span class="mask-l"><span data-line>Let’s talk.</span></span>
           </h2>
-          <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school,
-            or a food bank, tell us who you are and we’ll get back to you with next steps.</p>
-          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail">stockingtheblock@gmail.com</a></p>
+          <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school, or a food bank/community fridge, tell us who you are and we’ll get back to you with next steps.</p>
+          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a></p>
           <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
             <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;"
               data-state="idle"></span>
             <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Run by students. Every
-              delivery posted online.<br>Our first food bank partner site is being set up in Manhattan.</p>
+              delivery posted online.<br>Our first food bank/community fridge partner site is being set up in Manhattan.</p>
           </div>
         </div>
         <div id="formWrap">
@@ -355,7 +361,7 @@
               <option>School administrator</option>
               <option>Cafeteria staff</option>
               <option>Student, I want to join</option>
-              <option>Partner organization / food bank</option>
+              <option>Partner organization / food bank / community fridge</option>
               <option>Press</option>
             </select>
             <input data-ff name="org" class="span2" type="text" maxlength = "200" placeholder="School or organization"
@@ -366,6 +372,8 @@
               <label>Leave this empty <input name="website" type="text" tabindex="-1" autocomplete="off"></label>
             </div>
             <button data-ff data-ffb type="submit">Get in touch</button>
+            <p class="join-notice" style="grid-column:1 / -1; font-size:13px; line-height:1.55; color:var(--text-secondary); margin:2px 0 0;">
+              We use what you send only to reply to you. See our <a href="privacy.html#collect-contact">Privacy Policy</a>. Under 13? Please ask a parent, guardian or teacher to contact us for you.</p>
             <p id="joinFormError" hidden role="alert"
               style="grid-column:span 2; color:var(--accent-text); font-size:14px; margin:4px 0 0; line-height:1.5;">
               Something went wrong sending this. Try again in a moment, or email <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
@@ -381,24 +389,26 @@
         <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
         <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
       </span>
-      <span class="mono" style="font-weight:500;">Ready to run · seeking food bank partners</span>
+      <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
     </div>
     <nav class="wrap foot-links" aria-label="More pages">
       <a href="tracking.html">How we track</a>
+      <a href="log.html">Delivery log</a>
       <a href="why.html">Why now</a>
       <a href="team.html">Team</a>
       <a href="getting-started.html">Getting started</a>
       <a href="why.html#sources">Sources</a>
+      <a href="privacy.html">Privacy</a>
     </nav>
-    <div class="privacy">This site runs no analytics, sets no cookies and carries no trackers. It stores up to two small notes in this browser's localStorage, and neither ever leaves your device: your colour-theme choice, and, only if you're a Stock the Block member who has signed in here, a note that turns the Sign in button into My portal. Signing out removes it. The member sign-in itself runs on Google Firebase and loads only on the member portal, never on the public pages; while you're signed in there, Firebase keeps your sign-in in this browser until you sign out. Two outside services are involved on this page, and they're worth naming. The map loads its background tiles from CARTO and OpenStreetMap, so opening it sends your IP address and the map area you're viewing to those services. The contact form is run by Google Firebase: this page loads Firebase's code from Google's servers, and anything you send through the form is stored in our Firebase database, where only our team can read it. Everything else here is served from this site.</div>
+    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
   </footer>
 
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=14"></script>
-  <script src="assets/map.js?v=13"></script>
-  <script src="assets/mainpage.js?v=2"></script>
+  <script src="assets/site.js?v=16"></script>
+  <script src="assets/map.js?v=14"></script>
+  <script src="assets/mainpage.js?v=6"></script>
   
 </body>
 </html>

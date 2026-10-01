@@ -14,9 +14,9 @@
   </script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/site.css?v=13">
-  <link rel="stylesheet" href="assets/design.css?v=14">
-  <link rel="stylesheet" href="assets/portal.css?v=3">
+  <link rel="stylesheet" href="assets/site.css?v=17">
+  <link rel="stylesheet" href="assets/design.css?v=17">
+  <link rel="stylesheet" href="assets/portal.css?v=7">
 </head>
 
 <body class="portal">
@@ -52,19 +52,28 @@
   <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
 
   <main id="main" class="wrap portal-main portal-wide">
-    <header class="portal-head">
-      <h1>Member portal</h1>
-      <p class="p-lede">Log each delivery the day you make it. An admin checks it before it counts toward the public numbers.</p>
-    </header>
-
-    <!-- Sign-in or "no access" renders here (assets/portal.js). -->
+    <!-- Sign-in, "checking", and "waiting for approval" screens render here (assets/portal.js). -->
     <div id="gate"></div>
 
     <div id="app" hidden>
-      <div class="p-hello">
-        <h2 id="hello">Hi</h2>
-        <p class="p-who">Signed in as <b data-who></b> <button type="button" class="p-link" data-signout>Sign out</button></p>
-      </div>
+      <header class="dash-head">
+        <div class="dash-id">
+          <span class="avatar avatar-lg" data-avatar aria-hidden="true"></span>
+          <div class="dash-name">
+            <p class="dash-kicker">Member portal</p>
+            <h1 id="hello">Hi</h1>
+            <p class="dash-who"><span data-who></span> <span class="role-badge" data-role></span></p>
+          </div>
+        </div>
+        <button type="button" class="btn-sm" data-signout>Sign out</button>
+      </header>
+
+      <section class="dash-stats" aria-label="Your deliveries so far">
+        <div class="stat"><p class="stat-n" id="stDeliveries">0</p><p class="stat-l">Deliveries logged</p></div>
+        <div class="stat"><p class="stat-n" id="stLbs">0</p><p class="stat-l">Pounds of food moved</p></div>
+        <div class="stat"><p class="stat-n" id="stAccepted">0</p><p class="stat-l">Accepted</p></div>
+        <div class="stat"><p class="stat-n" id="stPending">0</p><p class="stat-l">Waiting for review</p></div>
+      </section>
 
       <div class="p-tabbar" role="tablist" aria-label="Member portal">
         <button type="button" role="tab" id="t-log" data-tab="log" aria-controls="tab-log">Log a delivery</button>
@@ -74,23 +83,49 @@
       </div>
 
       <section id="tab-log" role="tabpanel" aria-labelledby="t-log">
+        <div id="savedNote" class="saved" role="status" hidden></div>
         <div class="p-card p-formcard">
-          <form id="deliveryForm" class="p-form" novalidate>
+          <form id="deliveryForm" class="p-form d-form" novalidate>
+            <!-- Sections 1 to 3 (box, trip, contents) are drawn by portal.js, buildFields. -->
             <div id="deliveryFields"></div>
 
-            <label class="p-full">Photo of the food <span class="p-opt">optional</span>
-              <input type="file" id="photo" accept="image/*">
-            </label>
-            <div id="photoPreview" class="p-preview" hidden></div>
+            <section class="f-sec">
+              <header class="f-sec-head"><span class="f-num">4</span>
+                <div><h3>Photo <span class="p-opt">optional</span></h3><p>A quick photo of the food helps the reviewer. Food only, never people.</p></div>
+              </header>
+              <div class="f-body">
+                <input type="file" id="photo" class="vh-file" accept="image/*">
+                <label for="photo" id="photoDrop" class="drop">
+                  <span class="drop-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.5-2h7L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-9Z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+                  <span class="drop-text"><b>Add a photo</b><span>Take one or choose a file. It's shrunk before it uploads.</span></span>
+                </label>
+                <div id="photoPreview" class="p-preview" hidden></div>
+              </div>
+            </section>
 
-            <p class="p-muted p-full">Temperature readings will be added automatically once the box sensors are ready.</p>
-
-            <div class="p-actions">
-              <button type="submit" id="deliverySubmit" class="btn-sm solid">Save delivery</button>
+            <div class="f-submit">
+              <p class="p-muted">An admin checks every delivery before it counts toward the public numbers.</p>
+              <button type="submit" id="deliverySubmit" class="btn-sm solid btn-lg">Save delivery</button>
             </div>
             <p id="deliveryMsg" class="p-msg" role="status" aria-live="polite"></p>
           </form>
         </div>
+
+        <aside class="log-aside" aria-label="Tips for logging">
+          <div class="aside-card">
+            <h2>Food safety checklist</h2>
+            <ul class="checks">
+              <li>Only sealed, unopened food</li>
+              <li>An ice pack in the box, so it stays at 41°F or colder</li>
+              <li>The box ID written on the label</li>
+              <li>The whole box weighed before drop-off</li>
+            </ul>
+          </div>
+          <div class="aside-card aside-quiet">
+            <h2>Made a mistake?</h2>
+            <p>You can't edit a delivery once it's saved. Ask an admin to fix it, or mention it in the notes of your next one.</p>
+          </div>
+        </aside>
       </section>
 
       <section id="tab-mine" role="tabpanel" aria-labelledby="t-mine" hidden>
@@ -99,16 +134,29 @@
 
       <section id="tab-review" role="tabpanel" aria-labelledby="t-review" hidden>
         <p class="p-muted p-tabintro">Accept a delivery once the log matches what arrived. Reject it with a note so the member can fix it and log it again.</p>
-        <div id="reviewFilters" class="p-tabs" role="group" aria-label="Show deliveries by status"></div>
+        <div class="p-reviewbar">
+          <div id="reviewFilters" class="p-tabs" role="group" aria-label="Show deliveries by status"></div>
+          <label class="p-search"><span class="vh">Find a delivery</span>
+            <input type="search" id="reviewSearch" placeholder="Find by box ID, school, site or email" autocomplete="off" spellcheck="false">
+          </label>
+        </div>
         <div id="queue" class="d-list" aria-live="polite"></div>
       </section>
     </div>
   </main>
 
+  <footer class="p-foot">
+    <div class="wrap">
+      <span>© Stock the Block</span>
+      <a href="log.html">Public delivery log</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=14"></script>
-  <script src="assets/portal.js?v=4"></script>
-  <script src="assets/admin.js?v=2"></script>
-  <script src="assets/members.js?v=2"></script>
+  <script src="assets/site.js?v=16"></script>
+  <script src="assets/portal.js?v=7"></script>
+  <script src="assets/admin.js?v=4"></script>
+  <script src="assets/members.js?v=4"></script>
 </body>
 </html>

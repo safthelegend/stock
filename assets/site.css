@@ -35,6 +35,9 @@
   --box-side:#D6E5C4; --box-interior:#C6D9B0;
   /* The specular sweep. White at low alpha so it lifts whatever it crosses. */
   --box-shine:rgba(255,255,255,0.72);
+  /* Ice: the what-if ice pack and its frost. A cold blue that reads on each
+     theme's ground; the only non-brand hue, and only on the food-safety chart. */
+  --ice:#2F6FA8; --ice-soft:rgba(47,111,168,0.10);
 }
 /* Three modes: light (above, untouched), dark, and stock. The system
    preference decides only when the reader has made no explicit choice — hence
@@ -53,6 +56,7 @@
     --box-side:#1D2216; --box-interior:#141810;
     --box-shine:rgba(240,242,236,0.30);
     --placeholder:#9BA093;
+    --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
   }
 }
 :root[data-theme="dark"] {
@@ -67,6 +71,7 @@
   --box-side:#1D2216; --box-interior:#141810;
   --box-shine:rgba(240,242,236,0.30);
   --placeholder:#9BA093;
+  --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
 /* Stock — brand mode. Forest-green ground, cream text, orange accent.
    The hues are the site's own two brand colours; nothing new is introduced.
@@ -89,6 +94,7 @@
   --box-side:#1B3612; --box-interior:#132608;
   --box-shine:rgba(234,242,222,0.32);
   --placeholder:#B9BFB0;
+  --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
 @media (prefers-contrast: more) {
   :root {
@@ -143,6 +149,14 @@ nav.bar .links a[aria-current="true"]:hover { background-size:0% 1px; }
 nav.bar .links a.cta { color:var(--brand); font-weight:600;
   background-image:linear-gradient(var(--brand), var(--brand)); }
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
+/* Phones: the menu bar on one line on every page, including the ones that
+   don't load design.css — logo, Sign in and the theme switch only. */
+@media (max-width:700px) {
+  nav.bar .links a:not(.login) { display:none; }
+  nav.bar .links { gap:4px; }
+  nav.bar a.brand, nav.bar .links a { white-space:nowrap; }
+  #themeToggle .theme-name { display:none; }
+}
 .eyebrow { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:14px; letter-spacing:0; color:var(--text-secondary); margin:0 0 12px; }
 h1, h2 { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.035em; line-height:1.12; }
 h2.hd { font-size:clamp(30px,4.1vw,39px); color:var(--brand); margin:0; }
@@ -184,6 +198,8 @@ footer .foot-links a:hover { color:var(--accent-text); text-decoration:underline
 .page-head .body-p { margin:16px 0 0; max-width:60ch; }
 @media (max-width:640px) { .page-head { padding-top:72px; padding-bottom:32px; } }
 footer .privacy { padding:0 24px 28px; font-size:13px; color:var(--text-secondary); max-width:1100px; margin:0 auto; }
+footer .privacy a { color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
+footer .privacy a:hover { color:var(--brand); }
 
 /* ---------------------------------------------------------------------------
    Unverified-claim flag. Phase 2 rewrote four claims the project cannot yet
@@ -832,8 +848,9 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
    A marquee: the row is cloned once by script and the pair slides left by
    exactly one row's width, so the loop is seamless. Emblems are masks
    filled with the brand green, so every logo matches in every theme. */
-.emblems { padding:8px 0 24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface); }
-.emblems .eyebrow { margin:28px 0 8px; }
+.emblems { padding:24px 0 40px; }
+.emblems-title { margin:8px 0 10px; text-align:center; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:700; font-size:clamp(17px,1.7vw,20px); letter-spacing:-0.01em; color:var(--text); }
 .emblem-track { overflow:hidden; padding:12px 0; }
 .emblem-row { list-style:none; margin:0; padding:0 12px; display:flex; flex-wrap:wrap; justify-content:center; gap:16px 48px; }
 .emblem { flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-width:140px; min-height:112px; }
@@ -849,8 +866,6 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .emblem-track.is-moving .emblem { margin-right:56px; }
 .emblem-track.is-moving:hover .emblem-rail, .emblem-track.is-moving:focus-within .emblem-rail { animation-play-state:paused; }
 @keyframes emblemScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-.emblem-note { font-size:12px; color:var(--text-secondary); margin:4px auto 16px; text-align:center; }
-
 /* --- delivery photo gallery (home page) ----------------------------------
    A horizontal strip of hand-picked photos (assets/site.js: GALLERY). The
    row scrolls natively rather than auto-playing like the emblem marquee
@@ -876,3 +891,30 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .photo-lightbox-close { position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%;
   border:1px solid var(--line); background:var(--surface); color:var(--text); font-size:20px; line-height:1; cursor:pointer; }
 .photo-lightbox-close:hover { background:var(--tint); }
+
+/* ---------- phone menu (built by site.js) ----------
+   Hidden above 700px, where the bar already shows every link. */
+.nav-burger { display:none; width:40px; height:40px; align-items:center; justify-content:center;
+  background:none; border:none; padding:0; cursor:pointer; color:var(--text); border-radius:8px; }
+.nav-burger:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+.nav-burger path { transition:transform 200ms ease, opacity 150ms ease; transform-origin:12px 12px; }
+nav.bar.menu-open .nav-burger .nb-top { transform:translateY(5px) rotate(45deg); }
+nav.bar.menu-open .nav-burger .nb-mid { opacity:0; }
+nav.bar.menu-open .nav-burger .nb-bot { transform:translateY(-5px) rotate(-45deg); }
+.nav-menu { display:none; }
+@media (max-width:700px) {
+  .nav-burger { display:flex; }
+  nav.bar.menu-open { background:var(--bg); }
+  .nav-menu:not([hidden]) { display:flex; flex-direction:column; position:absolute; top:48px; left:0; right:0;
+    max-height:calc(100svh - 48px); overflow-y:auto; padding:8px 16px 16px; background:var(--bg);
+    border-bottom:1px solid var(--line); box-shadow:0 18px 30px -20px var(--paper-shadow, rgba(0,0,0,0.25)); }
+  .nav-menu a { display:block; padding:14px 8px; font-size:17px; font-weight:500; color:var(--text);
+    text-decoration:none; border-bottom:1px solid var(--line-soft, var(--line)); }
+  .nav-menu a:last-child { border-bottom:none; }
+  .nav-menu a:hover, .nav-menu a:focus-visible { color:var(--brand); }
+  .nav-menu a[aria-current="page"] { color:var(--brand); font-weight:600; }
+  .nav-menu a.cta { color:var(--brand); font-weight:600; }
+  /* Sign in is already a button in the bar; it's repeated here at the end. */
+  .nav-menu a.login { color:var(--brand); font-weight:600; }
+}
+@media print { .nav-burger, .nav-menu { display:none !important; } }

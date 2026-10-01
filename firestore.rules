@@ -83,6 +83,37 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ---------- publicLog/{deliveryId}: the public delivery log (log.html) ----------
+    // A trimmed copy of each delivery that anyone can read: date, weight, how
+    // many kinds of food, and status. Nothing that says who delivered it, from
+    // which school, to which site, or what the notes and photo say.
+    // Rejected deliveries are removed from it. Admins' portals keep it in step
+    // with deliveries (assets/admin.js, syncPublicLog).
+    function validPublic(d) {
+      return d.keys().hasOnly(['date', 'weightLbs', 'foods', 'status'])
+        && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && d.weightLbs is number && d.weightLbs > 0 && d.weightLbs <= 500
+        && d.foods is int && d.foods >= 0 && d.foods <= 50
+        && d.status in ['pending', 'accepted'];
+    }
+    function deliveryOf(id) { return get(/databases/$(database)/documents/deliveries/$(id)).data; }
+
+    match /publicLog/{id} {
+      allow read: if true;
+      // A member adds the entry right after saving their new delivery, and it
+      // has to match that delivery exactly.
+      allow create: if isMember()
+        && validPublic(request.resource.data)
+        && deliveryOf(id).memberUid == request.auth.uid
+        && deliveryOf(id).status == 'pending'
+        && request.resource.data.status == 'pending'
+        && request.resource.data.date == deliveryOf(id).date
+        && request.resource.data.weightLbs == deliveryOf(id).weightLbs
+        && request.resource.data.foods == deliveryOf(id).items.size();
+      allow create, update: if isAdmin() && validPublic(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
     // ---------- deliveryPhotos/{deliveryId}: { memberUid, dataUrl } ----------
     match /deliveryPhotos/{id} {
       // getAfter() looks at the delivery as it will be once this batch lands,

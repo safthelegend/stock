@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Delivery log: Stock the Block</title>
+<meta name="description" content="The public record of every Stock the Block delivery: the date, the weight and whether it has been checked.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script>
+/* Applies the saved theme before first paint, so switching modes never flashes
+   the default palette. Kept inline and tiny on purpose — an external file would
+   be a second round trip and the flash would be back. */
+try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dark" || t === "stock") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=17">
+<style>
+  .page-head { padding-bottom:40px; }
+  .log-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 32px; }
+  .log-stat { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:18px 20px; }
+  .log-stat .n { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(26px,3.4vw,36px); letter-spacing:-0.03em; color:var(--brand); margin:0; font-variant-numeric:tabular-nums; }
+  .log-stat .l { font-size:14px; color:var(--text-secondary); margin:4px 0 0; }
+  @media (max-width:640px) { .log-stats { grid-template-columns:minmax(0,1fr); gap:10px; } .log-stat { padding:14px 16px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; } .log-stat .n { font-size:24px; order:2; } .log-stat .l { margin:0; } }
+  .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background:var(--surface); transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease; }
+  .chip[aria-pressed="true"] { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+  .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; overflow:hidden; }
+  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
+  .mhead .left, .mhead .right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .thead, .mrow { display:grid; grid-template-columns:minmax(120px,1.2fr) minmax(90px,1fr) minmax(80px,0.8fr) minmax(150px,1.2fr); gap:12px; padding:0 20px; }
+  .thead { border-bottom:1px solid var(--brand-line-soft); }
+  .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
+  .thead .lab { cursor:default; }
+  .thead button:hover { color:var(--brand); }
+  .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
+  .mrow { padding-top:14px; padding-bottom:14px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text); }
+  .mrow:last-child { border-bottom:none; }
+  .mrow:hover { background:var(--tint); }
+  .mrow .lbs, .mrow .foods { font-variant-numeric:tabular-nums; }
+  .mrow .st { font-weight:500; display:inline-flex; align-items:center; gap:7px; }
+  .mrow .st::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; flex:none; }
+  .mrow .st.s-accepted { color:var(--brand); }
+  .mrow .st.s-pending { color:var(--accent-text); }
+  .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:48px 24px 52px; text-align:center; }
+  .empty-state .mascot-slot { width:88px; }
+  .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
+  .log-note { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:18px 0 0; max-width:70ch; }
+  @media (max-width:640px) {
+    .mhead { padding:10px 14px; }
+    /* Four short columns fit a phone, so no sideways scrolling. */
+    .thead, .mrow { grid-template-columns:minmax(0,1.25fr) minmax(0,0.9fr) minmax(0,0.6fr) minmax(0,1fr); gap:8px; padding-left:14px; padding-right:14px; }
+    .mrow { font-size:13px; }
+    .thead button, .thead .lab { font-size:11px; letter-spacing:0.04em; }
+    /* design.css gives the old tracker a 560px minimum and side-scrolling on
+       phones; this table fits without it. */
+    #manifest { overflow:hidden; }
+    #manifest .thead, #manifest .mrow { min-width:0; }
+    #manifest .mhead { position:static; max-width:none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+<link rel="stylesheet" href="assets/design.css?v=17">
+</head>
+<body>
+<a class="skip-link" href="#top">Skip to content</a>
+
+<nav class="bar" id="nav">
+  <div class="wrap">
+    <a href="index.html#top" class="brand">
+      <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
+      Stock the Block
+    </a>
+    <div class="links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#sensors">Food safety</a>
+      <a href="index.html#network">Map</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="log.html" aria-current="page">Delivery log</a>
+      <a href="index.html#join" class="cta">Work with us</a>
+      <a href="members.html" class="login">Sign in</a>
+      <button id="themeToggle" type="button" aria-label="Colour theme">
+        <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg data-theme-icon="dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg data-theme-icon="stock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M8 16l2-2 2 2"/><path d="M14 16l2-2 2 2"/></svg>
+        <span class="theme-name">Light</span>
+      </button>
+    </div>
+  </div>
+</nav>
+<p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
+
+<main>
+<header id="top" class="wrap page-head">
+  <a class="page-back" href="tracking.html">← How we track every box</a>
+  <p class="eyebrow">Delivery log</p>
+  <h1>Every delivery, on the public record.</h1>
+  <p class="body-p">Each box a member logs shows up here with its date, weight and status. It says <b>Verified</b> once an admin has checked the log against what arrived.</p>
+</header>
+
+<section class="wrap" style="padding-bottom:96px;">
+  <div class="log-stats" aria-live="polite">
+    <div class="log-stat"><p class="n" id="statCount">–</p><p class="l">deliveries verified</p></div>
+    <div class="log-stat"><p class="n" id="statLbs">–</p><p class="l">of food waste eliminated</p></div>
+    <div class="log-stat"><p class="n" id="statPending">–</p><p class="l">awaiting review</p></div>
+  </div>
+
+  <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by status"></div>
+  <div class="manifest" id="manifest">
+    <div class="mhead">
+      <span class="left">
+        <span style="color:var(--brand); font-weight:500;">DELIVERY LOG · <span id="filterLabel">ALL</span></span>
+        <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;" disabled>Export CSV</button>
+      </span>
+      <span class="right" style="font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
+    </div>
+    <div class="thead" id="thead">
+      <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" data-key="weightLbs" aria-sort="none">Weight <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" data-key="foods" aria-sort="none">Foods <span class="caret" aria-hidden="true">▾</span></button>
+      <span class="lab">Status</span>
+    </div>
+    <div id="mempty" class="empty-state">
+      <div class="mascot-slot" data-state="empty"></div>
+      <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">Loading the log…</p>
+      <p style="font-size:12px; color:var(--text-secondary); max-width:44ch;" id="emptySub"></p>
+    </div>
+    <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the delivery log.</p></noscript></div>
+  </div>
+  <p class="log-note">What's kept off this page: who made the delivery, which school it came from, where it went, notes and photos. Those stay with our members and admins. "Foods" is how many kinds of food were in the box. Deliveries an admin rejects are taken off the log.</p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap top">
+    <span style="display:flex; align-items:center; gap:12px;">
+      <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+      <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
+    </span>
+    <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
+  </div>
+  <nav class="wrap foot-links" aria-label="More pages">
+    <a href="tracking.html">How we track</a>
+    <a href="log.html">Delivery log</a>
+    <a href="why.html">Why now</a>
+    <a href="team.html">Team</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="why.html#sources">Sources</a>
+    <a href="privacy.html">Privacy</a>
+  </nav>
+  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
+</footer>
+
+<script type="module" src="assets/firebase-init.js?v=3"></script>
+<script src="assets/site.js?v=16"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = STB.$, $$ = STB.$$;
+  STB.initIcons();
+  STB.initMascotSlots();
+  STB.initTheme();
+  STB.initNav();
+
+  /* Rows come from Firestore's publicLog collection: a trimmed copy of each
+     delivery that holds only { date, weightLbs, foods, status }. The member
+     portal writes it (assets/members.js, assets/admin.js) and firestore.rules
+     lets anyone read it. */
+  var ROWS = null;          // null until the first load
+  var STATUS = { accepted: "Verified", pending: "Awaiting review" };
+  var FILTERS = [
+    { key: "all", label: "All" },
+    { key: "accepted", label: "Verified" },
+    { key: "pending", label: "Awaiting review" }
+  ];
+  var filter = "all", sortKey = "date", sortDir = "desc";
+
+  function fmtDate(iso) {
+    var p = iso.split("-").map(Number);
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  function lbs(n) { return (Math.round(n * 10) / 10).toLocaleString("en-US") + " lbs"; }
+
+  var chipsHost = $("#chips");
+  FILTERS.forEach(function (f) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = f.label;
+    b.setAttribute("aria-pressed", String(f.key === filter));
+    b.addEventListener("click", function () {
+      filter = f.key;
+      $$(".chip").forEach(function (c, i) { c.setAttribute("aria-pressed", String(FILTERS[i].key === filter)); });
+      render();
+    });
+    chipsHost.appendChild(b);
+  });
+  $$("#thead button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-key");
+      if (k === sortKey) sortDir = sortDir === "asc" ? "desc" : "asc";
+      else { sortKey = k; sortDir = "desc"; }
+      render();
+    });
+  });
+
+  function shown() {
+    return (ROWS || []).filter(function (r) { return filter === "all" || r.status === filter; })
+      .sort(function (a, b) {
+        var va = a[sortKey], vb = b[sortKey];
+        var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
+        if (!c) c = String(a.date).localeCompare(String(b.date));
+        return sortDir === "asc" ? c : -c;
+      });
+  }
+
+  function render() {
+    var rows = shown();
+    var body = $("#mbody");
+    body.replaceChildren.apply(body, rows.map(function (r) {
+      var row = document.createElement("div");
+      row.className = "mrow";
+      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)]].forEach(function (c) {
+        var s = document.createElement("span"); s.className = c[0]; s.textContent = c[1];
+        if (c[0] === "date") s.style.color = "var(--text-secondary)";
+        row.appendChild(s);
+      });
+      var st = document.createElement("span");
+      st.className = "st s-" + r.status; st.textContent = STATUS[r.status];
+      var cell = document.createElement("span"); cell.appendChild(st);
+      row.appendChild(cell);
+      return row;
+    }));
+
+    var empty = $("#mempty");
+    empty.style.display = rows.length ? "none" : "flex";
+    if (ROWS && !ROWS.length) {
+      $("#emptyMsg").textContent = "The log opens with the first delivery.";
+      $("#emptySub").textContent = "Nothing has been logged yet. Every delivery will show up here as soon as a member logs it.";
+    } else if (ROWS && !rows.length) {
+      $("#emptyMsg").textContent = "No deliveries here.";
+      $("#emptySub").textContent = "Pick All to see the full log.";
+    }
+
+    var total = rows.reduce(function (t, r) { return t + r.weightLbs; }, 0);
+    $("#shownTotal").textContent = rows.length ? rows.length + (rows.length === 1 ? " delivery · " : " deliveries · ") + lbs(total) : "";
+    $("#filterLabel").textContent = FILTERS.filter(function (f) { return f.key === filter; })[0].label.toUpperCase();
+    var csv = $("#csvExport");
+    csv.disabled = !rows.length;
+    csv.title = rows.length ? "Download these " + rows.length + " row(s) as CSV" : "Nothing to export yet";
+
+    $$("#thead button").forEach(function (b) {
+      var on = b.getAttribute("data-key") === sortKey;
+      b.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+      var c = b.querySelector(".caret");
+      c.style.opacity = on ? "1" : "0";
+      c.style.transform = on && sortDir === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+    });
+
+    if (ROWS) {
+      var ok = ROWS.filter(function (r) { return r.status === "accepted"; });
+      $("#statCount").textContent = ok.length.toLocaleString("en-US");
+      $("#statLbs").textContent = lbs(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0));
+      $("#statPending").textContent = (ROWS.length - ok.length).toLocaleString("en-US");
+    }
+  }
+
+  $("#csvExport").addEventListener("click", function () {
+    var rows = shown();
+    if (!rows.length) return;
+    var lines = ["date,weight_lbs,foods,status"].concat(rows.map(function (r) {
+      return [r.date, r.weightLbs, r.foods, STATUS[r.status]].join(",");
+    }));
+    var blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "stock-the-block-delivery-log.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  });
+
+  function fail() {
+    $("#emptyMsg").textContent = "The log couldn't load.";
+    $("#emptySub").textContent = "Check your connection and reload the page.";
+    $("#mempty").style.display = "flex";
+  }
+
+  /* Live: a delivery shows up, or turns Verified, without a reload. Only
+     well-formed rows are shown, so a bad entry can't break the table. */
+  function start(fb) {
+    fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
+      ROWS = snap.docs.map(function (d) { return d.data(); }).filter(function (r) {
+        return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
+      });
+      render();
+    }, function (err) { console.error(err); fail(); });
+  }
+  if (window.STB_FIREBASE) start(window.STB_FIREBASE);
+  else {
+    var t = setTimeout(fail, 10000);
+    addEventListener("stb-firebase-ready", function () { clearTimeout(t); start(window.STB_FIREBASE); }, { once: true });
+  }
+  render();
+
+  STB.initProgress();
+  STB.initOffline();
+  STB.initPalette([
+    { kind: "page", label: "Home", href: "index.html#top" },
+    { kind: "page", label: "How we track every box", href: "tracking.html", keywords: "tracker manifest delivery log track the box sealed box" },
+    { kind: "page", label: "Delivery log", href: "log.html", keywords: "tracker manifest delivery log deliveries weight status record" },
+    { kind: "page", label: "Privacy Policy", href: "privacy.html", keywords: "privacy data personal information cookies policy legal" },
+    { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
+    { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+    { kind: "page", label: "Team roles", href: "roles.html" },
+    { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
+    { kind: "section", label: "Work with us", href: "index.html#join", keywords: "contact signup form" }
+  ]);
+})();
+</script>
+</body>
+</html>

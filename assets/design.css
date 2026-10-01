@@ -21,9 +21,9 @@ h2 > .anchor-link, h3 > .anchor-link { position:absolute; top:0.12em; left:-1.75
 nav.bar { background:transparent; border-bottom-color:transparent;
   backdrop-filter:none; -webkit-backdrop-filter:none;
   transition:opacity 200ms ease, background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
-nav.bar.on { background:var(--nav-bg); border-bottom-color:var(--line);
+nav.bar.on { background:var(--nav-bg); border-bottom-color:transparent;
   backdrop-filter:saturate(180%) blur(18px); -webkit-backdrop-filter:saturate(180%) blur(18px);
-  box-shadow:0 6px 24px -14px var(--paper-shadow); }
+  box-shadow:0 10px 30px -24px var(--paper-shadow); }
 nav.bar .links a { background-size:0% 2px; background-position:0 calc(100% + 1px); }
 nav.bar .links a:hover, nav.bar .links a:focus-visible { background-size:100% 2px; }
 /* initSectionHighlight() sets aria-current="true" on the link whose section
@@ -45,8 +45,7 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
 /* --- hero: full-bleed wash, bigger and tighter headline, status pill ------ */
 #heropin { position:relative; background:
   radial-gradient(120% 90% at 85% 40%, var(--tint) 0%, transparent 62%),
-  linear-gradient(to bottom, transparent 70%, var(--bg));
-  border-bottom:1px solid var(--line-soft); }
+  linear-gradient(to bottom, transparent 70%, var(--bg)); }
 .hero-h1 { font-size:clamp(36px,4.4vw,64px); line-height:1.03; letter-spacing:-0.035em; max-width:18ch; }
 /* Brand orange. --accent-text is the AA-safe shade of #E8871E on the light
    grounds (and #E8871E's own dark-mode sibling elsewhere), so the line stays
@@ -80,37 +79,38 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
 .statband .cell:nth-child(3) { grid-area:ready; }
 .statband #statPct { font-size:clamp(96px,14vw,188px); line-height:0.86; letter-spacing:-0.06em; color:var(--accent-text); font-weight:800; }
 .statband .cell:nth-child(2) .cap { font-size:clamp(16px,1.6vw,20px); color:var(--text); font-weight:500; max-width:24ch; margin-top:14px; }
-.statband #statMeals { font-size:clamp(34px,3.6vw,48px); }
+.statband #statMeals { font-size:clamp(48px,5.6vw,80px); line-height:0.95; letter-spacing:-0.045em; }
+.statband .cell:nth-child(1) { display:flex; flex-direction:column; justify-content:center; }
+.statband .cell:nth-child(1) .cap { font-size:clamp(15px,1.3vw,17px); margin-top:12px; }
 @media (max-width:700px) {
   .statband .grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"pct" "meals" "ready"; }
 }
 
 /* --- instrument band: #sensors + #boxpin + #tracker ----------------------
-   The thesis section reads as lab equipment: a deep green-black panel in
-   every theme, graph paper behind it, DM Mono labels. The band re-declares
-   the theme tokens, so everything inside — charts, manifest, mascots, the
-   borough diagram — adapts without a single component rule being forked. */
+   The thesis section reads as lab equipment: graph paper behind it, DM Mono
+   labels, panels framed like instrument faces. It takes every colour from
+   the active theme (light, dark or stock), so it switches with the rest of
+   the page instead of staying a fixed dark panel. The grid, glows and tints
+   are mixed from --brand and --accent, never hard-coded. */
 .instrument {
-  --bg:#0B1209; --surface:#101A0D; --tint:#142011; --text:#E7EEDF; --text-secondary:#9DAE92;
-  --rule:#2E4226; --brand:#9CCB7A; --accent:#F0A040; --accent-text:#F4AD55;
-  --mascot-fill:#142011; --mascot-stroke:#9CCB7A; --on-brand:#0B1209; --brand-press:#B4DB97;
-  --line:rgba(231,238,223,0.13); --line-soft:rgba(231,238,223,0.07);
-  --brand-line:rgba(156,203,122,0.30); --brand-line-soft:rgba(156,203,122,0.14); --brand-line-mid:rgba(156,203,122,0.42);
-  --paper-shadow:rgba(0,0,0,0.6); --placeholder:#9DAE92;
-  --grid-minor:rgba(156,203,122,0.055); --grid-major:rgba(156,203,122,0.10);
-  position:relative; color:var(--text); background-color:var(--bg);
+  --grid-minor:color-mix(in srgb, var(--brand) 6%, transparent);
+  --grid-major:color-mix(in srgb, var(--brand) 11%, transparent);
+  position:relative; isolation:isolate; color:var(--text); }
+/* The graph paper fades in and out at the band's top and bottom, so the page
+   flows into and out of it with no edge or rule. */
+.instrument::before { content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
   background-image:
-    radial-gradient(90% 60% at 50% 0%, rgba(156,203,122,0.07), transparent 70%),
+    radial-gradient(70% 50% at 50% 50%, color-mix(in srgb, var(--brand) 6%, transparent), transparent 75%),
     linear-gradient(var(--grid-major) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
     linear-gradient(var(--grid-minor) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
   background-size:100% 100%, 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   background-position:0 0, -1px -1px, -1px -1px, -1px -1px, -1px -1px;
-  border-top:1px solid #000; border-bottom:1px solid #000;
-  box-shadow:inset 0 1px 0 rgba(156,203,122,0.18), inset 0 -1px 0 rgba(156,203,122,0.12); }
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image:linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent); }
 @media (prefers-contrast: more) {
-  .instrument { --text-secondary:#C9D6BE; --line:rgba(231,238,223,0.5); --brand-line:rgba(156,203,122,0.75); --grid-minor:transparent; }
+  .instrument { --grid-minor:transparent; }
 }
 .instrument .box-band, .instrument #tracker { background:transparent; border:none; }
 /* Instrument labels: mono caps with a status LED, like a panel legend. */
@@ -118,33 +118,29 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
   font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px;
   letter-spacing:0.14em; text-transform:uppercase; color:var(--brand); }
 .instrument .eyebrow::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--brand);
-  box-shadow:0 0 0 3px rgba(156,203,122,0.14), 0 0 10px rgba(156,203,122,0.7); flex:none; }
-.instrument h2.hd { color:var(--text); }
-.instrument .body-p { color:#CBD6C2; }
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 16%, transparent), 0 0 10px color-mix(in srgb, var(--brand) 60%, transparent); flex:none; }
 .instrument .unverified { color:var(--accent-text); }
 /* Panels read as instrument faces: one hairline frame and inset glass. */
 .instrument .cold-panel, .instrument .manifest {
-  background:linear-gradient(180deg, rgba(156,203,122,0.035), transparent 40%), var(--surface);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 4%, transparent), transparent 40%), var(--surface);
   border:1px solid var(--brand-line); border-radius:12px;
-  box-shadow:inset 0 1px 0 rgba(231,238,223,0.05), 0 24px 60px -30px rgba(0,0,0,0.8); }
+  box-shadow:0 20px 50px -30px var(--paper-shadow); }
 .instrument .cold-panel { position:relative; }
 .instrument .manifest { overflow:hidden; }
-.instrument .mhead { background:rgba(156,203,122,0.05); }
+.instrument .mhead { background:color-mix(in srgb, var(--brand) 5%, transparent); }
 .instrument .thead { background:var(--surface); }
-.instrument .mrow:hover { background:rgba(156,203,122,0.06); }
+.instrument .mrow:hover { background:color-mix(in srgb, var(--brand) 6%, transparent); }
 /* The threshold is the one line that matters on the chart, so it glows. */
 .instrument .cs-threshold { stroke:var(--accent); stroke-width:1.5; stroke-dasharray:4 4; opacity:1;
-  filter:drop-shadow(0 0 3px rgba(240,160,64,0.9)) drop-shadow(0 0 8px rgba(240,160,64,0.45)); }
+  filter:drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 70%, transparent)); }
 .instrument .cs-threshold-lbl { fill:var(--accent-text); opacity:1; letter-spacing:0.06em; }
-.instrument .cs-line { filter:drop-shadow(0 0 3px rgba(156,203,122,0.35)); }
+.instrument .cs-line { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--brand) 35%, transparent)); }
 .instrument .cs-xlabel { letter-spacing:0.04em; }
 .instrument .sim-btn { background:transparent; }
 .instrument .sim-btn.is-on { background:var(--brand); color:var(--on-brand); }
-.instrument .sim-banner { background:rgba(240,160,64,0.06); }
+.instrument .sim-banner { background:color-mix(in srgb, var(--accent) 6%, transparent); }
 .instrument .btn-sm { background:transparent; }
 .instrument .step-icon { color:var(--brand); }
-/* Hairline dividing the three instruments, drawn as a scale rule. */
-.instrument #boxpin { border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft); }
 @media print { .instrument { background:none !important; color:#000; box-shadow:none; } }
 
 /* --- cards: one radius, one lift ---------------------------------------- */
@@ -201,8 +197,10 @@ form.join input, form.join select, form.join textarea { width:100%; min-width:0;
 }
 
 /* --- footer + small sections --------------------------------------------- */
-footer { background:var(--surface); }
-footer .wrap.top { padding-top:40px; }
+/* One continuous surface: the footer shares the page background and is set
+   apart by space, not by a rule or a colour change. */
+footer { background:transparent; border-top:none; }
+footer .wrap.top { padding-top:56px; }
 .sources-list li { padding-left:2.2em; text-indent:-2.2em; }
 
 /* --- nav always visible, with a Sign in button --------------------------
@@ -214,3 +212,185 @@ footer .wrap.top { padding-top:40px; }
      background-image:none; font-weight:600; color:var(--brand); transition:border-color 160ms ease, background-color 160ms ease; }
    nav.bar .links a.login:hover, nav.bar .links a.login:focus-visible { border-color:var(--brand); background-color:var(--surface); }
    @media (max-width:700px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
+
+/* ============================================================================
+   PHONES — a calmer, less cluttered layout
+   ----------------------------------------------------------------------------
+   Every rule below sits inside a phone-width media query, so the desktop
+   layout is untouched. This file loads last, which is why the home page's
+   phone rules live here too: at equal specificity they must come after the
+   desktop rules above (and after assets/mainpage.css) to win.
+   ========================================================================= */
+@media (max-width:700px) {
+  /* Menu bar on one line: the logo, Sign in and the theme switch. "Work with
+     us" is dropped from the bar on phones only; the hero button and the join
+     section both carry it on every phone screen that matters. */
+  nav.bar a.brand { white-space:nowrap; }
+  nav.bar .links a.cta { display:none; }
+  nav.bar .links { gap:4px; }
+  nav.bar .links a.login { white-space:nowrap; }
+  #themeToggle { width:40px; height:40px; }
+
+  /* Type sized for a phone, not a monitor: 20px body copy and 30px headings
+     made every paragraph a wall and orphaned words in two-line headings. */
+  .body-p { font-size:17px; line-height:1.6; }
+  h2.hd { font-size:27px; line-height:1.12; text-wrap:balance; }
+  /* Headings are written as two fixed lines for desktop; on a phone the first
+     line can't fit, which left one word stranded on a line of its own. Here
+     they flow as one sentence and balance, so no line ends up a lone word. */
+  h2.hd .mask-l, h2.hd .mask-l > span { display:inline; }
+  footer .wrap.top { padding-top:40px; }
+
+  /* Home hero (#heropin exists only there; other pages also use #top for
+     their header): fits one screen, so the pinned lid-and-fruit scroll plays
+     with the whole hero in view instead of scrolling past empty space. */
+  #heropin #top { min-height:100svh !important; }
+  .hero-grid { padding-top:56px; padding-bottom:16px; gap:20px; }
+  .hero-grid > .visual { max-width:150px; }
+  .hero-h1 { font-size:31px; line-height:1.08; max-width:none; }
+  .hero-h1 em { margin-top:0.12em; }
+  #heroStatus { margin-top:18px; }
+  #heropin #top .btn { flex:1 1 0; min-width:0; text-align:center; font-size:16px; padding:12px 14px; }
+
+  /* One spacing rhythm for phones: 48px between sections, not 72. The
+     sections carry their desktop padding inline, hence !important. */
+  #how, #sensors, #learn { padding-top:48px !important; padding-bottom:48px !important; }
+  #network > .wrap, #join > .wrap { padding-top:48px !important; padding-bottom:48px !important; }
+  .emblems { padding:8px 0 24px; }
+
+  /* Stats: snugger cards and a quieter source note. */
+  .statband .grid { padding:24px 0 12px; gap:12px; }
+  .statband .cell:nth-child(2) { padding:22px 20px 24px; }
+  .statband .cite { font-size:12px; line-height:1.5; }
+
+  /* Food safety: a smaller mascot keeps the panel from towering. */
+  .cold-mascot { width:130px; }
+  .cold-mascot.is-3d { height:118px; }
+
+  /* Learn-more cards and the join form. */
+  .cards-grid .card { padding:20px; }
+  .cards-grid .card p.body { font-size:16px; }
+  .learn-grid { gap:12px; }
+  .join-grid { gap:24px; }
+
+  /* Map: the floating legend covered half the map on a phone. Here it is a
+     thin strip across the top, and the caption underneath is quieter. */
+  .map-shell .map-legend-card { left:8px; right:8px; top:8px; bottom:auto; max-width:none;
+    display:flex; flex-wrap:wrap; align-items:center; gap:3px 10px; padding:6px 10px; }
+  .map-shell .map-legend-card .lg-title { font-size:9px; }
+  .map-shell .map-legend-card .lg-item { font-size:10px; }
+  .map-shell .map-legend-card .lg-sep { display:none; }
+  .map-shell .map-legend-card .lg-sw { width:10px; height:10px; }
+  .hud-caption { font-size:12px; }
+  .hud-stat b { font-size:16px; }
+
+  /* School emblems a size down, so more of the strip shows at once. */
+  .emblem { min-width:104px; min-height:90px; }
+  .emblem-mark { width:64px; height:64px; }
+  .emblem.wide .emblem-mark { width:112px; }
+  .emblem-track.is-moving .emblem { margin-right:36px; }
+
+  /* Form fields at 16px: below that, iPhones zoom the whole page in when a
+     field is tapped. Covers the join form and the member portal's forms. */
+  form.join input, form.join select, form.join textarea { font-size:16px; }
+  body .portal input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+  body .portal select, body .portal textarea { font-size:16px; }
+}
+
+/* Short phones (iPhone SE and similar): a more compact hero so it still fits
+   one screen. */
+@media (max-width:700px) and (max-height:780px) {
+  .hero-grid { padding-top:52px; gap:12px; }
+  .hero-grid > .visual { max-width:112px; }
+  .hero-h1 { font-size:26px; }
+  #heropin #top .body-p { font-size:15.5px; line-height:1.5; }
+  #heropin #top .eyebrow { margin-bottom:8px; font-size:13px; }
+  #heroStatus { margin-top:12px; }
+  #heropin #top .btn { padding:10px 12px; }
+}
+
+/* How it works on phones: each station full width with its text beneath,
+   number and title on one line, the body un-indented. The side rail is
+   replaced by a short rolling conveyor between stations. */
+@media (max-width:760px) {
+  .step { padding:14px 0; row-gap:12px; }
+  .step .stage { width:100%; }
+  .step .stage::before, .belt { display:none; }
+  .step-text > button { grid-template-columns:28px minmax(0,1fr) 20px; grid-template-areas:"num ttl caret" "bdy bdy bdy"; row-gap:6px; }
+  .step .ttl { font-size:17px; }
+  .step .bdy { font-size:16px; }
+  .step .pdetail p { padding:6px 0 4px; }
+  .step:not(:last-child)::after { content:""; justify-self:center; width:22px; height:28px; margin-top:6px;
+    border-left:2px solid var(--brand-line-mid); border-right:2px solid var(--brand-line-mid);
+    background:repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
+    animation:beltRoll 0.8s linear infinite; }
+}
+/* --- live impact counter (home hero) ---------------------------------------
+   The first thing on the page: pounds of food waste eliminated, read live
+   from the public delivery log. Desktop: a card above the box mascot, in the
+   hero's right column. Phones: the box and the number side by side above
+   the headline, with no card. --live is a brighter green than --brand, used
+   only for "this is live" signals. */
+:root { --live:#1E9E50; }
+:root[data-theme="dark"] { --live:#5CD58C; }
+:root[data-theme="stock"] { --live:#86E3A6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]):not([data-theme="stock"]) { --live:#5CD58C; } }
+
+.hero-grid { grid-template-areas:"text impact" "text visual"; row-gap:0; }
+.hero-grid > .hero-text { grid-area:text; }
+.hero-grid > .impact { grid-area:impact; align-self:end; }
+.hero-grid > .visual { grid-area:visual; align-self:start; }
+
+.impact { justify-self:center; width:100%; max-width:400px; box-sizing:border-box; text-align:center; padding:20px 24px 18px;
+  background:color-mix(in srgb, var(--surface) 84%, transparent); border:1px solid var(--brand-line); border-radius:20px;
+  box-shadow:0 1px 2px var(--line-soft), 0 24px 48px -30px var(--paper-shadow);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 200ms both; }
+.impact-live { display:inline-flex; align-items:center; gap:8px; margin:0; color:var(--live);
+  font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase; }
+.live-dot { position:relative; width:8px; height:8px; border-radius:50%; background:var(--live); flex:none; }
+.live-dot::after { content:""; position:absolute; inset:0; border-radius:50%; background:var(--live); animation:livePing 1.8s cubic-bezier(0,0,0.2,1) infinite; }
+@keyframes livePing { 0% { transform:scale(1); opacity:0.65; } 80%, 100% { transform:scale(2.8); opacity:0; } }
+.impact[data-state="connecting"] .live-dot::after, .impact[data-state="offline"] .live-dot::after { animation:none; opacity:0; }
+.impact[data-state="connecting"] .impact-live { opacity:0.7; }
+.impact[data-state="offline"] .impact-live { color:var(--text-secondary); }
+.impact[data-state="offline"] .live-dot { background:var(--text-secondary); }
+
+.impact-fig { margin:8px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
+  line-height:0.95; letter-spacing:-0.05em; color:var(--brand); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.impact-num { font-size:clamp(72px,8vw,124px); }
+.impact.is-long .impact-num { font-size:clamp(52px,5.4vw,84px); }
+.impact-unit { font-size:clamp(30px,3vw,46px); letter-spacing:-0.03em; }
+.impact.is-bump .impact-num { animation:impactBump 1.2s ease-out; }
+@keyframes impactBump { 0% { color:var(--live); } 100% { color:var(--brand); } }
+.impact-label { margin:6px 0 0; font-size:clamp(18px,1.6vw,21px); font-weight:700; letter-spacing:-0.02em; line-height:1.2; color:var(--text); }
+.impact-meta { margin:10px 0 0; font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
+.impact-meta #impactCount { font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+.impact-link { display:inline-block; margin-top:10px; font-size:14px; font-weight:600; color:var(--brand); }
+.impact-link:hover { text-decoration:underline; text-underline-offset:3px; }
+@media (prefers-reduced-motion: reduce) { .live-dot::after, .impact.is-bump .impact-num, .impact { animation:none !important; } }
+
+/* The hero status pill turns green now that deliveries are running. */
+#heroStatus.is-live .prelaunch-tag::before { background:var(--live); animation:livePulse 2.2s ease-out infinite; }
+@keyframes livePulse { 0% { box-shadow:0 0 0 0 color-mix(in srgb, var(--live) 55%, transparent); } 70%, 100% { box-shadow:0 0 0 7px color-mix(in srgb, var(--live) 0%, transparent); } }
+
+@media (max-width:760px) {
+  .hero-grid { grid-template-columns:104px minmax(0,1fr); grid-template-areas:"visual impact" "text text"; column-gap:16px; row-gap:22px; align-items:center; }
+  .hero-grid > .visual { order:0; max-width:none; margin:0; align-self:center; }
+  .hero-grid > .impact { align-self:center; }
+  .impact { justify-self:stretch; max-width:none; text-align:left; padding:0; background:none; border:none; border-radius:0; box-shadow:none;
+    -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .impact-live { font-size:10.5px; gap:7px; }
+  .impact-fig { margin-top:4px; }
+  .impact-num { font-size:54px; }
+  .impact.is-long .impact-num { font-size:44px; }
+  .impact-unit { font-size:24px; }
+  .impact-label { font-size:16px; margin-top:4px; }
+  .impact-meta { font-size:12.5px; margin-top:5px; line-height:1.4; }
+  .impact-link { display:none; }
+}
+@media (max-width:700px) and (max-height:780px) {
+  .hero-grid { grid-template-columns:88px minmax(0,1fr); row-gap:16px; }
+  .impact-num { font-size:46px; }
+  .impact-label { font-size:15px; }
+}

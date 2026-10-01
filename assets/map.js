@@ -82,6 +82,9 @@
          the visitor can reach anywhere. */
       zoomControl: false,
       attributionControl: true,
+      /* Set here as well as on the tiles: the tiles load only after a tap,
+         and the pin clustering needs the zoom range before that. */
+      minZoom: 9, maxZoom: 17,
       /* Touch and wheel both start disabled so the map never steals a scroll.
          They are handed back once the visitor deliberately engages. */
       scrollWheelZoom: false,
@@ -92,9 +95,15 @@
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
+    /* The street background comes from CARTO, so loading it sends the
+       visitor's IP address there. It waits until someone taps, clicks or
+       focuses the map; until then the districts and pins (all served from
+       this site) show on a plain background. See privacy.html. */
     var tiles = L.tileLayer(TILES[isDarkTheme() ? "dark" : "light"], {
       attribution: TILE_ATTR, maxZoom: 17, minZoom: 9, detectRetina: true
-    }).addTo(map);
+    });
+    function loadTiles() { if (!map.hasLayer(tiles)) tiles.addTo(map); }
+    host.addEventListener("pointerdown", loadTiles, { once: true });
 
     /* Panes keep the draw order stable no matter what order things load in. */
     map.createPane("choro"); map.getPane("choro").style.zIndex = 400;
@@ -142,11 +151,12 @@
     var gate = document.createElement("button");
     gate.type = "button";
     gate.className = "map-gate";
-    gate.innerHTML = "<span>Tap to explore the map</span>";
+    gate.innerHTML = "<span>Tap to explore the map and show streets</span>";
     gate.setAttribute("aria-label", "Enable map panning and zooming");
     host.parentNode.insertBefore(gate, host.nextSibling);
 
     function engage() {
+      loadTiles();
       map.dragging.enable();
       map.scrollWheelZoom.enable();
       host.classList.add("is-engaged");
