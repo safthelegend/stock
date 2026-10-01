@@ -705,6 +705,7 @@
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();
+    STB.initGallery();
     STB.initScrollFx();
     STB.initProgress();
     STB.initAnchors();

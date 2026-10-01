@@ -850,3 +850,29 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .emblem-track.is-moving:hover .emblem-rail, .emblem-track.is-moving:focus-within .emblem-rail { animation-play-state:paused; }
 @keyframes emblemScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .emblem-note { font-size:12px; color:var(--text-secondary); margin:4px auto 16px; text-align:center; }
+
+/* --- delivery photo gallery (home page) ----------------------------------
+   A horizontal strip of hand-picked photos (assets/site.js: GALLERY). The
+   row scrolls natively rather than auto-playing like the emblem marquee
+   above, since these are meant to be looked at, not skimmed. */
+.photo-band { padding:8px 0 40px; border-top:1px solid var(--line); background:var(--surface); }
+.photo-band .eyebrow { margin:28px 0 8px; }
+.photo-track { overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:12px 24px 4px; scroll-snap-type:x proximity; }
+.photo-row { list-style:none; margin:0; padding:0; display:flex; gap:16px; width:max-content; }
+.photo-card { flex:none; width:260px; scroll-snap-align:start; }
+.photo-card button { all:unset; cursor:zoom-in; display:block; width:100%; border-radius:12px; overflow:hidden;
+  border:1px solid var(--line); box-shadow:0 1px 0 var(--line-soft);
+  transition:transform 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 200ms ease; }
+.photo-card button:hover, .photo-card button:focus-visible { transform:translateY(-2px);
+  box-shadow:0 10px 28px -14px var(--paper-shadow), 0 2px 6px -2px var(--line); outline:2px solid var(--brand); outline-offset:2px; }
+.photo-card img { width:100%; height:180px; object-fit:cover; display:block; background:var(--tint); }
+.photo-cap { font-size:13px; color:var(--text-secondary); margin:8px 2px 0; line-height:1.4; }
+
+.photo-lightbox { border:none; border-radius:14px; padding:0; max-width:min(92vw, 900px); max-height:88vh;
+  background:var(--surface); box-shadow:0 20px 60px -20px rgba(0,0,0,0.5); }
+.photo-lightbox::backdrop { background:rgba(0,0,0,0.72); }
+.photo-lightbox img { display:block; width:100%; max-height:76vh; object-fit:contain; background:#000; }
+.photo-lightbox-cap { margin:0; padding:12px 16px; font-size:14px; color:var(--text-secondary); }
+.photo-lightbox-close { position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%;
+  border:1px solid var(--line); background:var(--surface); color:var(--text); font-size:20px; line-height:1; cursor:pointer; }
+.photo-lightbox-close:hover { background:var(--tint); }
