@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light dark">
   <title>Stock the Block: student-run food recovery, NYC</title>
   <meta name="description"
-    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges, with a temperature record for every box.">
+    content="A student-run program moving sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges, with every delivery on a public log.">
   <meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
   <meta property="og:description"
-    content="A student-run, pre-launch program to move sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges.">
+    content="A student-run program moving sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges.">
   <meta property="og:image" content="https://safthelegend.github.io/stock/og-image.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://safthelegend.github.io/stock/">
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
   <link rel="stylesheet" href="assets/site.css?v=17">
   <link rel="stylesheet" href="assets/mainpage.css?v=3">
-  <link rel="stylesheet" href="assets/design.css?v=16">
+  <link rel="stylesheet" href="assets/design.css?v=17">
 </head>
 
 <body>
@@ -78,7 +78,7 @@
 
   <div id="heropin">
     <header id="top" class="wrap hero-grid">
-      <div>
+      <div class="hero-text">
         <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
         <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
           Connecting schools’ leftover lunch food to local food banks/community fridges.
@@ -87,8 +87,8 @@
         <div style="animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 380ms both;">
           <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
             insulated boxes, walk it to a convenient food bank/community fridge, and post the impact.</p>
-          <div class="prelaunch" id="heroStatus">
-            <p class="prelaunch-tag">In Development. Looking for food bank/community fridge partners!</p>
+          <div class="prelaunch is-live" id="heroStatus">
+            <p class="prelaunch-tag">Now delivering with 2 partner schools. Looking for more schools to join!</p>
           </div>
           <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
             <a href="#join" class="btn solid">Work with us</a>
@@ -96,6 +96,17 @@
           </div>
         </div>
       </div>
+      <!-- Live impact counter. The numbers in the markup are the last known
+           totals, shown until (or unless) the live log loads; mainpage.js then
+           keeps them in step with the public delivery log (log.html). -->
+      <section class="impact" id="impact" aria-labelledby="impactLabel">
+        <p class="impact-live" id="impactLive"><span class="live-dot" aria-hidden="true"></span><span id="impactLiveText">Updating live</span></p>
+        <p class="impact-fig"><span class="impact-num" id="impactLbs">55</span><span class="impact-unit"> lbs</span></p>
+        <h2 class="impact-label" id="impactLabel">of food waste eliminated</h2>
+        <p class="impact-meta"><span id="impactCount">3</span> <span id="impactCountWord">verified deliveries</span> · as of <span id="impactDate">October 1st, 2026</span></p>
+        <a class="impact-link" href="log.html">See every delivery <span aria-hidden="true">→</span></a>
+        <p class="vh" id="impactSR" aria-live="polite"></p>
+      </section>
       <div class="visual" style="display:flex; justify-content:center; align-items:center;">
         <div id="heroBoxWrap">
           <canvas id="heroBox" width="420" height="420" role="img"
@@ -126,9 +137,8 @@
           </div>
         </div>
         <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-          <p class="figure fig" id="statLbs"
-            style="color:var(--brand); font-size:clamp(24px,2.4vw,30px); line-height:1.25;">Ready to launch</p>
-          <p class="cap">Currently building connections between schools &amp; food banks/community fridges to launch.</p>
+          <p class="figure fig" id="statSchools">2</p>
+          <p class="cap">partner schools delivering with us now, and we’re looking for more</p>
         </div>
       </div>
       <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a
@@ -369,7 +379,7 @@
         <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
         <span>© 2026 Stock the Block · student-run food recovery, NYC</span>
       </span>
-      <span class="mono" style="font-weight:500;">Ready to launch · seeking food bank/community fridge partners</span>
+      <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
     </div>
     <nav class="wrap foot-links" aria-label="More pages">
       <a href="tracking.html">How we track</a>
@@ -388,7 +398,7 @@
   <script type="module" src="assets/firebase-init.js?v=3"></script>
   <script src="assets/site.js?v=16"></script>
   <script src="assets/map.js?v=14"></script>
-  <script src="assets/mainpage.js?v=5"></script>
+  <script src="assets/mainpage.js?v=6"></script>
   
 </body>
 </html>
