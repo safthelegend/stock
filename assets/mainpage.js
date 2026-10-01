@@ -54,13 +54,100 @@
             var r2 = $("#statband").getBoundingClientRect();
             if (r2.top < vh * 0.9 && r2.bottom > 0) {
                 bandDone = true;
-                /* Only the two sourced NYC figures animate. The third cell is a
-                   pre-launch statement, not a number, so there is nothing to count. */
+                /* Only the two sourced NYC figures animate. The third cell,
+                   our partner-school count, is small enough to just show. */
                 count(880000, function (v) { $("#statMeals").textContent = fmtN(v); });
                 count(4, function (v) { if (!pctTouched) $("#statPct").textContent = v + "%"; });
             }
         }
     }
+
+    /* ---------- live impact counter (hero) ----------
+       Pounds of food waste eliminated: the total weight of every verified
+       (admin-accepted) delivery on the public delivery log, using the same
+       rows and the same rule as log.html. onSnapshot keeps it live, so the
+       number moves the moment an admin accepts a delivery.
+
+       The markup holds the last known totals. They count up from zero as the
+       card fades in, then follow the live log once it loads. If the log can't
+       load, they stay up with the date they were true on, and the label stops
+       saying "live". */
+    (function () {
+        var card = $("#impact");
+        if (!card) return;
+        var numEl = $("#impactLbs"), countEl = $("#impactCount"), wordEl = $("#impactCountWord");
+        var dateEl = $("#impactDate"), liveText = $("#impactLiveText"), sr = $("#impactSR");
+        var target = parseFloat(numEl.textContent.replace(/,/g, "")) || 0;
+        var shownVal = target, raf = 0, loaded = false;
+
+        // 55 -> "55", 55.5 -> "55.5": one decimal only when the total has one.
+        function fmtLbs(v) {
+            var dp = target % 1 ? 1 : 0;
+            return v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+        }
+        function draw(v) {
+            var t = fmtLbs(v);
+            numEl.textContent = t;
+            card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4);
+        }
+        function animateTo(goal, from) {
+            target = goal;
+            if (raf) cancelAnimationFrame(raf);
+            if (reduced) { shownVal = goal; draw(goal); return; }
+            var a = from === undefined ? shownVal : from, t0 = performance.now(), dur = 1600;
+            raf = requestAnimationFrame(function tick(now) {
+                var p = Math.min((now - t0) / dur, 1);
+                shownVal = a + (goal - a) * (1 - Math.pow(1 - p, 3));
+                draw(p < 1 ? shownVal : goal);
+                raf = p < 1 ? requestAnimationFrame(tick) : 0;
+            });
+        }
+        // "October 1st, 2026"
+        function longDate(d) {
+            var n = d.getDate(), v = n % 100, suf = ["th", "st", "nd", "rd"];
+            return d.toLocaleDateString("en-US", { month: "long" }) + " " + n + (suf[(v - 20) % 10] || suf[v] || suf[0]) + ", " + d.getFullYear();
+        }
+
+        function update(rows) {
+            var ok = rows.filter(function (r) {
+                return r.status === "accepted" && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number";
+            });
+            var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
+            var grew = loaded && lbs > target;
+            countEl.textContent = fmtN(ok.length);
+            wordEl.textContent = ok.length === 1 ? "verified delivery" : "verified deliveries";
+            dateEl.textContent = longDate(new Date());
+            if (lbs !== target) animateTo(lbs);
+            if (grew) {
+                // A delivery was just verified while the page was open.
+                card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
+                sr.textContent = fmtLbs(lbs) + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
+            }
+            loaded = true;
+        }
+
+        function start(fb) {
+            if (!fb) { card.setAttribute("data-state", "offline"); liveText.textContent = "Live updates unavailable"; return; }
+            fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
+                card.setAttribute("data-state", "live");
+                liveText.textContent = "Updating live";
+                update(snap.docs.map(function (d) { return d.data(); }));
+            }, function (err) {
+                console.warn("Live impact counter:", err.code || err);
+                card.setAttribute("data-state", "offline");
+                liveText.textContent = "Live updates paused";
+            });
+        }
+
+        card.setAttribute("data-state", "connecting");
+        animateTo(target, 0);   // count up from zero as the card fades in
+        if (window.STB_FIREBASE) start(window.STB_FIREBASE);
+        else {
+            // firebase-init.js is a module and loads after this script.
+            var late = setTimeout(function () { start(null); }, 10000);
+            addEventListener("stb-firebase-ready", function () { clearTimeout(late); start(window.STB_FIREBASE); }, { once: true });
+        }
+    })();
 
     /* ---------- 4% what-if slider ----------
        Every input is sourced in the statband cite line. The Comptroller counts
