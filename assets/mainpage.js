@@ -882,6 +882,7 @@
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();
+    STB.initGallery();
     STB.initSmoothScroll();
     STB.initScrollFx();
     STB.initProgress();

@@ -1974,6 +1974,79 @@ function initMascotSlots(root) {
     });
   }
 
+  /* ======================================================================
+     DELIVERY PHOTO GALLERY (home page)
+     Hand-picked photos of the team out doing deliveries — not tied to any
+     database, just files we add ourselves. To add a photo: drop the image
+     in assets/gallery/, then add a line below with its path and a short
+     caption. The section stays hidden on its own (see initGallery) until
+     this list has at least one entry, the same way a school with no logo
+     is quietly left out of the carousel above.
+     ====================================================================== */
+  var GALLERY = [
+    // { src: "assets/gallery/2026-01-stuyvesant-packing.jpg", caption: "Packing boxes at Stuyvesant" },
+  ];
+
+  var lightboxEl, lightboxImg, lightboxCap;
+  function openLightbox(i) {
+    var p = GALLERY[i];
+    if (!p) return;
+    if (!lightboxEl) {
+      lightboxEl = document.createElement("dialog");
+      lightboxEl.className = "photo-lightbox";
+      var close = document.createElement("button");
+      close.type = "button";
+      close.className = "photo-lightbox-close";
+      close.setAttribute("aria-label", "Close");
+      close.innerHTML = "&times;";
+      close.addEventListener("click", function () { lightboxEl.close(); });
+      lightboxEl.addEventListener("click", function (e) { if (e.target === lightboxEl) lightboxEl.close(); });
+      lightboxImg = document.createElement("img");
+      lightboxCap = document.createElement("p");
+      lightboxCap.className = "photo-lightbox-cap";
+      lightboxEl.appendChild(close);
+      lightboxEl.appendChild(lightboxImg);
+      lightboxEl.appendChild(lightboxCap);
+      document.body.appendChild(lightboxEl);
+    }
+    lightboxImg.src = p.src;
+    lightboxImg.alt = p.caption || "";
+    lightboxCap.textContent = p.caption || "";
+    lightboxEl.showModal();
+  }
+
+  function initGallery() {
+    $$("[data-gallery]").forEach(function (track) {
+      var section = track.closest("section");
+      if (!GALLERY.length) { if (section) section.hidden = true; return; }
+      if (section) section.hidden = false;
+      var row = document.createElement("ul");
+      row.className = "photo-row";
+      row.setAttribute("aria-label", "Photos of the team doing deliveries");
+      GALLERY.forEach(function (p, i) {
+        var li = document.createElement("li");
+        li.className = "photo-card";
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("aria-label", "View larger: " + (p.caption || "delivery photo"));
+        var img = document.createElement("img");
+        img.src = p.src; img.alt = p.caption || ""; img.loading = "lazy"; img.decoding = "async";
+        btn.appendChild(img);
+        btn.addEventListener("click", function () { openLightbox(i); });
+        li.appendChild(btn);
+        if (p.caption) {
+          var cap = document.createElement("p");
+          cap.className = "photo-cap";
+          cap.textContent = p.caption;
+          li.appendChild(cap);
+        }
+        row.appendChild(li);
+      });
+      track.textContent = "";
+      track.appendChild(row);
+    });
+  }
+
   global.STB = {
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
@@ -1989,6 +2062,7 @@ function initMascotSlots(root) {
     ICONS: ICONS, iconSVG: iconSVG, initIcons: initIcons,
     MASCOT_EYES: MASCOT_EYES, MASCOT_SMILE: MASCOT_SMILE,
     MASCOT_LID: MASCOT_LID, MASCOT_LEAN: MASCOT_LEAN,
+    GALLERY: GALLERY, initGallery: initGallery,
     mascotSVG: mascotSVG, paintMascot: paintMascot, initMascotSlots: initMascotSlots,
     THEMES: THEMES, currentTheme: currentTheme, storedTheme: storedTheme,
     getVar: getVar, initTheme: initTheme,
