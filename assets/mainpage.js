@@ -8,10 +8,10 @@
     var fmtN = function (n) { return n.toLocaleString("en-US"); };
 
     var STEPS = [
-        { num: "01", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", detail: "NYC school rules say food must be store-packaged, unopened and kept at a safe temperature before it can leave the cafeteria.", state: "collect", icon: "package" },
-        { num: "02", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box before it leaves the building.", detail: "Each box gets an ID number. We write down its weight, what’s inside and when it was packed, so every pound can be traced.", state: "pack", icon: "archive" },
-        { num: "03", title: "Walk it to a food bank/community fridge", body: "Two students walk the box to a food bank/community fridge in the same borough, and the drop-off is confirmed on the spot.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
-        { num: "04", title: "Post it online", body: "Every delivery goes on a public log: the date, where it came from, where it went and how much it weighed.", detail: "Entries are never edited; fixes are added as new lines. <span class=\"unverified\">Track the Box, the public log, is planned and not live yet.</span>", state: "record", icon: "clipboard-check" }
+        { label: "Collect", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", state: "collect" },
+        { label: "Pack", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box with an ice pack, and the box gets its own tracking ID.", state: "pack" },
+        { label: "Deliver", title: "Walk it to a food bank/community fridge", body: "Students walk the box to a nearby food bank/community fridge, and the drop-off is confirmed on the spot.", state: "deliver" },
+        { label: "Post", title: "Post it online", body: "Every delivery goes on our public delivery log, so anyone can see how much food was saved.", state: "record" }
     ];
     /* ---------- icon set (shared — assets/site.js) ---------- */
     var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
@@ -62,85 +62,121 @@
         }
     }
 
-    /* ---------- live impact counter (hero) ----------
-       Pounds of food waste eliminated: the total weight of every verified
-       (admin-accepted) delivery on the public delivery log, using the same
-       rows and the same rule as log.html. onSnapshot keeps it live, so the
-       number moves the moment an admin accepts a delivery.
+    /* ---------- live impact: the hero card and Our Impact ----------
+       Both read the public delivery log (log.html's publicLog rows) through
+       one onSnapshot listener, so they move the moment an admin verifies a
+       delivery. "Verified" means accepted, the same rule log.html uses.
 
-       The markup holds the last known totals. They count up from zero as the
-       card fades in, then follow the live log once it loads. If the log can't
-       load, they stay up with the date they were true on, and the label stops
-       saying "live". */
-    (function () {
-        var card = $("#impact");
-        if (!card) return;
-        var numEl = $("#impactLbs"), countEl = $("#impactCount"), wordEl = $("#impactCountWord");
-        var dateEl = $("#impactDate"), liveText = $("#impactLiveText"), sr = $("#impactSR");
-        var target = parseFloat(numEl.textContent.replace(/,/g, "")) || 0;
-        var shownVal = target, raf = 0, loaded = false;
+       The markup holds the last known totals. The hero card counts up from
+       zero as it fades in; the Our Impact numbers count up the first time
+       they scroll into view. If the log can't load, both keep the last known
+       totals and stop saying "live". */
 
-        // 55 -> "55", 55.5 -> "55.5": one decimal only when the total has one.
-        function fmtLbs(v) {
-            var dp = target % 1 ? 1 : 0;
+    // A number that counts to its value: from zero when start() is called,
+    // then from wherever it is when the value changes.
+    function counter(el) {
+        var goal = parseFloat(el.textContent.replace(/,/g, "")) || 0, shown = goal, raf = 0, started = false;
+        function fmt(v) {
+            var dp = goal % 1 ? 1 : 0;
             return v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
         }
-        function draw(v) {
-            var t = fmtLbs(v);
-            numEl.textContent = t;
-            card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4);
-        }
-        function animateTo(goal, from) {
-            target = goal;
+        function run(from) {
             if (raf) cancelAnimationFrame(raf);
-            if (reduced) { shownVal = goal; draw(goal); return; }
-            var a = from === undefined ? shownVal : from, t0 = performance.now(), dur = 1600;
+            if (reduced) { shown = goal; el.textContent = fmt(goal); return; }
+            var t0 = performance.now(), dur = 1500;
             raf = requestAnimationFrame(function tick(now) {
                 var p = Math.min((now - t0) / dur, 1);
-                shownVal = a + (goal - a) * (1 - Math.pow(1 - p, 3));
-                draw(p < 1 ? shownVal : goal);
+                shown = from + (goal - from) * (1 - Math.pow(1 - p, 3));
+                el.textContent = fmt(p < 1 ? shown : goal);
+                if (el.onCount) el.onCount(el.textContent);
                 raf = p < 1 ? requestAnimationFrame(tick) : 0;
             });
         }
-        // "October 1st, 2026"
+        return {
+            start: function () { if (started) return; started = true; run(0); },
+            set: function (v) {
+                if (v === goal) return;
+                goal = v;
+                if (started) run(shown); else { shown = v; el.textContent = fmt(v); }
+            },
+            value: function () { return goal; }
+        };
+    }
+
+    (function () {
+        var card = $("#impact"), metrics = $("#metrics"), metricsLive = $("#metricsLive");
+        if (!card && !metrics) return;
+
+        /* ----- hero card ----- */
+        var heroLbs = card && counter($("#impactLbs"));
+        var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
+        var liveText = $("#impactLiveText"), sr = $("#impactSR");
+        if (card) {
+            $("#impactLbs").onCount = function (t) { card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4); };
+            heroLbs.start();   // count up from zero as the card fades in
+        }
+
+        /* ----- Our Impact: every number counts up once, when the row first
+           scrolls into view, and each icon plays its little animation. ----- */
+        var mCounters = {};
+        if (metrics) {
+            $$("[data-count]", metrics).forEach(function (el) { mCounters[el.id || el.getAttribute("data-count")] = counter(el); });
+            var reveal = function () {
+                metrics.classList.add("is-in");
+                Object.keys(mCounters).forEach(function (k, n) { setTimeout(function () { mCounters[k].start(); }, n * 120); });
+            };
+            if (reduced || !("IntersectionObserver" in window)) reveal();
+            else new IntersectionObserver(function (es, io) {
+                if (es[0].isIntersecting) { io.disconnect(); reveal(); }
+            }, { threshold: 0.35 }).observe(metrics);
+        }
+
+        // "October 3rd, 2026"
         function longDate(d) {
             var n = d.getDate(), v = n % 100, suf = ["th", "st", "nd", "rd"];
             return d.toLocaleDateString("en-US", { month: "long" }) + " " + n + (suf[(v - 20) % 10] || suf[v] || suf[0]) + ", " + d.getFullYear();
         }
 
+        function setState(state, text) {
+            if (card) { card.setAttribute("data-state", state); liveText.textContent = text; }
+            if (metricsLive) metricsLive.setAttribute("data-state", state);
+        }
+
+        var loaded = false;
         function update(rows) {
             var ok = rows.filter(function (r) {
                 return r.status === "accepted" && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number";
             });
             var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
-            var grew = loaded && lbs > target;
-            countEl.textContent = fmtN(ok.length);
-            wordEl.textContent = ok.length === 1 ? "verified delivery" : "verified deliveries";
-            dateEl.textContent = longDate(new Date());
-            if (lbs !== target) animateTo(lbs);
+            var grew = loaded && heroLbs && lbs > heroLbs.value();
+            if (card) {
+                countEl.textContent = fmtN(ok.length);
+                wordEl.textContent = ok.length === 1 ? "verified delivery" : "verified deliveries";
+                dateEl.textContent = longDate(new Date());
+                heroLbs.set(lbs);
+            }
+            if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(ok.length);
+            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
             if (grew) {
                 // A delivery was just verified while the page was open.
                 card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
-                sr.textContent = fmtLbs(lbs) + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
+                sr.textContent = heroLbs.value().toLocaleString("en-US") + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
             }
             loaded = true;
         }
 
         function start(fb) {
-            if (!fb) { card.setAttribute("data-state", "offline"); liveText.textContent = "Live updates unavailable"; return; }
+            if (!fb) { setState("offline", "Live updates unavailable"); return; }
             fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
-                card.setAttribute("data-state", "live");
-                liveText.textContent = "Updating live";
+                setState("live", "Updating live");
                 update(snap.docs.map(function (d) { return d.data(); }));
             }, function (err) {
                 console.warn("Live impact counter:", err.code || err);
-                card.setAttribute("data-state", "offline");
-                liveText.textContent = "Live updates paused";
+                setState("offline", "Live updates paused");
             });
         }
 
-        card.setAttribute("data-state", "connecting");
-        animateTo(target, 0);   // count up from zero as the card fades in
+        setState("connecting", "Updating live");
         if (window.STB_FIREBASE) start(window.STB_FIREBASE);
         else {
             // firebase-init.js is a module and loads after this script.
@@ -194,7 +230,7 @@
         update();
     })();
 
-    /* ---------- how it works: four animated stations on a conveyor ----------
+    /* ---------- Our Process: one small animated scene per stage ----------
        Each scene is a 240×150 drawing starring the flat mascot (the same
        mascotSVG the rest of the site uses, with its per-step mood), placed as a
        nested <svg> so its own lid animation keeps its coordinates. Items that
@@ -252,56 +288,98 @@
     };
     var SCENE_FOR = { collect: "collect", pack: "pack", deliver: "walk", record: "post" };
 
+    /* ---------- Our Process: a stepper ----------
+       Four stages in a row, joined by one line. A pulsing green dot moves
+       along it from stage to stage, every STAGE_MS (one full loop of a
+       stage's scene), and the line fills in behind it. The current stage's
+       scene plays from the start; the others wait, dimmed. Pointing at a
+       stage, or tapping its dot, jumps to it. On phones the dots and short
+       names stay in a row, and the current stage's scene and text show
+       underneath. Nothing moves until the section is on screen, and under
+       reduced motion it stays put on whichever stage was picked. */
     var stepsHost = $("#steps");
-    var belt = document.createElement("div");
-    belt.className = "belt";
-    belt.setAttribute("aria-hidden", "true");
-    belt.innerHTML = '<span class="parcel"></span><span class="parcel"></span><span class="parcel"></span>';
-    stepsHost.appendChild(belt);
-    STEPS.forEach(function (s) {
+    var STAGE_MS = 6000;
+    var procNodes = [], procScenes = [], procTexts = [];
+    var procLine = document.createElement("div");
+    procLine.className = "proc-line";
+    procLine.setAttribute("aria-hidden", "true");
+    procLine.innerHTML = '<span class="proc-fill"></span><span class="proc-runner"><span class="live-dot"></span></span>';
+    stepsHost.appendChild(procLine);
+    STEPS.forEach(function (s, i) {
         var key = SCENE_FOR[s.state];
-        var d = document.createElement("div");
-        d.className = "prow step";
-        d.setAttribute("data-prow", "");
-        d.innerHTML =
-            '<div class="stage" aria-hidden="true"><svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg></div>" +
-            '<div class="step-text"><button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button>' +
-            '<div class="pdetail"><div><p>' + s.detail + "</p></div></div></div>";
-        var btn = d.querySelector("button");
-        btn.addEventListener("click", function () {
-            var open = d.classList.toggle("open");
-            btn.setAttribute("aria-expanded", open ? "true" : "false");
-            btn.querySelector(".caret").textContent = open ? "−" : "+";
+        var scene = document.createElement("div");
+        scene.className = "proc-scene";
+        scene.setAttribute("aria-hidden", "true");
+        scene.innerHTML = '<svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg>";
+        var node = document.createElement("button");
+        node.type = "button";
+        node.className = "proc-node";
+        node.setAttribute("aria-label", "Step " + (i + 1) + " of " + STEPS.length + ": " + s.title);
+        node.innerHTML = '<span class="proc-dot" aria-hidden="true"></span><span class="proc-short" aria-hidden="true">' + s.label + "</span>";
+        node.addEventListener("click", function () { setStage(i, true); });
+        var text = document.createElement("div");
+        text.className = "proc-text";
+        text.innerHTML = "<h3>" + s.title + "</h3><p>" + s.body + "</p>";
+        [scene, node, text].forEach(function (el) {
+            el.style.setProperty("--col", String(i + 1));
+            el.setAttribute("data-i", String(i));
+            stepsHost.appendChild(el);
         });
-        stepsHost.appendChild(d);
+        procNodes.push(node); procScenes.push(scene); procTexts.push(text);
     });
 
-    /* The belt runs from the first station's centre to the last one's, behind
-       the stations, so parcels ride down and disappear into each one. Re-measured
-       whenever the list changes size (a step opening, a resize). */
-    function layoutBelt() {
-        var stages = $$(".stage", stepsHost);
-        if (stages.length < 2) return;
-        var host = stepsHost.getBoundingClientRect();
-        var a = stages[0].getBoundingClientRect(), b = stages[stages.length - 1].getBoundingClientRect();
-        var top = a.top + a.height / 2 - host.top;
-        belt.style.top = top.toFixed(1) + "px";
-        belt.style.height = (b.top + b.height / 2 - host.top - top).toFixed(1) + "px";
+    var stage = -1, procTimer = 0, procInView = false, procHeld = false;
+    // Restarts a scene's animations, so the stage that just lit up plays
+    // its little story from the beginning.
+    function restartScene(svg) {
+        var els = svg.querySelectorAll("*");
+        els.forEach(function (n) { n.style.animationName = "none"; });
+        void svg.getBoundingClientRect();
+        els.forEach(function (n) { n.style.animationName = ""; });
     }
-    layoutBelt();
-    if ("ResizeObserver" in window) new ResizeObserver(layoutBelt).observe(stepsHost);
-    addEventListener("resize", layoutBelt, { passive: true });
-
-    /* Scenes only animate while their step is on screen. */
-    (function () {
-        var steps = $$(".step", stepsHost);
-        if (!("IntersectionObserver" in window)) { steps.forEach(function (el) { el.classList.add("is-playing"); }); return; }
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (en) { en.target.classList.toggle("is-playing", en.isIntersecting); });
-            stepsHost.classList.toggle("in-view", steps.some(function (el) { return el.classList.contains("is-playing"); }));
-        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.2 });
-        steps.forEach(function (el) { io.observe(el); });
-    })();
+    function setStage(i, byUser) {
+        if (i !== stage) {
+            stage = i;
+            stepsHost.style.setProperty("--progress", (i / (STEPS.length - 1)).toFixed(4));
+            procNodes.forEach(function (n, j) {
+                n.classList.toggle("is-done", j < i);
+                n.classList.toggle("is-current", j === i);
+                if (j === i) n.setAttribute("aria-current", "step"); else n.removeAttribute("aria-current");
+            });
+            procScenes.forEach(function (el, j) { el.classList.toggle("is-current", j === i); });
+            procTexts.forEach(function (el, j) { el.classList.toggle("is-current", j === i); });
+            if (!reduced) restartScene(procScenes[i].querySelector("svg"));
+        }
+        if (byUser) scheduleStage();   // a tap restarts the clock on that stage
+    }
+    function scheduleStage() {
+        clearTimeout(procTimer);
+        if (reduced || !procInView || procHeld) return;
+        procTimer = setTimeout(function () { setStage((stage + 1) % STEPS.length); scheduleStage(); }, STAGE_MS);
+    }
+    stepsHost.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var t = e.target.closest("[data-i]");
+        if (!t || t.parentNode !== stepsHost) return;
+        procHeld = true;
+        clearTimeout(procTimer);
+        setStage(+t.getAttribute("data-i"));
+    });
+    stepsHost.addEventListener("pointerleave", function () { procHeld = false; scheduleStage(); });
+    stepsHost.addEventListener("focusin", function () { procHeld = true; clearTimeout(procTimer); });
+    stepsHost.addEventListener("focusout", function () { procHeld = false; scheduleStage(); });
+    setStage(0);
+    if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) {
+            procInView = es[0].isIntersecting;
+            stepsHost.classList.toggle("in-view", procInView);
+            if (procInView) scheduleStage(); else clearTimeout(procTimer);
+        }, { threshold: 0.3 }).observe(stepsHost);
+    } else {
+        procInView = true;
+        stepsHost.classList.add("in-view");
+        scheduleStage();
+    }
 
     /* ---------- cold-chain readout ----------
        One instrument readout for one sample run. The status column states the
@@ -899,11 +977,12 @@
         { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-        { kind: "section", label: "How it works", href: "#how", keywords: "steps collect pack deliver log" },
+        { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
+        { kind: "section", label: "Our process", href: "#how", keywords: "how it works steps collect pack deliver log" },
         { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
-        { kind: "section", label: "The map", href: "#network", keywords: "map snap need boroughs districts" },
-        { kind: "section", label: "Learn more", href: "#learn" },
+        { kind: "section", label: "Our why: the SNAP map", href: "#network", keywords: "map snap need boroughs districts why" },
         { kind: "section", label: "Work with us", href: "#join", keywords: "contact signup form" },
+        { kind: "section", label: "Learn more", href: "#learn" },
         { kind: "template", label: "Health code memo", href: "getting-started.html#doc-health", keywords: "tcs food safety release records health department" },
         { kind: "template", label: "Box spec", href: "getting-started.html#doc-build", keywords: "insulated transport box cut sheet materials" },
         { kind: "template", label: "Partner agreement", href: "getting-started.html#doc-agreement", keywords: "one page signed school receiving site" },

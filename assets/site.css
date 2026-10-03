@@ -149,9 +149,11 @@ nav.bar .links a[aria-current="true"]:hover { background-size:0% 1px; }
 nav.bar .links a.cta { color:var(--brand); font-weight:600;
   background-image:linear-gradient(var(--brand), var(--brand)); }
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
-/* Phones: the menu bar on one line on every page, including the ones that
-   don't load design.css — logo, Sign in and the theme switch only. */
-@media (max-width:700px) {
+/* Phones and tablets: the menu bar on one line on every page, including the
+   ones that don't load design.css — logo, Sign in, the theme switch and the
+   menu button. Below about 940px the full row of links no longer fits on one
+   line, and wrapped words looked broken, so the links move into the menu. */
+@media (max-width:940px) {
   nav.bar .links a:not(.login) { display:none; }
   nav.bar .links { gap:4px; }
   nav.bar a.brand, nav.bar .links a { white-space:nowrap; }
@@ -866,28 +868,51 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .emblem-track.is-moving .emblem { margin-right:56px; }
 .emblem-track.is-moving:hover .emblem-rail, .emblem-track.is-moving:focus-within .emblem-rail { animation-play-state:paused; }
 @keyframes emblemScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-/* --- delivery photo gallery (home page) ----------------------------------
-   A single-image carousel of hand-picked photos (assets/site.js: GALLERY).
-   One photo shows at a time in a fixed, shrunk frame and crossfades to the
-   next on a timer (see initGallery) so it visibly rotates no matter how
-   wide the page is, unlike a scrollable row that can sit still if every
-   photo already fits on screen. */
-.photo-band { padding:8px 0 40px; border-top:1px solid var(--line); background:var(--surface); }
-.photo-track { max-width:420px; margin:20px auto 0; }
-.photo-frame { position:relative; aspect-ratio:4/3; border-radius:14px; overflow:hidden;
-  border:1px solid var(--line); box-shadow:0 1px 0 var(--line-soft); background:var(--tint); }
-.photo-slide { position:absolute; inset:0; opacity:0; transition:opacity 500ms ease; }
-.photo-slide.is-active { opacity:1; }
-.photo-slide button { all:unset; cursor:zoom-in; display:block; width:100%; height:100%; }
+/* --- delivery photo carousel (home page, Our Impact) ----------------------
+   One photo in the middle, its neighbours smaller and blurred to either
+   side, the rest out of sight (assets/site.js: GALLERY, initGallery). Each
+   photo's place comes from its data-pos, and the move, scale and blur
+   animate between places. The photos are portrait, so each slide is 3:4. */
+.impact-gallery { margin-top:72px; }
+.photo-track { position:relative; }
+.photo-frame { --h:clamp(340px, 44vw, 540px); position:relative; height:var(--h); overflow:hidden; overflow:clip;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.photo-slide { position:absolute; top:0; left:50%; height:100%; aspect-ratio:3/4; margin:0;
+  transform:translateX(-50%) translateX(150%) scale(0.7); opacity:0; pointer-events:none; }
+.photo-frame.is-ready .photo-slide { transition:transform 700ms cubic-bezier(0.22,1,0.36,1), filter 700ms ease, opacity 700ms ease; }
+.photo-slide[data-pos="0"] { transform:translateX(-50%); opacity:1; z-index:3; pointer-events:auto; }
+.photo-slide[data-pos="1"], .photo-slide[data-pos="-1"] { opacity:0.55; filter:blur(5px) saturate(0.8); z-index:2; pointer-events:auto; }
+.photo-slide[data-pos="1"] { transform:translateX(-50%) translateX(84%) scale(0.84); }
+.photo-slide[data-pos="-1"] { transform:translateX(-50%) translateX(-84%) scale(0.84); }
+.photo-slide[data-pos="-2"] { transform:translateX(-50%) translateX(-150%) scale(0.7); }
+.photo-slide button { all:unset; box-sizing:border-box; display:block; width:100%; height:100%; border-radius:20px; overflow:hidden;
+  cursor:pointer; background:var(--tint); box-shadow:0 24px 50px -28px var(--paper-shadow); }
+.photo-slide[data-pos="0"] button { cursor:zoom-in; }
+.photo-slide button:focus-visible { outline:3px solid var(--brand); outline-offset:4px; }
 .photo-slide img { width:100%; height:100%; object-fit:cover; display:block; }
-.photo-slide .photo-cap { position:absolute; left:0; right:0; bottom:0; margin:0; padding:10px 14px;
+.photo-slide .photo-cap { position:absolute; left:0; right:0; bottom:0; margin:0; padding:12px 16px; border-radius:0 0 20px 20px;
   font-size:13px; color:#fff; line-height:1.4; pointer-events:none;
   background:linear-gradient(0deg, rgba(0,0,0,0.6), transparent); }
-.photo-dots { display:flex; justify-content:center; gap:8px; margin:14px 0 0; }
+.photo-slide:not([data-pos="0"]) .photo-cap { opacity:0; }
+.photo-arrow { position:absolute; top:50%; z-index:4; width:48px; height:48px; margin-top:-24px; padding:0; border-radius:50%;
+  display:grid; place-items:center; border:1px solid var(--line); background:var(--surface); color:var(--text); cursor:pointer;
+  box-shadow:0 8px 20px -8px var(--paper-shadow); transition:background-color 160ms ease, transform 160ms ease; }
+.photo-arrow:hover { background:var(--tint); transform:scale(1.05); }
+.photo-arrow:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+.photo-arrow-prev { left:max(8px, calc(50% - var(--h) * 0.375 - 120px)); }
+.photo-arrow-next { right:max(8px, calc(50% - var(--h) * 0.375 - 120px)); }
+.photo-dots { display:flex; justify-content:center; gap:8px; margin:20px 0 0; }
 .photo-dots button { all:unset; cursor:pointer; width:8px; height:8px; border-radius:50%; background:var(--line);
   transition:background-color 160ms ease, transform 160ms ease; }
 .photo-dots button.is-active { background:var(--brand); transform:scale(1.3); }
 .photo-dots button:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+@media (max-width:700px) {
+  .impact-gallery { margin-top:48px; }
+  .photo-arrow { width:40px; height:40px; margin-top:-20px; }
+  .photo-slide button, .photo-slide .photo-cap { border-radius:16px; }
+}
+@media (prefers-reduced-motion: reduce) { .photo-frame.is-ready .photo-slide, .photo-arrow { transition:none; } }
 
 .photo-lightbox { border:none; border-radius:14px; padding:0; max-width:min(92vw, 900px); max-height:88vh;
   background:var(--surface); box-shadow:0 20px 60px -20px rgba(0,0,0,0.5); }
@@ -899,7 +924,7 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .photo-lightbox-close:hover { background:var(--tint); }
 
 /* ---------- phone menu (built by site.js) ----------
-   Hidden above 700px, where the bar already shows every link. */
+   Hidden above 940px, where the bar already shows every link. */
 .nav-burger { display:none; width:40px; height:40px; align-items:center; justify-content:center;
   background:none; border:none; padding:0; cursor:pointer; color:var(--text); border-radius:8px; }
 .nav-burger:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
@@ -908,7 +933,7 @@ nav.bar.menu-open .nav-burger .nb-top { transform:translateY(5px) rotate(45deg);
 nav.bar.menu-open .nav-burger .nb-mid { opacity:0; }
 nav.bar.menu-open .nav-burger .nb-bot { transform:translateY(-5px) rotate(-45deg); }
 .nav-menu { display:none; }
-@media (max-width:700px) {
+@media (max-width:940px) {
   .nav-burger { display:flex; }
   nav.bar.menu-open { background:var(--bg); }
   .nav-menu:not([hidden]) { display:flex; flex-direction:column; position:absolute; top:48px; left:0; right:0;
