@@ -1,8 +1,9 @@
 ## Delivery photo gallery
 
-Photos here show up in the horizontal "In the field" gallery on the home
-page (`index.html#gallery`). The section stays hidden until it has at
-least one photo.
+Photos here show up in the photo carousel under "Our Impact" on the home
+page (`index.html#our-impact`): one photo in the middle, its neighbours
+blurred to either side, moving on every 15 seconds. The carousel stays
+hidden until it has at least one photo.
 
 To add a photo:
 

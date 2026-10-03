@@ -31,7 +31,7 @@ nav.bar .links a:hover, nav.bar .links a:focus-visible { background-size:100% 2p
 nav.bar .links a[aria-current="true"],
 nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:none;
   background-image:linear-gradient(var(--accent), var(--accent)); background-size:100% 2px; }
-@media (max-width:700px) {
+@media (max-width:940px) {
   /* The link row was 377px wide on a 390px phone and pushed the page sideways.
      The in-page links are one tap away in the page itself; the CTA stays. */
   nav.bar .links a:not(.cta):not(.login) { display:none; }
@@ -82,6 +82,10 @@ nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:non
 .statband #statMeals { font-size:clamp(48px,5.6vw,80px); line-height:0.95; letter-spacing:-0.045em; }
 .statband .cell:nth-child(1) { display:flex; flex-direction:column; justify-content:center; }
 .statband .cell:nth-child(1) .cap { font-size:clamp(15px,1.3vw,17px); margin-top:12px; }
+/* Partner schools: the same size as the meals figure beside it. */
+.statband #statSchools { font-size:clamp(48px,5.6vw,80px); line-height:0.95; letter-spacing:-0.045em; color:var(--brand); }
+.statband .cell:nth-child(3) { display:flex; flex-direction:column; justify-content:center; }
+.statband .cell:nth-child(3) .cap { font-size:clamp(15px,1.3vw,17px); margin-top:12px; }
 @media (max-width:700px) {
   .statband .grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"pct" "meals" "ready"; }
 }
@@ -211,7 +215,7 @@ footer .wrap.top { padding-top:56px; }
    nav.bar .links a.login { padding:6px 14px; border:1.5px solid var(--brand-line-mid); border-radius:999px;
      background-image:none; font-weight:600; color:var(--brand); transition:border-color 160ms ease, background-color 160ms ease; }
    nav.bar .links a.login:hover, nav.bar .links a.login:focus-visible { border-color:var(--brand); background-color:var(--surface); }
-   @media (max-width:700px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
+   @media (max-width:940px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
 
 /* ============================================================================
    PHONES — a calmer, less cluttered layout
@@ -221,15 +225,17 @@ footer .wrap.top { padding-top:56px; }
    phone rules live here too: at equal specificity they must come after the
    desktop rules above (and after assets/mainpage.css) to win.
    ========================================================================= */
-@media (max-width:700px) {
-  /* Menu bar on one line: the logo, Sign in and the theme switch. "Work with
-     us" is dropped from the bar on phones only; the hero button and the join
-     section both carry it on every phone screen that matters. */
+/* Menu bar on one line: the logo, Sign in, the theme switch and the menu.
+   "Work with us" moves into the menu too; the hero button and the join
+   section both carry it. */
+@media (max-width:940px) {
   nav.bar a.brand { white-space:nowrap; }
   nav.bar .links a.cta { display:none; }
   nav.bar .links { gap:4px; }
   nav.bar .links a.login { white-space:nowrap; }
   #themeToggle { width:40px; height:40px; }
+}
+@media (max-width:700px) {
 
   /* Type sized for a phone, not a monitor: 20px body copy and 30px headings
      made every paragraph a wall and orphaned words in two-line headings. */
@@ -252,16 +258,11 @@ footer .wrap.top { padding-top:56px; }
   #heroStatus { margin-top:18px; }
   #heropin #top .btn { flex:1 1 0; min-width:0; text-align:center; font-size:16px; padding:12px 14px; }
 
-  /* One spacing rhythm for phones: 48px between sections, not 72. The
-     sections carry their desktop padding inline, hence !important. */
-  #how, #sensors, #learn { padding-top:48px !important; padding-bottom:48px !important; }
-  #network > .wrap, #join > .wrap { padding-top:48px !important; padding-bottom:48px !important; }
   .emblems { padding:8px 0 24px; }
 
-  /* Stats: snugger cards and a quieter source note. */
+  /* Stats: snugger cards. */
   .statband .grid { padding:24px 0 12px; gap:12px; }
   .statband .cell:nth-child(2) { padding:22px 20px 24px; }
-  .statband .cite { font-size:12px; line-height:1.5; }
 
   /* Food safety: a smaller mascot keeps the panel from towering. */
   .cold-mascot { width:130px; }
@@ -271,7 +272,6 @@ footer .wrap.top { padding-top:56px; }
   .cards-grid .card { padding:20px; }
   .cards-grid .card p.body { font-size:16px; }
   .learn-grid { gap:12px; }
-  .join-grid { gap:24px; }
 
   /* Map: the floating legend covered half the map on a phone. Here it is a
      thin strip across the top, and the caption underneath is quieter. */
@@ -309,22 +309,6 @@ footer .wrap.top { padding-top:56px; }
   #heropin #top .btn { padding:10px 12px; }
 }
 
-/* How it works on phones: each station full width with its text beneath,
-   number and title on one line, the body un-indented. The side rail is
-   replaced by a short rolling conveyor between stations. */
-@media (max-width:760px) {
-  .step { padding:14px 0; row-gap:12px; }
-  .step .stage { width:100%; }
-  .step .stage::before, .belt { display:none; }
-  .step-text > button { grid-template-columns:28px minmax(0,1fr) 20px; grid-template-areas:"num ttl caret" "bdy bdy bdy"; row-gap:6px; }
-  .step .ttl { font-size:17px; }
-  .step .bdy { font-size:16px; }
-  .step .pdetail p { padding:6px 0 4px; }
-  .step:not(:last-child)::after { content:""; justify-self:center; width:22px; height:28px; margin-top:6px;
-    border-left:2px solid var(--brand-line-mid); border-right:2px solid var(--brand-line-mid);
-    background:repeating-linear-gradient(180deg, var(--brand-line-mid) 0 2px, transparent 2px 12px);
-    animation:beltRoll 0.8s linear infinite; }
-}
 /* --- live impact counter (home hero) ---------------------------------------
    The first thing on the page: pounds of food waste eliminated, read live
    from the public delivery log. Desktop: a card above the box mascot, in the
@@ -393,4 +377,173 @@ footer .wrap.top { padding-top:56px; }
   .hero-grid { grid-template-columns:88px minmax(0,1fr); row-gap:16px; }
   .impact-num { font-size:46px; }
   .impact-label { font-size:15px; }
+}
+
+/* ============================================================================
+   Home page sections
+   Every section below the hero opens the same way: a centred title in brand
+   green with a short orange rule under it, then one or two plain sentences.
+   Spacing between sections is the same everywhere (.sec).
+   ============================================================================ */
+.sec { padding:112px 0; }
+.sec-head { max-width:780px; margin:0 auto 56px; text-align:center; }
+.sec-title { margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
+  font-size:clamp(36px,4.6vw,56px); line-height:1.04; letter-spacing:-0.04em; color:var(--brand); text-wrap:balance; }
+.sec-title::after { content:""; display:block; width:44px; height:4px; border-radius:2px; background:var(--accent); margin:20px auto 0; }
+/* Shrink-wrapped, so the copy-link button hangs just right of the words
+   rather than at the far edge of the page. */
+.sec-title { display:table; margin-left:auto; margin-right:auto; }
+h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
+.sec-lede { margin:20px auto 0; max-width:60ch; font-size:clamp(17px,1.45vw,19px); line-height:1.6; color:var(--text-secondary); text-wrap:pretty; }
+.sec-note { margin:-24px auto 28px; max-width:66ch; text-align:center; font-size:14.5px; line-height:1.6; color:var(--text-secondary); }
+.sec-more { margin:32px 0 0; text-align:center; }
+.sec-more .doc-toggle { display:inline-flex; }
+/* Food safety keeps its framed instrument panel but drops the graph paper,
+   so it sits on the same background as every other section. */
+.instrument.is-plain::before { display:none; }
+.instrument.is-plain .cold-panel { margin-top:0; }
+
+/* --- Our Impact ---------------------------------------------------------- */
+.metrics { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:40px 24px; }
+.metric { display:flex; flex-direction:column; align-items:center; text-align:center; }
+.metric-ico { display:block; width:clamp(108px,11vw,148px); aspect-ratio:1; }
+.metric-ico svg { display:block; width:100%; height:100%; overflow:visible; }
+.metric-num { margin:18px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
+  font-size:clamp(40px,4.4vw,58px); line-height:1; letter-spacing:-0.04em; color:var(--brand); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.metric-label { margin:12px 0 0; max-width:17ch; font-size:clamp(15px,1.3vw,17px); line-height:1.4; font-weight:600; color:var(--text); }
+.metrics-live { margin:40px auto 0; max-width:60ch; text-align:center; font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
+.metrics-live .live-dot { display:inline-block; vertical-align:middle; margin:-2px 8px 0 0; }
+.metrics-live a { color:var(--brand); font-weight:600; }
+.metrics-live[data-state="connecting"] .live-dot::after, .metrics-live[data-state="offline"] .live-dot::after { animation:none; opacity:0; }
+.metrics-live[data-state="offline"] .live-dot { background:var(--text-secondary); }
+
+/* The icons: line drawings in brand green on a soft green disc, with orange
+   and fruit colours as accents. Every colour is a theme token except the
+   fruit, so they switch with light, dark and stock. */
+.mi-line { fill:none; stroke:var(--brand); stroke-width:3.2; stroke-linecap:round; stroke-linejoin:round; }
+.mi-blob { fill:color-mix(in srgb, var(--brand) 18%, var(--tint)); }
+.mi-fill { fill:var(--surface); }
+.mi-soft, .mi-win { fill:color-mix(in srgb, var(--brand) 28%, var(--surface)); }
+.mi-accent { fill:var(--accent); }
+.mi-flag { fill:var(--accent); stroke:var(--brand); stroke-width:2.6; stroke-linejoin:round; }
+.mi-side { fill:var(--box-side); }
+.mi-body { fill:var(--mascot-fill); }
+.mi-smile { fill:none; stroke:var(--accent); stroke-width:3.6; stroke-linecap:round; }
+.mi-badge circle { fill:var(--brand); }
+.mi-tick { fill:none; stroke:var(--on-brand); stroke-width:3.6; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:24; }
+.mi-leaf { fill:var(--brand); }
+.mi-applebody { fill:#D9534F; }
+.mi-banana { fill:#F2C14E; stroke-width:2.6; }
+.mi-plate { fill:var(--brand); }
+.mi-needle { stroke:var(--accent); stroke-width:3.4; stroke-linecap:round; }
+
+/* One short animation per icon, once, when the row first scrolls into view
+   (mainpage.js adds .is-in): the flag waves, a volunteer waves, the box
+   hops and gets its check, the food drops onto the scale. */
+.mi-flag { transform-box:fill-box; transform-origin:left center; }
+.mi-arm, .mi-hand { transform-box:view-box; transform-origin:73px 76px; }
+.mi-badge { transform-box:view-box; transform-origin:90px 38px; }
+.mi-needle { transform-box:view-box; transform-origin:60px 81px; transform:rotate(38deg); }
+.metrics.is-in .mi-flag { animation:miFlag 1.4s ease-in-out 250ms 2; }
+.metrics.is-in .mi-p1 { animation:miBob 700ms ease-out 350ms; }
+.metrics.is-in .mi-p3 { animation:miBob 700ms ease-out 500ms; }
+.metrics.is-in .mi-arm, .metrics.is-in .mi-hand { animation:miWave 1.2s ease-in-out 450ms 2; }
+.metrics.is-in .mi-crate { animation:miHop 800ms cubic-bezier(0.3,1.5,0.5,1) 600ms; }
+.metrics.is-in .mi-badge { animation:miPop 600ms cubic-bezier(0.3,1.6,0.5,1) 1000ms both; }
+.metrics.is-in .mi-tick { animation:miTick 450ms ease-out 1350ms both; }
+.metrics.is-in .mi-food { animation:miDrop 900ms cubic-bezier(0.3,1.4,0.5,1) 750ms both; }
+.metrics.is-in .mi-needle { animation:miNeedle 1.1s cubic-bezier(0.3,1.4,0.5,1) 1050ms both; }
+@keyframes miFlag { 0%, 100% { transform:skewY(0) scaleX(1); } 25% { transform:skewY(-9deg) scaleX(0.9); } 50% { transform:skewY(5deg) scaleX(1.04); } 75% { transform:skewY(-4deg) scaleX(0.95); } }
+@keyframes miBob { 0%, 100% { transform:translateY(0); } 40% { transform:translateY(-6px); } }
+@keyframes miWave { 0%, 100% { transform:rotate(0); } 25% { transform:rotate(-14deg); } 75% { transform:rotate(10deg); } }
+@keyframes miHop { 0%, 100% { transform:translateY(0); } 40% { transform:translateY(-10px); } }
+@keyframes miPop { 0% { transform:scale(0); } 100% { transform:scale(1); } }
+@keyframes miTick { 0% { stroke-dashoffset:24; } 100% { stroke-dashoffset:0; } }
+@keyframes miDrop { 0% { transform:translateY(-26px); opacity:0; } 30% { opacity:1; } 100% { transform:translateY(0); opacity:1; } }
+@keyframes miNeedle { 0% { transform:rotate(-50deg); } 100% { transform:rotate(38deg); } }
+
+@media (max-width:760px) {
+  .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:40px 16px; }
+  .metric-ico { width:96px; }
+  .metric-num { margin-top:14px; font-size:42px; }
+  .metric-label { font-size:15px; margin-top:8px; }
+  .metrics-live { margin-top:32px; font-size:13px; }
+}
+
+/* --- Our Process: the stepper ----------------------------------------------
+   Built by mainpage.js. Each stage puts three things in the grid, in its
+   own column (--col): its scene (row 1), its dot (row 2) and its words
+   (row 3). The line runs through row 2 from the first dot's centre to the
+   last's (columns are equal, so that is 12.5% in from each side), and the
+   green runner rides it to whichever stage is current (--progress, 0 to 1). */
+.proc { position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.proc-scene { grid-row:1; grid-column:var(--col); margin:0 12px 30px; padding:8px 10px 4px;
+  background:var(--surface); border:1px solid var(--brand-line); border-radius:18px; box-shadow:0 14px 34px -26px var(--paper-shadow);
+  opacity:0.45; transform:scale(0.95); transition:opacity 450ms ease, transform 450ms cubic-bezier(0.22,1,0.36,1), border-color 450ms ease; }
+.proc-scene.is-current { opacity:1; transform:none; border-color:var(--brand-line-mid); }
+.proc .scene { --d:0s; }
+.proc.in-view .proc-scene.is-current .scene { --play:running; }
+
+.proc-line { grid-row:2; grid-column:1 / -1; align-self:center; position:relative; height:4px; margin:0 12.5%; border-radius:2px; background:var(--line); }
+.proc-fill { position:absolute; left:0; top:0; bottom:0; width:calc(var(--progress, 0) * 100%); border-radius:inherit; background:var(--brand);
+  transition:width 700ms cubic-bezier(0.22,1,0.36,1); }
+.proc-runner { position:absolute; top:50%; left:calc(var(--progress, 0) * 100%); z-index:3; width:32px; height:32px; margin:-16px 0 0 -16px;
+  box-sizing:border-box; border-radius:50%; display:grid; place-items:center; background:var(--surface); border:2px solid var(--live);
+  box-shadow:0 0 0 6px color-mix(in srgb, var(--live) 14%, transparent); pointer-events:none;
+  transition:left 700ms cubic-bezier(0.22,1,0.36,1); }
+.proc-runner .live-dot { width:12px; height:12px; }
+
+.proc-node { grid-row:2; grid-column:var(--col); justify-self:center; position:relative; z-index:2; display:grid; place-items:center;
+  width:40px; height:40px; padding:0; border:none; border-radius:50%; background:none; cursor:pointer; color:inherit; font:inherit; }
+.proc-node:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+.proc-dot { display:block; width:18px; height:18px; box-sizing:border-box; border-radius:50%; background:var(--surface); border:2px solid var(--line);
+  transition:background-color 300ms ease, border-color 300ms ease; }
+.proc-node:hover .proc-dot { border-color:var(--brand-line-mid); }
+.proc-node.is-done .proc-dot { background:var(--brand); border-color:var(--brand); }
+.proc-short { display:none; }
+
+.proc-text { grid-row:3; grid-column:var(--col); padding:22px 14px 0; text-align:center; opacity:0.5; transition:opacity 450ms ease; }
+.proc-text.is-current { opacity:1; }
+.proc-text h3 { margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700;
+  font-size:18px; line-height:1.3; letter-spacing:-0.015em; color:var(--text); text-wrap:balance; }
+.proc-text p { margin:8px auto 0; max-width:30ch; font-size:15px; line-height:1.55; color:var(--text-secondary); }
+
+/* Phones: four dots with short names in a row, and the current stage's
+   scene and words underneath, one at a time. */
+@media (max-width:700px) {
+  .proc-node { grid-row:1; width:auto; height:auto; display:flex; flex-direction:column; align-items:center; gap:10px; padding:4px 2px; border-radius:10px; }
+  .proc-short { display:block; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600;
+    font-size:13px; color:var(--text-secondary); transition:color 300ms ease; }
+  .proc-node.is-current .proc-short { color:var(--text); }
+  .proc-line { grid-row:1; align-self:start; margin-top:11px; }
+  .proc-runner { width:28px; height:28px; margin:-14px 0 0 -14px; }
+  .proc-runner .live-dot { width:10px; height:10px; }
+  .proc-scene, .proc-text { grid-column:1 / -1; display:none; }
+  .proc-scene { grid-row:2; width:min(100%, 360px); margin:28px auto 0; box-sizing:border-box; }
+  .proc-text { grid-row:3; padding:18px 8px 0; }
+  .proc-scene.is-current, .proc-text.is-current { display:block; animation:procIn 450ms ease both; }
+  .proc-text h3 { font-size:19px; }
+  .proc-text p { font-size:16px; max-width:34ch; }
+}
+@keyframes procIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) {
+  .proc-scene, .proc-text { opacity:1; transform:none; }
+  .proc-fill, .proc-runner { transition:none; }
+}
+
+/* --- Work With Us and the footer sources ---------------------------------- */
+.join-wrap { max-width:720px; margin:0 auto; }
+.join-foot { display:flex; align-items:center; justify-content:center; gap:12px; margin:28px 0 0; }
+.join-foot p { margin:0; font-size:15px; line-height:1.5; color:var(--text-secondary); }
+.join-foot a { color:var(--brand); font-weight:600; }
+.foot-sources p { margin:0; padding:4px 0 8px; max-width:120ch; font-size:12.5px; line-height:1.6; color:var(--text-secondary); }
+.foot-sources a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
+
+@media (max-width:700px) {
+  .sec { padding:72px 0; }
+  .sec-head { margin-bottom:36px; }
+  .sec-title { font-size:34px; }
+  .sec-title::after { width:36px; margin-top:16px; }
+  .sec-lede { margin-top:16px; font-size:16.5px; }
+  .sec-note { margin:-12px auto 20px; font-size:14px; }
 }

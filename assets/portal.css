@@ -117,7 +117,7 @@
    
    /* design.css hides nav links and the theme label on phones, which suits the
       long public nav; here there are only two links and no icon. */
-   @media (max-width:700px) {
+   @media (max-width:940px) {
      .portal nav.bar .links a:not([hidden]) { display:inline; }
      .portal #themeToggle .theme-name { display:inline; }
    }

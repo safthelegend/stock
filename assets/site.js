@@ -1725,7 +1725,7 @@ function initMascotSlots(root) {
   function initAnchors() {
     var used = {};
     $$("h2, h3").forEach(function (h) {
-      if (h.closest("#palette, .packet-doc")) return;
+      if (h.closest("#palette, .packet-doc, [data-no-anchor]")) return;
       var id = h.id;
       if (!id) {
         id = (h.textContent || "").trim().toLowerCase()
@@ -1979,7 +1979,7 @@ function initMascotSlots(root) {
      Hand-picked photos of the team out doing deliveries — not tied to any
      database, just files we add ourselves. To add a photo: drop the image
      in assets/gallery/, then add a line below with its path and a short
-     caption. The section stays hidden on its own (see initGallery) until
+     caption. The photos stay hidden on their own (see initGallery) until
      this list has at least one entry, the same way a school with no logo
      is quietly left out of the carousel above.
      ====================================================================== */
@@ -2030,24 +2030,30 @@ function initMascotSlots(root) {
 
   function initGallery() {
     $$("[data-gallery]").forEach(function (track) {
-      var section = track.closest("section");
-      if (!GALLERY.length) { if (section) section.hidden = true; return; }
-      if (section) section.hidden = false;
+      // The photos sit inside a bigger section (Our Impact), so only their
+      // own wrapper is hidden when there are none.
+      var wrap = track.closest("[data-gallery-wrap]") || track.closest("section");
+      if (!GALLERY.length) { if (wrap) wrap.hidden = true; return; }
+      if (wrap) wrap.hidden = false;
 
       var frame = document.createElement("div");
       frame.className = "photo-frame";
       frame.setAttribute("role", "group");
+      frame.setAttribute("aria-roledescription", "carousel");
       frame.setAttribute("aria-label", "Photos of the team doing deliveries");
       var slides = GALLERY.map(function (p, i) {
         var slide = document.createElement("div");
         slide.className = "photo-slide";
         var btn = document.createElement("button");
         btn.type = "button";
-        btn.setAttribute("aria-label", "View larger: " + (p.caption || "delivery photo"));
         var img = document.createElement("img");
-        img.src = p.src; img.alt = p.caption || ""; img.loading = "lazy"; img.decoding = "async";
+        img.src = p.src; img.alt = p.caption || ""; img.decoding = "async";
         btn.appendChild(img);
-        btn.addEventListener("click", function () { openLightbox(i); });
+        // The middle photo opens larger; a photo to either side moves to
+        // the middle instead.
+        btn.addEventListener("click", function () {
+          if (i === idx) openLightbox(i); else { goTo(i); schedule(); }
+        });
         slide.appendChild(btn);
         if (p.caption) {
           var cap = document.createElement("p");
@@ -2062,9 +2068,21 @@ function initMascotSlots(root) {
       track.textContent = "";
       track.appendChild(frame);
 
-      var dotsWrap = null, dots = [];
+      var dots = [];
       if (GALLERY.length > 1) {
-        dotsWrap = document.createElement("div");
+        var arrow = function (dir, label, path) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "photo-arrow photo-arrow-" + dir;
+          b.setAttribute("aria-label", label);
+          b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + path + '"/></svg>';
+          b.addEventListener("click", function () { goTo(idx + (dir === "next" ? 1 : -1)); schedule(); });
+          frame.appendChild(b);
+        };
+        arrow("prev", "Previous photo", "M15 18l-6-6 6-6");
+        arrow("next", "Next photo", "M9 6l6 6-6 6");
+
+        var dotsWrap = document.createElement("div");
         dotsWrap.className = "photo-dots";
         dots = GALLERY.map(function (p, i) {
           var dot = document.createElement("button");
@@ -2075,25 +2093,52 @@ function initMascotSlots(root) {
           return dot;
         });
         track.appendChild(dotsWrap);
+
+        // Swipe on touch screens.
+        var x0 = null;
+        frame.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        frame.addEventListener("touchend", function (e) {
+          if (x0 === null) return;
+          var dx = e.changedTouches[0].clientX - x0;
+          x0 = null;
+          if (Math.abs(dx) > 40) { goTo(idx + (dx < 0 ? 1 : -1)); schedule(); }
+        });
       }
 
-      /* ---- one slide visible at a time, crossfading to the next every
-         15s and looping back to the start. This advances on a fixed timer
-         rather than a scroll position, so it visibly rotates no matter
-         how many photos there are or how wide the page is. Off entirely
-         under prefers-reduced-motion or with only one photo, and paused
-         on hover, keyboard focus, or while the lightbox is open, so a
-         photo never changes out from under someone looking at it. */
-      var idx = 0, timer = null;
+      /* ---- one photo in the middle, its neighbours to either side, smaller
+         and blurred, the rest tucked out of sight. It moves to the next
+         photo every 15s and loops. Each photo's place is set by data-pos
+         (0 = middle, -1/1 = either side, -2/2 = hidden) and the CSS animates
+         between places. The timer is off under prefers-reduced-motion or
+         with one photo, and pauses on hover, keyboard focus, or while the
+         lightbox is open, so a photo never moves out from under someone
+         looking at it. */
+      var idx = 0, timer = null, n = slides.length;
       function goTo(i) {
-        idx = (i + slides.length) % slides.length;
-        slides.forEach(function (s, j) { s.classList.toggle("is-active", j === idx); });
+        idx = (i + n) % n;
+        slides.forEach(function (s, j) {
+          var d = (j - idx + n) % n;          // 0 .. n-1 steps to the right
+          if (d > n / 2) d -= n;              // the shorter way round
+          var pos = d === 0 ? 0 : d === 1 ? 1 : d === -1 ? -1 : (d > 0 ? 2 : -2);
+          if (n === 2 && d !== 0) pos = 1;
+          s.setAttribute("data-pos", String(pos));
+          s.setAttribute("aria-hidden", pos === 0 ? "false" : "true");
+          var b = s.querySelector("button");
+          b.tabIndex = pos === 0 ? 0 : -1;
+          b.setAttribute("aria-label", pos === 0
+            ? "View larger: " + (GALLERY[j].caption || "photo " + (j + 1) + " of " + n)
+            : "Show photo " + (j + 1) + " of " + n);
+        });
         dots.forEach(function (d, j) { d.classList.toggle("is-active", j === idx); });
       }
       goTo(0);
-      if (reduced || GALLERY.length < 2) return;
+      // Photos take their places without sliding in on page load; only
+      // later moves animate.
+      requestAnimationFrame(function () { requestAnimationFrame(function () { frame.classList.add("is-ready"); }); });
+      if (reduced || n < 2) return;
       function schedule() {
         clearInterval(timer);
+        if (reduced || n < 2) return;
         timer = setInterval(function () { goTo(idx + 1); }, 15000);
       }
       function stop() { clearInterval(timer); }

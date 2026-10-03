@@ -530,7 +530,7 @@
         say("New York City has " + withData + " community districts. In " + above30 +
             " of them, more than 30% of residents are on SNAP.");
       } else if (t < TL.ACT3A) {
-        say("Today: " + real + " schools tracked, one receiving site in setup in Manhattan. The log is still empty.");
+        say("Today: " + real + " schools on the map, and every delivery on our public log.");
       } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
       } else if (t < TL.ACT3C) {
