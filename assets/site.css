@@ -867,21 +867,27 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .emblem-track.is-moving:hover .emblem-rail, .emblem-track.is-moving:focus-within .emblem-rail { animation-play-state:paused; }
 @keyframes emblemScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 /* --- delivery photo gallery (home page) ----------------------------------
-   A horizontal strip of hand-picked photos (assets/site.js: GALLERY). The
-   row scrolls natively rather than auto-playing like the emblem marquee
-   above, since these are meant to be looked at, not skimmed. */
+   A single-image carousel of hand-picked photos (assets/site.js: GALLERY).
+   One photo shows at a time in a fixed, shrunk frame and crossfades to the
+   next on a timer (see initGallery) so it visibly rotates no matter how
+   wide the page is, unlike a scrollable row that can sit still if every
+   photo already fits on screen. */
 .photo-band { padding:8px 0 40px; border-top:1px solid var(--line); background:var(--surface); }
-.photo-band .eyebrow { margin:28px 0 8px; }
-.photo-track { overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:12px 24px 4px; scroll-snap-type:x proximity; }
-.photo-row { list-style:none; margin:0; padding:0; display:flex; gap:16px; width:max-content; }
-.photo-card { flex:none; width:260px; scroll-snap-align:start; }
-.photo-card button { all:unset; cursor:zoom-in; display:block; width:100%; border-radius:12px; overflow:hidden;
-  border:1px solid var(--line); box-shadow:0 1px 0 var(--line-soft);
-  transition:transform 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 200ms ease; }
-.photo-card button:hover, .photo-card button:focus-visible { transform:translateY(-2px);
-  box-shadow:0 10px 28px -14px var(--paper-shadow), 0 2px 6px -2px var(--line); outline:2px solid var(--brand); outline-offset:2px; }
-.photo-card img { width:100%; height:180px; object-fit:cover; display:block; background:var(--tint); }
-.photo-cap { font-size:13px; color:var(--text-secondary); margin:8px 2px 0; line-height:1.4; }
+.photo-track { max-width:420px; margin:20px auto 0; }
+.photo-frame { position:relative; aspect-ratio:4/3; border-radius:14px; overflow:hidden;
+  border:1px solid var(--line); box-shadow:0 1px 0 var(--line-soft); background:var(--tint); }
+.photo-slide { position:absolute; inset:0; opacity:0; transition:opacity 500ms ease; }
+.photo-slide.is-active { opacity:1; }
+.photo-slide button { all:unset; cursor:zoom-in; display:block; width:100%; height:100%; }
+.photo-slide img { width:100%; height:100%; object-fit:cover; display:block; }
+.photo-slide .photo-cap { position:absolute; left:0; right:0; bottom:0; margin:0; padding:10px 14px;
+  font-size:13px; color:#fff; line-height:1.4; pointer-events:none;
+  background:linear-gradient(0deg, rgba(0,0,0,0.6), transparent); }
+.photo-dots { display:flex; justify-content:center; gap:8px; margin:14px 0 0; }
+.photo-dots button { all:unset; cursor:pointer; width:8px; height:8px; border-radius:50%; background:var(--line);
+  transition:background-color 160ms ease, transform 160ms ease; }
+.photo-dots button.is-active { background:var(--brand); transform:scale(1.3); }
+.photo-dots button:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
 
 .photo-lightbox { border:none; border-radius:14px; padding:0; max-width:min(92vw, 900px); max-height:88vh;
   background:var(--surface); box-shadow:0 20px 60px -20px rgba(0,0,0,0.5); }

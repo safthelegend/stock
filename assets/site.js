@@ -1985,12 +1985,23 @@ function initMascotSlots(root) {
      ====================================================================== */
   var GALLERY = [
     // { src: "assets/gallery/2026-01-stuyvesant-packing.jpg", caption: "Packing boxes at Stuyvesant" },
+    {src: "assets/gallery/EmptyFridge.JPG"},
+    {src: "assets/gallery/fridgeday1.jpeg"},
+    {src: "assets/gallery/BagsDay1.jpeg"},
+    {src: "assets/gallery/BagsDay2.jpeg"},
+
   ];
+
+  /* Auto-rotate pauses while the lightbox is open (set by initGallery,
+     called from openLightbox/close below) so a photo never slides away
+     from under someone who's looking at it enlarged. */
+  var pauseGalleryRotate = null, resumeGalleryRotate = null;
 
   var lightboxEl, lightboxImg, lightboxCap;
   function openLightbox(i) {
     var p = GALLERY[i];
     if (!p) return;
+    if (pauseGalleryRotate) pauseGalleryRotate();
     if (!lightboxEl) {
       lightboxEl = document.createElement("dialog");
       lightboxEl.className = "photo-lightbox";
@@ -2001,6 +2012,8 @@ function initMascotSlots(root) {
       close.innerHTML = "&times;";
       close.addEventListener("click", function () { lightboxEl.close(); });
       lightboxEl.addEventListener("click", function (e) { if (e.target === lightboxEl) lightboxEl.close(); });
+      // Fires on every close path: the button above, Esc, and backdrop clicks.
+      lightboxEl.addEventListener("close", function () { if (resumeGalleryRotate) resumeGalleryRotate(); });
       lightboxImg = document.createElement("img");
       lightboxCap = document.createElement("p");
       lightboxCap.className = "photo-lightbox-cap";
@@ -2020,12 +2033,14 @@ function initMascotSlots(root) {
       var section = track.closest("section");
       if (!GALLERY.length) { if (section) section.hidden = true; return; }
       if (section) section.hidden = false;
-      var row = document.createElement("ul");
-      row.className = "photo-row";
-      row.setAttribute("aria-label", "Photos of the team doing deliveries");
-      GALLERY.forEach(function (p, i) {
-        var li = document.createElement("li");
-        li.className = "photo-card";
+
+      var frame = document.createElement("div");
+      frame.className = "photo-frame";
+      frame.setAttribute("role", "group");
+      frame.setAttribute("aria-label", "Photos of the team doing deliveries");
+      var slides = GALLERY.map(function (p, i) {
+        var slide = document.createElement("div");
+        slide.className = "photo-slide";
         var btn = document.createElement("button");
         btn.type = "button";
         btn.setAttribute("aria-label", "View larger: " + (p.caption || "delivery photo"));
@@ -2033,17 +2048,62 @@ function initMascotSlots(root) {
         img.src = p.src; img.alt = p.caption || ""; img.loading = "lazy"; img.decoding = "async";
         btn.appendChild(img);
         btn.addEventListener("click", function () { openLightbox(i); });
-        li.appendChild(btn);
+        slide.appendChild(btn);
         if (p.caption) {
           var cap = document.createElement("p");
           cap.className = "photo-cap";
           cap.textContent = p.caption;
-          li.appendChild(cap);
+          slide.appendChild(cap);
         }
-        row.appendChild(li);
+        frame.appendChild(slide);
+        return slide;
       });
+
       track.textContent = "";
-      track.appendChild(row);
+      track.appendChild(frame);
+
+      var dotsWrap = null, dots = [];
+      if (GALLERY.length > 1) {
+        dotsWrap = document.createElement("div");
+        dotsWrap.className = "photo-dots";
+        dots = GALLERY.map(function (p, i) {
+          var dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", "Show photo " + (i + 1) + " of " + GALLERY.length);
+          dot.addEventListener("click", function () { goTo(i); schedule(); });
+          dotsWrap.appendChild(dot);
+          return dot;
+        });
+        track.appendChild(dotsWrap);
+      }
+
+      /* ---- one slide visible at a time, crossfading to the next every
+         15s and looping back to the start. This advances on a fixed timer
+         rather than a scroll position, so it visibly rotates no matter
+         how many photos there are or how wide the page is. Off entirely
+         under prefers-reduced-motion or with only one photo, and paused
+         on hover, keyboard focus, or while the lightbox is open, so a
+         photo never changes out from under someone looking at it. */
+      var idx = 0, timer = null;
+      function goTo(i) {
+        idx = (i + slides.length) % slides.length;
+        slides.forEach(function (s, j) { s.classList.toggle("is-active", j === idx); });
+        dots.forEach(function (d, j) { d.classList.toggle("is-active", j === idx); });
+      }
+      goTo(0);
+      if (reduced || GALLERY.length < 2) return;
+      function schedule() {
+        clearInterval(timer);
+        timer = setInterval(function () { goTo(idx + 1); }, 15000);
+      }
+      function stop() { clearInterval(timer); }
+      track.addEventListener("mouseenter", stop);
+      track.addEventListener("mouseleave", schedule);
+      track.addEventListener("focusin", stop);
+      track.addEventListener("focusout", schedule);
+      pauseGalleryRotate = stop;
+      resumeGalleryRotate = schedule;
+      schedule();
     });
   }
 
