@@ -151,9 +151,9 @@ nav.bar .links a.cta { color:var(--brand); font-weight:600;
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
 /* Phones and tablets: the menu bar on one line on every page, including the
    ones that don't load design.css — logo, Sign in, the theme switch and the
-   menu button. Below about 940px the full row of links no longer fits on one
+   menu button. Below about 800px the full row of links no longer fits on one
    line, and wrapped words looked broken, so the links move into the menu. */
-@media (max-width:940px) {
+@media (max-width:800px) {
   nav.bar .links a:not(.login) { display:none; }
   nav.bar .links { gap:4px; }
   nav.bar a.brand, nav.bar .links a { white-space:nowrap; }
@@ -271,7 +271,7 @@ footer .privacy a:hover { color:var(--brand); }
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   font-size:10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
   padding:3px 8px; border-radius:4px; }
-.site-row .status.s-setup { color:var(--on-brand); background:var(--brand); }
+.site-row .status.s-setup, .site-row .status.s-active { color:var(--on-brand); background:var(--brand); }
 .site-row .status.s-conversation { color:var(--brand); background:var(--tint); border:1px solid var(--brand-line-mid); }
 .site-row .status.s-target { color:var(--text-secondary); background:transparent; border:1px dashed var(--line); }
 @media (max-width:420px) { .site-rows { grid-template-columns:1fr; } }
@@ -640,8 +640,8 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 /* --- markers ------------------------------------------------------------ */
 .pin-wrap { position:relative; display:block; width:14px; height:14px; }
 .pin-dot { position:absolute; inset:0; box-sizing:border-box; }
-/* In setup: a solid filled disc with a light collar — reads as "on". */
-.pin-dot.pin-setup { border-radius:50%; background:var(--brand); border:3px solid var(--surface);
+/* Delivering: a solid filled disc with a light collar — reads as "on". */
+.pin-dot.pin-setup, .pin-dot.pin-active { border-radius:50%; background:var(--brand); border:3px solid var(--surface);
   box-shadow:0 0 0 1.5px var(--brand); }
 /* In conversation: a half-filled disc — started, not finished. */
 .pin-dot.pin-conversation { border-radius:50%; background:var(--surface); border:3px solid var(--brand);
@@ -924,7 +924,7 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .photo-lightbox-close:hover { background:var(--tint); }
 
 /* ---------- phone menu (built by site.js) ----------
-   Hidden above 940px, where the bar already shows every link. */
+   Hidden above 800px, where the bar already shows every link. */
 .nav-burger { display:none; width:40px; height:40px; align-items:center; justify-content:center;
   background:none; border:none; padding:0; cursor:pointer; color:var(--text); border-radius:8px; }
 .nav-burger:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
@@ -933,7 +933,7 @@ nav.bar.menu-open .nav-burger .nb-top { transform:translateY(5px) rotate(45deg);
 nav.bar.menu-open .nav-burger .nb-mid { opacity:0; }
 nav.bar.menu-open .nav-burger .nb-bot { transform:translateY(-5px) rotate(-45deg); }
 .nav-menu { display:none; }
-@media (max-width:940px) {
+@media (max-width:800px) {
   .nav-burger { display:flex; }
   nav.bar.menu-open { background:var(--bg); }
   .nav-menu:not([hidden]) { display:flex; flex-direction:column; position:absolute; top:48px; left:0; right:0;

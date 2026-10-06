@@ -8,10 +8,11 @@
      Act 1  the need      — choropleth of one published indicator, by
                             community district. Real, cited, and the counts
                             in the caption are computed from the data file.
-     Act 2  today         — the schools from STB.SITES and the one in-setup
-                            receiving site, with the routes a borough run is
-                            designed to take. Real, and it says the log is
-                            still empty.
+     Act 2  our story     — real, in the order it happened: Stuyvesant and
+                            the Essex Market fridge, then Midwood and a
+                            Brooklyn fridge, then Brooklyn Tech, then the
+                            schools we're in talks with. Ends on "today",
+                            which is also where the map rests.
      Act 3  if it spreads — anonymous dots blooming across the districts with
                             the highest need. HYPOTHETICAL. A banner stays on
                             screen the whole time it runs, the dots are never
@@ -24,7 +25,8 @@
    is the seam to feed from the manifest.
 
    Leaflet is vendored at assets/vendor/leaflet/ — no CDN. Basemap tiles are
-   the one third-party request this site makes; the footer says so.
+   the one third-party request the map makes, and only after a tap; the
+   footer and privacy.html say so.
    ========================================================================= */
 (function (window, document) {
   "use strict";
@@ -36,16 +38,13 @@
   var GEO_URL = "assets/geo/nyc-cd.geojson";
   var SITES_URL = "assets/geo/sites.json";
 
-  /* Two CARTO basemaps, chosen to match whichever theme is active rather than
-     forcing the page into dark. Attribution is required by both CARTO and
-     OpenStreetMap and is rendered by Leaflet's own control. */
-  var TILES = {
-    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-  };
-  var TILE_ATTR =
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-    '&copy; <a href="https://carto.com/attributions">CARTO</a>';
+  /* OpenStreetMap's own tiles. CARTO's free basemaps started stamping "API
+     KEY REQUIRED" across the map, so they're gone. OSM's tiles are colourful,
+     so design.css greys them (and inverts them in the dark themes) to sit
+     quietly under the data. Attribution is required and rendered by
+     Leaflet's own control. */
+  var TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  var TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
   /* Same five-class ramp and breakpoints the legend prints, so the map reads
      without colour. */
@@ -60,12 +59,6 @@
 
   function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-  function isDarkTheme() {
-    var t = document.documentElement.getAttribute("data-theme");
-    if (t === "dark" || t === "stock") return true;
-    if (t === "light") return false;
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
 
   function initNetworkMap() {
@@ -83,7 +76,7 @@
       zoomControl: false,
       attributionControl: true,
       /* Set here as well as on the tiles: the tiles load only after a tap,
-         and the pin clustering needs the zoom range before that. */
+         and the zoom control needs the range before that. */
       minZoom: 9, maxZoom: 17,
       /* Touch and wheel both start disabled so the map never steals a scroll.
          They are handed back once the visitor deliberately engages. */
@@ -95,13 +88,11 @@
 
     L.control.zoom({ position: "bottomleft" }).addTo(map);
 
-    /* The street background comes from CARTO, so loading it sends the
-       visitor's IP address there. It waits until someone taps, clicks or
+    /* The street background comes from OpenStreetMap, so loading it sends
+       the visitor's IP address there. It waits until someone taps, clicks or
        focuses the map; until then the districts and pins (all served from
        this site) show on a plain background. See privacy.html. */
-    var tiles = L.tileLayer(TILES[isDarkTheme() ? "dark" : "light"], {
-      attribution: TILE_ATTR, maxZoom: 17, minZoom: 9, detectRetina: true
-    });
+    var tiles = L.tileLayer(TILES, { attribution: TILE_ATTR, maxZoom: 17, minZoom: 9 });
     function loadTiles() { if (!map.hasLayer(tiles)) tiles.addTo(map); }
     host.addEventListener("pointerdown", loadTiles, { once: true });
 
@@ -110,42 +101,10 @@
     map.createPane("routes"); map.getPane("routes").style.zIndex = 450;
     map.createPane("pins"); map.getPane("pins").style.zIndex = 600;
 
-    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null, cluster: null };
-
-    /* Clustering, for where pins genuinely stack. Deliberately tight
-       (46px, and off entirely past zoom 12): the point is to merge markers
-       that overlap, not to hide a borough behind a number. Only the school and
-       receiving pins cluster — the Act 3 seed dots never do, because watching
-       the spread collapse into counters would defeat the whole sequence.
-
-       The hull polygon on hover is off: over a choropleth it reads as another
-       data layer. */
-    function clusterIcon(cluster) {
-      var kids = cluster.getAllChildMarkers();
-      var live = kids.some(function (m) { return m.options.stbStatus === "setup"; });
-      var n = kids.length;
-      return L.divIcon({
-        className: "",
-        html: '<span class="pin-cluster' + (live ? " pin-cluster-live" : "") + '">' +
-              '<b>' + n + '</b><span class="pin-cluster-lbl">sites</span></span>',
-        iconSize: [34, 34], iconAnchor: [17, 17]
-      });
-    }
-
-    if (L.markerClusterGroup) {
-      state.cluster = L.markerClusterGroup({
-        clusterPane: "pins",
-        maxClusterRadius: 46,
-        disableClusteringAtZoom: 13,
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        animate: !reduced,
-        iconCreateFunction: clusterIcon
-      });
-      map.addLayer(state.cluster);
-    }
-
+    /* No pin clustering: with a handful of pins, merging them into "3 sites"
+       bubbles hid the very schools the map is about. Overlapping labels are
+       thinned out instead (declutterLabels). */
+    var state = { geo: null, sites: null, choro: null, markers: [], routes: [], seeds: [], spotlit: null };
 
     /* ---------- interaction gate: never hijack a scroll ---------- */
     var gate = document.createElement("button");
@@ -226,43 +185,55 @@
       });
     }
 
-    /* ---------- markers ---------- */
+    /* ---------- markers ----------
+       Schools wear their status (delivering pulses; in talks and planned
+       never do). Fridges get their own square mark. */
     function pinFor(place, coords) {
-      var live = place.status === "setup";
+      var fridge = place.kind === "receiving";
+      var live = !fridge && place.status === "active";
+      var label = fridge ? "Community fridge" : (statusOf[place.status] || place.status);
       var icon = L.divIcon({
         className: "",
         html:
           '<span class="pin-wrap' + (live && !reduced ? " pin-live" : "") + '">' +
-            '<span class="pin-dot pin-' + place.status + '"></span>' +
-            '<span class="pin-text">' + (statusOf[place.status] || place.status) + '</span>' +
+            '<span class="pin-dot ' + (fridge ? "pin-fridge" : "pin-" + place.status) + '"></span>' +
+            '<span class="pin-text">' + label + '</span>' +
           '</span>',
         iconSize: [14, 14],
         iconAnchor: [7, 7]
       });
       var m = L.marker([coords.lat, coords.lon], {
         pane: "pins", icon: icon, keyboard: true,
-        /* Read back by the cluster icon so a cluster containing a live site
-           can say so rather than averaging it away. */
-        stbStatus: place.status,
-        alt: place.name + ", " + place.borough + ", " + (statusOf[place.status] || place.status),
+        alt: place.name + ", " + place.borough + ", " + label,
         title: place.name
       });
+      var link = fridge
+        ? (STB.SITES || []).filter(function (s) { return s.dropoff === place.name; }).map(function (s) { return s.name; })
+        : (place.dropoff ? [place.dropoff] : []);
       m.bindPopup(
         '<strong>' + place.name + '</strong>' +
         '<span class="pop-line">' + place.borough + '</span>' +
-        '<span class="pop-line">' + (statusOf[place.status] || place.status) + '</span>' +
+        '<span class="pop-line">' + label + '</span>' +
+        (link.length ? '<span class="pop-line">' + (fridge ? "Food from " : "Delivers to ") + link.join(", ") + '</span>' : "") +
         (coords.precision === "borough"
           ? '<span class="pop-note">Exact location not published; pin is borough-level.</span>' : ""),
         { className: "map-pop-leaflet", closeButton: true }
       );
+      m.stbPlace = place;
       return m;
     }
 
     function placesForMap() {
-      var all = (STB.SITES || []).concat([STB.RECEIVING_SITE].filter(Boolean));
+      var all = (STB.SITES || []).concat(STB.RECEIVING_SITES || [STB.RECEIVING_SITE].filter(Boolean));
       return all.filter(function (p) {
         return STB.matchesSiteState ? STB.matchesSiteState(p) : true;
       });
+    }
+
+    // Delivering schools in the order they joined.
+    function partners() {
+      return (STB.SITES || []).filter(function (s) { return s.status === "active"; })
+        .sort(function (a, b) { return (a.joined || 99) - (b.joined || 99); });
     }
 
     function coordsFor(name) {
@@ -297,14 +268,13 @@
     }
 
     function drawMarkers() {
-      if (state.cluster) state.cluster.clearLayers();
       state.markers.forEach(function (m) { map.removeLayer(m); });
       state.markers = [];
       placesForMap().forEach(function (p, i) {
         var c = coordsFor(p.name);
         if (!c) return;
         var m = pinFor(p, c);
-        if (state.cluster) state.cluster.addLayer(m); else m.addTo(map);
+        m.addTo(map);
         state.markers.push(m);
         /* The pop-in sequence: markers arrive in turn rather than all at once.
            Under reduced motion they are simply there. */
@@ -333,7 +303,9 @@
        watermark inside the map frame says so for as long as it is on screen. */
     var TL = {
       ACT1: 0, SPOT_AT: 2600, SPOT_EACH: 1250, SPOT_N: 4,
-      ACT2: 7800, ACT3A: 11400, ACT3B: 14400, ACT3C: 17200, ACT4: 20400, END: 23500
+      ACT2: 7800, STEP: 2600,            /* our story: one step per partner, then "in talks" */
+      TODAY: 18200,                      /* where the map rests */
+      ACT3A: 21200, ACT3B: 24200, ACT3C: 27000, ACT4: 30200, END: 33300
     };
     var SEED_STOPS = [14, 27];   /* how far the bloom has got by 3B and 3C */
 
@@ -350,14 +322,16 @@
       hud.className = "map-hud";
       hud.innerHTML =
         '<div class="hud-counts" aria-hidden="true">' +
-          '<span class="hud-stat"><b id="hudSchools">0</b><span>schools</span></span>' +
-          '<span class="hud-stat"><b id="hudBoroughs">0</b><span>boroughs</span></span>' +
+          '<span class="hud-stat"><b id="hudSchools">0</b><span id="hudSchoolsLbl">partner schools</span></span>' +
+          '<span class="hud-stat"><b id="hudBoroughs">0</b><span id="hudBoroughsLbl">fridges</span></span>' +
         '</div>' +
         '<p class="hud-caption" id="hudCaption" role="status"></p>';
       shell.appendChild(hud);
       HUD.caption = hud.querySelector("#hudCaption");
       HUD.schools = hud.querySelector("#hudSchools");
       HUD.boroughs = hud.querySelector("#hudBoroughs");
+      HUD.schoolsLbl = hud.querySelector("#hudSchoolsLbl");
+      HUD.boroughsLbl = hud.querySelector("#hudBoroughsLbl");
 
       /* The disambiguation watermark lives inside the map frame, not in the
          page flow, so it cannot be scrolled away from the thing it qualifies. */
@@ -449,26 +423,32 @@
       }
     }
 
-    function syncRoutes(on) {
-      if (on === (state.routes.length > 0)) return;
-      if (!on) {
-        state.routes.forEach(function (r) { map.removeLayer(r); });
-        state.routes = [];
-        return;
-      }
-      var recv = coordsFor("Receiving site");
-      if (!recv) return;
-      placesForMap().forEach(function (p) {
-        if (p.kind === "receiving") return;
-        var c = coordsFor(p.name);
-        if (!c) return;
-        var line = L.polyline([[c.lat, c.lon], [recv.lat, recv.lon]], {
-          pane: "routes", color: cssVar("--accent"), weight: 2, opacity: 0.75,
-          dashArray: "6 8", className: "route-line" + (reduced ? "" : " route-animate")
+    /* Real routes only: each delivering school to the fridge it delivers
+       to, revealed in the order the schools joined. n = how many show. */
+    function syncRoutes(n) {
+      var pairs = partners().filter(function (p) { return p.dropoff && coordsFor(p.name) && coordsFor(p.dropoff); });
+      n = Math.max(0, Math.min(n, pairs.length));
+      while (state.routes.length > n) map.removeLayer(state.routes.pop());
+      while (state.routes.length < n) {
+        var p = pairs[state.routes.length], a = coordsFor(p.name), b = coordsFor(p.dropoff);
+        var line = L.polyline([[a.lat, a.lon], [b.lat, b.lon]], {
+          pane: "routes", color: cssVar("--brand"), weight: 3.5, opacity: 0.9, lineCap: "round",
+          dashArray: "1 9", className: "route-line" + (reduced ? "" : " route-animate")
         }).addTo(map);
-        line.bindTooltip("Illustrative route — no run has been logged on this pair",
-          { sticky: true, className: "map-tip" });
+        line.bindTooltip(p.name + " → " + p.dropoff, { sticky: true, className: "map-tip" });
         state.routes.push(line);
+      }
+    }
+
+    /* Which pins are lit at each point of the story. Pins that haven't come
+       up yet are dimmed rather than hidden, so the map never jumps. */
+    function syncPins(lit, focus) {
+      state.markers.forEach(function (m) {
+        var el = m.getElement();
+        if (!el) return;
+        var name = m.stbPlace.name;
+        el.classList.toggle("pin-dim", !!lit && !lit[name]);
+        el.classList.toggle("pin-focus", !!focus && !!focus[name]);
       });
     }
 
@@ -498,9 +478,17 @@
     }
 
     /* ---------- the one render function ---------- */
+    function namesOf(list) { var o = {}; list.forEach(function (p) { o[p.name] = 1; }); return o; }
+    function joinNames(list) {
+      var n = list.map(function (p) { return p.name; });
+      return n.length < 3 ? n.join(" and ") : n.slice(0, -1).join(", ") + ", and " + n[n.length - 1];
+    }
+
     function renderAt(t) {
-      var real = placesForMap().filter(function (p) { return p.kind !== "receiving"; }).length;
       var seeds = districtSeeds();
+      var part = partners();
+      var talks = (STB.SITES || []).filter(function (s) { return s.status === "conversation"; });
+      var fridges = STB.RECEIVING_SITES || [];
 
       var withData = 0, above30 = 0;
       state.geo.features.forEach(function (f) {
@@ -513,7 +501,22 @@
       if (t >= TL.SPOT_AT && t < TL.ACT2) spotIdx = Math.floor((t - TL.SPOT_AT) / TL.SPOT_EACH);
       syncSpotlight(spotIdx);
 
-      syncRoutes(t >= TL.ACT2);
+      /* Our story: step k (0-based) brings in partner k and its fridge; the
+         step after the last partner brings in the schools we're talking to. */
+      var step = t < TL.ACT2 ? -1 : Math.min(part.length, Math.floor((t - TL.ACT2) / TL.STEP));
+      var story = t >= TL.ACT2 && t < TL.TODAY;
+      var shown = step < 0 ? [] : part.slice(0, Math.min(step + 1, part.length));
+      var shownFridges = fridges.filter(function (f) { return shown.some(function (p) { return p.dropoff === f.name; }); });
+      syncRoutes(t < TL.ACT2 ? 0 : t >= TL.TODAY ? part.length : shown.length);
+
+      if (t < TL.ACT2) syncPins({}, null);                       // the need: every pin dimmed
+      else if (story && step < part.length) {
+        var p = part[step];
+        var lit = namesOf(shown.concat(shownFridges));
+        var focus = {}; focus[p.name] = 1; if (p.dropoff) focus[p.dropoff] = 1;
+        syncPins(lit, focus);
+      } else if (story) syncPins(namesOf(part.concat(fridges, talks)), namesOf(talks));
+      else syncPins(null, null);                                 // today and beyond: all lit
 
       var nSeeds = 0;
       if (t >= TL.ACT3A) nSeeds = lerpCount(t, TL.ACT3A, TL.ACT3B, 0, SEED_STOPS[0]);
@@ -524,29 +527,50 @@
       if (HUD.mark) HUD.mark.hidden = t < TL.ACT3A;
 
       if (spotIdx >= 0 && spotIdx < TL.SPOT_N) {
-        var p = rankedDistricts()[spotIdx].feature.properties;
-        say(p.name + " — " + p.snap + "% of residents on SNAP.");
+        var sp = rankedDistricts()[spotIdx].feature.properties;
+        say(sp.name + " — " + sp.snap + "% of residents on SNAP.");
       } else if (t < TL.ACT2) {
         say("New York City has " + withData + " community districts. In " + above30 +
             " of them, more than 30% of residents are on SNAP.");
+      } else if (story && step === 0) {
+        say("We started at " + part[0].name + (part[0].dropoff ? ", delivering to the " + part[0].dropoff + "." : "."));
+      } else if (story && step < part.length) {
+        var q = part[step], fr = q.dropoff && q.dropoff.indexOf("Brooklyn community fridge") === 0 ? "a community fridge in Brooklyn" : "the " + q.dropoff;
+        say(step === part.length - 1 && !q.dropoff
+          ? "We've just added " + q.name + "."
+          : "Then " + q.name + " joined" + (q.dropoff ? ", delivering to " + fr + "." : "."));
+      } else if (story) {
+        say("Next, we're in talks with " + joinNames(talks) + ".");
       } else if (t < TL.ACT3A) {
-        say("Today: " + real + " schools on the map, and every delivery on our public log.");
+        var boros = {};
+        fridges.forEach(function (f) { boros[f.borough] = 1; });
+        say("Today: " + part.length + " partner schools delivering to community fridges in " +
+            Object.keys(boros).join(" and ") + ", and " + talks.length + " more schools in talks.");
       } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
       } else if (t < TL.ACT3C) {
         say("Every district above 20% reached — one share table at a time.");
       } else if (t < TL.ACT4) {
-        say("Citywide: a student-run recovery network on top of the need map, feeding partner food banks in every borough.");
+        say("Citywide: a student-run recovery network on top of the need map, feeding food banks and community fridges in every borough.");
       } else {
-        say("That is the shape of the idea. It starts with one receiving partner saying yes.");
+        say("That's the idea. It grows one school, and one fridge, at a time.");
       }
 
-      var boroughs = {};
-      placesForMap().forEach(function (pl) { boroughs[pl.borough] = 1; });
-      if (t < TL.ACT2) { setCount(HUD.schools, 0); setCount(HUD.boroughs, 0); }
-      else {
-        setCount(HUD.schools, real + nSeeds);
+      /* Counts: partner schools and fridges through our story; once the
+         projection runs, schools (real plus illustrative) and boroughs. */
+      var projecting = t >= TL.ACT3A;
+      var nA = t < TL.ACT2 ? 0 : story ? shown.length : part.length;
+      var nB = t < TL.ACT2 ? 0 : story ? shownFridges.length : fridges.length;
+      if (HUD.schoolsLbl) HUD.schoolsLbl.textContent = projecting ? "schools" : nA === 1 ? "partner school" : "partner schools";
+      if (HUD.boroughsLbl) HUD.boroughsLbl.textContent = projecting ? "boroughs" : nB === 1 ? "fridge" : "fridges";
+      if (!projecting) {
+        setCount(HUD.schools, nA);
+        setCount(HUD.boroughs, nB);
+      } else {
+        var boroughs = {};
+        part.forEach(function (pl) { boroughs[pl.borough] = 1; });
         for (var i = 0; i < nSeeds; i++) boroughs[seeds[i].borough] = 1;
+        setCount(HUD.schools, part.length + nSeeds);
         setCount(HUD.boroughs, Object.keys(boroughs).length);
       }
 
@@ -585,7 +609,7 @@
     function clearProjection() {
       pause();
       clock = 0;
-      syncRoutes(false); syncSeeds(0); syncSpotlight(-1);
+      syncRoutes(0); syncSeeds(0); syncSpotlight(-1); syncPins(null, null);
       if (HUD.mark) HUD.mark.hidden = true;
       renderAt(0);
     }
@@ -618,6 +642,7 @@
         var keys = (STB.SITE_STATUS || []).map(function (st) {
           return '<span class="lg-item"><span class="lg-pin"><span class="pin-dot pin-' + st.key + '"></span></span>' + st.label + "</span>";
         });
+        keys.push('<span class="lg-item"><span class="lg-pin"><span class="pin-dot pin-fridge"></span></span>Community fridge</span>');
         host2.innerHTML = '<span class="lg-title">% on SNAP</span>' + items.join("") +
           (keys.length ? '<span class="lg-sep" aria-hidden="true"></span><span class="lg-title">Sites</span>' + keys.join("") : "");
       }
@@ -657,21 +682,20 @@
       buildHud();
 
       /* No autoplay. The map opens on the real, sourced picture: the need
-         shading, today's school pins and the one receiving site. The
-         projection only runs when a visitor presses Play. */
-      seek(TL.ACT2);
+         shading, our partner schools, the fridges they deliver to and the
+         schools we're talking to. Play tells the story from the start. */
+      seek(TL.TODAY);
       atRest = true;
 
       /* Re-tile and re-colour on a theme switch: every colour above is read
          from a custom property, so the map follows the page. */
       var mo = new MutationObserver(function () {
-        tiles.setUrl(TILES[isDarkTheme() ? "dark" : "light"]);
         if (state.choro) state.choro.setStyle(styleFor);
+        state.routes.forEach(function (r) { r.setStyle({ color: cssVar("--brand") }); });
       });
       mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
       map.on("zoomend moveend", declutterLabels);
-      if (state.cluster) state.cluster.on("animationend spiderfied unspiderfied", declutterLabels);
       host.setAttribute("data-ready", "true");
     })["catch"](function () {
       host.innerHTML = '<p class="map-fallback">The map could not be loaded. ' +

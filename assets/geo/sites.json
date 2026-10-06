@@ -1,6 +1,6 @@
 {
   "meta": {
-    "purpose": "Map pin coordinates for the schools in STB.SITES, plus the one operating receiving site. Names and statuses are NOT stored here — those live in the SITES array in assets/site.js, which stays the single source. This file only answers 'where does the pin go'.",
+    "purpose": "Map pin coordinates for the schools in STB.SITES, plus the community fridges in STB.RECEIVING_SITES that they deliver to. Names and statuses are NOT stored here — those live in the SITES array in assets/site.js, which stays the single source. This file only answers 'where does the pin go'.",
     "precision": "Each entry carries a precision field. 'address' means the point is the school campus. 'borough' means no point is published and the pin is placed at a borough reference point rather than at a real address.",
     "verified": false,
     "verification_note": "These coordinates were entered from publicly known school addresses and have NOT been checked against a geocoding service. Run tools/geocode.mjs to regenerate them from a live geocoder and overwrite this file before treating any pin as authoritative.",
@@ -15,7 +15,8 @@
     { "name": "Bronx High School of Science", "lat": 40.8736, "lon": -73.8907, "precision": "address" },
     { "name": "Townsend Harris High School", "lat": 40.7345, "lon": -73.8203, "precision": "address" },
     { "name": "Queens High School for the Sciences at York College", "lat": 40.7005, "lon": -73.7977, "precision": "address" },
-    { "name": "Receiving site", "lat": 40.7220, "lon": -74.0020, "precision": "borough" }
+    { "name": "Essex Market Community Fridge", "lat": 40.7178, "lon": -73.9890, "precision": "address" },
+    { "name": "Brooklyn community fridge", "lat": 40.6500, "lon": -73.9500, "precision": "borough" }
   ],
   "boroughView": {
     "Manhattan": { "lat": 40.7780, "lon": -73.9700, "zoom": 12 },
