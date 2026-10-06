@@ -16,7 +16,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=19">
+<link rel="stylesheet" href="assets/site.css?v=21">
 <style>
   .policy { max-width:820px; padding-bottom:96px; }
   .policy h2 { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:24px; letter-spacing:-0.02em; color:var(--text); margin:48px 0 12px; scroll-margin-top:72px; }
@@ -43,7 +43,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .policy th, .policy td { padding:8px; }
   }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=18">
+<link rel="stylesheet" href="assets/design.css?v=20">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -55,12 +55,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       Stock the Block
     </a>
     <div class="links">
-      <a href="index.html#how">Our process</a>
-      <a href="index.html#sensors">Food safety</a>
-      <a href="index.html#network">Our why</a>
-      <a href="getting-started.html">Getting started</a>
-      <a href="log.html">Delivery log</a>
-      <a href="index.html#join" class="cta">Work with us</a>
+      <a href="index.html#how">Our Process</a>
+      <a href="index.html#sensors">Safety</a>
+      <a href="index.html#network">Our Why</a>
+      <a href="log.html">Deliveries</a>
+      <a href="index.html#join" class="cta">Work With Us</a>
       <a href="members.html" class="login">Sign in</a>
       <button id="themeToggle" type="button" aria-label="Colour theme">
         <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -114,7 +113,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>If you send the contact form, we store what you type so we can reply.</li>
     <li>If you are a member and sign in with Google, we store your name, email address and the deliveries you log.</li>
     <li>The public delivery log shows only a delivery's date, weight, number of food types and review status. It never shows names, schools, locations, notes or photos.</li>
-    <li>Some parts of the Site load content from outside services (GitHub, which hosts the Site, and Google). The map's street background comes from CARTO, but only after you tap the map. These services receive basic technical information, such as your IP address, when your browser contacts them.</li>
+    <li>Some parts of the Site load content from outside services (GitHub, which hosts the Site, and Google). The map's street background comes from OpenStreetMap, but only after you tap the map. These services receive basic technical information, such as your IP address, when your browser contacts them.</li>
     <li>We never sell or rent personal information.</li>
   </ul>
 
@@ -125,7 +124,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <ul>
     <li><b>Website hosting (GitHub Pages).</b> The Site is hosted by GitHub. When you load a page, GitHub receives your IP address and standard request details (such as browser type and the page requested), and may log visitor IP addresses for security purposes. We do not have access to these logs.</li>
     <li><b>Fonts (Google Fonts).</b> Our pages load typefaces from Google Fonts, so your browser sends your IP address and browser details to Google.</li>
-    <li><b>Map (CARTO and OpenStreetMap).</b> The map on the home page shows districts and school locations from files stored on the Site. The street background (“tiles”) comes from CARTO, using map data from OpenStreetMap, and loads only after you tap, click or select the map. From then on, your browser sends your IP address and the map area being viewed to CARTO.</li>
+    <li><b>Map (OpenStreetMap).</b> The map on the home page shows districts, school locations and community fridge locations from files stored on the Site. The street background (“tiles”) comes from the OpenStreetMap Foundation’s tile servers and loads only after you tap, click or select the map. From then on, your browser sends your IP address and the map area being viewed to the OpenStreetMap Foundation.</li>
     <li><b>Database (Google Firebase).</b> The home page (for the live impact counter and the contact form), the delivery log and the member portal load code from Google's servers and connect to our Google Firebase database. Google receives your IP address and browser details when this happens.</li>
   </ul>
 
@@ -180,7 +179,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <tr><td>GitHub Pages (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy</a>)</td><td>Hosts the Site</td><td>IP address and request details</td></tr>
       <tr><td>Google Firebase (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacy</a>)</td><td>Database and member sign-in</td><td>Contact form messages, member accounts, delivery records and photos, public log; IP address and browser details</td></tr>
       <tr><td>Google Fonts (<a href="https://developers.google.com/fonts/faq/privacy" rel="noopener">privacy</a>)</td><td>Provides the Site's typefaces</td><td>IP address and browser details</td></tr>
-      <tr><td>CARTO (<a href="https://carto.com/privacy" rel="noopener">privacy</a>), with OpenStreetMap data</td><td>Provides the map's street background, after you tap the map</td><td>IP address and the map area viewed</td></tr>
+      <tr><td>OpenStreetMap Foundation (<a href="https://osmfoundation.org/wiki/Privacy_Policy" rel="noopener">privacy</a>)</td><td>Provides the map's street background, after you tap the map</td><td>IP address and the map area viewed</td></tr>
     </tbody>
   </table>
   </div>
@@ -260,10 +259,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <a href="why.html#sources">Sources</a>
     <a href="privacy.html" aria-current="page">Privacy</a>
   </nav>
-  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address.</div>
+  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and OpenStreetMap map tiles), which receive basic technical details such as your IP address.</div>
 </footer>
 
-<script src="assets/site.js?v=19"></script>
+<script src="assets/site.js?v=21"></script>
 <script>
 (function () {
   "use strict";

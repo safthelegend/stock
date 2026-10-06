@@ -1534,32 +1534,39 @@ function initMascotSlots(root) {
      the counts, the ordering and the caveat about targets all had to be kept
      true by hand. They are one array now: status lives on the record, and the
      view is derived. Adding a school is one line, and promoting one from
-     target to in setup is one word.
+     planned to delivering is one word.
 
      The list renders from JS, so the markup in index.html carries the same
      rows as a <noscript> fallback — a reader with JS off still gets every
      school and its status, just without the filter. */
   var SITES = [
-    { name: "Stuyvesant High School", borough: "Manhattan", status: "setup" },
-    { name: "Midwood High School", borough: "Brooklyn", status: "conversation" },
-    { name: "James Madison High School", borough: "Brooklyn", status: "conversation" },
-    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "target" },
-    { name: "Rachel Carson High School", borough: "Brooklyn", status: "target" },
-    { name: "Bronx High School of Science", borough: "Bronx", status: "target" },
-    { name: "Townsend Harris High School", borough: "Queens", status: "target" },
-    { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "target", tag: "specialized" }
+    /* Delivering, in the order they joined. dropoff names the fridge in
+       RECEIVING_SITES the map draws each school's route to. */
+    { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
+    { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
+    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3 },
+    { name: "Townsend Harris High School", borough: "Queens", status: "conversation" },
+    { name: "Bronx High School of Science", borough: "Bronx", status: "conversation" },
+    { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "conversation", tag: "specialized" },
+    { name: "James Madison High School", borough: "Brooklyn", status: "target" },
+    { name: "Rachel Carson High School", borough: "Brooklyn", status: "target" }
   ];
 
   var SITE_STATUS = [
-    { key: "setup", label: "In setup", note: "Pre-launch. Boxes and routes are being prepared; no food has moved yet." },
-    { key: "conversation", label: "In conversation", note: "Talking to staff or administration. Nothing agreed, nothing running." },
-    { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
+    { key: "active", label: "Delivering", note: "Partner school. Food is moving, and every delivery is on the public log." },
+    { key: "conversation", label: "In talks", note: "Talking with staff or administration about starting. Nothing is running yet." },
+    { key: "target", label: "Planned", note: "Schools we plan to reach next. They have not agreed to anything, and listing one here is not a claim that they have." }
   ];
 
-  /* The one receiving site. It is not a school, so it does not belong in the
-     school list, but the map needs it or the map shows origins with no
-     destination. Kept beside SITES rather than inside it. */
-  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "setup", kind: "receiving" };
+  /* The community fridges our partner schools deliver to. They are not
+     schools, so they stay out of SITES, but the map pins each one and draws
+     the route to it. The Brooklyn fridge's exact spot isn't published yet,
+     so its pin is borough-level (assets/geo/sites.json). */
+  var RECEIVING_SITES = [
+    { name: "Essex Market Community Fridge", borough: "Manhattan", status: "active", kind: "receiving" },
+    { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
+  ];
+  var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
   var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
 
@@ -1841,10 +1848,16 @@ function initMascotSlots(root) {
      only the wheel's steps are eased — so sticky sections, the scroll scrub,
      keyboard, scrollbar and touch all keep working as they are.
      Left alone: reduced motion, pinch-zoom, sideways swipes, and anything
-     that scrolls on its own (an engaged map, the palette, a popup).
+     that scrolls on its own (an engaged map, the palette, a popup, the
+     delivery log's table).
+
+     It turns itself on for every page when this file loads (bottom of this
+     file); calling it again just returns the one already running.
      ====================================================================== */
+  var smoothScroll = null;
   function initSmoothScroll(opts) {
     if (reduced) return null;
+    if (smoothScroll) return smoothScroll;
     opts = opts || {};
     var EASE = opts.ease || 0.11;          /* share of the gap closed per 60Hz frame */
     var root = document.documentElement;
@@ -1915,7 +1928,8 @@ function initMascotSlots(root) {
       history.pushState(null, "", location.pathname + location.search + url.hash);
       glideTo(el);
     });
-    return { glideTo: glideTo, stop: stop };
+    smoothScroll = { glideTo: glideTo, stop: stop };
+    return smoothScroll;
   }
 
   /* ======================================================================
@@ -2173,10 +2187,13 @@ function initMascotSlots(root) {
     getVar: getVar, initTheme: initTheme,
     initNav: initNav, initReveals: initReveals,
     SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
-    RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
+    RECEIVING_SITE: RECEIVING_SITE, RECEIVING_SITES: RECEIVING_SITES, BOROUGHS: BOROUGHS,
     siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
     initScrollFx: initScrollFx,
     EMBLEMS: EMBLEMS, initEmblems: initEmblems,
     initSmoothScroll: initSmoothScroll
   };
+
+  // The gliding scroll from the home page, on every page.
+  initSmoothScroll();
 })(window);

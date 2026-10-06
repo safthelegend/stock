@@ -955,8 +955,8 @@
         var el = $("#sitesSummary");
         if (!el || !STB.SITES) return;
         var n = function (k) { return STB.SITES.filter(function (s) { return s.status === k; }).length; };
-        el.innerHTML = STB.SITES.length + " schools so far: " + n("setup") + " getting set up, " + n("conversation") +
-            " in talks, " + n("target") + " we plan to reach. <a href=\"getting-started.html#sites\">See the full list →</a>";
+        el.innerHTML = STB.SITES.length + " schools on the map: " + n("active") + " delivering, " + n("conversation") +
+            " in talks, " + n("target") + " planned. <a href=\"getting-started.html#sites\">See the full list →</a>";
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();

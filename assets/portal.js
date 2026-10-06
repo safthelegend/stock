@@ -27,8 +27,9 @@
        these and nothing else, so every delivery names a partner the same way
        and the totals add up per school and per fridge.
   
-       Schools come from STB.SITES in site.js, the same list the map and the
-       getting-started page use. Add a school there and it shows up here too.
+       Schools come from STB.SITES in site.js, the same list the map uses:
+       only the ones marked "active" (delivering). Mark a school active there
+       and it shows up here too.
        Drop-off sites live here. Add one by adding a line; the name is what
        gets saved with each delivery, so don't rename one that's been used. */
     const DROPOFFS = [
@@ -48,7 +49,7 @@
     const byBorough = (a, b) => (BOROUGH_ORDER.indexOf(a.borough) - BOROUGH_ORDER.indexOf(b.borough)) || a.name.localeCompare(b.name);
   
     function schools() {
-      return (STB.SITES || []).slice().sort(byBorough).map((s) => ({ name: s.name, group: s.borough, meta: s.borough }));
+      return (STB.SITES || []).filter((s) => s.status === "active").sort(byBorough).map((s) => ({ name: s.name, group: s.borough, meta: s.borough }));
     }
     function dropoffs() {
       return DROPOFFS.slice().sort(byBorough).map((s) => ({

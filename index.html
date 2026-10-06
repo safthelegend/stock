@@ -29,9 +29,9 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=19">
+  <link rel="stylesheet" href="assets/site.css?v=21">
   <link rel="stylesheet" href="assets/mainpage.css?v=4">
-  <link rel="stylesheet" href="assets/design.css?v=18">
+  <link rel="stylesheet" href="assets/design.css?v=20">
 </head>
 
 <body>
@@ -44,12 +44,11 @@
         Stock the Block
       </a>
       <div class="links">
-        <a href="index.html#how">Our process</a>
-        <a href="index.html#sensors">Food safety</a>
-        <a href="index.html#network">Our why</a>
-        <a href="getting-started.html">Getting started</a>
-        <a href="log.html">Delivery log</a>
-        <a href="index.html#join" class="cta">Work with us</a>
+        <a href="index.html#how">Our Process</a>
+        <a href="index.html#sensors">Safety</a>
+        <a href="index.html#network">Our Why</a>
+        <a href="log.html">Deliveries</a>
+        <a href="index.html#join" class="cta">Work With Us</a>
         <a href="members.html" class="login">Sign in</a>
         <button id="themeToggle" type="button" aria-label="Colour theme">
           <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -88,7 +87,7 @@
           <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
             insulated boxes, walk it to a convenient food bank/community fridge, and post the impact.</p>
           <div class="prelaunch is-live" id="heroStatus">
-            <p class="prelaunch-tag">Now delivering with 2 partner schools. Looking for more schools to join!</p>
+            <p class="prelaunch-tag">Now delivering with 3 partner schools. Looking for more schools to join!</p>
           </div>
           <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
             <a href="#join" class="btn solid">Work with us</a>
@@ -129,7 +128,7 @@
       <ul class="metrics" id="metrics">
         <li class="metric">
           <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-school"><circle class="mi-blob" cx="64" cy="52" r="34"/><path class="mi-line" d="M60 40 V14"/><path class="mi-flag" d="M61 15 H80 L75 21 L80 27 H61 Z"/><path class="mi-fill mi-line" d="M22 58 L60 38 L98 58 Z"/><rect class="mi-fill mi-line" x="28" y="58" width="64" height="40"/><rect class="mi-soft mi-line" x="51" y="76" width="18" height="22" rx="2"/><rect class="mi-line mi-win" x="35" y="67" width="10" height="10" rx="1.5"/><rect class="mi-line mi-win" x="75" y="67" width="10" height="10" rx="1.5"/><circle class="mi-line" cx="60" cy="52" r="4"/><path class="mi-line" d="M16 98 H104"/></svg></span>
-          <p class="metric-num"><span data-count="2">2</span></p>
+          <p class="metric-num"><span data-count="3">3</span></p>
           <p class="metric-label">Partner Schools</p>
         </li>
         <li class="metric">
@@ -177,7 +176,7 @@
           </div>
         </div>
         <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-          <p class="figure fig" id="statSchools">2</p>
+          <p class="figure fig" id="statSchools">3</p>
           <p class="cap">Partner Schools</p>
         </div>
       </div>
@@ -298,18 +297,19 @@
           stamps) to buy groceries. With SNAP being cut, more families are turning to food banks and community fridges
           to fill the gap. That’s where our food goes.</p>
       </header>
-      <p class="sec-note">Darker areas have more residents on SNAP. Pins show the schools we work with. Press play to
-        see what a citywide network could look like.</p>
+      <p class="sec-note">Darker areas have more residents on SNAP. Pins show our partner schools, the community
+        fridges they deliver to, and the schools we’re talking to next. Press play to see how we got here and where it
+        could go.</p>
 
       <div class="map-shell">
         <div id="networkMap" class="map-canvas" role="region"
-          aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0">
+          aria-label="Interactive map of New York City community districts, Stock the Block schools and the community fridges they deliver to" tabindex="0">
         </div>
       </div>
 
       <div id="networkMapLegend" class="map-legend"></div>
 
-      <p class="sites-summary" id="sitesSummary">8 schools so far: 1 getting set up, 2 in talks, 5 we plan to reach. <a
+      <p class="sites-summary" id="sitesSummary">8 schools on the map: 3 delivering, 3 in talks, 2 planned. <a
           href="getting-started.html#sites">See the full list →</a></p>
 
       <details class="map-about">
@@ -322,8 +322,9 @@
           not a map of where we operate.</p>
         <p class="cite" id="networkMapCite"></p>
         <p class="cite">School pins are placed from public campus addresses and have not been checked against a
-          geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s
-          exact location is not published, so its pin is borough-level.</p>
+          geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The Brooklyn community
+          fridge’s exact location is not published yet, so its pin is borough-level. Street map © OpenStreetMap
+          contributors.</p>
       </details>
     </div>
   </section>
@@ -435,15 +436,15 @@
       <a href="why.html#sources">Sources</a>
       <a href="privacy.html">Privacy</a>
     </nav>
-    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
+    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
   </footer>
 
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=19"></script>
-  <script src="assets/map.js?v=15"></script>
-  <script src="assets/mainpage.js?v=7"></script>
+  <script src="assets/site.js?v=21"></script>
+  <script src="assets/map.js?v=16"></script>
+  <script src="assets/mainpage.js?v=8"></script>
   
 </body>
 </html>
