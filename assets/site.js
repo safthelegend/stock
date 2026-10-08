@@ -333,12 +333,12 @@ function initMascotSlots(root) {
      the same effect, just triggered by arrival instead of by scrolling. */
   if (!REVEAL_ON_SCROLL) document.documentElement.classList.add("no-reveal");
 
-    /* Nav "Sign in" button: says "My portal" for someone who's signed in as a
+    /* Nav "Sign in" button: says "Visit Portal" for someone who's signed in as a
      member in this browser. Reads the note portal.js leaves; never loads
      Firebase on public pages. */
      try {
       if (localStorage.getItem("stb-member") === "1") {
-        $$("nav.bar a.login").forEach(function (a) { a.textContent = "My portal"; });
+        $$("nav.bar a.login").forEach(function (a) { a.textContent = "Visit Portal"; });
       }
     } catch (e) {}
 
@@ -1545,11 +1545,11 @@ function initMascotSlots(root) {
     { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
     { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
     { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3 },
-    { name: "Townsend Harris High School", borough: "Queens", status: "conversation" },
     { name: "Bronx High School of Science", borough: "Bronx", status: "conversation" },
     { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "conversation", tag: "specialized" },
-    { name: "James Madison High School", borough: "Brooklyn", status: "target" },
-    { name: "Rachel Carson High School", borough: "Brooklyn", status: "target" }
+    { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
+    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
+    { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
 
   var SITE_STATUS = [

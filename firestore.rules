@@ -85,16 +85,19 @@ service cloud.firestore {
 
     // ---------- publicLog/{deliveryId}: the public delivery log (log.html) ----------
     // A trimmed copy of each delivery that anyone can read: date, weight, how
-    // many kinds of food, and status. Nothing that says who delivered it, from
-    // which school, to which site, or what the notes and photo say.
+    // many kinds of food, status, and region (the borough of the school the
+    // food came from; optional, older entries don't have it). Nothing that
+    // says who delivered it, from which school, to which site, or what the
+    // notes and photo say.
     // Rejected deliveries are removed from it. Admins' portals keep it in step
     // with deliveries (assets/admin.js, syncPublicLog).
     function validPublic(d) {
-      return d.keys().hasOnly(['date', 'weightLbs', 'foods', 'status'])
+      return d.keys().hasOnly(['date', 'weightLbs', 'foods', 'status', 'region'])
         && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && d.weightLbs is number && d.weightLbs > 0 && d.weightLbs <= 500
         && d.foods is int && d.foods >= 0 && d.foods <= 50
-        && d.status in ['pending', 'accepted'];
+        && d.status in ['pending', 'accepted']
+        && (!('region' in d) || d.region in ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island']);
     }
     function deliveryOf(id) { return get(/databases/$(database)/documents/deliveries/$(id)).data; }
 

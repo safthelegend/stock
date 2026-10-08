@@ -118,7 +118,14 @@
            sites, notes or photo. See firestore.rules, publicLog. It's written
            on its own, after the delivery, so a problem here never loses the
            delivery; an admin's portal fills in any entry that's missing. */
-        fb.setDoc(fb.doc(fb.db, "publicLog", ref.id), P.publicEntry({ ...data, status: "pending" }))
+        const pubRef = fb.doc(fb.db, "publicLog", ref.id);
+        const pubEntry = P.publicEntry({ ...data, status: "pending" });
+        fb.setDoc(pubRef, pubEntry)
+          // Until the live Firestore rules accept a region, write it without.
+          .catch((err) => {
+            if (err.code === "permission-denied" && pubEntry.region) return fb.setDoc(pubRef, P.publicEntry({ ...data, status: "pending" }, false));
+            throw err;
+          })
           .catch((err) => console.warn("Public log entry not written yet:", err.code || err));
         resetForm();
         say("");

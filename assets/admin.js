@@ -189,7 +189,12 @@
     let pub = null;          // publicLog entries by id, once loaded
     let loaded = false;      // true once the deliveries have loaded
     let syncing = false, syncAgain = false;
-    const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status;
+    /* The region field needs the updated firestore.rules. Until they're
+       published, a write with it is refused, so this falls back to leaving it
+       out and stops asking for it. */
+    let withRegion = true;
+    const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
+      (!withRegion || (a.region || null) === (b.region || null));
 
     async function syncPublicLog() {
       if (!ctx || !pub || !loaded) return;
@@ -198,7 +203,7 @@
       try {
         const { fb } = ctx;
         const want = {};
-        all.forEach((d) => { const e = P.publicEntry(d); if (e) want[d.id] = e; });
+        all.forEach((d) => { const e = P.publicEntry(d, withRegion); if (e) want[d.id] = e; });
         const ops = [];
         Object.keys(want).forEach((id) => { if (!sameEntry(pub[id], want[id])) ops.push({ id, value: want[id] }); });
         Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
@@ -211,7 +216,8 @@
           await b.commit();
         }
       } catch (err) {
-        console.error("Couldn't update the public delivery log:", err);
+        if (err.code === "permission-denied" && withRegion) { withRegion = false; syncAgain = true; }
+        else console.error("Couldn't update the public delivery log:", err);
       } finally {
         syncing = false;
         if (syncAgain) { syncAgain = false; syncPublicLog(); }

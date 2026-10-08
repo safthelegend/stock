@@ -882,6 +882,27 @@
         paintMascot($("#mascotJoin svg"), "confirmed");
         setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
     }
+    /* Each message goes two ways at once: into Firestore (contactSubmissions),
+       and by email to the team inbox through FormSubmit (formsubmit.co), a free
+       form-to-email service. The thanks card shows if either one lands, so a
+       message isn't lost when one of them is down. FormSubmit asks the inbox
+       to confirm the very first message it gets ("Activate Form"); from then
+       on every message arrives as an email, with Reply going to the sender. */
+    var MAIL_TO = "stockingtheblock@gmail.com";
+    function emailIt(p) {
+        return fetch("https://formsubmit.co/ajax/" + MAIL_TO, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({
+                _subject: "Website message from " + p.name + " (" + p.role + ")",
+                _template: "table",
+                Name: p.name, email: p.email, Role: p.role,
+                "School or organization": p.org || "—", Message: p.message || "—"
+            })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+            if (String(j.success) !== "true") throw new Error(j.message || "Email not sent");
+        });
+    }
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (joinErr) joinErr.hidden = true;
@@ -892,11 +913,14 @@
         };
         joinBtn.disabled = true;
         joinBtn.textContent = "Sending…";
-        waitForFirebase().then(function (fb) {
+        var saved = waitForFirebase().then(function (fb) {
             if (!fb) throw new Error("firebase-unavailable");
-            payload.createdAt = fb.serverTimestamp();
-            return fb.addDoc(fb.collection(fb.db, "contactSubmissions"), payload);
-        }).then(showDone).catch(function () {
+            return fb.addDoc(fb.collection(fb.db, "contactSubmissions"), Object.assign({ createdAt: fb.serverTimestamp() }, payload));
+        });
+        var mailed = emailIt(payload);
+        Promise.allSettled([saved, mailed]).then(function (res) {
+            if (res[1].status === "rejected") console.warn("Contact form email not sent:", res[1].reason);
+            if (res[0].status === "fulfilled" || res[1].status === "fulfilled") { showDone(); return; }
             joinBtn.disabled = false;
             joinBtn.textContent = "Get in touch";
             if (joinErr) joinErr.hidden = false;
