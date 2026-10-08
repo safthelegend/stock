@@ -52,7 +52,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="wrap">
     <a href="index.html#top" class="brand">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-      Stock the Block
+      Stock The Block
     </a>
     <div class="links">
       <a href="index.html#how">Our Process</a>
@@ -112,7 +112,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>You can read the public pages without giving us any information. We run no analytics, no advertising and no tracking cookies.</li>
     <li>If you send the contact form, we store what you type so we can reply.</li>
     <li>If you are a member and sign in with Google, we store your name, email address and the deliveries you log.</li>
-    <li>The public delivery log shows only a delivery's date, weight, number of food types and review status. It never shows names, schools, locations, notes or photos.</li>
+    <li>The public delivery log shows only a delivery's date, weight, number of food types, review status and the borough of the school it came from. It never shows names, schools, delivery locations, notes or photos.</li>
     <li>Some parts of the Site load content from outside services (GitHub, which hosts the Site, and Google). The map's street background comes from OpenStreetMap, but only after you tap the map. These services receive basic technical information, such as your IP address, when your browser contacts them.</li>
     <li>We never sell or rent personal information.</li>
   </ul>
@@ -137,6 +137,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>your message, if you write one; and</li>
     <li>the date and time you sent it.</li>
   </ul>
+  <p>When you send the form, it is saved in our database (Google Firebase) and a copy is emailed to our team inbox, stockingtheblock@gmail.com, through FormSubmit, a form-to-email service.</p>
   <p>If you email us instead, we receive your email address and whatever you include in the email.</p>
 
   <h3 id="collect-members">3.3 When a member uses the member portal</h3>
@@ -165,8 +166,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <ul>
     <li>the delivery date;</li>
     <li>the total weight;</li>
-    <li>the number of kinds of food in the box; and</li>
-    <li>whether it is awaiting review or has been verified.</li>
+    <li>the number of kinds of food in the box;</li>
+    <li>whether it is awaiting review or has been verified; and</li>
+    <li>the borough of the school the food came from (for example, Brooklyn).</li>
   </ul>
   <p>It does not show who made the delivery, the school, the delivery location, the box ID, notes, reviewer notes or photos. Deliveries that an administrator rejects are removed from the public log. Contact form messages and member account details are never made public.</p>
 
@@ -178,6 +180,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <tbody>
       <tr><td>GitHub Pages (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy</a>)</td><td>Hosts the Site</td><td>IP address and request details</td></tr>
       <tr><td>Google Firebase (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacy</a>)</td><td>Database and member sign-in</td><td>Contact form messages, member accounts, delivery records and photos, public log; IP address and browser details</td></tr>
+      <tr><td>FormSubmit (<a href="https://formsubmit.co" rel="noopener">formsubmit.co</a>)</td><td>Emails each “Work with us” form message to our team inbox</td><td>What you enter in the form; IP address and browser details</td></tr>
       <tr><td>Google Fonts (<a href="https://developers.google.com/fonts/faq/privacy" rel="noopener">privacy</a>)</td><td>Provides the Site's typefaces</td><td>IP address and browser details</td></tr>
       <tr><td>OpenStreetMap Foundation (<a href="https://osmfoundation.org/wiki/Privacy_Policy" rel="noopener">privacy</a>)</td><td>Provides the map's street background, after you tap the map</td><td>IP address and the map area viewed</td></tr>
     </tbody>
@@ -201,7 +204,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <thead><tr><th scope="col">Item</th><th scope="col">Purpose</th></tr></thead>
     <tbody>
       <tr><td><code>stb-theme</code></td><td>Remembers the color theme you pick (light, dark or stock).</td></tr>
-      <tr><td><code>stb-member</code></td><td>Set only after a member signs in, so the “Sign in” button reads “My portal.” It is removed when the member signs out.</td></tr>
+      <tr><td><code>stb-member</code></td><td>Set only after a member signs in, so the “Sign in” button reads “Visit Portal.” It is removed when the member signs out.</td></tr>
       <tr><td>Offline copy of the Site</td><td>Where your browser supports it, a copy of the Site's pages and files is saved so the Site loads faster and works offline.</td></tr>
       <tr><td>Firebase sign-in state</td><td>Member portal only. Keeps a member signed in until they sign out. During Google sign-in, Google may set its own cookies on its own website under Google's policies.</td></tr>
     </tbody>
@@ -259,10 +262,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <a href="why.html#sources">Sources</a>
     <a href="privacy.html" aria-current="page">Privacy</a>
   </nav>
-  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and OpenStreetMap map tiles), which receive basic technical details such as your IP address.</div>
+  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address.</div>
 </footer>
 
-<script src="assets/site.js?v=21"></script>
+<script src="assets/site.js?v=22"></script>
 <script>
 (function () {
   "use strict";

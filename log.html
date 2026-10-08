@@ -29,7 +29,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; overflow:hidden; }
   .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
   .mhead .left, .mhead .right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .thead, .mrow { display:grid; grid-template-columns:minmax(120px,1.2fr) minmax(90px,1fr) minmax(80px,0.8fr) minmax(150px,1.2fr); gap:12px; padding:0 20px; }
+  .thead, .mrow { display:grid; grid-template-columns:minmax(120px,1.2fr) minmax(90px,1fr) minmax(70px,0.7fr) minmax(100px,1fr) minmax(150px,1.2fr); gap:12px; padding:0 20px; }
   .thead { border-bottom:1px solid var(--brand-line-soft); }
   .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
   .thead .lab { cursor:default; }
@@ -46,12 +46,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:48px 24px 52px; text-align:center; }
   .empty-state .mascot-slot { width:88px; }
   .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
-  .log-note { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:18px 0 0; max-width:70ch; }
   @media (max-width:640px) {
     .mhead { padding:10px 14px; }
-    /* Four short columns fit a phone, so no sideways scrolling. */
-    .thead, .mrow { grid-template-columns:minmax(0,1.25fr) minmax(0,0.9fr) minmax(0,0.6fr) minmax(0,1fr); gap:8px; padding-left:14px; padding-right:14px; }
-    .mrow { font-size:13px; }
+    /* Five short columns fit a phone, so no sideways scrolling. */
+    .thead, .mrow { grid-template-columns:minmax(0,1fr) minmax(0,0.9fr) minmax(0,0.55fr) minmax(0,1.1fr) minmax(0,1.15fr); gap:6px; padding-left:12px; padding-right:12px; }
+    .mrow { font-size:12px; }
+    .mrow .date .yr { display:none; }
     .thead button, .thead .lab { font-size:11px; letter-spacing:0.04em; }
     /* design.css gives the old tracker a 560px minimum and side-scrolling on
        phones; this table fits without it. */
@@ -133,7 +133,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="wrap">
     <a href="index.html#top" class="brand">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-      Stock the Block
+      Stock The Block
     </a>
     <div class="links">
       <a href="index.html#how">Our Process</a>
@@ -171,7 +171,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="mhead">
       <span class="left">
         <span style="color:var(--brand); font-weight:500;">DELIVERY LOG · <span id="filterLabel">ALL</span></span>
-        <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;" disabled>Export CSV</button>
       </span>
       <span class="right" style="font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
     </div>
@@ -179,6 +178,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
       <button type="button" data-key="weightLbs" aria-sort="none">Weight <span class="caret" aria-hidden="true">▾</span></button>
       <button type="button" data-key="foods" aria-sort="none">Foods <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" data-key="region" aria-sort="none">Region <span class="caret" aria-hidden="true">▾</span></button>
       <span class="lab">Status</span>
     </div>
     <div id="mempty" class="empty-state">
@@ -212,7 +212,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <span><i class="lg-goal"></i>Milestone</span>
     </div>
   </section>
-  <p class="log-note">What's kept off this page: who made the delivery, which school it came from, where it went, notes and photos. Those stay with our members and admins. "Foods" is how many kinds of food were in the box. Deliveries an admin rejects are taken off the log.</p>
 </section>
 </main>
 
@@ -233,11 +232,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <a href="why.html#sources">Sources</a>
     <a href="privacy.html">Privacy</a>
   </nav>
-  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
+  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=21"></script>
+<script src="assets/site.js?v=22"></script>
 <script>
 (function () {
   "use strict";
@@ -248,9 +247,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initNav();
 
   /* Rows come from Firestore's publicLog collection: a trimmed copy of each
-     delivery that holds only { date, weightLbs, foods, status }. The member
-     portal writes it (assets/members.js, assets/admin.js) and firestore.rules
-     lets anyone read it. */
+     delivery that holds only { date, weightLbs, foods, status, region }.
+     region is the borough of the school the food came from, and older rows
+     may not have it yet (they show a dash). The member portal writes it
+     (assets/portal.js publicEntry, members.js, admin.js) and
+     firestore.rules lets anyone read it. */
   var ROWS = null;          // null until the first load
   var STATUS = { accepted: "Verified", pending: "Awaiting review" };
   var FILTERS = [
@@ -291,6 +292,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     return (ROWS || []).filter(function (r) { return filter === "all" || r.status === filter; })
       .sort(function (a, b) {
         var va = a[sortKey], vb = b[sortKey];
+        if (sortKey === "region") { va = va || "~"; vb = vb || "~"; }
         var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
         if (!c) c = String(a.date).localeCompare(String(b.date));
         return sortDir === "asc" ? c : -c;
@@ -360,8 +362,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       return new Date(n * DAY).toLocaleDateString("en-US", year ? { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" } : { month: "short", day: "numeric", timeZone: "UTC" });
     }
     function fmtLbs(v) { return (Math.round(v * 10) / 10).toLocaleString("en-US"); }
-    function valueAt(pts, d) { var v = 0; pts.forEach(function (p) { if (p.d <= d) v = p.v; }); return v; }
 
+    /* The x axis counts delivery days, not calendar days: every day with a
+       verified delivery gets one evenly spaced slot, so weekends and other
+       days off take no room and the line doesn't sit flat across them. Slot
+       0 is the start, at zero. Each point keeps its real date for labels.
+       The projection works in the same slots, then turns them back into
+       dates by counting school days (Monday to Friday). */
     function model(rows) {
       var byDay = {};
       rows.forEach(function (r) {
@@ -371,21 +378,33 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       });
       var days = Object.keys(byDay).map(Number).sort(function (a, b) { return a - b; });
       if (!days.length) return null;
-      var pts = [{ d: days[0] - 1, v: 0 }], sum = 0;
-      days.forEach(function (d) { sum += byDay[d]; pts.push({ d: d, v: Math.round(sum * 10) / 10, real: true }); });
-      var total = pts[pts.length - 1].v;
-      var now = Math.max(todayNum(), days[days.length - 1]);
-      if (now > days[days.length - 1]) pts.push({ d: now, v: total });
-      /* Pace: pounds a day over the last four weeks, or since the first
-         delivery if that's sooner, spread over at least a week so one big
-         first day doesn't promise too much. */
-      var from = Math.max(pts[0].d, now - 28);
-      var rate = (total - valueAt(pts, from)) / Math.max(7, now - from);
+      var pts = [{ d: 0, v: 0 }], sum = 0;
+      days.forEach(function (day, k) { sum += byDay[day]; pts.push({ d: k + 1, date: day, v: Math.round(sum * 10) / 10, real: true }); });
+      var n = days.length, total = pts[n].v, last = days[n - 1];
+
+      // Pace: average pounds per delivery day, over the last ten of them.
+      var recent = days.slice(-10);
+      var rate = recent.reduce(function (t, day) { return t + byDay[day]; }, 0) / recent.length;
       var goal = MILESTONES.filter(function (g) { return g >= total * 1.25; })[0] || Math.ceil(total * 1.5);
-      // Rounded up to a whole day: "likely around" errs on the late side.
-      var eta = function (r) { return r > 0 ? now + Math.ceil((goal - total) / r) : null; };
-      return { pts: pts, total: total, now: now, rate: rate, goal: goal, eta: eta(rate),
-        soon: eta(rate * 1.3), late: eta(rate * 0.7), weeks: now - from >= 28, verified: rows.filter(function (r) { return r.status === "accepted"; }).length };
+      // Delivery days still needed, rounded up: "likely around" errs late.
+      var need = function (r) { return r > 0 ? Math.ceil((goal - total) / r) : null; };
+
+      /* How often a school day is a delivery day so far, from the first
+         delivery to today, so the dates don't assume a delivery every day. */
+      var isSchoolDay = function (day) { var w = new Date(day * DAY).getUTCDay(); return w !== 0 && w !== 6; };
+      var now = Math.max(todayNum(), last), schoolDays = 0;
+      for (var d = days[0]; d <= now; d++) if (isSchoolDay(d)) schoolDays++;
+      var often = Math.min(1, n / Math.max(1, schoolDays));
+      var dateAfter = function (k) {
+        if (k === null) return null;
+        var left = Math.ceil(k / often), day = now;
+        while (left > 0) { day++; if (isSchoolDay(day)) left--; }
+        return day;
+      };
+      var nk = need(rate), soonK = need(rate * 1.3), lateK = need(rate * 0.7);
+      return { pts: pts, total: total, now: n, rate: rate, goal: goal, recent: recent.length,
+        eta: nk === null ? null : n + nk, etaDate: dateAfter(nk), soonDate: dateAfter(soonK), lateDate: dateAfter(lateK),
+        lastDate: last, firstDate: days[0] };
     }
 
     // A smooth curve through the points that never overshoots them (the
@@ -426,12 +445,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       var W = host.clientWidth, H = host.clientHeight;
       if (W < 120 || !H) return;            // too narrow to draw (e.g. mid-resize)
       var padL = 8, padR = 8, padT = 28, padB = 28;
-      var x0 = m.pts[0].d;
-      var end = m.eta !== null ? Math.max(m.eta, m.now + 1) : m.now + 7;
+      var x0 = 0;
+      var end = m.eta !== null ? Math.max(m.eta, m.now + 1) : m.now + 3;
       // The projection gets at most three times the room the history has,
       // so what has actually happened stays readable.
-      var clipped = end > m.now + Math.max(7, 3 * (m.now - x0));
-      if (clipped) end = m.now + Math.max(7, 3 * (m.now - x0));
+      var room = m.now + Math.max(3, 3 * m.now);
+      var clipped = end > room;
+      if (clipped) end = room;
       var x1 = end + (end - x0) * 0.05, yMax = m.goal * 1.12;
       var X = function (d) { return padL + (d - x0) / (x1 - x0) * (W - padL - padR); };
       var Y = function (v) { return padT + (1 - v / yMax) * (H - padT - padB); };
@@ -460,7 +480,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       goalG.appendChild(node("text", { class: "tr-label goal", x: padL, y: gy - 9 }, fmtLbs(m.goal) + " lbs milestone"));
       svg.appendChild(goalG);
 
-      // Projection: the likely range, then our pace, from today on.
+      // Projection: the likely range, then our pace, from the latest delivery on.
       var proj = node("g", { "clip-path": "url(#" + id + "p)" });
       if (m.rate > 0) {
         var vAt = function (r, d) { return Math.min(m.goal, m.total + r * (d - m.now)); };
@@ -496,7 +516,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         svg.appendChild(etaG);
       }
 
-      // Dates along the bottom: the first delivery, today, and the milestone.
+      // Dates along the bottom: the first delivery, the latest, and the milestone.
       var labels = node("g", { class: "tr-fade" }), ly = H - 6, placed = [];
       function label(x, text, cls) {
         var anchor = x < 40 ? "start" : x > W - 40 ? "end" : "middle";
@@ -506,9 +526,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         placed.push([left, left + w]);
         labels.appendChild(node("text", { class: "tr-label" + (cls ? " " + cls : ""), x: x, y: ly, "text-anchor": anchor }, text));
       }
-      label(nx, "Today");
-      if (m.eta !== null && !clipped) label(X(m.eta), fmtDay(m.eta, new Date(m.eta * DAY).getUTCFullYear() !== new Date().getFullYear()), "eta");
-      label(X(m.pts[1].d), fmtDay(m.pts[1].d));
+      var otherYear = function (day) { return new Date(day * DAY).getUTCFullYear() !== new Date().getFullYear(); };
+      label(nx, fmtDay(m.lastDate));
+      if (m.eta !== null && !clipped) label(X(m.eta), fmtDay(m.etaDate, otherYear(m.etaDate)), "eta");
+      if (m.now > 1) label(X(1), fmtDay(m.firstDate));
       svg.appendChild(labels);
 
       // Hover: the running total on any delivery day.
@@ -526,7 +547,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
         hl.setAttribute("x1", px); hl.setAttribute("x2", px);
         hc.setAttribute("cx", px); hc.setAttribute("cy", py);
         hover.style.display = "";
-        tipEl.textContent = fmtDay(best.d) + " · " + fmtLbs(best.v) + " lbs";
+        tipEl.textContent = fmtDay(best.date) + " · " + fmtLbs(best.v) + " lbs";
         tipEl.style.left = (px / W * 100) + "%";
         tipEl.style.top = (py / H * 100) + "%";
         tipEl.classList.add("is-on");
@@ -535,7 +556,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
       host.append(svg, tipEl);
       host.setAttribute("aria-label", "Chart: " + fmtLbs(m.total) + " pounds of food waste eliminated so far" +
-        (m.eta !== null ? ". At our current pace we would reach " + fmtLbs(m.goal) + " pounds around " + fmtDay(m.eta, true) + "." : "."));
+        (m.eta !== null ? ". At our current pace we would reach " + fmtLbs(m.goal) + " pounds around " + fmtDay(m.etaDate, true) + "." : "."));
 
       var shown = [goalG, labels, nowG].concat(etaG ? [etaG] : []);
       if (!animate || reduced) {
@@ -564,19 +585,19 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     function header(m) {
       setTotal(m ? m.total : 0);
       if (!m) { $("#trendPace").textContent = ""; $("#trendGoal").textContent = "First delivery"; $("#trendEta").textContent = ""; $("#trendRange").textContent = ""; return; }
-      var week = m.rate * 7;
       $("#trendPace").textContent = m.rate > 0
-        ? "Our pace: about " + fmtLbs(week >= 10 ? Math.round(week) : week) + " lbs a week" + (m.weeks ? ", over the last 4 weeks" : ", since our first delivery")
+        ? "Our pace: about " + fmtLbs(m.rate >= 10 ? Math.round(m.rate) : m.rate) + " lbs per delivery day" +
+          (m.recent > 1 ? ", over the last " + m.recent + " delivery days" : "")
         : "No new deliveries lately";
       $("#trendGoal").textContent = fmtLbs(m.goal) + " lbs";
       var yr = function (n) { return new Date(n * DAY).getUTCFullYear() !== new Date().getFullYear(); };
-      $("#trendEta").textContent = m.eta !== null ? "· likely around " + fmtDay(m.eta, yr(m.eta)) : "";
-      $("#trendRange").textContent = m.eta !== null ? "Somewhere between " + fmtDay(m.soon, yr(m.soon)) + " and " + fmtDay(m.late, yr(m.late)) + " at this pace" : "";
+      $("#trendEta").textContent = m.eta !== null ? "· likely around " + fmtDay(m.etaDate, yr(m.etaDate)) : "";
+      $("#trendRange").textContent = m.eta !== null ? "Somewhere between " + fmtDay(m.soonDate, yr(m.soonDate)) + " and " + fmtDay(m.lateDate, yr(m.lateDate)) + " at this pace, counting school days" : "";
     }
 
     function update(rows) {
       var m = model(rows || []);
-      var k = m ? [m.total, m.pts.length, m.now].join("|") : "none";
+      var k = m ? [m.total, m.pts.length, m.etaDate, todayNum()].join("|") : "none";
       if (k === key) return;
       key = k;
       data = m;
@@ -608,9 +629,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     body.replaceChildren.apply(body, rows.map(function (r) {
       var row = document.createElement("div");
       row.className = "mrow";
-      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)]].forEach(function (c) {
-        var s = document.createElement("span"); s.className = c[0]; s.textContent = c[1];
-        if (c[0] === "date") s.style.color = "var(--text-secondary)";
+      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)], ["region", r.region || "—"]].forEach(function (c) {
+        var s = document.createElement("span"); s.className = c[0];
+        if (c[0] === "date") {
+          // The year hides on phones to keep five columns on one line.
+          var parts = c[1].split(", ");
+          s.append(parts[0]);
+          if (parts[1]) { var y = document.createElement("span"); y.className = "yr"; y.textContent = ", " + parts[1]; s.appendChild(y); }
+          s.style.color = "var(--text-secondary)";
+        } else s.textContent = c[1];
         row.appendChild(s);
       });
       var st = document.createElement("span");
@@ -633,9 +660,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     var total = rows.reduce(function (t, r) { return t + r.weightLbs; }, 0);
     $("#shownTotal").textContent = rows.length ? rows.length + (rows.length === 1 ? " delivery · " : " deliveries · ") + lbs(total) : "";
     $("#filterLabel").textContent = FILTERS.filter(function (f) { return f.key === filter; })[0].label.toUpperCase();
-    var csv = $("#csvExport");
-    csv.disabled = !rows.length;
-    csv.title = rows.length ? "Download these " + rows.length + " row(s) as CSV" : "Nothing to export yet";
 
     $$("#thead button").forEach(function (b) {
       var on = b.getAttribute("data-key") === sortKey;
@@ -654,20 +678,6 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       trend.update(ROWS);
     }
   }
-
-  $("#csvExport").addEventListener("click", function () {
-    var rows = shown();
-    if (!rows.length) return;
-    var lines = ["date,weight_lbs,foods,status"].concat(rows.map(function (r) {
-      return [r.date, r.weightLbs, r.foods, STATUS[r.status]].join(",");
-    }));
-    var blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url; a.download = "stock-the-block-delivery-log.csv";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-  });
 
   function fail() {
     $("#emptyMsg").textContent = "The log couldn't load.";

@@ -13,7 +13,7 @@
     const $ = STB.$;
   
     /* A hint for the public pages: while this note exists, their "Sign in"
-       button says "My portal" instead (see site.js). It's only a hint; the real
+       button says "Visit Portal" instead (see site.js). It's only a hint; the real
        check always happens here, when the portal loads. */
     function rememberMember(on) {
       try {
@@ -651,11 +651,21 @@
   
     /* ---------- the public log's copy of a delivery ----------
        Only what's safe to publish: the date, weight, how many kinds of food,
-       and the status. Returns null for a delivery that shouldn't be listed
-       (rejected ones). The fields must match firestore.rules, publicLog. */
-    function publicEntry(d) {
+       the status, and the region: the borough of the school the food came
+       from (never the school or the fridge). Returns null for a delivery that
+       shouldn't be listed (rejected ones). The fields must match
+       firestore.rules, publicLog. withRegion false leaves the region out,
+       for as long as the live rules don't accept it yet. */
+    function regionOf(school) {
+      const s = (STB.SITES || []).find((x) => x.name === school);
+      return s ? s.borough : null;
+    }
+    function publicEntry(d, withRegion) {
       if (d.status !== "pending" && d.status !== "accepted") return null;
-      return { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
+      const e = { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
+      const region = withRegion === false ? null : regionOf(d.fromSchool);
+      if (region) e.region = region;
+      return e;
     }
 
     window.STBP = { ready, el, icon, mascot, copyButton, today, fmtTime, fmtDate, statusPill, say, gate, buildFields, deliveryDetails, compressImage, publicEntry, newBoxId, DROPOFFS };
