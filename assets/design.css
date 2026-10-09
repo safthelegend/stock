@@ -27,11 +27,14 @@ nav.bar.on { background:var(--nav-bg); border-bottom-color:transparent;
 nav.bar .links a { background-size:0% 2px; background-position:0 calc(100% + 1px); }
 nav.bar .links a:hover, nav.bar .links a:focus-visible { background-size:100% 2px; }
 /* initSectionHighlight() sets aria-current="true" on the link whose section
-   is in view; it gets a brand underline that stays put. */
+   is in view, and a page's own link carries aria-current="page" (Team on the
+   team page, Deliveries on the log); both get an underline that stays put. */
 nav.bar .links a[aria-current="true"],
-nav.bar .links a[aria-current="true"]:hover { color:var(--brand); box-shadow:none;
+nav.bar .links a[aria-current="true"]:hover,
+nav.bar .links a[aria-current="page"],
+nav.bar .links a[aria-current="page"]:hover { color:var(--brand); box-shadow:none;
   background-image:linear-gradient(var(--accent), var(--accent)); background-size:100% 2px; }
-@media (max-width:800px) {
+@media (max-width:880px) {
   /* The link row was 377px wide on a 390px phone and pushed the page sideways.
      The in-page links are one tap away in the page itself; the CTA stays. */
   nav.bar .links a:not(.cta):not(.login) { display:none; }
@@ -236,7 +239,7 @@ footer .wrap.top { padding-top:56px; }
    nav.bar .links a.login { padding:6px 14px; border:1.5px solid var(--brand-line-mid); border-radius:999px;
      background-image:none; font-weight:600; color:var(--brand); transition:border-color 160ms ease, background-color 160ms ease; }
    nav.bar .links a.login:hover, nav.bar .links a.login:focus-visible { border-color:var(--brand); background-color:var(--surface); }
-   @media (max-width:800px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
+   @media (max-width:880px) { nav.bar .links a.login { display:inline-block; padding:5px 11px; font-size:13px; } }
 
 /* ============================================================================
    PHONES — a calmer, less cluttered layout
@@ -249,7 +252,7 @@ footer .wrap.top { padding-top:56px; }
 /* Menu bar on one line: the logo, Sign in, the theme switch and the menu.
    "Work with us" moves into the menu too; the hero button and the join
    section both carry it. */
-@media (max-width:800px) {
+@media (max-width:880px) {
   nav.bar a.brand { white-space:nowrap; }
   nav.bar .links a.cta { display:none; }
   nav.bar .links { gap:4px; }

@@ -22,7 +22,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=21">
+<link rel="stylesheet" href="assets/site.css?v=22">
 <style>
   .page-head { padding-bottom:40px; }
   .log-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 32px; }
@@ -111,6 +111,21 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .trend.is-drawn .tr-now-ring { animation:trPing 2s cubic-bezier(0,0,0.2,1) infinite; }
   @keyframes trPing { 0% { transform:scale(1); opacity:0.5; } 80%, 100% { transform:scale(3); opacity:0; } }
   .tr-eta-dot { fill:var(--surface); stroke:var(--accent); stroke-width:2.5; }
+  /* the milestone moment */
+  .tr-hit-dot { fill:var(--brand); stroke:var(--surface); stroke-width:2.5; }
+  .tr-hit-tick { fill:none; stroke:var(--on-brand); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .tr-burst { fill:none; stroke:var(--live, #1E9E50); stroke-width:2; opacity:0; transform-box:fill-box; transform-origin:center; }
+  .tr-hit.is-burst .tr-burst { animation:trBurst 900ms cubic-bezier(0.2,0.7,0.3,1) 2; }
+  @keyframes trBurst { 0% { transform:scale(1); opacity:0.9; } 100% { transform:scale(4.4); opacity:0; } }
+  .tr-badge { opacity:0; transform:translateY(6px); transform-box:fill-box; transform-origin:center bottom;
+    transition:opacity 300ms ease, transform 420ms cubic-bezier(0.3,1.6,0.5,1); }
+  .tr-badge.is-on { opacity:1; transform:none; }
+  .tr-badge rect { fill:var(--brand); }
+  .tr-badge text { fill:var(--on-brand); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:11.5px; }
+  .tr-fade.is-hit .tr-goal { stroke:var(--live, #1E9E50); stroke-dasharray:none; stroke-width:2.5; opacity:1; }
+  .tr-fade.is-hit .tr-label.goal { fill:var(--live, #1E9E50); }
+  .tr-fade.is-glide { transition:opacity 500ms ease, transform 850ms cubic-bezier(0.22,1,0.36,1); }
+  .tr-goal, .tr-label.goal { transition:stroke 250ms ease, fill 250ms ease, stroke-width 250ms ease; }
   .tr-pop { opacity:0; transform:scale(0.4); transform-box:fill-box; transform-origin:center; transition:opacity 350ms ease, transform 450ms cubic-bezier(0.3,1.6,0.5,1); }
   .tr-pop.is-on { opacity:1; transform:none; }
   .tr-fade { opacity:0; transition:opacity 500ms ease; }
@@ -130,7 +145,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=20">
+<link rel="stylesheet" href="assets/design.css?v=21">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -146,6 +161,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <a href="index.html#sensors">Safety</a>
       <a href="index.html#network">Our Why</a>
       <a href="log.html" aria-current="page">Deliveries</a>
+      <a href="team.html">Team</a>
       <a href="index.html#join" class="cta">Work With Us</a>
       <a href="members.html" class="login">Sign in</a>
       <button id="themeToggle" type="button" aria-label="Colour theme">
@@ -359,7 +375,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     var section = $("#trend"), host = $("#trendChart");
     var NS = "http://www.w3.org/2000/svg", DAY = 864e5;
     var MILESTONES = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000];
-    var data = null, key = "", played = false, visible = false;
+    var data = null, key = "", played = false, visible = false, lastGoal = null;
     var setTotal = counter($("#trendTotal"));
 
     function dayNum(iso) { var p = iso.split("-").map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / DAY); }
@@ -510,6 +526,36 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       actual.appendChild(node("path", { class: "tr-line", d: line }));
       svg.appendChild(actual);
 
+      /* The milestone already passed (the biggest one at or below the total)
+         and where the line crossed it. It keeps a small check on the line.
+         The first time the chart plays, crossing it is a little moment:
+         the check pops, a "reached" tag shows, the goal line flashes, then
+         it glides up to the next milestone. */
+      var passed = MILESTONES.filter(function (g) { return g <= m.total; }).pop() || null;
+      var hitX = null, hitY = null, hitG = null, badge = null;
+      if (passed) {
+        for (var k = 1; k < m.pts.length; k++) {
+          if (m.pts[k].v >= passed) {
+            var pa = m.pts[k - 1], pb = m.pts[k], f = (passed - pa.v) / ((pb.v - pa.v) || 1);
+            hitX = X(pa.d + (pb.d - pa.d) * f); hitY = Y(passed);
+            break;
+          }
+        }
+      }
+      if (hitX !== null) {
+        hitG = node("g", { class: "tr-hit tr-pop" });
+        hitG.appendChild(node("circle", { class: "tr-burst", cx: hitX, cy: hitY, r: 7 }));
+        hitG.appendChild(node("circle", { class: "tr-hit-dot", cx: hitX, cy: hitY, r: 7.5 }));
+        hitG.appendChild(node("path", { class: "tr-hit-tick", d: "M" + (hitX - 3.3).toFixed(1) + "," + hitY.toFixed(1) + " l2.3,2.4 l4.3,-4.8" }));
+        svg.appendChild(hitG);
+        var tagText = fmtLbs(passed) + " lbs reached";
+        var bw = tagText.length * 6.6 + 24, bx = Math.min(Math.max(hitX - bw / 2, padL), W - padR - bw), by = Math.max(2, hitY - 40);
+        badge = node("g", { class: "tr-badge" });
+        badge.appendChild(node("rect", { x: bx.toFixed(1), y: by.toFixed(1), width: bw.toFixed(1), height: 22, rx: 11 }));
+        badge.appendChild(node("text", { x: (bx + bw / 2).toFixed(1), y: (by + 15).toFixed(1), "text-anchor": "middle" }, tagText));
+        svg.appendChild(badge);
+      }
+
       var nowG = node("g", { class: "tr-pop" });
       nowG.appendChild(node("circle", { class: "tr-now-ring", cx: nx, cy: ny, r: 6 }));
       nowG.appendChild(node("circle", { class: "tr-now-dot", cx: nx, cy: ny, r: 6 }));
@@ -564,27 +610,67 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       host.setAttribute("aria-label", "Chart: " + fmtLbs(m.total) + " pounds of food waste eliminated so far" +
         (m.eta !== null ? ". At our current pace we would reach " + fmtLbs(m.goal) + " pounds around " + fmtDay(m.etaDate, true) + "." : "."));
 
-      var shown = [goalG, labels, nowG].concat(etaG ? [etaG] : []);
+      var shown = [goalG, labels, nowG].concat(etaG ? [etaG] : [], hitG ? [hitG] : []);
       if (!animate || reduced) {
         shown.forEach(function (g) { g.classList.add("is-on"); });
+        if (badge) badge.remove();
         section.classList.add("is-drawn");
         return;
       }
-      // The intro: the line draws left to right, today's dot pops, the
-      // projection runs out to the milestone, and the milestone pops last.
+      /* The intro. With a milestone passed: the line draws up to it, the
+         goal line waiting there; the check pops, the tag shows and the goal
+         line flashes; the goal line glides up to the next milestone; the
+         line carries on to today; then the projection runs out to the new
+         milestone. Without one: the line draws, then the projection. */
       section.classList.remove("is-drawn");
       rectA.setAttribute("width", 0);
       rectP.setAttribute("width", 0);
-      var A = 1400, B = 1000, t0 = performance.now();
+      var goalText = goalG.querySelector("text");
+      var celebrate = hitX !== null;
+      var lineEnd = nx + 10, DRAW = 1500, HOLD = celebrate ? 1500 : 0, B = 1000;
+      var A1 = celebrate ? Math.max(600, DRAW * (hitX - padL) / Math.max(1, lineEnd - padL)) : DRAW;
+      var A2 = celebrate ? Math.max(450, DRAW - A1) : 0;
+      var lineDone = A1 + HOLD + A2, total = lineDone + B;
+      var easeIO = function (p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };
+      var hit = false, glided = false;
+      if (celebrate) {
+        goalG.style.transform = "translateY(" + (hitY - gy).toFixed(1) + "px)";
+        goalText.textContent = fmtLbs(passed) + " lbs milestone";
+        $("#trendGoal").textContent = fmtLbs(passed) + " lbs";
+        $("#trendEta").textContent = "";
+        $("#trendRange").textContent = "";
+      }
+      var t0 = performance.now();
       requestAnimationFrame(function tick(now) {
-        var e = now - t0;
-        rectA.setAttribute("width", ((nx + 10) * ease(Math.min(e / A, 1))).toFixed(1));
-        rectP.setAttribute("width", Math.max(0, (W - nx) * ease(Math.max(0, Math.min((e - A + 100) / B, 1)))).toFixed(1));
+        var e = Math.max(0, now - t0);   // the first frame's clock can read just before t0
+        var w;
+        if (!celebrate) w = lineEnd * ease(Math.min(e / A1, 1));
+        else if (e < A1) w = padL + (hitX - padL) * easeIO(e / A1);
+        else if (e < A1 + HOLD) w = hitX;
+        else w = hitX + (lineEnd - hitX) * easeIO(Math.min((e - A1 - HOLD) / A2, 1));
+        rectA.setAttribute("width", w.toFixed(1));
+        rectP.setAttribute("width", Math.max(0, (W - nx) * ease(Math.max(0, Math.min((e - lineDone + 100) / B, 1)))).toFixed(1));
         if (e > 150) { goalG.classList.add("is-on"); labels.classList.add("is-on"); }
-        if (e > A - 150) nowG.classList.add("is-on");
-        if (e > A + B - 150 && etaG) etaG.classList.add("is-on");
-        if (e < A + B) requestAnimationFrame(tick);
-        else { rectA.setAttribute("width", W); section.classList.add("is-drawn"); }
+        if (celebrate && !hit && e >= A1) {
+          hit = true;
+          hitG.classList.add("is-on", "is-burst");
+          badge.classList.add("is-on");
+          goalG.classList.add("is-hit");
+          $("#trendEta").textContent = "· reached!";
+        }
+        if (celebrate && !glided && e >= A1 + HOLD * 0.55) {
+          glided = true;
+          goalG.classList.remove("is-hit");
+          goalG.classList.add("is-glide");
+          goalG.style.transform = "translateY(0px)";
+          goalText.textContent = fmtLbs(m.goal) + " lbs milestone";
+          header(m);
+        }
+        if (celebrate && e > lineDone + 300) badge.classList.remove("is-on");
+        if (e > lineDone - 150) nowG.classList.add("is-on");
+        if (e > total - 150 && etaG) etaG.classList.add("is-on");
+        if (e < total + 300) requestAnimationFrame(tick);
+        else { rectA.setAttribute("width", W); section.classList.add("is-drawn"); if (badge) badge.remove(); }
       });
     }
 
@@ -606,10 +692,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       var k = m ? [m.total, m.pts.length, m.etaDate, todayNum()].join("|") : "none";
       if (k === key) return;
       key = k;
+      var prevGoal = data ? data.goal : null;
       data = m;
+      lastGoal = prevGoal;
       section.hidden = false;
       header(m);
-      if (played) draw(false);
+      // Passing a milestone while the page is open plays the moment again.
+      if (played) draw(m && lastGoal !== null && m.goal > lastGoal);
       else if (visible || !("IntersectionObserver" in window)) { played = true; draw(true); }
     }
 

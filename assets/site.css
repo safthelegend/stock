@@ -151,9 +151,9 @@ nav.bar .links a.cta { color:var(--brand); font-weight:600;
 #themeToggle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; color:var(--text); padding:0; }
 /* Phones and tablets: the menu bar on one line on every page, including the
    ones that don't load design.css — logo, Sign in, the theme switch and the
-   menu button. Below about 800px the full row of links no longer fits on one
+   menu button. Below about 880px the full row of links no longer fits on one
    line, and wrapped words looked broken, so the links move into the menu. */
-@media (max-width:800px) {
+@media (max-width:880px) {
   nav.bar .links a:not(.login) { display:none; }
   nav.bar .links { gap:4px; }
   nav.bar a.brand, nav.bar .links a { white-space:nowrap; }
@@ -924,7 +924,7 @@ nav.bar:focus-within { opacity:1; pointer-events:auto; }
 .photo-lightbox-close:hover { background:var(--tint); }
 
 /* ---------- phone menu (built by site.js) ----------
-   Hidden above 800px, where the bar already shows every link. */
+   Hidden above 880px, where the bar already shows every link. */
 .nav-burger { display:none; width:40px; height:40px; align-items:center; justify-content:center;
   background:none; border:none; padding:0; cursor:pointer; color:var(--text); border-radius:8px; }
 .nav-burger:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
@@ -933,7 +933,7 @@ nav.bar.menu-open .nav-burger .nb-top { transform:translateY(5px) rotate(45deg);
 nav.bar.menu-open .nav-burger .nb-mid { opacity:0; }
 nav.bar.menu-open .nav-burger .nb-bot { transform:translateY(-5px) rotate(-45deg); }
 .nav-menu { display:none; }
-@media (max-width:800px) {
+@media (max-width:880px) {
   .nav-burger { display:flex; }
   nav.bar.menu-open { background:var(--bg); }
   .nav-menu:not([hidden]) { display:flex; flex-direction:column; position:absolute; top:48px; left:0; right:0;
