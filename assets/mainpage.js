@@ -1002,6 +1002,7 @@
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
         { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
+        { kind: "section", label: "Endorsements", href: "#endorsements", keywords: "endorsed endorsement grassroots grocery camba support backers" },
         { kind: "section", label: "Our process", href: "#how", keywords: "how it works steps collect pack deliver log" },
         { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
         { kind: "section", label: "Our why: the SNAP map", href: "#network", keywords: "map snap need boroughs districts why" },

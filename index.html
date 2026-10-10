@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
   <link rel="stylesheet" href="assets/site.css?v=22">
   <link rel="stylesheet" href="assets/mainpage.css?v=4">
-  <link rel="stylesheet" href="assets/design.css?v=21">
+  <link rel="stylesheet" href="assets/design.css?v=23">
 </head>
 
 <body>
@@ -138,7 +138,7 @@
         </li>
         <li class="metric">
           <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-people"><circle class="mi-blob" cx="60" cy="58" r="36"/><g class="mi-p mi-p1"><circle class="mi-fill mi-line" cx="32" cy="54" r="9"/><path class="mi-fill mi-line" d="M16 98 V86 A16 16 0 0 1 48 86 V98"/></g><g class="mi-p mi-p3"><circle class="mi-fill mi-line" cx="88" cy="54" r="9"/><path class="mi-fill mi-line" d="M72 98 V86 A16 16 0 0 1 104 86 V98"/></g><g class="mi-p mi-p2"><path class="mi-line mi-arm" d="M73 76 L86 44"/><circle class="mi-accent mi-line mi-hand" cx="87" cy="40" r="5"/><circle class="mi-fill mi-line" cx="60" cy="46" r="11"/><path class="mi-soft mi-line" d="M40 100 V84 A20 20 0 0 1 80 84 V100"/></g></svg></span>
-          <p class="metric-num"><span data-count="20">20</span>+</p>
+          <p class="metric-num"><span data-count="30">30</span>+</p>
           <p class="metric-label">Student Volunteers</p>
         </li>
         <li class="metric is-live">
@@ -157,6 +157,50 @@
       <!-- Photos: assets/site.js, GALLERY. Hidden until there's at least one. -->
       <div class="impact-gallery" data-gallery-wrap hidden>
         <div class="photo-track" data-gallery></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Endorsements: one card per organization that has endorsed us. The
+       logo is a one-colour mask (python3 tools/emblems.py assets/endorsements),
+       painted in the brand green by design.css. -->
+  <section id="endorsements" class="sec" aria-labelledby="endorseHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="endorseHd">Endorsements</h2>
+        <p class="sec-lede">Organizations that back our work.</p>
+      </header>
+      <div class="endorse-grid">
+        <article class="endorse-card">
+          <a class="endorse-logo" href="https://www.grassrootsgrocery.org/" target="_blank" rel="noopener"
+            aria-label="Grassroots Grocery website (opens in a new tab)">
+            <span class="endorse-mark endorse-gg" aria-hidden="true"></span>
+          </a>
+          <div class="endorse-body">
+            <p class="endorse-kicker">Endorsed by</p>
+            <h3 class="endorse-name">Grassroots Grocery</h3>
+            <p class="endorse-text">A New York nonprofit fighting for dignified food access for all. Every Saturday, its
+              volunteers rescue unsold fresh produce from the Hunts Point Market and bring it to neighbors who need it,
+              through community-led food sites and community fridges: more than 3,000,000 pounds of produce so far.</p>
+            <a class="doc-toggle endorse-link" href="https://www.grassrootsgrocery.org/" target="_blank" rel="noopener">Visit
+              grassrootsgrocery.org <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+        <article class="endorse-card">
+          <a class="endorse-logo" href="https://camba.org/" target="_blank" rel="noopener"
+            aria-label="CAMBA website (opens in a new tab)">
+            <span class="endorse-mark endorse-camba" aria-hidden="true"></span>
+          </a>
+          <div class="endorse-body">
+            <p class="endorse-kicker">Endorsed by</p>
+            <h3 class="endorse-name">CAMBA</h3>
+            <p class="endorse-text">A Brooklyn nonprofit that began in 1977 as a small merchant association in Flatbush.
+              Today its 170+ programs help more than 70,000 New Yorkers a year with housing, health, education, legal
+              aid, and food: its Beyond Hunger Emergency Food Pantry serves nearly 16,000 people a month.</p>
+            <a class="doc-toggle endorse-link" href="https://camba.org/" target="_blank" rel="noopener">Visit
+              camba.org <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -449,7 +493,7 @@
   <script type="module" src="assets/firebase-init.js?v=3"></script>
   <script src="assets/site.js?v=22"></script>
   <script src="assets/map.js?v=16"></script>
-  <script src="assets/mainpage.js?v=9"></script>
+  <script src="assets/mainpage.js?v=11"></script>
   
 </body>
 </html>

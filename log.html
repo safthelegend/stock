@@ -24,7 +24,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css?v=22">
 <style>
-  .page-head { padding-bottom:40px; }
+  /* The page opens like the home page's sections and the team page: a
+     centred green title with the orange rule under it. */
+  .log-head { padding-top:120px; }
+  .log-head .sec-head { margin-bottom:48px; }
+  @media (max-width:640px) { .log-head { padding-top:88px; } .log-head .sec-head { margin-bottom:32px; } }
   .log-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 32px; }
   .log-stat { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:18px 20px; }
   .log-stat .n { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(26px,3.4vw,36px); letter-spacing:-0.03em; color:var(--brand); margin:0; font-variant-numeric:tabular-nums; }
@@ -145,7 +149,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=21">
+<link rel="stylesheet" href="assets/design.css?v=23">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -176,9 +180,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
 
 <main>
-<header id="top" class="wrap page-head">
-  <h1>Delivery Log</h1>
-  <p class="body-p">We value transparency. Every delivery done by every school is tracked and verified with its date, weight, and status.</p>
+<header id="top" class="wrap log-head">
+  <div class="sec-head">
+    <h1 class="sec-title">Delivery Log</h1>
+    <p class="sec-lede">We value transparency. Every delivery done by every school is tracked and verified with its date, weight, and status.</p>
+  </div>
 </header>
 
 <section class="wrap" style="padding-bottom:96px;">

@@ -55,7 +55,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     font-size:13px; line-height:1.35; color:var(--brand); }
   .p-foot { position:relative; display:block; margin-top:14px; min-height:4.5em; font-size:14px; line-height:1.45; }
   .p-school, .p-more { position:absolute; left:0; right:0; transition:opacity 220ms ease, transform 260ms cubic-bezier(0.22,1,0.36,1); }
-  .p-school { bottom:0; font-size:13.5px; color:var(--text-secondary); }
+  .p-school { bottom:0; right:26px; font-size:13.5px; color:var(--text-secondary); }   /* clear of the + */
+  .p-more { right:22px; }
   .p-more { top:0; color:var(--text); opacity:0; transform:translateY(6px); }
   /* The school stamp: the same one-colour logos as the "Built by students
      from" strip, all in brand green. A school with no
@@ -88,8 +89,37 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .person:hover .p-plus::after { transform:rotate(0deg); opacity:0; }
   }
 
+  /* Three tiers, told apart without reading the headings. The executive
+     board sits on its own tinted panel, with larger cards and the orange
+     accent along the top. The leadership team keeps the standard card.
+     Site operations is the most compact: smaller cards, four to a row, and
+     a plain top edge. */
+  .crew-exec { padding:36px 28px 40px; border-radius:24px; border:1px solid var(--brand-line);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 9%, var(--surface)), color-mix(in srgb, var(--brand) 3%, var(--bg))); }
+  .crew-exec .crew-title { font-size:clamp(28px,3.2vw,36px); color:var(--brand); }
+  .crew-exec .crew-count { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+  .crew-exec .person { border-top:4px solid var(--accent); padding:24px 24px 22px; box-shadow:0 14px 34px -26px var(--paper-shadow); }
+  .crew-exec .p-name { font-size:21px; }
+  .crew-exec .p-stamp { width:54px; height:54px; }
+  .crew-exec .p-stamp.is-wide { width:78px; height:39px; }
+
+  .crew-ops .crew-title { font-size:clamp(21px,2.3vw,25px); }
+  .crew-ops .crew-grid { max-width:1100px; gap:12px; }
+  .crew-ops .crew-grid > li { flex-basis:calc((100% - 36px) / 4); }
+  .crew-ops .person { border-top:1px solid var(--brand-line); padding:18px 18px 16px; }
+  .crew-ops .p-name { font-size:17px; }
+  .crew-ops .p-role { font-size:12.5px; }
+  .crew-ops .p-foot { font-size:13.5px; min-height:5.8em; }
+  .crew-ops .p-stamp { width:38px; height:38px; }
+  .crew-ops .p-stamp.is-wide { width:56px; height:28px; }
+  .crew-ops .p-plus { bottom:16px; right:16px; }
+  @media (max-width:900px) { .crew-ops .crew-grid > li { flex-basis:calc((100% - 12px) / 2); } }
+
   .team-emblems { padding:24px 0 72px; }
   @media (max-width:640px) {
+    .crew-exec { padding:24px 14px 26px; border-radius:18px; }
+    .crew-ops .crew-grid > li { flex-basis:100%; }
+    .crew-ops .p-foot { min-height:3.2em; }
     .team-page { padding:88px 0 24px; }
     .crew + .crew { margin-top:48px; }
     .crew-grid { gap:12px; }
@@ -99,7 +129,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=21">
+<link rel="stylesheet" href="assets/design.css?v=23">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -138,7 +168,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <p class="team-hint">Hover over anyone, or tap them on a phone, to see what they do.</p>
     </header>
 
-    <section class="crew" aria-labelledby="execHd" data-no-anchor>
+    <section class="crew crew-exec" aria-labelledby="execHd" data-no-anchor>
       <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">9</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role1">
@@ -189,7 +219,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </ul>
     </section>
 
-    <section class="crew" aria-labelledby="leadersHd" data-no-anchor>
+    <section class="crew crew-lead" aria-labelledby="leadersHd" data-no-anchor>
       <h2 class="crew-title" id="leadersHd">Leadership Team <span class="crew-count">11</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role10">
@@ -250,7 +280,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </ul>
     </section>
 
-    <section class="crew" aria-labelledby="opsHd" data-no-anchor>
+    <section class="crew crew-ops" aria-labelledby="opsHd" data-no-anchor>
       <h2 class="crew-title" id="opsHd">Site Operations <span class="crew-count">7</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role21">
