@@ -6,10 +6,11 @@ reads only a picture's transparency. A JPEG has none, and a full-colour logo
 would come out as one solid blob, so each raster emblem is rebuilt here as a
 transparent PNG: the logo's dark ink becomes solid, its paper becomes clear.
 
-    python3 tools/emblems.py
+    python3 tools/emblems.py                      # school emblems
+    python3 tools/emblems.py assets/endorsements  # endorsers' logos
 
-Writes assets/schools/mask/<name>.png for every .png/.jpg/.jpeg/.webp in
-assets/schools/. SVGs are skipped: an SVG whose light areas are real holes
+Writes <folder>/mask/<name>.png for every .png/.jpg/.jpeg/.webp in the
+folder (assets/schools/ unless another is given). SVGs are skipped: an SVG whose light areas are real holes
 (like Stuyvesant's) already works as a mask and is used as-is.
 
 No dependencies beyond the Python standard library and macOS's `sips`, which
@@ -26,7 +27,7 @@ GREEN = (0x2E, 0x5A, 0x22)          # brand green; the CSS mask recolours it per
 # light or transparent background; light marks inside become cut-outs).
 # "alpha": the logo is every non-transparent pixel, whatever its colour, for
 # logos drawn in light colours on a transparent background.
-MODE = {"wellsprings-school": "alpha"}
+MODE = {"wellsprings-school": "alpha", "camba": "alpha"}
 INK_SOLID, INK_CLEAR = 0.45, 0.78   # luminance: below SOLID is opaque, above CLEAR is clear
 
 
@@ -105,10 +106,14 @@ def convert(name):
 
 
 def main():
+    global SRC, OUT
+    if len(sys.argv) > 1:
+        SRC = os.path.abspath(sys.argv[1])
+        OUT = os.path.join(SRC, "mask")
     os.makedirs(OUT, exist_ok=True)
     names = sorted(n for n in os.listdir(SRC)
                    if os.path.isfile(os.path.join(SRC, n)) and n.lower().endswith((".png", ".jpg", ".jpeg", ".webp")))
-    print("Building emblem masks:")
+    print("Building masks in %s:" % os.path.relpath(SRC, ROOT))
     for n in names:
         convert(n)
 
