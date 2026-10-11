@@ -11,15 +11,39 @@ service cloud.firestore {
     function roleDoc() { return /databases/$(database)/documents/roles/$(request.auth.uid); }
     function role() { return exists(roleDoc()) ? get(roleDoc()).data.role : null; }
     function isAdmin() { return signedIn() && role() == 'admin'; }
+    // A verified account: one an admin has given a role.
     function isMember() { return signedIn() && role() in ['member', 'admin']; }
 
     function str(v, max) { return v is string && v.size() <= max; }
 
-    // ---------- roles/{uid}: { role: "member" | "admin" } ----------
-    // Created by hand in the console only. Nobody can promote themselves.
+    // ---------- roles/{uid}: { role: "member" | "admin", verifiedBy?, verifiedAt? } ----------
+    // Having a role is what makes an account verified. Admins verify new
+    // members from the portal's Review tab (assets/admin.js), which can only
+    // ever grant "member". Admin rights are still given by hand in the
+    // console, so nobody can make themselves or anyone else an admin.
     match /roles/{uid} {
-      allow read: if signedIn() && request.auth.uid == uid;
-      allow write: if false;
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['role', 'verifiedBy', 'verifiedAt'])
+        && request.resource.data.role == 'member'
+        && request.resource.data.verifiedBy == request.auth.token.email
+        && request.resource.data.verifiedAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // ---------- members/{uid}: { name, email, createdAt } ----------
+    // Saved by each person the first time they open the portal, so admins can
+    // see who is waiting to be verified. It doesn't make anyone a member;
+    // roles/{uid} does.
+    match /members/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'createdAt'])
+        && str(request.resource.data.name, 200)
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.createdAt == request.time;
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow delete: if isAdmin();
+      allow update: if false;
     }
 
     // ---------- public contact form ----------
@@ -56,8 +80,10 @@ service cloud.firestore {
     }
 
     match /deliveries/{id} {
-      // Members log their own, always as pending, with no review fields.
-      allow create: if isMember()
+      // Anyone signed in logs their own, always as pending, with no review
+      // fields. An unverified account's deliveries wait in Review, off the
+      // public log, until an admin verifies it.
+      allow create: if signedIn()
         && validDelivery(request.resource.data)
         && request.resource.data.memberUid == request.auth.uid
         && request.resource.data.memberEmail == request.auth.token.email
@@ -68,8 +94,8 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
 
-      // Members see their own; admins see everything.
-      allow read: if isAdmin() || (isMember() && resource.data.memberUid == request.auth.uid);
+      // People see their own; admins see everything.
+      allow read: if isAdmin() || (signedIn() && resource.data.memberUid == request.auth.uid);
 
       // Only admins change anything, and never who logged it or when.
       allow update: if isAdmin()
@@ -103,8 +129,9 @@ service cloud.firestore {
 
     match /publicLog/{id} {
       allow read: if true;
-      // A member adds the entry right after saving their new delivery, and it
-      // has to match that delivery exactly.
+      // A verified member adds the entry right after saving their new
+      // delivery, and it has to match that delivery exactly. Unverified
+      // accounts can't: their deliveries stay off until an admin verifies them.
       allow create: if isMember()
         && validPublic(request.resource.data)
         && deliveryOf(id).memberUid == request.auth.uid
@@ -121,14 +148,14 @@ service cloud.firestore {
     match /deliveryPhotos/{id} {
       // getAfter() looks at the delivery as it will be once this batch lands,
       // so a photo can only be attached to your own delivery, in the same write.
-      allow create: if isMember()
+      allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['memberUid', 'dataUrl'])
         && request.resource.data.memberUid == request.auth.uid
         && request.resource.data.dataUrl is string
         && request.resource.data.dataUrl.size() < 900000
         && request.resource.data.dataUrl.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+$')
         && getAfter(/databases/$(database)/documents/deliveries/$(id)).data.memberUid == request.auth.uid;
-      allow read: if isAdmin() || (isMember() && resource.data.memberUid == request.auth.uid);
+      allow read: if isAdmin() || (signedIn() && resource.data.memberUid == request.auth.uid);
       allow delete: if isAdmin();
       allow update: if false;
     }

@@ -92,6 +92,11 @@ nav.bar .links a[aria-current="page"]:hover { color:var(--brand); box-shadow:non
 @media (max-width:700px) {
   .statband .grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"pct" "meals" "ready"; }
 }
+/* Inside Our Why, between the lede and the map's note. */
+#network .statband { margin-bottom:48px; }
+#network .statband .grid { padding:0; }
+#network .statband + .sec-note { margin-top:0; }
+@media (max-width:640px) { #network .statband { margin-bottom:32px; } }
 
 /* --- instrument band: #sensors + #boxpin + #tracker ----------------------
    The thesis section reads as lab equipment: graph paper behind it, DM Mono
