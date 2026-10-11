@@ -1,7 +1,9 @@
 /* ============================================================================
    Stock the Block — the Review tab on members.html (admins only)
    Every delivery, live. Filter by status, look at the photo, accept or reject
-   with a note, fix mistakes, or delete.
+   with a note, fix mistakes, or delete. Also where new accounts are verified:
+   anyone can sign in and log deliveries, but theirs wait here, off the public
+   log, until an admin verifies them.
 
    This file doesn't sign anyone in. members.js does that, and if the person
    is an admin it calls STBA.start(ctx). Loaded before members.js.
@@ -17,6 +19,15 @@
     const photos = {};       // loaded photos, by delivery id
     let editing = null;      // id of the card open for editing, or null
     let onPending = () => {}; // told the waiting count, for the badge on the tab
+
+    /* Who's verified: every account with a role (roles/{uid}). "loading"
+       until the list arrives; "off" if the database won't share it, which
+       means the updated firestore.rules aren't published yet, and then
+       everyone counts as verified, as before. */
+    let verified = new Set();
+    let rolesState = "loading";
+    let people = {};         // members/{uid}: { name, email, createdAt }
+    const isVerified = (uid) => rolesState !== "ok" || verified.has(uid);
   
     /* ---------- filter buttons ---------- */
     const TABS = [
@@ -27,7 +38,7 @@
     ];
     function renderTabs() {
       const count = (k) => k === "all" ? all.length : all.filter((d) => d.status === k).length;
-      onPending(count("pending"));
+      onPending(count("pending") + waitingPeople().length);
       $("#reviewFilters").replaceChildren(...TABS.map((t) => {
         const b = el("button", { type: "button", className: "p-tab" }, t.label + " ", el("span", { className: "p-count" }, count(t.key)));
         b.setAttribute("aria-pressed", String(filter === t.key));
@@ -64,6 +75,16 @@
       }).then(() => { delete drafts[d.id]; });
     }
   
+    // Verifies an account: gives it the member role. Admin rights are only
+    // ever given by hand in the Firebase console.
+    function verify(uid) {
+      const { fb, user } = ctx;
+      return fb.setDoc(fb.doc(fb.db, "roles", uid), { role: "member", verifiedBy: user.email, verifiedAt: fb.serverTimestamp() });
+    }
+    function askVerify(uid, email) {
+      return confirm("Verify " + (email || "this account") + "?\n\nThey become a member. Their deliveries move into review and show on the public delivery log as waiting.");
+    }
+
     function remove(d) {
       const { fb } = ctx;
       const b = fb.writeBatch(fb.db);
@@ -107,7 +128,13 @@
   
       const btn = (label, cls, fn) => { const b = el("button", { type: "button", className: "btn-sm " + cls }, label); b.addEventListener("click", fn); return b; };
       const actions = el("div", { className: "p-actions" });
-      if (d.status !== "accepted") actions.appendChild(btn("Accept", "solid", () => run(card, () => setStatus(d, "accepted"), "Accepted.")));
+      /* An unverified account's delivery can be rejected or deleted, but not
+         accepted until the account is verified. */
+      const held = !isVerified(d.memberUid);
+      if (held) actions.appendChild(btn("Verify account", "solid", () => {
+        if (askVerify(d.memberUid, d.memberEmail)) run(card, () => verify(d.memberUid), "Verified.");
+      }));
+      else if (d.status !== "accepted") actions.appendChild(btn("Accept", "solid", () => run(card, () => setStatus(d, "accepted"), "Accepted.")));
       if (d.status !== "rejected") actions.appendChild(btn("Reject", "danger", () => {
         if (!note.value.trim() && !confirm("Reject without a note? The member won't know why.")) return;
         run(card, () => setStatus(d, "rejected"), "Rejected.");
@@ -120,12 +147,14 @@
       }));
   
       const reviewed = d.reviewedBy ? " · reviewed by " + d.reviewedBy + " " + P.fmtTime(d.reviewedAt) : "";
-      card.append(
+      card.append(...[
         el("header", { className: "d-head" }, P.statusPill(d.status),
+          held ? el("span", { className: "d-status s-held" }, "Unverified account") : null,
           el("span", { className: "p-muted" }, d.memberEmail + ", logged " + P.fmtTime(d.createdAt) + reviewed)),
+        held ? el("p", { className: "d-held-note" }, "This account isn't verified yet, so the delivery is off the public log. Verify the account to accept it, or reject it if it isn't one of ours.") : null,
         el("div", { className: "d-split" }, P.deliveryDetails(d), photoBlock(d)),
         el("div", { className: "d-temps p-muted" }, d.temps && d.temps.length ? d.temps.length + " temperature readings" : "No temperature readings (sensors not connected yet)."),
-        note, actions, msg);
+        note, actions, msg].filter(Boolean));
       return card;
     }
   
@@ -151,6 +180,46 @@
       return card;
     }
   
+    /* ---------- new accounts to verify ----------
+       Everyone who has opened the portal but isn't verified, plus anyone
+       whose delivery is waiting without a profile (they signed up before
+       profiles were saved). Newest first. */
+    function waitingPeople() {
+      if (rolesState !== "ok") return [];
+      const out = {};
+      Object.keys(people).forEach((uid) => { if (!verified.has(uid)) out[uid] = { uid, ...people[uid] }; });
+      all.forEach((d) => { if (!verified.has(d.memberUid) && !out[d.memberUid]) out[d.memberUid] = { uid: d.memberUid, name: "", email: d.memberEmail }; });
+      const n = (uid) => all.filter((d) => d.memberUid === uid && d.status !== "rejected").length;
+      return Object.values(out).map((p) => ({ ...p, deliveries: n(p.uid) }))
+        .sort((a, b) => (b.createdAt ? b.createdAt.toMillis() : 0) - (a.createdAt ? a.createdAt.toMillis() : 0));
+    }
+
+    function renderPeople() {
+      const host = $("#newMembers");
+      if (!host) return;
+      const list = waitingPeople();
+      if (!list.length) { host.hidden = true; host.replaceChildren(); return; }
+      host.replaceChildren(
+        el("header", { className: "newm-head" },
+          el("h2", {}, "New accounts to verify ", el("span", { className: "p-count" }, list.length)),
+          el("p", { className: "p-muted" }, "They've signed in but aren't verified. They can log deliveries, which wait here and stay off the public log until you verify them.")),
+        el("ul", { className: "newm-list" }, list.map((p) => {
+          const row = el("li", { className: "newm-row" });
+          const go = el("button", { type: "button", className: "btn-sm solid" }, "Verify");
+          go.addEventListener("click", () => { if (askVerify(p.uid, p.email)) run(row, () => verify(p.uid), "Verified."); });
+          const bits = [p.email];
+          if (p.createdAt && p.createdAt.toDate) bits.push("joined " + P.fmtTime(p.createdAt));
+          bits.push(p.deliveries === 1 ? "1 delivery logged" : p.deliveries + " deliveries logged");
+          row.append(
+            el("span", { className: "avatar", ariaHidden: "true" }, P.initials({ displayName: p.name, email: p.email })),
+            el("div", { className: "newm-who" }, el("b", {}, p.name || p.email || "Unnamed account"), el("span", {}, bits.join(" · "))),
+            go,
+            el("p", { className: "p-msg", role: "status" }));
+          return row;
+        })));
+      host.hidden = false;
+    }
+
     /* ---------- the list ---------- */
     /* The search box narrows whichever status is showing, by box ID, school,
        drop-off site or member email, so a box can be found from its label. */
@@ -162,6 +231,7 @@
 
     function render() {
       renderTabs();
+      renderPeople();
       const q = search ? search.value.trim().toLowerCase() : "";
       const rows = (filter === "all" ? all : all.filter((d) => d.status === filter)).filter((d) => !q || matches(d, q));
       const host = $("#queue");
@@ -197,13 +267,18 @@
       (!withRegion || (a.region || null) === (b.region || null));
 
     async function syncPublicLog() {
-      if (!ctx || !pub || !loaded) return;
+      if (!ctx || !pub || !loaded || rolesState === "loading") return;
       if (syncing) { syncAgain = true; return; }
       syncing = true;
       try {
         const { fb } = ctx;
+        /* An unverified account's waiting deliveries stay off until it's
+           verified. Accepted ones always stay on. */
         const want = {};
-        all.forEach((d) => { const e = P.publicEntry(d, withRegion); if (e) want[d.id] = e; });
+        all.forEach((d) => {
+          if (d.status === "pending" && !isVerified(d.memberUid)) return;
+          const e = P.publicEntry(d, withRegion); if (e) want[d.id] = e;
+        });
         const ops = [];
         Object.keys(want).forEach((id) => { if (!sameEntry(pub[id], want[id])) ops.push({ id, value: want[id] }); });
         Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
@@ -245,7 +320,22 @@
           snap.docs.forEach((d) => { pub[d.id] = d.data(); });
           syncPublicLog();
         }, (err) => console.error("Couldn't read the public delivery log:", err));
-        return () => { stop(); stopPub(); ctx = null; all = []; pub = null; loaded = false; editing = null; };
+        const stopRoles = c.fb.onSnapshot(c.fb.collection(c.fb.db, "roles"), (snap) => {
+          verified = new Set(snap.docs.filter((d) => ["member", "admin"].includes(d.data().role)).map((d) => d.id));
+          rolesState = "ok";
+          if (loaded) render();
+          syncPublicLog();
+        }, () => { rolesState = "off"; if (loaded) render(); syncPublicLog(); });
+        const stopPeople = c.fb.onSnapshot(c.fb.collection(c.fb.db, "members"), (snap) => {
+          people = {};
+          snap.docs.forEach((d) => { people[d.id] = d.data({ serverTimestamps: "estimate" }); });
+          if (loaded) render();
+        }, () => { people = {}; });
+        return () => {
+          stop(); stopPub(); stopRoles(); stopPeople();
+          ctx = null; all = []; pub = null; loaded = false; editing = null;
+          verified = new Set(); rolesState = "loading"; people = {};
+        };
       }
     };
   })();

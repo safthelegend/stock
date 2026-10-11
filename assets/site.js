@@ -1544,8 +1544,8 @@ function initMascotSlots(root) {
        RECEIVING_SITES the map draws each school's route to. */
     { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
     { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
-    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3 },
-    { name: "Bronx High School of Science", borough: "Bronx", status: "conversation" },
+    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
+    { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
     { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "conversation", tag: "specialized" },
     { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
     { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
@@ -1564,7 +1564,9 @@ function initMascotSlots(root) {
      so its pin is borough-level (assets/geo/sites.json). */
   var RECEIVING_SITES = [
     { name: "Essex Market Community Fridge", borough: "Manhattan", status: "active", kind: "receiving" },
-    { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
+    { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
+    { name: "Classon Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
+    { name: "The Friendly Fridge BX", borough: "Bronx", status: "active", kind: "receiving" }
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
@@ -1943,12 +1945,12 @@ function initMascotSlots(root) {
      ====================================================================== */
   var EMBLEMS = [
     { name: "Stuyvesant", full: "Stuyvesant High School", logo: "assets/schools/Stuyvesant.svg" },
-    { name: "Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
+    { name: "CUNY Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
     { name: "James Madison", full: "James Madison High School", logo: "assets/schools/mask/james-madison.png" },
     { name: "Midwood", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
     { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
-    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "" },
-    { name: "Baruch", full: "Baruch College", logo: "" },
+    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "assets/schools/mask/rachel-carson.png" },
+    { name: "CUNY Baruch College", full: "Baruch College", logo: "assets/schools/mask/baruch-college.png", wide: true },
     { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" }
   ];
 

@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
   <link rel="stylesheet" href="assets/site.css?v=22">
   <link rel="stylesheet" href="assets/mainpage.css?v=4">
-  <link rel="stylesheet" href="assets/design.css?v=23">
+  <link rel="stylesheet" href="assets/design.css?v=24">
 </head>
 
 <body>
@@ -92,7 +92,7 @@
           <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
             insulated boxes, walk it to a convenient food bank/community fridge, and post the impact.</p>
           <div class="prelaunch is-live" id="heroStatus">
-            <p class="prelaunch-tag">Now delivering with 3 partner schools. Looking for more schools to join!</p>
+            <p class="prelaunch-tag">Now delivering with 4 partner schools. Looking for more schools to join!</p>
           </div>
           <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
             <a href="#join" class="btn solid">Work with us</a>
@@ -133,7 +133,7 @@
       <ul class="metrics" id="metrics">
         <li class="metric">
           <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-school"><circle class="mi-blob" cx="64" cy="52" r="34"/><path class="mi-line" d="M60 40 V14"/><path class="mi-flag" d="M61 15 H80 L75 21 L80 27 H61 Z"/><path class="mi-fill mi-line" d="M22 58 L60 38 L98 58 Z"/><rect class="mi-fill mi-line" x="28" y="58" width="64" height="40"/><rect class="mi-soft mi-line" x="51" y="76" width="18" height="22" rx="2"/><rect class="mi-line mi-win" x="35" y="67" width="10" height="10" rx="1.5"/><rect class="mi-line mi-win" x="75" y="67" width="10" height="10" rx="1.5"/><circle class="mi-line" cx="60" cy="52" r="4"/><path class="mi-line" d="M16 98 H104"/></svg></span>
-          <p class="metric-num"><span data-count="3">3</span></p>
+          <p class="metric-num"><span data-count="4">4</span></p>
           <p class="metric-label">Partner Schools</p>
         </li>
         <li class="metric">
@@ -201,33 +201,6 @@
               camba.org <span aria-hidden="true">→</span></a>
           </div>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="statband" id="statband">
-    <div class="wrap">
-      <div class="grid">
-        <div class="cell fade-in-up" data-stat>
-          <p class="figure fig" id="statMeals">880,000</p>
-          <p class="cap">school meals served every day in NYC</p>
-        </div>
-        <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
-          <p class="figure fig" id="statPct">4%</p>
-          <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
-          <!-- What-if slider. Drag the share of buildings that donate and see the
-             food it would save. Every input is sourced in the cite line below. -->
-          <div class="pct-whatif" id="pctWhatIf" hidden>
-            <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
-              aria-label="Share of NYC school buildings that donate leftover food">
-            <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
-            <p class="pct-result" id="pctResult"></p>
-          </div>
-        </div>
-        <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-          <p class="figure fig" id="statSchools">3</p>
-          <p class="cap">Partner Schools</p>
-        </div>
       </div>
     </div>
   </section>
@@ -342,10 +315,35 @@
     <div class="wrap">
       <header class="sec-head">
         <h2 class="sec-title" id="whyHd">Our Why?</h2>
-        <p class="sec-lede">In 13 of New York City’s 59 community districts, more than 30% of residents use SNAP (food
-          stamps) to buy groceries. With SNAP being cut, more families are turning to food banks and community fridges
-          to fill the gap. That’s where our food goes.</p>
+        <p class="sec-lede">Millions of pounds of edible school food go to waste each year while New Yorkers face food
+          insecurity. As SNAP cuts threaten food access, Stock the Block bridges this gap by redirecting sealed, unopened
+          surplus food to food pantries and community fridges.</p>
       </header>
+      <!-- The numbers behind the why: the 4% what-if slider and friends. -->
+      <div class="statband" id="statband">
+        <div class="grid">
+          <div class="cell fade-in-up" data-stat>
+            <p class="figure fig" id="statMeals">880,000</p>
+            <p class="cap">school meals served every day in NYC</p>
+          </div>
+          <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
+            <p class="figure fig" id="statPct">4%</p>
+            <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
+            <!-- What-if slider. Drag the share of buildings that donate and see the
+               food it would save. Every input is sourced in the cite line below. -->
+            <div class="pct-whatif" id="pctWhatIf" hidden>
+              <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
+                aria-label="Share of NYC school buildings that donate leftover food">
+              <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
+              <p class="pct-result" id="pctResult"></p>
+            </div>
+          </div>
+          <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
+            <p class="figure fig" id="statSchools">4</p>
+            <p class="cap">Partner Schools</p>
+          </div>
+        </div>
+      </div>
       <p class="sec-note">Darker areas have more residents on SNAP. Pins show our partner schools, the community
         fridges they deliver to, and the schools we’re talking to next. Press play to see how we got here and where it
         could go.</p>
@@ -358,7 +356,7 @@
 
       <div id="networkMapLegend" class="map-legend"></div>
 
-      <p class="sites-summary" id="sitesSummary">8 schools on the map: 3 delivering, 4 in talks, 1 planned. <a
+      <p class="sites-summary" id="sitesSummary">8 schools on the map: 4 delivering, 3 in talks, 1 planned. <a
           href="getting-started.html#sites">See the full list →</a></p>
 
       <details class="map-about">
@@ -416,13 +414,13 @@
               We use what you send only to reply to you. See our <a href="privacy.html#collect-contact">Privacy Policy</a>. Under 13? Please ask a parent, guardian or teacher to contact us for you.</p>
             <p id="joinFormError" hidden role="alert"
               style="grid-column:span 2; color:var(--accent-text); font-size:14px; margin:4px 0 0; line-height:1.5;">
-              Something went wrong sending this. Try again in a moment, or email <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
+              Something went wrong sending this. Try again in a moment, or email <a href="mailto:contact@stocktheblock.com">contact@stocktheblock.com</a>.</p>
           </form>
         </div>
         <div class="join-foot mascot-hover">
           <span id="mascotJoin" class="mascot-slot" style="width:36px; flex:none; display:block;"
             data-state="idle"></span>
-          <p>Rather email? <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a></p>
+          <p>Rather email? <a href="mailto:contact@stocktheblock.com">contact@stocktheblock.com</a></p>
         </div>
       </div>
     </div>
@@ -491,8 +489,8 @@
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=22"></script>
-  <script src="assets/map.js?v=16"></script>
+  <script src="assets/site.js?v=23"></script>
+  <script src="assets/map.js?v=17"></script>
   <script src="assets/mainpage.js?v=11"></script>
   
 </body>

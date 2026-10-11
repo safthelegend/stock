@@ -10,7 +10,9 @@
                             in the caption are computed from the data file.
      Act 2  our story     — real, in the order it happened: Stuyvesant and
                             the Essex Market fridge, then Midwood and a
-                            Brooklyn fridge, then Brooklyn Tech, then the
+                            Brooklyn fridge, then Brooklyn Tech and the
+                            Classon fridge, then Bronx Science and the
+                            Friendly Fridge BX, then the
                             schools we're in talks with. Ends on "today",
                             which is also where the map rests.
      Act 3  if it spreads — anonymous dots blooming across the districts with
@@ -304,8 +306,8 @@
     var TL = {
       ACT1: 0, SPOT_AT: 2600, SPOT_EACH: 1250, SPOT_N: 4,
       ACT2: 7800, STEP: 2600,            /* our story: one step per partner, then "in talks" */
-      TODAY: 18200,                      /* where the map rests */
-      ACT3A: 21200, ACT3B: 24200, ACT3C: 27000, ACT4: 30200, END: 33300
+      TODAY: 20800,                      /* where the map rests: ACT2 + STEP x (partners + 1) */
+      ACT3A: 23800, ACT3B: 26800, ACT3C: 29600, ACT4: 32800, END: 35900
     };
     var SEED_STOPS = [14, 27];   /* how far the bloom has got by 3B and 3C */
 
@@ -483,6 +485,12 @@
       var n = list.map(function (p) { return p.name; });
       return n.length < 3 ? n.join(" and ") : n.slice(0, -1).join(", ") + ", and " + n[n.length - 1];
     }
+    /* "the Essex Market Community Fridge", "The Friendly Fridge BX", and the
+       Brooklyn fridge, whose exact spot isn't published, by borough. */
+    function fridgeName(n) {
+      if (n.indexOf("Brooklyn community fridge") === 0) return "a community fridge in Brooklyn";
+      return /^the /i.test(n) ? n : "the " + n;
+    }
 
     function renderAt(t) {
       var seeds = districtSeeds();
@@ -533,19 +541,17 @@
         say("New York City has " + withData + " community districts. In " + above30 +
             " of them, more than 30% of residents are on SNAP.");
       } else if (story && step === 0) {
-        say("We started at " + part[0].name + (part[0].dropoff ? ", delivering to the " + part[0].dropoff + "." : "."));
+        say("We started at " + part[0].name + (part[0].dropoff ? ", delivering to " + fridgeName(part[0].dropoff) + "." : "."));
       } else if (story && step < part.length) {
-        var q = part[step], fr = q.dropoff && q.dropoff.indexOf("Brooklyn community fridge") === 0 ? "a community fridge in Brooklyn" : "the " + q.dropoff;
-        say(step === part.length - 1 && !q.dropoff
-          ? "We've just added " + q.name + "."
-          : "Then " + q.name + " joined" + (q.dropoff ? ", delivering to " + fr + "." : "."));
+        var q = part[step], to = q.dropoff ? ", delivering to " + fridgeName(q.dropoff) + "." : ".";
+        say(step === part.length - 1 ? "We've just added " + q.name + to : "Then " + q.name + " joined" + to);
       } else if (story) {
         say("Next, we're in talks with " + joinNames(talks) + ".");
       } else if (t < TL.ACT3A) {
         var boros = {};
         fridges.forEach(function (f) { boros[f.borough] = 1; });
         say("Today: " + part.length + " partner schools delivering to community fridges in " +
-            Object.keys(boros).join(" and ") + ", and " + talks.length + " more schools in talks.");
+            joinNames(Object.keys(boros).map(function (b) { return { name: b }; })) + ", and " + talks.length + " more schools in talks.");
       } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
       } else if (t < TL.ACT3C) {

@@ -16,7 +16,9 @@
     { "name": "Queens High School for the Sciences at York College", "lat": 40.7005, "lon": -73.7977, "precision": "address" },
     { "name": "Benjamin N. Cardozo High School", "lat": 40.7522, "lon": -73.7574, "precision": "address" },
     { "name": "Essex Market Community Fridge", "lat": 40.7178, "lon": -73.9890, "precision": "address" },
-    { "name": "Brooklyn community fridge", "lat": 40.6500, "lon": -73.9500, "precision": "borough" }
+    { "name": "Brooklyn community fridge", "lat": 40.6500, "lon": -73.9500, "precision": "borough" },
+    { "name": "Classon Community Fridge", "lat": 40.6787, "lon": -73.9619, "precision": "address" },
+    { "name": "The Friendly Fridge BX", "lat": 40.8906, "lon": -73.8982, "precision": "address" }
   ],
   "boroughView": {
     "Manhattan": { "lat": 40.7780, "lon": -73.9700, "zoom": 12 },
