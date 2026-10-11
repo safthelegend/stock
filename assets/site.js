@@ -1948,6 +1948,7 @@ function initMascotSlots(root) {
     { name: "Midwood", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
     { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
     { name: "Rachel Carson", full: "Rachel Carson High School", logo: "" },
+    { name: "Baruch", full: "Baruch College", logo: "" },
     { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" }
   ];
 
