@@ -67,10 +67,15 @@
        one onSnapshot listener, so they move the moment an admin verifies a
        delivery. "Verified" means accepted, the same rule log.html uses.
 
-       The markup holds the last known totals. The hero card counts up from
-       zero as it fades in; the Our Impact numbers count up the first time
-       they scroll into view. If the log can't load, both keep the last known
-       totals and stop saying "live". */
+       The totals come fast first, from one plain request (STB.fetchPublicLog),
+       then Firebase keeps them live. Until then the page holds the best
+       totals it has: the ones typed into the markup (dated by data-at on the
+       hero card) or, if newer, the ones this browser saw last time. The hero
+       number stays hidden until real totals arrive (usually a few hundred
+       milliseconds) and then counts up to them, so it never counts up to an
+       old figure first. The Our Impact numbers count up the first time they
+       scroll into view. If nothing loads, both keep the best totals they
+       have and stop saying "live". */
 
     // A number that counts to its value: from zero when start() is called,
     // then from wherever it is when the value changes.
@@ -111,10 +116,7 @@
         var heroLbs = card && counter($("#impactLbs"));
         var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
         var liveText = $("#impactLiveText"), sr = $("#impactSR");
-        if (card) {
-            $("#impactLbs").onCount = function (t) { card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4); };
-            heroLbs.start();   // count up from zero as the card fades in
-        }
+        if (card) $("#impactLbs").onCount = function (t) { card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4); };
 
         /* ----- Our Impact: every number counts up once, when the row first
            scrolls into view, and each icon plays its little animation. ----- */
@@ -142,21 +144,44 @@
             if (metricsLive) metricsLive.setAttribute("data-state", state);
         }
 
+        function showTotals(lbs, count, at) {
+            if (card) {
+                countEl.textContent = fmtN(count);
+                wordEl.textContent = count === 1 ? "verified delivery" : "verified deliveries";
+                dateEl.textContent = longDate(at);
+                heroLbs.set(lbs);
+            }
+            if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(count);
+            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
+        }
+
+        // This browser's last totals, if they're newer than the typed ones.
+        var CACHE = "stb-impact";
+        try {
+            var last = JSON.parse(localStorage.getItem(CACHE) || "null");
+            var typedAt = card && card.getAttribute("data-at") ? new Date(card.getAttribute("data-at") + "T23:59:59").getTime() : 0;
+            if (last && typeof last.lbs === "number" && typeof last.count === "number" && last.at > typedAt) showTotals(last.lbs, last.count, new Date(last.at));
+        } catch (e) { /* storage blocked: the typed totals stand */ }
+
+        var revealed = false;
+        function revealHero() {
+            if (revealed || !card) return;
+            revealed = true;
+            card.classList.remove("is-waiting");
+            heroLbs.start();   // count up from zero
+        }
+        if (card) { card.classList.add("is-waiting"); setTimeout(revealHero, 1500); }
+
         var loaded = false;
         function update(rows) {
             var ok = rows.filter(function (r) {
                 return r.status === "accepted" && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number";
             });
             var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
-            var grew = loaded && heroLbs && lbs > heroLbs.value();
-            if (card) {
-                countEl.textContent = fmtN(ok.length);
-                wordEl.textContent = ok.length === 1 ? "verified delivery" : "verified deliveries";
-                dateEl.textContent = longDate(new Date());
-                heroLbs.set(lbs);
-            }
-            if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(ok.length);
-            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
+            var grew = loaded && revealed && heroLbs && lbs > heroLbs.value();
+            showTotals(lbs, ok.length, new Date());
+            try { localStorage.setItem(CACHE, JSON.stringify({ lbs: lbs, count: ok.length, at: Date.now() })); } catch (e) { /* fine */ }
+            revealHero();
             if (grew) {
                 // A delivery was just verified while the page was open.
                 card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
@@ -165,18 +190,30 @@
             loaded = true;
         }
 
+        /* Fast first, then live. Once Firebase has delivered, the quick
+           fetch's answer (if it's later) is ignored. If Firebase can't
+           connect, the quick fetch's totals are still current as of now. */
+        var live = false;
+        STB.fetchPublicLog().then(function (rows) {
+            if (live) return;
+            update(rows);
+            setState("fresh", "Up to date");
+        }).catch(function (err) { console.warn("Impact totals, quick fetch:", err.message || err); });
+
         function start(fb) {
-            if (!fb) { setState("offline", "Live updates unavailable"); return; }
+            if (!fb) { if (!loaded) setState("offline", "Live updates unavailable"); return; }
             fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
+                live = true;
                 setState("live", "Updating live");
                 update(snap.docs.map(function (d) { return d.data(); }));
             }, function (err) {
                 console.warn("Live impact counter:", err.code || err);
-                setState("offline", "Live updates paused");
+                if (loaded) setState("fresh", "Up to date");
+                else setState("offline", "Live updates paused");
             });
         }
 
-        setState("connecting", "Updating live");
+        setState("connecting", "Loading latest");
         if (window.STB_FIREBASE) start(window.STB_FIREBASE);
         else {
             // firebase-init.js is a module and loads after this script.

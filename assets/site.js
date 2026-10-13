@@ -2169,7 +2169,43 @@ function initMascotSlots(root) {
     });
   }
 
+  /* ======================================================================
+     PUBLIC LOG, FAST (home page and log.html)
+     One plain HTTPS request for the public delivery log, the same rows the
+     Firebase listener delivers. It needs no SDK, so it answers in a fraction
+     of a second, and it still works where Firebase's live connection is slow
+     or blocked (some in-app browsers, weak phone signal). The pages show
+     these numbers first, then Firebase keeps them live. publicLog is public
+     to read (firestore.rules), so no key or sign-in is involved.
+     ====================================================================== */
+  var PUBLIC_LOG_URL = "https://firestore.googleapis.com/v1/projects/stock-the-block/databases/(default)/documents/publicLog";
+  function fetchPublicLog() {
+    function value(f) {
+      if (!f) return undefined;
+      if ("stringValue" in f) return f.stringValue;
+      if ("integerValue" in f) return Number(f.integerValue);
+      if ("doubleValue" in f) return f.doubleValue;
+      return undefined;
+    }
+    function page(token, rows) {
+      var url = PUBLIC_LOG_URL + "?pageSize=300" + (token ? "&pageToken=" + encodeURIComponent(token) : "");
+      return fetch(url, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("publicLog " + r.status);
+        return r.json();
+      }).then(function (j) {
+        (j.documents || []).forEach(function (d) {
+          var f = d.fields || {}, row = {};
+          Object.keys(f).forEach(function (k) { row[k] = value(f[k]); });
+          rows.push(row);
+        });
+        return j.nextPageToken ? page(j.nextPageToken, rows) : rows;
+      });
+    }
+    return page(null, []);
+  }
+
   global.STB = {
+    fetchPublicLog: fetchPublicLog,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,

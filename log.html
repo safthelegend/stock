@@ -149,7 +149,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=24">
+<link rel="stylesheet" href="assets/design.css?v=25">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -264,7 +264,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=23"></script>
+<script src="assets/site.js?v=24"></script>
 <script>
 (function () {
   "use strict";
@@ -413,7 +413,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       // Pace: average pounds per delivery day, over the last ten of them.
       var recent = days.slice(-10);
       var rate = recent.reduce(function (t, day) { return t + byDay[day]; }, 0) / recent.length;
-      var goal = MILESTONES.filter(function (g) { return g >= total * 1.25; })[0] || Math.ceil(total * 1.5);
+      // The goal is always the next milestone we haven't reached, however close.
+      var goal = MILESTONES.filter(function (g) { return g > total; })[0] || Math.ceil(total * 1.5);
       // Delivery days still needed, rounded up: "likely around" errs late.
       var need = function (r) { return r > 0 ? Math.ceil((goal - total) / r) : null; };
 
@@ -781,6 +782,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   }
 
   function fail() {
+    if (ROWS) return;   // the quick fetch already filled it in
     $("#emptyMsg").textContent = "The log couldn't load.";
     $("#emptySub").textContent = "Check your connection and reload the page.";
     $("#mempty").style.display = "flex";
@@ -788,11 +790,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   /* Live: a delivery shows up, or turns Verified, without a reload. Only
      well-formed rows are shown, so a bad entry can't break the table. */
+  function wellFormed(rows) {
+    return rows.filter(function (r) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
+    });
+  }
+  /* Fast first: one plain request (STB.fetchPublicLog in site.js) fills the
+     log in a fraction of a second, even where Firebase's live connection is
+     slow or blocked. Then Firebase keeps it live, and its rows win. */
+  var live = false;
+  STB.fetchPublicLog().then(function (rows) {
+    if (live) return;
+    ROWS = wellFormed(rows);
+    render();
+  }).catch(function (err) { console.warn("Delivery log, quick fetch:", err.message || err); });
   function start(fb) {
     fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
-      ROWS = snap.docs.map(function (d) { return d.data(); }).filter(function (r) {
-        return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
-      });
+      live = true;
+      ROWS = wellFormed(snap.docs.map(function (d) { return d.data(); }));
       render();
     }, function (err) { console.error(err); fail(); });
   }
