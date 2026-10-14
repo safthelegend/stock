@@ -368,6 +368,12 @@ footer .wrap.top { padding-top:56px; }
 .impact[data-state="connecting"] .impact-live { opacity:0.7; }
 .impact[data-state="offline"] .impact-live { color:var(--text-secondary); }
 .impact[data-state="offline"] .live-dot { background:var(--text-secondary); }
+/* Fresh totals, but not a live connection: a steady dot. */
+.impact[data-state="fresh"] .live-dot::after, .metrics-live[data-state="fresh"] .live-dot::after { animation:none; opacity:0; }
+/* Until the current totals arrive (a moment), the number and its line stay
+   hidden, so the count-up never runs to an old figure (mainpage.js). */
+.impact .impact-fig, .impact .impact-meta { transition:opacity 260ms ease; }
+.impact.is-waiting .impact-fig, .impact.is-waiting .impact-meta { opacity:0; }
 
 .impact-fig { margin:8px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
   line-height:0.95; letter-spacing:-0.05em; color:var(--brand); font-variant-numeric:tabular-nums; white-space:nowrap; }
