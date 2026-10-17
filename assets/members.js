@@ -126,9 +126,9 @@
         const pubRef = fb.doc(fb.db, "publicLog", ref.id);
         const pubEntry = P.publicEntry({ ...data, status: "pending" });
         if (ctx.verified) fb.setDoc(pubRef, pubEntry)
-          // Until the live Firestore rules accept a region, write it without.
+          // Until the live Firestore rules accept the school and borough, write it without.
           .catch((err) => {
-            if (err.code === "permission-denied" && pubEntry.region) return fb.setDoc(pubRef, P.publicEntry({ ...data, status: "pending" }, false));
+            if (err.code === "permission-denied" && (pubEntry.region || pubEntry.school)) return fb.setDoc(pubRef, P.publicEntry({ ...data, status: "pending" }, false));
             throw err;
           })
           .catch((err) => console.warn("Public log entry not written yet:", err.code || err));

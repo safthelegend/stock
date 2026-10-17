@@ -259,12 +259,12 @@
     let pub = null;          // publicLog entries by id, once loaded
     let loaded = false;      // true once the deliveries have loaded
     let syncing = false, syncAgain = false;
-    /* The region field needs the updated firestore.rules. Until they're
-       published, a write with it is refused, so this falls back to leaving it
-       out and stops asking for it. */
+    /* The school and region fields need the updated firestore.rules. Until
+       they're published, a write with them is refused, so this falls back to
+       leaving them out and stops asking for them. */
     let withRegion = true;
     const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
-      (!withRegion || (a.region || null) === (b.region || null));
+      (!withRegion || ((a.region || null) === (b.region || null) && (a.school || null) === (b.school || null)));
 
     async function syncPublicLog() {
       if (!ctx || !pub || !loaded || rolesState === "loading") return;

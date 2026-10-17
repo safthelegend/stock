@@ -1603,11 +1603,12 @@ function processScene(key) {
      school and its status, just without the filter. */
   var SITES = [
     /* Delivering, in the order they joined. dropoff names the fridge in
-       RECEIVING_SITES the map draws each school's route to. */
-    { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
-    { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
-    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
-    { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
+       RECEIVING_SITES the map draws each school's route to; short is the
+       name the public delivery log shows. */
+    { name: "Stuyvesant High School", short: "Stuyvesant", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
+    { name: "Midwood High School", short: "Midwood", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
+    { name: "Brooklyn Technical High School", short: "Brooklyn Tech", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
+    { name: "Bronx High School of Science", short: "Bronx Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
     { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
     { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
     { name: "Aviation High School", borough: "Queens", status: "conversation" },

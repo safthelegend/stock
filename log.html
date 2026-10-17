@@ -206,7 +206,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
       <button type="button" data-key="weightLbs" aria-sort="none">Weight <span class="caret" aria-hidden="true">▾</span></button>
       <button type="button" data-key="foods" aria-sort="none">Foods <span class="caret" aria-hidden="true">▾</span></button>
-      <button type="button" data-key="region" aria-sort="none">Region <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" data-key="school" aria-sort="none">School <span class="caret" aria-hidden="true">▾</span></button>
       <span class="lab">Status</span>
     </div>
     <div id="mempty" class="empty-state">
@@ -264,7 +264,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=26"></script>
+<script src="assets/site.js?v=27"></script>
 <script>
 (function () {
   "use strict";
@@ -275,11 +275,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initNav();
 
   /* Rows come from Firestore's publicLog collection: a trimmed copy of each
-     delivery that holds only { date, weightLbs, foods, status, region }.
-     region is the borough of the school the food came from, and older rows
-     may not have it yet (they show a dash). The member portal writes it
-     (assets/portal.js publicEntry, members.js, admin.js) and
-     firestore.rules lets anyone read it. */
+     delivery that holds only { date, weightLbs, foods, status, school,
+     region }. school is the school the food came from, shown by its short
+     name (STB.SITES); older rows may not have it yet (they show a dash).
+     The member portal writes it (assets/portal.js publicEntry, members.js,
+     admin.js) and firestore.rules lets anyone read it. */
+  var SHORT = {};
+  (STB.SITES || []).forEach(function (s) { SHORT[s.name] = s.short || s.name; });
+  function schoolName(r) { return r.school ? SHORT[r.school] || r.school : ""; }
   var ROWS = null;          // null until the first load
   var STATUS = { accepted: "Verified", pending: "Awaiting review" };
   var FILTERS = [
@@ -320,7 +323,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     return (ROWS || []).filter(function (r) { return filter === "all" || r.status === filter; })
       .sort(function (a, b) {
         var va = a[sortKey], vb = b[sortKey];
-        if (sortKey === "region") { va = va || "~"; vb = vb || "~"; }
+        if (sortKey === "school") { va = schoolName(a) || "~"; vb = schoolName(b) || "~"; }
         var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
         if (!c) c = String(a.date).localeCompare(String(b.date));
         return sortDir === "asc" ? c : -c;
@@ -731,7 +734,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     body.replaceChildren.apply(body, rows.map(function (r) {
       var row = document.createElement("div");
       row.className = "mrow";
-      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)], ["region", r.region || "—"]].forEach(function (c) {
+      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)], ["school", schoolName(r) || "—"]].forEach(function (c) {
         var s = document.createElement("span"); s.className = c[0];
         if (c[0] === "date") {
           // The year hides on phones to keep five columns on one line.

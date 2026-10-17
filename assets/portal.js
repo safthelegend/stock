@@ -697,11 +697,17 @@
       const s = (STB.SITES || []).find((x) => x.name === school);
       return s ? s.borough : null;
     }
-    function publicEntry(d, withRegion) {
+    /* The public log's copy of a delivery: date, weight, how many foods,
+       status, and the school it came from with that school's borough. With
+       full === false, only the first four, for the older database rules
+       that don't accept the school and borough yet. */
+    function publicEntry(d, full) {
       if (d.status !== "pending" && d.status !== "accepted") return null;
       const e = { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
-      const region = withRegion === false ? null : regionOf(d.fromSchool);
+      if (full === false) return e;
+      const region = regionOf(d.fromSchool);
       if (region) e.region = region;
+      if (d.fromSchool) e.school = d.fromSchool;
       return e;
     }
 
