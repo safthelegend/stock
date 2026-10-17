@@ -119,7 +119,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>You can read the public pages without giving us any information. We run no analytics, no advertising and no tracking cookies.</li>
     <li>If you send the contact form, we store what you type so we can reply.</li>
     <li>If you are a member and sign in with Google, we store your name, email address and the deliveries you log.</li>
-    <li>The public delivery log shows only a delivery's date, weight, number of food types, review status, and the school it came from and that school's borough. It never shows names, email addresses, delivery locations, notes or photos.</li>
+    <li>The public delivery log shows only a delivery's date, weight, number of food types, review status, the school it came from and that school's borough, the community fridge it went to, and, once an administrator has accepted the delivery, its photo, unless the administrator keeps that photo private. It never shows names, email addresses or notes.</li>
     <li>Some parts of the Site load content from outside services (GitHub, which hosts the Site, and Google). The map's street background comes from OpenStreetMap, but only after you tap the map. These services receive basic technical information, such as your IP address, when your browser contacts them.</li>
     <li>We never sell or rent personal information.</li>
   </ul>
@@ -153,7 +153,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li><b>Sign-in.</b> Members sign in with their Google account through Google Firebase Authentication. We receive the account's name, email address, a Google account identifier and, if the account has one, a link to its profile photo. <b>We never see or store your Google password.</b> Google's handling of your account is covered by <a href="https://policies.google.com/privacy" rel="noopener">Google's Privacy Policy</a>.</li>
     <li><b>Member profile and verification.</b> The first time you open the portal, we save your name and email address so an administrator can verify your account. We also record whether an account is a verified member or an administrator, and which administrator verified it and when.</li>
     <li><b>Delivery records.</b> For each delivery a member logs, we store: the delivery date, a box ID that the portal assigns automatically, the school the food came from, where it was delivered, its total weight, a list of foods and amounts, optional notes, the member's account identifier and email address, the time it was logged, and its review status, including any reviewer note and the email address of the administrator who reviewed it.</li>
-    <li><b>Photos.</b> A member may attach a photo of the food. Before uploading, the photo is resized and re-saved in the browser, which removes embedded information such as the photo's GPS location and camera details. Photos should show food only, never people.</li>
+    <li><b>Photos.</b> A member may attach a photo of the food. Before uploading, the photo is resized and re-saved in the browser, which removes embedded information such as the photo's GPS location and camera details. Photos should show food only, never people. Once an administrator accepts the delivery, its photo is shown on the public delivery log, unless the administrator chooses to keep it private.</li>
     <li><b>Temperature readings.</b> When our box sensors are in use, a delivery may include temperature readings from the box. These are about the food, not about any person.</li>
   </ul>
 
@@ -174,10 +174,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <li>the delivery date;</li>
     <li>the total weight;</li>
     <li>the number of kinds of food in the box;</li>
-    <li>whether it is awaiting review or has been verified; and</li>
-    <li>the borough of the school the food came from (for example, Brooklyn).</li>
+    <li>whether it is awaiting review or has been verified;</li>
+    <li>the school the food came from, and that school's borough (for example, Brooklyn);</li>
+    <li>the community fridge it was delivered to; and</li>
+    <li>once the delivery is verified, its photo, unless an administrator keeps it private.</li>
   </ul>
-  <p>It does not show who made the delivery, the school, the delivery location, the box ID, notes, reviewer notes or photos. Deliveries that an administrator rejects are removed from the public log. Contact form messages and member account details are never made public.</p>
+  <p>It does not show who made the delivery, the box ID, notes or reviewer notes. Deliveries that an administrator rejects are removed from the public log. Contact form messages and member account details are never made public.</p>
 
   <h2 id="share">6. Service providers</h2>
   <p>We use the following outside services to run the Site. They handle information on our behalf or, as described in section 3.1, receive technical information directly from your browser. Each is governed by its own privacy policy.</p>

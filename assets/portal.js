@@ -698,9 +698,10 @@
       return s ? s.borough : null;
     }
     /* The public log's copy of a delivery: date, weight, how many foods,
-       status, and the school it came from with that school's borough. With
-       full === false, only the first four, for the older database rules
-       that don't accept the school and borough yet. */
+       status, the school it came from with that school's borough, and the
+       fridge it went to. With full === false, only the first four, for the
+       older database rules that don't accept the rest yet. Whether it has a
+       public photo is added by an admin's portal (assets/admin.js). */
     function publicEntry(d, full) {
       if (d.status !== "pending" && d.status !== "accepted") return null;
       const e = { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
@@ -708,6 +709,7 @@
       const region = regionOf(d.fromSchool);
       if (region) e.region = region;
       if (d.fromSchool) e.school = d.fromSchool;
+      if (d.toSite) e.site = d.toSite;
       return e;
     }
 

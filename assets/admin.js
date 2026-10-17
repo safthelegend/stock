@@ -147,12 +147,25 @@
       }));
   
       const reviewed = d.reviewedBy ? " · reviewed by " + d.reviewedBy + " " + P.fmtTime(d.reviewedAt) : "";
+      /* Whether this photo goes on the public delivery log once the delivery
+         is accepted. On unless an admin turns it off. */
+      let photoSwitch = null;
+      if (d.hasPhoto) {
+        const cb = el("input", { type: "checkbox", checked: d.photoPublic !== false });
+        cb.addEventListener("change", () => run(card, () => ctx.fb.updateDoc(ctx.fb.doc(ctx.fb.db, "deliveries", d.id),
+          { photoPublic: cb.checked, updatedAt: ctx.fb.serverTimestamp() }),
+          cb.checked ? "The photo will show on the public log once accepted." : "The photo stays private."));
+        photoSwitch = el("label", { className: "d-pubphoto" }, cb,
+          el("span", {}, el("b", {}, "Show this photo on the public log"), " once it's accepted. Turn this off if it shows a person or anything private."));
+      }
+
       card.append(...[
         el("header", { className: "d-head" }, P.statusPill(d.status),
           held ? el("span", { className: "d-status s-held" }, "Unverified account") : null,
           el("span", { className: "p-muted" }, d.memberEmail + ", logged " + P.fmtTime(d.createdAt) + reviewed)),
         held ? el("p", { className: "d-held-note" }, "This account isn't verified yet, so the delivery is off the public log. Verify the account to accept it, or reject it if it isn't one of ours.") : null,
         el("div", { className: "d-split" }, P.deliveryDetails(d), photoBlock(d)),
+        photoSwitch,
         el("div", { className: "d-temps p-muted" }, d.temps && d.temps.length ? d.temps.length + " temperature readings" : "No temperature readings (sensors not connected yet)."),
         note, actions, msg].filter(Boolean));
       return card;
@@ -264,7 +277,15 @@
        leaving them out and stops asking for them. */
     let withRegion = true;
     const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
-      (!withRegion || ((a.region || null) === (b.region || null) && (a.school || null) === (b.school || null)));
+      (!withRegion || ((a.region || null) === (b.region || null) && (a.school || null) === (b.school || null) &&
+        (a.site || null) === (b.site || null) && !!a.photo === !!b.photo));
+    /* Photos: an accepted delivery's photo is copied to publicPhotos (which
+       anyone can read) unless an admin turned it off, and its public log
+       entry says photo: true. Turning it off, or the delivery leaving
+       "accepted", removes the copy. photosOff stops trying if the database
+       refuses (rules not published yet). */
+    let photosOff = false;
+    const photoWanted = (d) => withRegion && !photosOff && d.status === "accepted" && d.hasPhoto && d.photoPublic !== false;
 
     async function syncPublicLog() {
       if (!ctx || !pub || !loaded || rolesState === "loading") return;
@@ -272,19 +293,41 @@
       syncing = true;
       try {
         const { fb } = ctx;
+        /* Copy any newly public photos first, so an entry never says
+           photo: true before its picture is there. One at a time: each is
+           up to about 900 KB. */
+        const hasPublic = new Set(Object.keys(pub).filter((id) => pub[id].photo));
+        for (const d of all) {
+          if (!photoWanted(d) || hasPublic.has(d.id)) continue;
+          try {
+            const snap = await fb.getDoc(fb.doc(fb.db, "deliveryPhotos", d.id));
+            if (!snap.exists()) continue;
+            await fb.setDoc(fb.doc(fb.db, "publicPhotos", d.id), { dataUrl: snap.data().dataUrl });
+            hasPublic.add(d.id);
+          } catch (err) {
+            if (err.code === "permission-denied") { photosOff = true; break; }
+            console.error("Couldn't publish a delivery photo:", err);
+          }
+        }
+
         /* An unverified account's waiting deliveries stay off until it's
            verified. Accepted ones always stay on. */
         const want = {};
         all.forEach((d) => {
           if (d.status === "pending" && !isVerified(d.memberUid)) return;
-          const e = P.publicEntry(d, withRegion); if (e) want[d.id] = e;
+          const e = P.publicEntry(d, withRegion); if (!e) return;
+          if (photoWanted(d) && hasPublic.has(d.id)) e.photo = true;
+          want[d.id] = e;
         });
         const ops = [];
         Object.keys(want).forEach((id) => { if (!sameEntry(pub[id], want[id])) ops.push({ id, value: want[id] }); });
         Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
+        // Photos no longer wanted come down with their entry's update.
+        Object.keys(pub).forEach((id) => { if (pub[id].photo && !(want[id] && want[id].photo)) ops.push({ id, photoGone: true }); });
         for (let i = 0; i < ops.length; i += 400) {   // a batch takes up to 500 writes
           const b = fb.writeBatch(fb.db);
           ops.slice(i, i + 400).forEach((op) => {
+            if (op.photoGone) { b.delete(fb.doc(fb.db, "publicPhotos", op.id)); return; }
             const ref = fb.doc(fb.db, "publicLog", op.id);
             if (op.value) b.set(ref, op.value); else b.delete(ref);
           });

@@ -1603,12 +1603,11 @@ function processScene(key) {
      school and its status, just without the filter. */
   var SITES = [
     /* Delivering, in the order they joined. dropoff names the fridge in
-       RECEIVING_SITES the map draws each school's route to; short is the
-       name the public delivery log shows. */
-    { name: "Stuyvesant High School", short: "Stuyvesant", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
-    { name: "Midwood High School", short: "Midwood", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
-    { name: "Brooklyn Technical High School", short: "Brooklyn Tech", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
-    { name: "Bronx High School of Science", short: "Bronx Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
+       RECEIVING_SITES the map draws each school's route to. */
+    { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
+    { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
+    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
+    { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
     { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
     { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
     { name: "Aviation High School", borough: "Queens", status: "conversation" },
@@ -2248,6 +2247,7 @@ function processScene(key) {
       if ("stringValue" in f) return f.stringValue;
       if ("integerValue" in f) return Number(f.integerValue);
       if ("doubleValue" in f) return f.doubleValue;
+      if ("booleanValue" in f) return f.booleanValue;
       return undefined;
     }
     function page(token, rows) {
@@ -2257,7 +2257,7 @@ function processScene(key) {
         return r.json();
       }).then(function (j) {
         (j.documents || []).forEach(function (d) {
-          var f = d.fields || {}, row = {};
+          var f = d.fields || {}, row = { id: d.name.split("/").pop() };
           Object.keys(f).forEach(function (k) { row[k] = value(f[k]); });
           rows.push(row);
         });
@@ -2266,9 +2266,20 @@ function processScene(key) {
     }
     return page(null, []);
   }
+  /* A delivery's public photo (publicPhotos/{deliveryId}), as a data URL,
+     or null if it has none. Copied there by an admin's portal once the
+     delivery is accepted (assets/admin.js). */
+  function fetchPublicPhoto(id) {
+    var url = PUBLIC_LOG_URL.replace(/publicLog$/, "publicPhotos") + "/" + encodeURIComponent(id);
+    return fetch(url).then(function (r) {
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error("publicPhotos " + r.status);
+      return r.json().then(function (j) { return (j.fields && j.fields.dataUrl && j.fields.dataUrl.stringValue) || null; });
+    });
+  }
 
   global.STB = {
-    fetchPublicLog: fetchPublicLog, processScene: processScene,
+    fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,
