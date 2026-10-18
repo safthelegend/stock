@@ -124,11 +124,24 @@
         el("header", { className: "d-head" }, P.statusPill(d.status),
           el("span", { className: "p-muted" }, d.memberEmail + ", logged " + P.fmtTime(d.createdAt) + reviewed)),
         el("div", { className: "d-split" }, P.deliveryDetails(d), photoBlock(d)),
-        el("div", { className: "d-temps p-muted" }, d.temps && d.temps.length ? d.temps.length + " temperature readings" : "No temperature readings (sensors not connected yet)."),
+        tempsPublicToggle(d, card),
         note, actions, msg);
       return card;
     }
   
+    /* Temperature logs are private until an admin publishes one here. Then
+       its entry on the public log (log.html) gets the readings too, via
+       syncPublicLog below. A rejected delivery isn't on the public log at all. */
+    function tempsPublicToggle(d, card) {
+      if (!d.temps || !d.temps.length) return el("p", { className: "p-muted d-notemps" }, "No temperature log.");
+      const box = el("input", { type: "checkbox", checked: !!d.tempsPublic });
+      box.addEventListener("change", () => run(card, () => ctx.fb.updateDoc(ctx.fb.doc(ctx.fb.db, "deliveries", d.id),
+        { tempsPublic: box.checked, updatedAt: ctx.fb.serverTimestamp() }),
+        box.checked ? "The temperature log is on the public delivery log." : "The temperature log is private again.")
+        .then(() => { if (!card.querySelector(".p-msg").classList.contains("is-ok")) box.checked = !box.checked; }));
+      return el("label", { className: "p-check" }, box, el("span", {}, "Show the temperature log on the public delivery log"));
+    }
+
     function editCard(d) {
       const card = el("article", { className: "d-card d-admin is-editing" });
       card.dataset.id = d.id;
@@ -189,7 +202,8 @@
     let pub = null;          // publicLog entries by id, once loaded
     let loaded = false;      // true once the deliveries have loaded
     let syncing = false, syncAgain = false;
-    const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status;
+    const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
+      JSON.stringify(a.temps || null) === JSON.stringify(b.temps || null);
 
     async function syncPublicLog() {
       if (!ctx || !pub || !loaded) return;

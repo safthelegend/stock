@@ -37,6 +37,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
   .mrow { padding-top:14px; padding-bottom:14px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text); }
   .mrow:last-child { border-bottom:none; }
+  .mrow .stcell { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .tbtn { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; padding:3px 9px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--brand-line-mid); background:none; color:var(--brand); }
+  .tbtn[aria-expanded="true"] { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+  .tlog { grid-column:1 / -1; display:grid; gap:6px; padding:6px 0 4px; font-size:12px; color:var(--text-secondary); }
+  .tlog p { margin:0; }
   .mrow:hover { background:var(--tint); }
   .mrow .lbs, .mrow .foods { font-variant-numeric:tabular-nums; }
   .mrow .st { font-weight:500; display:inline-flex; align-items:center; gap:7px; }
@@ -128,7 +134,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </div>
     <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the delivery log.</p></noscript></div>
   </div>
-  <p class="log-note">What's kept off this page: who made the delivery, which school it came from, where it went, notes and photos. Those stay with our members and admins. "Foods" is how many kinds of food were in the box. Deliveries an admin rejects are taken off the log.</p>
+  <p class="log-note">What's kept off this page: who made the delivery, which school it came from, where it went, notes and photos. Those stay with our members and admins. "Foods" is how many kinds of food were in the box. Deliveries an admin rejects are taken off the log. Some boxes carry a temperature sensor; when an admin publishes a box's log, a Temperature button shows how cold it stayed (the dashed line is 41°F, the food-safety limit).</p>
 </section>
 </main>
 
@@ -154,6 +160,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
 <script src="assets/site.js?v=18"></script>
+<script src="assets/tempchart.js?v=1"></script>
 <script>
 (function () {
   "use strict";
@@ -164,7 +171,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initNav();
 
   /* Rows come from Firestore's publicLog collection: a trimmed copy of each
-     delivery that holds only { date, weightLbs, foods, status }. The member
+     delivery that holds only { date, weightLbs, foods, status }, plus temps
+     (the box's temperature log) when an admin has published it. The member
      portal writes it (assets/members.js, assets/admin.js) and firestore.rules
      lets anyone read it. */
   var ROWS = null;          // null until the first load
@@ -175,6 +183,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     { key: "pending", label: "Awaiting review" }
   ];
   var filter = "all", sortKey = "date", sortDir = "desc";
+  var openTemps = {};       // ids of rows whose temperature chart is open
 
   function fmtDate(iso) {
     var p = iso.split("-").map(Number);
@@ -226,8 +235,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       });
       var st = document.createElement("span");
       st.className = "st s-" + r.status; st.textContent = STATUS[r.status];
-      var cell = document.createElement("span"); cell.appendChild(st);
+      var cell = document.createElement("span"); cell.className = "stcell"; cell.appendChild(st);
       row.appendChild(cell);
+      if (STBTemp.summary(r.temps)) {
+        var open = !!openTemps[r.id];
+        var tb = document.createElement("button");
+        tb.type = "button"; tb.className = "tbtn"; tb.textContent = "Temperature";
+        tb.setAttribute("aria-expanded", String(open));
+        tb.addEventListener("click", function () { openTemps[r.id] = !openTemps[r.id]; render(); });
+        cell.appendChild(tb);
+        if (open) {
+          var log = document.createElement("div");
+          log.className = "tlog";
+          var line = document.createElement("p"); line.textContent = STBTemp.describe(r.temps);
+          log.appendChild(STBTemp.chart(r.temps));
+          log.appendChild(line);
+          row.appendChild(log);
+        }
+      }
       return row;
     }));
 
@@ -288,7 +313,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      well-formed rows are shown, so a bad entry can't break the table. */
   function start(fb) {
     fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
-      ROWS = snap.docs.map(function (d) { return d.data(); }).filter(function (r) {
+      ROWS = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }).filter(function (r) {
         return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
       });
       render();

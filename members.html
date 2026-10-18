@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/site.css?v=18">
   <link rel="stylesheet" href="assets/design.css?v=17">
-  <link rel="stylesheet" href="assets/portal.css?v=7">
+  <link rel="stylesheet" href="assets/portal.css?v=8">
 </head>
 
 <body class="portal">
@@ -91,6 +91,14 @@
 
             <section class="f-sec">
               <header class="f-sec-head"><span class="f-num">4</span>
+                <div><h3>Temperature <span class="p-opt">optional</span></h3><p>Record the box sensor from pickup to drop-off, so we can show the food stayed cold.</p></div>
+              </header>
+              <!-- Drawn by assets/temps.js. -->
+              <div class="f-body"><div id="tempRecorder" class="tr"></div></div>
+            </section>
+
+            <section class="f-sec">
+              <header class="f-sec-head"><span class="f-num">5</span>
                 <div><h3>Photo <span class="p-opt">optional</span></h3><p>A quick photo of the food helps the reviewer. Food only, never people.</p></div>
               </header>
               <div class="f-body">
@@ -155,8 +163,10 @@
 
   <script type="module" src="assets/firebase-init.js?v=3"></script>
   <script src="assets/site.js?v=18"></script>
-  <script src="assets/portal.js?v=7"></script>
-  <script src="assets/admin.js?v=4"></script>
-  <script src="assets/members.js?v=4"></script>
+  <script src="assets/portal.js?v=8"></script>
+  <script src="assets/tempchart.js?v=1"></script>
+  <script src="assets/temps.js?v=1"></script>
+  <script src="assets/admin.js?v=5"></script>
+  <script src="assets/members.js?v=5"></script>
 </body>
 </html>

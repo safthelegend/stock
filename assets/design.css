@@ -340,6 +340,10 @@ footer .wrap.top { padding-top:56px; }
 .hero-grid > .hero-text { grid-area:text; }
 .hero-grid > .impact { grid-area:impact; align-self:end; }
 .hero-grid > .visual { grid-area:visual; align-self:start; }
+/* Room above the box so the fruit that flies out of the opening lid clears
+   the impact card instead of disappearing behind it. Desktop only: on a
+   phone the box sits beside the counter, not under it. */
+@media (min-width:761px) { .hero-grid > .visual { margin-top:64px; } }
 
 .impact { justify-self:center; width:100%; max-width:400px; box-sizing:border-box; text-align:center; padding:20px 24px 18px;
   background:color-mix(in srgb, var(--surface) 84%, transparent); border:1px solid var(--brand-line); border-radius:20px;
