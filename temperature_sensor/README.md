@@ -29,6 +29,11 @@ fast in setup mode.
 
 ## One-time setup for each sensor (an admin does this)
 
+0. **Turn on email/password accounts (first sensor only).** Firebase console →
+   Authentication → Sign-in method → Add new provider → **Email/Password** →
+   turn on the first switch (not "Email link") → Save. The website doesn't
+   change: members still sign in with Google, and the portal has no
+   email/password form. This only lets sensor accounts exist.
 1. **Make the sensor an account.** Firebase console → Authentication → Users →
    Add user. Use an email like `sensor1@stocktheblock.org` and a long random
    password. Copy the **User UID** it shows.
