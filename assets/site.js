@@ -2247,6 +2247,7 @@ function processScene(key) {
       if ("stringValue" in f) return f.stringValue;
       if ("integerValue" in f) return Number(f.integerValue);
       if ("doubleValue" in f) return f.doubleValue;
+      if ("booleanValue" in f) return f.booleanValue;
       return undefined;
     }
     function page(token, rows) {
@@ -2256,7 +2257,7 @@ function processScene(key) {
         return r.json();
       }).then(function (j) {
         (j.documents || []).forEach(function (d) {
-          var f = d.fields || {}, row = {};
+          var f = d.fields || {}, row = { id: d.name.split("/").pop() };
           Object.keys(f).forEach(function (k) { row[k] = value(f[k]); });
           rows.push(row);
         });
@@ -2265,9 +2266,20 @@ function processScene(key) {
     }
     return page(null, []);
   }
+  /* A delivery's public photo (publicPhotos/{deliveryId}), as a data URL,
+     or null if it has none. Copied there by an admin's portal once the
+     delivery is accepted (assets/admin.js). */
+  function fetchPublicPhoto(id) {
+    var url = PUBLIC_LOG_URL.replace(/publicLog$/, "publicPhotos") + "/" + encodeURIComponent(id);
+    return fetch(url).then(function (r) {
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error("publicPhotos " + r.status);
+      return r.json().then(function (j) { return (j.fields && j.fields.dataUrl && j.fields.dataUrl.stringValue) || null; });
+    });
+  }
 
   global.STB = {
-    fetchPublicLog: fetchPublicLog, processScene: processScene,
+    fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,

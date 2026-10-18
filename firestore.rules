@@ -63,7 +63,7 @@ service cloud.firestore {
     // ---------- deliveries ----------
     function validDelivery(d) {
       return d.keys().hasOnly(['memberUid', 'memberEmail', 'date', 'boxId', 'fromSchool', 'toSite',
-                               'weightLbs', 'items', 'notes', 'temps', 'hasPhoto', 'status',
+                               'weightLbs', 'items', 'notes', 'temps', 'hasPhoto', 'photoPublic', 'status',
                                'reviewNote', 'reviewedBy', 'reviewedAt', 'createdAt', 'updatedAt'])
         && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && str(d.boxId, 40)
@@ -74,6 +74,7 @@ service cloud.firestore {
         && str(d.notes, 2000)
         && d.temps is list && d.temps.size() <= 500
         && d.hasPhoto is bool
+        && (!('photoPublic' in d) || d.photoPublic is bool)
         && d.status in ['pending', 'accepted', 'rejected']
         && str(d.reviewNote, 1000)
         && (!('reviewedBy' in d) || str(d.reviewedBy, 320));
@@ -111,21 +112,35 @@ service cloud.firestore {
 
     // ---------- publicLog/{deliveryId}: the public delivery log (log.html) ----------
     // A trimmed copy of each delivery that anyone can read: date, weight, how
-    // many kinds of food, status, and region (the borough of the school the
-    // food came from; optional, older entries don't have it). Nothing that
-    // says who delivered it, from which school, to which site, or what the
-    // notes and photo say.
+    // many kinds of food, status, the school the food came from, that
+    // school's borough (region), the community fridge it went to (site), and
+    // whether it has a public photo (photo, see publicPhotos). All but the
+    // first four are optional; older entries don't have them. Nothing that
+    // says who delivered it, or what the notes say.
     // Rejected deliveries are removed from it. Admins' portals keep it in step
     // with deliveries (assets/admin.js, syncPublicLog).
     function validPublic(d) {
-      return d.keys().hasOnly(['date', 'weightLbs', 'foods', 'status', 'region'])
+      return d.keys().hasOnly(['date', 'weightLbs', 'foods', 'status', 'region', 'school', 'site', 'photo'])
         && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && d.weightLbs is number && d.weightLbs > 0 && d.weightLbs <= 500
         && d.foods is int && d.foods >= 0 && d.foods <= 50
         && d.status in ['pending', 'accepted']
-        && (!('region' in d) || d.region in ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island']);
+        && (!('region' in d) || d.region in ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'])
+        && (!('school' in d) || str(d.school, 120))
+        && (!('site' in d) || str(d.site, 120))
+        && (!('photo' in d) || d.photo is bool);
     }
     function deliveryOf(id) { return get(/databases/$(database)/documents/deliveries/$(id)).data; }
+    // An admin's entry has to say exactly what its delivery says: the same
+    // date, weight, number of foods, status, school and fridge, and a photo
+    // only if that delivery's public photo is really there.
+    function matchesDelivery(id, e) {
+      let d = deliveryOf(id);
+      return e.date == d.date && e.weightLbs == d.weightLbs && e.foods == d.items.size() && e.status == d.status
+        && (!('school' in e) || e.school == d.fromSchool)
+        && (!('site' in e) || e.site == d.toSite)
+        && (!('photo' in e) || e.photo == false || exists(/databases/$(database)/documents/publicPhotos/$(id)));
+    }
 
     match /publicLog/{id} {
       allow read: if true;
@@ -139,8 +154,26 @@ service cloud.firestore {
         && request.resource.data.status == 'pending'
         && request.resource.data.date == deliveryOf(id).date
         && request.resource.data.weightLbs == deliveryOf(id).weightLbs
-        && request.resource.data.foods == deliveryOf(id).items.size();
-      allow create, update: if isAdmin() && validPublic(request.resource.data);
+        && request.resource.data.foods == deliveryOf(id).items.size()
+        && (!('school' in request.resource.data) || request.resource.data.school == deliveryOf(id).fromSchool)
+        && (!('site' in request.resource.data) || request.resource.data.site == deliveryOf(id).toSite)
+        && !('photo' in request.resource.data);
+      allow create, update: if isAdmin() && validPublic(request.resource.data) && matchesDelivery(id, request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- publicPhotos/{deliveryId}: { dataUrl } ----------
+    // The public copy of a delivery's photo, shown on the delivery log. Only
+    // an admin's portal writes it, once the delivery is accepted and unless
+    // the admin chose to keep that photo private (deliveries.photoPublic).
+    // It has to be exactly the photo attached to that same delivery.
+    match /publicPhotos/{id} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['dataUrl'])
+        && request.resource.data.dataUrl == get(/databases/$(database)/documents/deliveryPhotos/$(id)).data.dataUrl
+        && deliveryOf(id).status == 'accepted'
+        && deliveryOf(id).get('photoPublic', true) != false;
       allow delete: if isAdmin();
     }
 
