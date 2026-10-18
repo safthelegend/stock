@@ -14,9 +14,9 @@
   </script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/site.css?v=18">
-  <link rel="stylesheet" href="assets/design.css?v=17">
-  <link rel="stylesheet" href="assets/portal.css?v=8">
+  <link rel="stylesheet" href="assets/site.css?v=22">
+  <link rel="stylesheet" href="assets/design.css?v=25">
+  <link rel="stylesheet" href="assets/portal.css?v=13">
 </head>
 
 <body class="portal">
@@ -26,7 +26,7 @@
     <div class="wrap">
       <a href="index.html" class="brand">
         <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-        Stock the Block
+        Stock The Block
       </a>
       <div class="links">
         <a href="index.html">Public site</a>
@@ -68,6 +68,9 @@
         <button type="button" class="btn-sm" data-signout>Sign out</button>
       </header>
 
+      <!-- "Not verified yet" notice, drawn by members.js for accounts an admin hasn't verified. -->
+      <div id="verifyNote" class="verify-note" role="status" hidden></div>
+
       <section class="dash-stats" aria-label="Your deliveries so far">
         <div class="stat"><p class="stat-n" id="stDeliveries">0</p><p class="stat-l">Deliveries logged</p></div>
         <div class="stat"><p class="stat-n" id="stLbs">0</p><p class="stat-l">Pounds of food moved</p></div>
@@ -99,7 +102,7 @@
 
             <section class="f-sec">
               <header class="f-sec-head"><span class="f-num">5</span>
-                <div><h3>Photo <span class="p-opt">optional</span></h3><p>A quick photo of the food helps the reviewer. Food only, never people.</p></div>
+                <div><h3>Photo <span class="p-opt">optional</span></h3><p>A quick photo of the food helps the reviewer, and once the delivery is accepted it’s shown on the public delivery log. Food only, never people.</p></div>
               </header>
               <div class="f-body">
                 <input type="file" id="photo" class="vh-file" accept="image/*">
@@ -142,6 +145,8 @@
 
       <section id="tab-review" role="tabpanel" aria-labelledby="t-review" hidden>
         <p class="p-muted p-tabintro">Accept a delivery once the log matches what arrived. Reject it with a note so the member can fix it and log it again.</p>
+        <!-- New accounts waiting to be verified, drawn by admin.js. -->
+        <section id="newMembers" class="newm" aria-label="New accounts to verify" hidden></section>
         <div class="p-reviewbar">
           <div id="reviewFilters" class="p-tabs" role="group" aria-label="Show deliveries by status"></div>
           <label class="p-search"><span class="vh">Find a delivery</span>
@@ -162,11 +167,11 @@
   </footer>
 
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=18"></script>
-  <script src="assets/portal.js?v=8"></script>
-  <script src="assets/tempchart.js?v=1"></script>
+  <script src="assets/site.js?v=27"></script>
+  <script src="assets/portal.js?v=12"></script>
+  <script src="assets/tempchart.js?v=3"></script>
   <script src="assets/temps.js?v=1"></script>
-  <script src="assets/admin.js?v=5"></script>
-  <script src="assets/members.js?v=5"></script>
+  <script src="assets/admin.js?v=8"></script>
+  <script src="assets/members.js?v=8"></script>
 </body>
 </html>

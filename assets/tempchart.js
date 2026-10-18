@@ -54,14 +54,15 @@
     return n;
   }
 
-  /* chart(temps) returns an <svg> line chart, with a dashed line at 41°F and
-     any reading above it marked. Colours come from the site's theme
-     variables, set inline so the chart needs no stylesheet of its own. */
-  function chart(temps) {
-    const rows = clean(temps);
+  /* draw(rows, W) returns an <svg> line chart W pixels wide, with a dashed
+     line at 41°F and any reading above it marked. Colours come from the
+     site's theme variables, set inline so the chart needs no stylesheet of
+     its own. */
+  function draw(rows, W, fluid) {
     const s = summary(rows);
-    const W = 600, H = 180, L = 44, R = 14, T = 12, B = 28;
-    const root = svg("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", role: "img", style: "display:block;max-width:100%;height:auto;overflow:visible" });
+    const H = W < 420 ? 150 : 180, L = 40, R = 14, T = 12, B = 28;
+    const root = svg("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      width: fluid ? "100%" : W, style: "display:block;overflow:visible;max-width:100%;height:auto" });
     if (!s) return root;
     root.setAttribute("aria-label", "Temperature log: " + describe(rows) +
       (s.over ? ". " + s.over + " above " + SAFE_MAX_F + "°F." : ". All at or below " + SAFE_MAX_F + "°F."));
@@ -92,11 +93,32 @@
       style: "fill:none;stroke:var(--brand);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round" }));
     rows.forEach((r, i) => {
       const warm = toF(r.c) > SAFE_MAX_F;
-      if (!warm && rows.length > 30) return;
+      if (!warm && rows.length > W / 20) return;
       root.appendChild(svg("circle", { cx: pts[i][0], cy: pts[i][1], r: warm ? 4 : 3,
         style: warm ? "fill:var(--accent)" : "fill:var(--surface);stroke:var(--brand);stroke-width:2" }));
     });
     return root;
+  }
+
+  /* chart(temps) returns a box holding the chart, drawn at the box's real
+     width so the labels stay 12px on a phone and on a wide screen alike. It
+     redraws when that width changes (rotating a phone, opening a panel).
+     Until the first measurement it shows a version that scales to fit. */
+  function chart(temps) {
+    const rows = clean(temps);
+    const box = document.createElement("div");
+    box.className = "tchart";
+    box.style.cssText = "width:100%;min-width:0";
+    box.appendChild(draw(rows, 600, true));
+    let drawnAt = 0;
+    const paint = () => {
+      const w = Math.round(box.clientWidth);
+      if (!w || w === drawnAt) return;
+      drawnAt = w;
+      box.replaceChildren(draw(rows, w));
+    };
+    if (window.ResizeObserver) new ResizeObserver(paint).observe(box);
+    return box;
   }
 
   window.STBTemp = { SAFE_MAX_F, toF, fmtF, fmtClock, clean, summary, describe, chart };

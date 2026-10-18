@@ -10,7 +10,11 @@
   <meta property="og:title" content="Stock the Block: student-run food recovery, NYC">
   <meta property="og:description"
     content="A student-run program moving sealed surplus cafeteria food from NYC school share tables to nearby food banks/community fridges.">
-  <meta property="og:image" content="https://stocktheblock.com/og-image.png">
+  <meta property="og:image" content="https://stocktheblock.com/og-image.png?v=2">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stock The Block: reducing in-school food waste, one meal at a time. Built by students, for the people.">
+  <meta name="twitter:image" content="https://stocktheblock.com/og-image.png?v=2">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stocktheblock.com/">
   <meta name="twitter:card" content="summary_large_image">
@@ -29,9 +33,10 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=18">
-  <link rel="stylesheet" href="assets/mainpage.css?v=3">
-  <link rel="stylesheet" href="assets/design.css?v=17">
+  <link rel="stylesheet" href="assets/site.css?v=22">
+  <link rel="stylesheet" href="assets/mainpage.css?v=5">
+  <link rel="stylesheet" href="assets/scenes.css?v=1">
+  <link rel="stylesheet" href="assets/design.css?v=25">
 </head>
 
 <body>
@@ -41,15 +46,15 @@
     <div class="wrap">
       <a href="index.html#top" class="brand" aria-current="page">
         <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-        Stock the Block
+        Stock The Block
       </a>
       <div class="links">
-        <a href="index.html#how">How it works</a>
-        <a href="index.html#sensors">Food safety</a>
-        <a href="index.html#network">Map</a>
-        <a href="getting-started.html">Getting started</a>
-        <a href="log.html">Delivery log</a>
-        <a href="index.html#join" class="cta">Work with us</a>
+        <a href="index.html#how">Our Process</a>
+        <a href="index.html#sensors">Safety</a>
+        <a href="index.html#network">Our Why</a>
+        <a href="log.html">Deliveries</a>
+        <a href="team.html">Team</a>
+        <a href="index.html#join" class="cta">Work With Us</a>
         <a href="members.html" class="login">Sign in</a>
         <button id="themeToggle" type="button" aria-label="Colour theme">
           <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -88,7 +93,7 @@
           <p class="body-p" style="margin:20px 0 0;">We pack sealed, unopened food from schools’ share tables into cold,
             insulated boxes, walk it to a convenient food bank/community fridge, and post the impact.</p>
           <div class="prelaunch is-live" id="heroStatus">
-            <p class="prelaunch-tag">Now delivering with 2 partner schools. Looking for more schools to join!</p>
+            <p class="prelaunch-tag">Now delivering with 4 partner schools. Looking for more schools to join!</p>
           </div>
           <div style="margin-top:28px; display:flex; flex-wrap:wrap; gap:12px;">
             <a href="#join" class="btn solid">Work with us</a>
@@ -97,13 +102,15 @@
         </div>
       </div>
       <!-- Live impact counter. The numbers in the markup are the last known
-           totals, shown until (or unless) the live log loads; mainpage.js then
-           keeps them in step with the public delivery log (log.html). -->
-      <section class="impact" id="impact" aria-labelledby="impactLabel">
+           totals, as of data-at, shown where the page's scripts don't run
+           (previews, snapshots); mainpage.js loads the current ones and keeps
+           them in step with the public delivery log (log.html). Update both
+           now and then so they're never far behind. -->
+      <section class="impact" id="impact" aria-labelledby="impactLabel" data-no-anchor data-at="2026-10-15">
         <p class="impact-live" id="impactLive"><span class="live-dot" aria-hidden="true"></span><span id="impactLiveText">Updating live</span></p>
-        <p class="impact-fig"><span class="impact-num" id="impactLbs">55</span><span class="impact-unit"> lbs</span></p>
+        <p class="impact-fig"><span class="impact-num" id="impactLbs">546</span><span class="impact-unit"> lbs</span></p>
         <h2 class="impact-label" id="impactLabel">of food waste eliminated</h2>
-        <p class="impact-meta"><span id="impactCount">3</span> <span id="impactCountWord">verified deliveries</span> · as of <span id="impactDate">October 1st, 2026</span></p>
+        <p class="impact-meta"><span id="impactCount">24</span> <span id="impactCountWord">verified deliveries</span> · as of <span id="impactDate">October 15th, 2026</span></p>
         <a class="impact-link" href="log.html">See every delivery <span aria-hidden="true">→</span></a>
         <p class="vh" id="impactSR" aria-live="polite"></p>
       </section>
@@ -117,58 +124,112 @@
     </header>
   </div>
 
-  <section class="statband" id="statband">
+  <!-- Our Impact. Partner schools and volunteers are typed in here; the
+       deliveries and pounds are the last known totals until mainpage.js
+       loads the live delivery log and keeps them in step with it. -->
+  <section id="our-impact" class="sec" aria-labelledby="ourImpactHd">
     <div class="wrap">
-      <div class="grid">
-        <div class="cell fade-in-up" data-stat>
-          <p class="figure fig" id="statMeals">880,000</p>
-          <p class="cap">school meals served every day in NYC</p>
-        </div>
-        <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
-          <p class="figure fig" id="statPct">4%</p>
-          <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
-          <!-- What-if slider. Drag the share of buildings that donate and see the
-             food it would save. Every input is sourced in the cite line below. -->
-          <div class="pct-whatif" id="pctWhatIf" hidden>
-            <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
-              aria-label="Share of NYC school buildings that donate leftover food">
-            <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
-            <p class="pct-result" id="pctResult"></p>
-          </div>
-        </div>
-        <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-          <p class="figure fig" id="statSchools">2</p>
-          <p class="cap">partner schools delivering with us now, and we’re looking for more</p>
-        </div>
+      <header class="sec-head">
+        <h2 class="sec-title" id="ourImpactHd">Our Impact</h2>
+        <p class="sec-lede">Every delivery is checked by an admin and posted to our public delivery log.</p>
+      </header>
+      <ul class="metrics" id="metrics">
+        <li class="metric">
+          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-school"><circle class="mi-blob" cx="64" cy="52" r="34"/><path class="mi-line" d="M60 40 V14"/><path class="mi-flag" d="M61 15 H80 L75 21 L80 27 H61 Z"/><path class="mi-fill mi-line" d="M22 58 L60 38 L98 58 Z"/><rect class="mi-fill mi-line" x="28" y="58" width="64" height="40"/><rect class="mi-soft mi-line" x="51" y="76" width="18" height="22" rx="2"/><rect class="mi-line mi-win" x="35" y="67" width="10" height="10" rx="1.5"/><rect class="mi-line mi-win" x="75" y="67" width="10" height="10" rx="1.5"/><circle class="mi-line" cx="60" cy="52" r="4"/><path class="mi-line" d="M16 98 H104"/></svg></span>
+          <p class="metric-num"><span data-count="4">4</span></p>
+          <p class="metric-label">Partner Schools</p>
+        </li>
+        <li class="metric">
+          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-people"><circle class="mi-blob" cx="60" cy="58" r="36"/><g class="mi-p mi-p1"><circle class="mi-fill mi-line" cx="32" cy="54" r="9"/><path class="mi-fill mi-line" d="M16 98 V86 A16 16 0 0 1 48 86 V98"/></g><g class="mi-p mi-p3"><circle class="mi-fill mi-line" cx="88" cy="54" r="9"/><path class="mi-fill mi-line" d="M72 98 V86 A16 16 0 0 1 104 86 V98"/></g><g class="mi-p mi-p2"><path class="mi-line mi-arm" d="M73 76 L86 44"/><circle class="mi-accent mi-line mi-hand" cx="87" cy="40" r="5"/><circle class="mi-fill mi-line" cx="60" cy="46" r="11"/><path class="mi-soft mi-line" d="M40 100 V84 A20 20 0 0 1 80 84 V100"/></g></svg></span>
+          <p class="metric-num"><span data-count="50">50</span>+</p>
+          <p class="metric-label">Student Volunteers</p>
+        </li>
+        <li class="metric is-live">
+          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-box"><circle class="mi-blob" cx="58" cy="62" r="36"/><g class="mi-crate"><path class="mi-side mi-line" d="M30 50 L38 42 H92 L84 50 Z"/><rect class="mi-body mi-line" x="26" y="50" width="58" height="46" rx="7"/><path class="mi-line" d="M26 62 H84"/><path class="mi-line mi-eye" d="M40 76 L45 71 L50 76 M60 76 L65 71 L70 76"/><path class="mi-smile" d="M47 84 Q55 90 63 84"/></g><g class="mi-badge"><circle cx="90" cy="38" r="15"/><path class="mi-tick" d="M83 38 L88 43 L97 33"/></g></svg></span>
+          <p class="metric-num"><span id="metricDeliveries" data-count="24">24</span></p>
+          <p class="metric-label">Successful Deliveries</p>
+        </li>
+        <li class="metric is-live">
+          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-scale"><circle class="mi-blob" cx="62" cy="52" r="34"/><g class="mi-food"><g class="mi-apple"><path class="mi-line" d="M46 30 V25"/><path class="mi-leaf" d="M47 27 Q52 20 58 23 Q54 30 47 27 Z"/><circle class="mi-applebody mi-line" cx="46" cy="42" r="12"/></g><path class="mi-banana mi-line" d="M62 46 Q74 60 92 50 Q90 47 88 45 Q76 52 68 40 Z"/></g><rect class="mi-plate mi-line" x="26" y="56" width="68" height="7" rx="3.5"/><path class="mi-fill mi-line" d="M36 63 H84 L90 98 H30 Z"/><circle class="mi-fill mi-line" cx="60" cy="81" r="10"/><path class="mi-needle" d="M60 81 L60 73"/><path class="mi-line" d="M20 98 H100"/></svg></span>
+          <p class="metric-num"><span id="metricLbs" data-count="546">546</span></p>
+          <p class="metric-label">Lbs of Food Waste Eliminated</p>
+        </li>
+      </ul>
+      <p class="metrics-live" id="metricsLive"><span class="live-dot" aria-hidden="true"></span><span>Deliveries and pounds update live from our <a href="log.html">delivery log</a></span></p>
+
+      <!-- Photos: assets/site.js, GALLERY. Hidden until there's at least one. -->
+      <div class="impact-gallery" data-gallery-wrap hidden>
+        <div class="photo-track" data-gallery></div>
       </div>
-      <p class="cite fade-in-up" style="transition-delay:260ms">Sources: <a
-          href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/"
-          target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food
-        donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the
-        average a school recovered in its first year of share tables in a <a
-          href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025
-          study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
     </div>
   </section>
 
-  <section id="how" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <h2 class="hd" data-mask style="margin-bottom:40px; max-width:640px;">
-      <span class="mask-l"><span data-line>Four simple steps</span></span>
-    </h2>
-    <div id="steps"></div>
+  <!-- Endorsements: one card per organization that has endorsed us. The
+       logo is a one-colour mask (python3 tools/emblems.py assets/endorsements),
+       painted in the brand green by design.css. -->
+  <section id="endorsements" class="sec" aria-labelledby="endorseHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="endorseHd">Endorsements</h2>
+        <p class="sec-lede">Organizations that back our work.</p>
+      </header>
+      <div class="endorse-grid">
+        <article class="endorse-card">
+          <a class="endorse-logo" href="https://www.grassrootsgrocery.org/" target="_blank" rel="noopener"
+            aria-label="Grassroots Grocery website (opens in a new tab)">
+            <span class="endorse-mark endorse-gg" aria-hidden="true"></span>
+          </a>
+          <div class="endorse-body">
+            <p class="endorse-kicker">Endorsed by</p>
+            <h3 class="endorse-name">Grassroots Grocery</h3>
+            <p class="endorse-text">A New York nonprofit fighting for dignified food access for all. Every Saturday, its
+              volunteers rescue unsold fresh produce from the Hunts Point Market and bring it to neighbors who need it,
+              through community-led food sites and community fridges: more than 3,000,000 pounds of produce so far.</p>
+            <a class="doc-toggle endorse-link" href="https://www.grassrootsgrocery.org/" target="_blank" rel="noopener">Visit
+              grassrootsgrocery.org <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+        <article class="endorse-card">
+          <a class="endorse-logo" href="https://camba.org/" target="_blank" rel="noopener"
+            aria-label="CAMBA website (opens in a new tab)">
+            <span class="endorse-mark endorse-camba" aria-hidden="true"></span>
+          </a>
+          <div class="endorse-body">
+            <p class="endorse-kicker">Endorsed by</p>
+            <h3 class="endorse-name">CAMBA</h3>
+            <p class="endorse-text">A Brooklyn nonprofit that began in 1977 as a small merchant association in Flatbush.
+              Today its 170+ programs help more than 70,000 New Yorkers a year with housing, health, education, legal
+              aid, and food: its Beyond Hunger Emergency Food Pantry serves nearly 16,000 people a month.</p>
+            <a class="doc-toggle endorse-link" href="https://camba.org/" target="_blank" rel="noopener">Visit
+              camba.org <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 
-  <div class="instrument">
-    <section id="sensors" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-      <p class="eyebrow" data-reveal>Food safety</p>
-      <h2 class="hd" data-mask style="margin-bottom:20px; max-width:640px;">
-        <span class="mask-l"><span data-line>Ice packs keep the food</span></span>
-        <span class="mask-l"><span data-line>safe to eat.</span></span>
-      </h2>
-      <p class="body-p" data-reveal style="margin:0;">Food has to stay at <span data-degf="41"></span> or colder. On
-        this sample trip, the box got too warm at the handoff. Press <strong>Add ice pack</strong> to see how it stays
-        safe.</p>
-      <div class="cold-panel" data-reveal style="margin-top:36px;">
+  <section id="how" class="sec" aria-labelledby="howHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="howHd">Our Process</h2>
+        <p class="sec-lede">Four steps take food from a school’s share table to a community fridge the same afternoon.</p>
+      </header>
+      <!-- Built by mainpage.js from STEPS: a stepper whose green dot moves
+           from stage to stage, each stage with its own animated scene. -->
+      <div class="proc" id="steps" data-no-anchor></div>
+    </div>
+  </section>
+
+  <div class="instrument is-plain">
+    <section id="sensors" class="sec" aria-labelledby="safetyHd">
+     <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="safetyHd">Food Safety</h2>
+        <p class="sec-lede">Food safety is our top priority. Every box stays at <span data-degf="41"></span> or colder,
+          from the school to the fridge. On this sample trip the box got too warm at the handoff; press
+          <strong>Add ice pack</strong> to see how we keep it safe.</p>
+      </header>
+      <div class="cold-panel" data-reveal>
         <div id="coldMascot" class="cold-mascot is-danger" aria-hidden="true"><svg data-mascot data-solid
             data-state="danger" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
             role="presentation" style="width:100%;height:auto;display:block;overflow:visible;">
@@ -247,30 +308,58 @@
           </noscript>
         </div>
       </div>
-      <a class="doc-toggle" data-reveal href="tracking.html" style="text-decoration:none; margin-top:24px;">How we track
-        every box <span aria-hidden="true">→</span></a>
+      <p class="sec-more"><a class="doc-toggle" href="tracking.html" style="text-decoration:none;">How we track every
+          box <span aria-hidden="true">→</span></a></p>
+     </div>
     </section>
   </div>
 
-  <section id="network">
-    <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-      <p class="eyebrow" data-reveal>The map</p>
-      <h2 class="hd" data-mask style="margin-bottom:16px; max-width:640px;">
-        <span class="mask-l"><span data-line>Where food help</span></span>
-        <span class="mask-l"><span data-line>is needed most.</span></span>
-      </h2>
-      <p class="body-p" data-reveal style="margin:0 0 28px;">Darker areas have more people using SNAP (food stamps).
-        Pins show the schools we’re working with. Press play to see what a citywide network could look like.</p>
+  <section id="network" class="sec" aria-labelledby="whyHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="whyHd">Our Why?</h2>
+        <p class="sec-lede">Millions of pounds of edible school food go to waste each year while New Yorkers face food
+          insecurity. As SNAP cuts threaten food access, Stock the Block bridges this gap by redirecting sealed, unopened
+          surplus food to food pantries and community fridges.</p>
+      </header>
+      <!-- The numbers behind the why: the 4% what-if slider and friends. -->
+      <div class="statband" id="statband">
+        <div class="grid">
+          <div class="cell fade-in-up" data-stat>
+            <p class="figure fig" id="statMeals">880,000</p>
+            <p class="cap">school meals served every day in NYC</p>
+          </div>
+          <div class="cell fade-in-up" data-stat style="transition-delay:90ms">
+            <p class="figure fig" id="statPct">4%</p>
+            <p class="cap" id="pctCap">of NYC school buildings donate their leftover food</p>
+            <!-- What-if slider. Drag the share of buildings that donate and see the
+               food it would save. Every input is sourced in the cite line below. -->
+            <div class="pct-whatif" id="pctWhatIf" hidden>
+              <input type="range" class="pct-range" id="pctRange" min="4" max="100" step="1" value="4"
+                aria-label="Share of NYC school buildings that donate leftover food">
+              <div class="pct-scale" aria-hidden="true"><span>4% today</span><span>50%</span><span>100%</span></div>
+              <p class="pct-result" id="pctResult"></p>
+            </div>
+          </div>
+          <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
+            <p class="figure fig" id="statSchools">4</p>
+            <p class="cap">Partner Schools</p>
+          </div>
+        </div>
+      </div>
+      <p class="sec-note">Darker areas have more residents on SNAP. Pins show our partner schools, the community
+        fridges they deliver to, and the schools we’re talking to next. Press play to see how we got here and where it
+        could go.</p>
 
       <div class="map-shell">
         <div id="networkMap" class="map-canvas" role="region"
-          aria-label="Interactive map of New York City community districts and Stock the Block schools" tabindex="0">
+          aria-label="Interactive map of New York City community districts, Stock the Block schools and the community fridges they deliver to" tabindex="0">
         </div>
       </div>
 
       <div id="networkMapLegend" class="map-legend"></div>
 
-      <p class="sites-summary" id="sitesSummary">8 schools so far: 1 getting set up, 2 in talks, 5 we plan to reach. <a
+      <p class="sites-summary" id="sitesSummary">8 schools on the map: 4 delivering, 3 in talks, 1 planned. <a
           href="getting-started.html#sites">See the full list →</a></p>
 
       <details class="map-about">
@@ -280,50 +369,13 @@
           dots is a real school.</p>
         <p>Shading shows the percent of residents getting SNAP in each community district, from NYC Council Data Team
           analysis of NYC Human Resources Administration and NYC Department of City Planning data, September 2025. It is
-          not a map of where we operate. One food bank/community fridge partner site is being set up, in Manhattan.</p>
+          not a map of where we operate.</p>
         <p class="cite" id="networkMapCite"></p>
         <p class="cite">School pins are placed from public campus addresses and have not been checked against a
-          geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The receiving site’s
-          exact location is not published, so its pin is borough-level.</p>
+          geocoder; run <code>tools/geocode.mjs</code> to regenerate them from a live service. The Brooklyn community
+          fridge’s exact location is not published yet, so its pin is borough-level. Street map © OpenStreetMap
+          contributors.</p>
       </details>
-    </div>
-  </section>
-
-  <section id="learn" class="wrap" style="padding-top:72px; padding-bottom:72px;">
-    <p class="eyebrow" data-reveal>Learn more</p>
-    <h2 class="hd" data-mask style="margin-bottom:32px; max-width:640px;">
-      <span class="mask-l"><span data-line>Want the details?</span></span>
-    </h2>
-    <div class="cards-grid learn-grid">
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="clipboard-check">How we track every box</p>
-        <p class="body">The sealed box, the temperature loggers, and the public delivery log anyone can check.</p>
-        <a class="doc-toggle" href="tracking.html">See the tracking <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="shield-check">Why this matters now</p>
-        <p class="body">SNAP is being cut. What that means for NYC, and what rescued food can and can’t fix.</p>
-        <a class="doc-toggle" href="why.html">Read why <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="handshake">Meet the team</p>
-        <p class="body">The students behind this, the schools they come from, and what each role does.</p>
-        <a class="doc-toggle" href="team.html">Meet us <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="card" data-reveal>
-        <p class="kicker" data-icon="ruler">Start it at your school</p>
-        <p class="body">Step-by-step setup, the health code memo, the box plans and printable paperwork.</p>
-        <a class="doc-toggle" href="getting-started.html">Get started <span aria-hidden="true">→</span></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="gallery" class="photo-band" aria-labelledby="galleryHd" hidden>
-    <div class="wrap">
-      <h2 class="hd" id="galleryHd" data-mask style="margin-bottom:16px; max-width:640px;">
-        <span class="mask-l"><span data-line>Us doing deliveries.</span></span>
-      </h2>
-      <div class="photo-track" data-gallery></div>
     </div>
   </section>
 
@@ -334,24 +386,14 @@
     <div class="emblem-track" data-emblems></div>
   </section>
 
-  <section id="join">
-    <div class="wrap" style="padding-top:72px; padding-bottom:72px;">
-      <p class="eyebrow" data-reveal>Get involved</p>
-      <div class="join-grid">
-        <div>
-          <h2 class="hd" data-mask>
-            <span class="mask-l"><span data-line>Want to help?</span></span>
-            <span class="mask-l"><span data-line>Let’s talk.</span></span>
-          </h2>
-          <p class="body-p" data-reveal style="margin:16px 0 0;">Whether you’re a student who wants to join, a school, or a food bank/community fridge, tell us who you are and we’ll get back to you with next steps.</p>
-          <p class="body-p" style="margin:12px 0 0; font-size:17px;">Rather email? <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a></p>
-          <div class="mascot-hover" style="margin-top:28px; display:flex; align-items:center; gap:14px;">
-            <span id="mascotJoin" class="mascot-slot" style="width:40px; flex:none; display:block;"
-              data-state="idle"></span>
-            <p style="font-size:14px; color:var(--text-secondary); margin:0; line-height:1.6;">Run by students. Every
-              delivery posted online.<br>Our first food bank/community fridge partner site is being set up in Manhattan.</p>
-          </div>
-        </div>
+  <section id="join" class="sec" aria-labelledby="joinHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="joinHd">Work With Us</h2>
+        <p class="sec-lede">Whether you’re a student who wants to join, a school, or a food bank/community fridge, tell
+          us who you are and we’ll get back to you with next steps.</p>
+      </header>
+      <div class="join-wrap">
         <div id="formWrap">
           <form class="join" id="joinForm">
             <input data-ff name="name" required type="text" maxlength="200" placeholder="Name" aria-label="Name">
@@ -375,8 +417,44 @@
               We use what you send only to reply to you. See our <a href="privacy.html#collect-contact">Privacy Policy</a>. Under 13? Please ask a parent, guardian or teacher to contact us for you.</p>
             <p id="joinFormError" hidden role="alert"
               style="grid-column:span 2; color:var(--accent-text); font-size:14px; margin:4px 0 0; line-height:1.5;">
-              Something went wrong sending this. Try again in a moment, or email <a href="mailto:stockingtheblock@gmail.com">stockingtheblock@gmail.com</a>.</p>
+              Something went wrong sending this. Try again in a moment, or email <a href="mailto:contact@stocktheblock.com">contact@stocktheblock.com</a>.</p>
           </form>
+        </div>
+        <div class="join-foot mascot-hover">
+          <span id="mascotJoin" class="mascot-slot" style="width:36px; flex:none; display:block;"
+            data-state="idle"></span>
+          <p>Rather email? <a href="mailto:contact@stocktheblock.com">contact@stocktheblock.com</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="learn" class="sec" aria-labelledby="learnHd">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="learnHd">Learn More</h2>
+        <p class="sec-lede">How we track every box, why this matters now, who we are, and how to start at your school.</p>
+      </header>
+      <div class="cards-grid learn-grid">
+        <div class="card" data-reveal>
+          <p class="kicker" data-icon="clipboard-check">How we track every box</p>
+          <p class="body">The sealed box, the temperature loggers, and the public delivery log anyone can check.</p>
+          <a class="doc-toggle" href="tracking.html">See the tracking <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="card" data-reveal>
+          <p class="kicker" data-icon="shield-check">Why this matters now</p>
+          <p class="body">SNAP is being cut. What that means for NYC, and what rescued food can and can’t fix.</p>
+          <a class="doc-toggle" href="why.html">Read why <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="card" data-reveal>
+          <p class="kicker" data-icon="handshake">Meet the team</p>
+          <p class="body">The students behind this, the schools they come from, and what each role does.</p>
+          <a class="doc-toggle" href="team.html">Meet us <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="card" data-reveal>
+          <p class="kicker" data-icon="ruler">Start it at your school</p>
+          <p class="body">Step-by-step setup, the health code memo, the box plans and printable paperwork.</p>
+          <a class="doc-toggle" href="getting-started.html">Get started <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -390,24 +468,33 @@
       </span>
       <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
     </div>
+    <div class="wrap foot-sources">
+      <p>Sources: <a
+          href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/"
+          target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food
+        donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the
+        average a school recovered in its first year of share tables in a <a
+          href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025
+          study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
+    </div>
     <nav class="wrap foot-links" aria-label="More pages">
-      <a href="tracking.html">How we track</a>
-      <a href="log.html">Delivery log</a>
-      <a href="why.html">Why now</a>
+      <a href="tracking.html">Tracking</a>
+      <a href="log.html">Deliveries</a>
+      <a href="why.html">Our Why?</a>
       <a href="team.html">Team</a>
-      <a href="getting-started.html">Getting started</a>
+      <a href="getting-started.html">Getting Started</a>
       <a href="why.html#sources">Sources</a>
       <a href="privacy.html">Privacy</a>
     </nav>
-    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
+    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
   </footer>
 
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=18"></script>
-  <script src="assets/map.js?v=14"></script>
-  <script src="assets/mainpage.js?v=6"></script>
+  <script src="assets/site.js?v=27"></script>
+  <script src="assets/map.js?v=17"></script>
+  <script src="assets/mainpage.js?v=14"></script>
   
 </body>
 </html>

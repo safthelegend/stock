@@ -17,7 +17,8 @@
     let photoData = null;  // compressed data URL, or null
     let photoBusy = false; // true while a photo is still being shrunk
     let photoSeq = 0;      // bumps on every pick or clear; stale shrinks are ignored
-    let ctx = null;        // { fb, user, role } once signed in
+    let ctx = null;        // { fb, user, role, verified } once signed in
+    let lastMine = null;   // the latest "My deliveries" snapshot, to redraw on verification
     const temp = STBT.recorder($("#tempRecorder"));
   
     /* Each fresh form gets a new box ID straight away, so the member can
@@ -95,7 +96,9 @@
       view.addEventListener("click", () => showTab("mine"));
       saved.replaceChildren(P.icon("check", "saved-ico"),
         el("div", { className: "saved-text" }, el("b", {}, "Saved box " + boxId),
-          el("span", {}, "It's waiting for review. The form below has a new box ID for your next delivery.")),
+          el("span", {}, (ctx && !ctx.verified
+            ? "It's on hold until an admin verifies your account, then it's reviewed like every delivery."
+            : "It's waiting for review.") + " The form below has a new box ID for your next delivery.")),
         view);
       saved.hidden = false;
       saved.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -139,8 +142,17 @@
         /* The public log (log.html) gets a trimmed copy: no names, schools,
            sites, notes or photo. See firestore.rules, publicLog. It's written
            on its own, after the delivery, so a problem here never loses the
-           delivery; an admin's portal fills in any entry that's missing. */
-        fb.setDoc(fb.doc(fb.db, "publicLog", ref.id), P.publicEntry({ ...data, status: "pending" }))
+           delivery; an admin's portal fills in any entry that's missing.
+           Not for unverified accounts: theirs go on once an admin verifies
+           them (assets/admin.js). */
+        const pubRef = fb.doc(fb.db, "publicLog", ref.id);
+        const pubEntry = P.publicEntry({ ...data, status: "pending" });
+        if (ctx.verified) fb.setDoc(pubRef, pubEntry)
+          // Until the live Firestore rules accept the school and borough, write it without.
+          .catch((err) => {
+            if (err.code === "permission-denied" && (pubEntry.region || pubEntry.school)) return fb.setDoc(pubRef, P.publicEntry({ ...data, status: "pending" }, false));
+            throw err;
+          })
           .catch((err) => console.warn("Public log entry not written yet:", err.code || err));
         temp.finish();
         resetForm();
@@ -149,7 +161,9 @@
       } catch (err) {
         console.error(err);
         say(err.code === "permission-denied"
-          ? "The database refused this. Your account may not be a member yet, or a field is over its limit."
+          ? (ctx && !ctx.verified
+            ? "The database refused this. It isn't taking deliveries from unverified accounts yet, so ask an admin to verify you."
+            : "The database refused this. Your account may not be a member yet, or a field is over its limit.")
           : "Couldn't save. Check your connection and try again. Nothing was sent.", "err");
       } finally {
         submitBtn.disabled = false;
@@ -166,7 +180,38 @@
       $("#stPending").textContent = rows.filter((d) => d.status === "pending").length.toLocaleString("en-US");
     }
   
+    /* Not verified yet: a notice at the top of the portal saying what that
+       means. It turns into a "you're verified" note the moment an admin
+       verifies the account (watchVerified), and is gone on the next visit. */
+    const verifyNote = $("#verifyNote");
+    function renderVerifyNote(state) {
+      if (!state) { verifyNote.hidden = true; verifyNote.replaceChildren(); return; }
+      const done = state === "done";
+      verifyNote.classList.toggle("is-done", done);
+      verifyNote.replaceChildren(P.icon(done ? "check" : "shield", "verify-ico"),
+        el("div", { className: "verify-text" },
+          el("b", {}, done ? "You're verified" : "Your account isn't verified yet"),
+          el("span", {}, done
+            ? "An admin verified your account. Your deliveries have moved into review and will show on the public delivery log."
+            : "You can log deliveries now. They're on hold until an admin verifies your account, and they won't show on the public delivery log until then. Once you're verified, they're reviewed and confirmed like everyone else's.")));
+      verifyNote.hidden = false;
+    }
+
+    // Listens for this account's role to appear, i.e. an admin verifying it.
+    function watchVerified(c) {
+      return c.fb.onSnapshot(c.fb.doc(c.fb.db, "roles", c.user.uid), (snap) => {
+        const role = snap.exists() ? snap.data().role : null;
+        if (ctx !== c || ctx.verified || (role !== "member" && role !== "admin")) return;
+        ctx.verified = true;
+        ctx.role = role;
+        P.showRole(role);
+        renderVerifyNote("done");
+        if (lastMine) renderMine(lastMine);
+      }, () => {});
+    }
+
     function renderMine(snap) {
+      lastMine = snap;
       const host = $("#mine");
       /* Sorted here instead of with orderBy() in the query: combining where()
          and orderBy() on different fields needs a composite index in Firebase,
@@ -188,9 +233,11 @@
         STB.initMascotSlots(host);
         return;
       }
+      const held = ctx && !ctx.verified;
       host.replaceChildren(...rows.map((d) =>
         el("article", { className: "d-card" },
-          el("header", { className: "d-head" }, P.statusPill(d.status),
+          el("header", { className: "d-head" },
+            held && d.status === "pending" ? el("span", { className: "d-status s-held" }, "On hold until you're verified") : P.statusPill(d.status),
             el("span", { className: "p-muted" }, "Logged " + P.fmtTime(d.createdAt))),
           P.deliveryDetails(d),
           d.reviewNote ? el("p", { className: "d-review" }, el("b", {}, "Reviewer: "), d.reviewNote) : null)));
@@ -211,9 +258,12 @@
   
     P.gate({
       need: "member",
+      unverified: true,
       onReady: (c) => {
         ctx = c;
         isAdmin = c.role === "admin";
+        renderVerifyNote(c.verified ? null : "waiting");
+        const stopVerified = c.verified ? null : watchVerified(c);
         const first = (c.user.displayName || "").split(" ")[0];
         $("#hello").textContent = first ? "Hi, " + first : "Hi";
         resetForm();
@@ -228,7 +278,10 @@
           : null;
   
         showTab(location.hash.slice(1));
-        return () => { stopMine(); if (stopReview) stopReview(); temp.detach(); ctx = null; isAdmin = false; };
+        return () => {
+          stopMine(); if (stopReview) stopReview(); if (stopVerified) stopVerified(); temp.detach();
+          ctx = null; isAdmin = false; lastMine = null; renderVerifyNote(null);
+        };
       }
     });
   })();

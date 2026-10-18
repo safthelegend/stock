@@ -237,6 +237,68 @@ function initMascotSlots(root) {
   });
 }
 
+/* ---------- the process scenes (home page's Our Process, tracking.html) ----------
+   Each scene is a 240×150 drawing starring the flat mascot (the same
+   mascotSVG the rest of the site uses, with its per-step mood), placed as a
+   nested <svg> so its own lid animation keeps its coordinates. Items that
+   "go into" the box are drawn behind it, so they vanish as they drop in. */
+function sceneMascot(state, x, y, w) {
+    var svg = mascotSVG(state, {});
+    var inner = svg.slice(svg.indexOf(">") + 1, svg.lastIndexOf("</svg>"));
+    return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 260 / 300).toFixed(1) +
+        '" viewBox="0 0 300 260" overflow="visible">' + inner + "</svg>";
+}
+var SCENES = {
+    /* 01: an apple and a banana hop off the share table into the box; the
+       lid shuts and a strip of tape seals it. */
+    collect:
+        '<rect class="sc-table" x="14" y="128" width="212" height="7" rx="3"/>' +
+        '<path class="sc-leg" d="M32 135 V148 M208 135 V148"/>' +
+        '<g class="sc-apple"><path class="stem" d="M36 108 V102"/><path class="leaf" d="M37 104 Q42 96 49 99 Q45 106 37 104 Z"/><circle cx="36" cy="118" r="10"/></g>' +
+        '<g class="sc-banana"><path class="fruit" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/><path class="tip" d="M188 112 L185 108"/></g>' +
+        '<g class="sc-box">' + sceneMascot("collect", 65, 47, 110) + "</g>" +
+        '<rect class="sc-tape" x="109" y="77" width="22" height="8" rx="2"/>' +
+        '<path class="sc-spark" d="M176 48 L179 56 L187 59 L179 62 L176 70 L173 62 L165 59 L173 56 Z"/>',
+    /* 02: on the scale, an ice pack drops in; snowflakes, and the
+       thermometer cools from warm orange to ice blue. */
+    pack:
+        '<g class="sc-thermo"><rect class="tube" x="20" y="42" width="14" height="76" rx="7"/><rect class="mercury" x="24" y="56" width="6" height="62" rx="3"/><circle class="bulb" cx="27" cy="122" r="10"/></g>' +
+        '<rect class="sc-table" x="58" y="128" width="124" height="7" rx="3"/>' +
+        '<rect class="sc-scale" x="98" y="135" width="44" height="13" rx="3"/><text class="sc-readout" x="120" y="144.5">12 lb</text>' +
+        '<g class="sc-ice"><rect x="193" y="110" width="30" height="20" rx="5"/><path d="M208 113 V127 M202 116.5 L214 123.5 M202 123.5 L214 116.5"/></g>' +
+        '<g class="sc-box">' + sceneMascot("pack", 65, 47, 110) + "</g>" +
+        '<g class="sc-flakes"><path d="M60 40 V52 M54 43 L66 49 M54 49 L66 43"/><path d="M186 58 V68 M181 60.5 L191 65.5 M181 65.5 L191 60.5"/><path d="M150 22 V32 M145 24.5 L155 29.5 M145 29.5 L155 24.5"/></g>',
+    /* 03: a student carries the box to a food bank/community fridge; a check pops at the door. */
+    walk:
+        '<path class="sc-ground" d="M6 136 H234"/>' +
+        '<g class="sc-bank"><path class="roof" d="M170 80 L201 56 L232 80 Z"/><rect class="wall" x="175" y="80" width="52" height="56"/><rect class="door" x="194" y="106" width="14" height="30" rx="2"/><path class="heart" d="M201 97 C197 93 192 95 192 89.5 C192 86.5 195 85 197.5 86.5 C199 87.5 200 88.5 201 90 C202 88.5 203 87.5 204.5 86.5 C207 85 210 86.5 210 89.5 C210 95 205 93 201 97 Z"/></g>' +
+        '<g class="sc-walker">' +
+            '<path class="limb leg leg-a" d="M40 112 L40 134"/><path class="limb leg leg-b" d="M40 112 L40 134"/>' +
+            '<path class="limb" d="M40 94 L40 112"/><circle class="head" cx="40" cy="85" r="7.5"/>' +
+            sceneMascot("deliver", 44, 78, 42) +
+            '<path class="limb" d="M40 98 L50 104"/>' +
+        "</g>" +
+        '<g class="sc-check"><circle cx="201" cy="42" r="10"/><path d="M196 42 L199.5 45.5 L206 38.5"/></g>',
+    /* 04: a dot flies from the box to the laptop and a new row lands in the
+       public log with a check; the box cheers. */
+    post:
+        '<path class="sc-ground" d="M6 136 H92"/>' +
+        '<g class="sc-screen"><rect class="win" x="98" y="20" width="128" height="94" rx="8"/><path class="bar" d="M98 36 H226"/>' +
+            '<circle class="dot" cx="108" cy="28" r="2.6"/><circle class="dot" cx="116" cy="28" r="2.6"/><circle class="dot" cx="124" cy="28" r="2.6"/>' +
+            '<g class="sc-rows"><rect x="106" y="62" width="112" height="11" rx="3"/><rect x="106" y="79" width="112" height="11" rx="3"/><rect x="106" y="96" width="112" height="11" rx="3"/></g>' +
+            '<g class="sc-row-new"><rect class="hi" x="106" y="43" width="112" height="13" rx="3"/><path d="M111 49.5 L114 52.5 L119 46.5"/><rect class="ln" x="124" y="47.5" width="56" height="4.5" rx="2"/><rect class="ln" x="190" y="47.5" width="22" height="4.5" rx="2"/></g>' +
+            '<path class="base" d="M88 116 H236 L228 124 H96 Z"/>' +
+        "</g>" +
+        '<text class="sc-plus" x="214" y="16">+1</text>' +
+        '<circle class="sc-packet" cx="58" cy="70" r="4.5"/>' +
+        '<g class="sc-box">' + sceneMascot("confirmed", 4, 69, 80) + "</g>"
+};
+/* processScene("collect" | "pack" | "walk" | "post") -> the scene's <svg>
+   markup. Styled and animated by assets/scenes.css. */
+function processScene(key) {
+  return '<svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg>";
+}
+
   /* ---------- theme ----------
      Three modes cycling light -> dark -> stock. "light" and "dark" mirror the
      system preference; "stock" is the brand mode and is opt-in only, never
@@ -333,12 +395,12 @@ function initMascotSlots(root) {
      the same effect, just triggered by arrival instead of by scrolling. */
   if (!REVEAL_ON_SCROLL) document.documentElement.classList.add("no-reveal");
 
-    /* Nav "Sign in" button: says "My portal" for someone who's signed in as a
+    /* Nav "Sign in" button: says "Visit Portal" for someone who's signed in as a
      member in this browser. Reads the note portal.js leaves; never loads
      Firebase on public pages. */
      try {
       if (localStorage.getItem("stb-member") === "1") {
-        $$("nav.bar a.login").forEach(function (a) { a.textContent = "My portal"; });
+        $$("nav.bar a.login").forEach(function (a) { a.textContent = "Visit Portal"; });
       }
     } catch (e) {}
 
@@ -1534,32 +1596,41 @@ function initMascotSlots(root) {
      the counts, the ordering and the caveat about targets all had to be kept
      true by hand. They are one array now: status lives on the record, and the
      view is derived. Adding a school is one line, and promoting one from
-     target to in setup is one word.
+     planned to delivering is one word.
 
      The list renders from JS, so the markup in index.html carries the same
      rows as a <noscript> fallback — a reader with JS off still gets every
      school and its status, just without the filter. */
   var SITES = [
-    { name: "Stuyvesant High School", borough: "Manhattan", status: "setup" },
-    { name: "Midwood High School", borough: "Brooklyn", status: "conversation" },
-    { name: "James Madison High School", borough: "Brooklyn", status: "conversation" },
-    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "target" },
-    { name: "Rachel Carson High School", borough: "Brooklyn", status: "target" },
-    { name: "Bronx High School of Science", borough: "Bronx", status: "target" },
-    { name: "Townsend Harris High School", borough: "Queens", status: "target" },
-    { name: "Queens High School for the Sciences at York College", borough: "Queens", status: "target", tag: "specialized" }
+    /* Delivering, in the order they joined. dropoff names the fridge in
+       RECEIVING_SITES the map draws each school's route to. */
+    { name: "Stuyvesant High School", borough: "Manhattan", status: "active", joined: 1, dropoff: "Essex Market Community Fridge" },
+    { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
+    { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
+    { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
+    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
+    { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
+    { name: "Aviation High School", borough: "Queens", status: "conversation" },
+    { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
 
   var SITE_STATUS = [
-    { key: "setup", label: "In setup", note: "Pre-launch. Boxes and routes are being prepared; no food has moved yet." },
-    { key: "conversation", label: "In conversation", note: "Talking to staff or administration. Nothing agreed, nothing running." },
-    { key: "target", label: "Target", note: "Schools we intend to approach. They have not agreed to anything, and listing one here is not a claim that they have." }
+    { key: "active", label: "Delivering", note: "Partner school. Food is moving, and every delivery is on the public log." },
+    { key: "conversation", label: "In talks", note: "Talking with staff or administration about starting. Nothing is running yet." },
+    { key: "target", label: "Planned", note: "Schools we plan to reach next. They have not agreed to anything, and listing one here is not a claim that they have." }
   ];
 
-  /* The one receiving site. It is not a school, so it does not belong in the
-     school list, but the map needs it or the map shows origins with no
-     destination. Kept beside SITES rather than inside it. */
-  var RECEIVING_SITE = { name: "Receiving site", borough: "Manhattan", status: "setup", kind: "receiving" };
+  /* The community fridges our partner schools deliver to. They are not
+     schools, so they stay out of SITES, but the map pins each one and draws
+     the route to it. The Brooklyn fridge's exact spot isn't published yet,
+     so its pin is borough-level (assets/geo/sites.json). */
+  var RECEIVING_SITES = [
+    { name: "Essex Market Community Fridge", borough: "Manhattan", status: "active", kind: "receiving" },
+    { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
+    { name: "Classon Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
+    { name: "The Friendly Fridge BX", borough: "Bronx", status: "active", kind: "receiving" }
+  ];
+  var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
   var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
 
@@ -1725,7 +1796,7 @@ function initMascotSlots(root) {
   function initAnchors() {
     var used = {};
     $$("h2, h3").forEach(function (h) {
-      if (h.closest("#palette, .packet-doc")) return;
+      if (h.closest("#palette, .packet-doc, [data-no-anchor]")) return;
       var id = h.id;
       if (!id) {
         id = (h.textContent || "").trim().toLowerCase()
@@ -1841,10 +1912,16 @@ function initMascotSlots(root) {
      only the wheel's steps are eased — so sticky sections, the scroll scrub,
      keyboard, scrollbar and touch all keep working as they are.
      Left alone: reduced motion, pinch-zoom, sideways swipes, and anything
-     that scrolls on its own (an engaged map, the palette, a popup).
+     that scrolls on its own (an engaged map, the palette, a popup, the
+     delivery log's table).
+
+     It turns itself on for every page when this file loads (bottom of this
+     file); calling it again just returns the one already running.
      ====================================================================== */
+  var smoothScroll = null;
   function initSmoothScroll(opts) {
     if (reduced) return null;
+    if (smoothScroll) return smoothScroll;
     opts = opts || {};
     var EASE = opts.ease || 0.11;          /* share of the gap closed per 60Hz frame */
     var root = document.documentElement;
@@ -1915,7 +1992,8 @@ function initMascotSlots(root) {
       history.pushState(null, "", location.pathname + location.search + url.hash);
       glideTo(el);
     });
-    return { glideTo: glideTo, stop: stop };
+    smoothScroll = { glideTo: glideTo, stop: stop };
+    return smoothScroll;
   }
 
   /* ======================================================================
@@ -1929,11 +2007,12 @@ function initMascotSlots(root) {
      ====================================================================== */
   var EMBLEMS = [
     { name: "Stuyvesant", full: "Stuyvesant High School", logo: "assets/schools/Stuyvesant.svg" },
-    { name: "Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
+    { name: "CUNY Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
     { name: "James Madison", full: "James Madison High School", logo: "assets/schools/mask/james-madison.png" },
     { name: "Midwood", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
     { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
-    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "" },
+    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "assets/schools/mask/rachel-carson.png" },
+    { name: "CUNY Baruch College", full: "Baruch College", logo: "assets/schools/mask/baruch-college.png", wide: true },
     { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" }
   ];
 
@@ -1979,7 +2058,7 @@ function initMascotSlots(root) {
      Hand-picked photos of the team out doing deliveries — not tied to any
      database, just files we add ourselves. To add a photo: drop the image
      in assets/gallery/, then add a line below with its path and a short
-     caption. The section stays hidden on its own (see initGallery) until
+     caption. The photos stay hidden on their own (see initGallery) until
      this list has at least one entry, the same way a school with no logo
      is quietly left out of the carousel above.
      ====================================================================== */
@@ -2030,24 +2109,30 @@ function initMascotSlots(root) {
 
   function initGallery() {
     $$("[data-gallery]").forEach(function (track) {
-      var section = track.closest("section");
-      if (!GALLERY.length) { if (section) section.hidden = true; return; }
-      if (section) section.hidden = false;
+      // The photos sit inside a bigger section (Our Impact), so only their
+      // own wrapper is hidden when there are none.
+      var wrap = track.closest("[data-gallery-wrap]") || track.closest("section");
+      if (!GALLERY.length) { if (wrap) wrap.hidden = true; return; }
+      if (wrap) wrap.hidden = false;
 
       var frame = document.createElement("div");
       frame.className = "photo-frame";
       frame.setAttribute("role", "group");
+      frame.setAttribute("aria-roledescription", "carousel");
       frame.setAttribute("aria-label", "Photos of the team doing deliveries");
       var slides = GALLERY.map(function (p, i) {
         var slide = document.createElement("div");
         slide.className = "photo-slide";
         var btn = document.createElement("button");
         btn.type = "button";
-        btn.setAttribute("aria-label", "View larger: " + (p.caption || "delivery photo"));
         var img = document.createElement("img");
-        img.src = p.src; img.alt = p.caption || ""; img.loading = "lazy"; img.decoding = "async";
+        img.src = p.src; img.alt = p.caption || ""; img.decoding = "async";
         btn.appendChild(img);
-        btn.addEventListener("click", function () { openLightbox(i); });
+        // The middle photo opens larger; a photo to either side moves to
+        // the middle instead.
+        btn.addEventListener("click", function () {
+          if (i === idx) openLightbox(i); else { goTo(i); schedule(); }
+        });
         slide.appendChild(btn);
         if (p.caption) {
           var cap = document.createElement("p");
@@ -2062,9 +2147,21 @@ function initMascotSlots(root) {
       track.textContent = "";
       track.appendChild(frame);
 
-      var dotsWrap = null, dots = [];
+      var dots = [];
       if (GALLERY.length > 1) {
-        dotsWrap = document.createElement("div");
+        var arrow = function (dir, label, path) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "photo-arrow photo-arrow-" + dir;
+          b.setAttribute("aria-label", label);
+          b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + path + '"/></svg>';
+          b.addEventListener("click", function () { goTo(idx + (dir === "next" ? 1 : -1)); schedule(); });
+          frame.appendChild(b);
+        };
+        arrow("prev", "Previous photo", "M15 18l-6-6 6-6");
+        arrow("next", "Next photo", "M9 6l6 6-6 6");
+
+        var dotsWrap = document.createElement("div");
         dotsWrap.className = "photo-dots";
         dots = GALLERY.map(function (p, i) {
           var dot = document.createElement("button");
@@ -2075,25 +2172,52 @@ function initMascotSlots(root) {
           return dot;
         });
         track.appendChild(dotsWrap);
+
+        // Swipe on touch screens.
+        var x0 = null;
+        frame.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        frame.addEventListener("touchend", function (e) {
+          if (x0 === null) return;
+          var dx = e.changedTouches[0].clientX - x0;
+          x0 = null;
+          if (Math.abs(dx) > 40) { goTo(idx + (dx < 0 ? 1 : -1)); schedule(); }
+        });
       }
 
-      /* ---- one slide visible at a time, crossfading to the next every
-         15s and looping back to the start. This advances on a fixed timer
-         rather than a scroll position, so it visibly rotates no matter
-         how many photos there are or how wide the page is. Off entirely
-         under prefers-reduced-motion or with only one photo, and paused
-         on hover, keyboard focus, or while the lightbox is open, so a
-         photo never changes out from under someone looking at it. */
-      var idx = 0, timer = null;
+      /* ---- one photo in the middle, its neighbours to either side, smaller
+         and blurred, the rest tucked out of sight. It moves to the next
+         photo every 15s and loops. Each photo's place is set by data-pos
+         (0 = middle, -1/1 = either side, -2/2 = hidden) and the CSS animates
+         between places. The timer is off under prefers-reduced-motion or
+         with one photo, and pauses on hover, keyboard focus, or while the
+         lightbox is open, so a photo never moves out from under someone
+         looking at it. */
+      var idx = 0, timer = null, n = slides.length;
       function goTo(i) {
-        idx = (i + slides.length) % slides.length;
-        slides.forEach(function (s, j) { s.classList.toggle("is-active", j === idx); });
+        idx = (i + n) % n;
+        slides.forEach(function (s, j) {
+          var d = (j - idx + n) % n;          // 0 .. n-1 steps to the right
+          if (d > n / 2) d -= n;              // the shorter way round
+          var pos = d === 0 ? 0 : d === 1 ? 1 : d === -1 ? -1 : (d > 0 ? 2 : -2);
+          if (n === 2 && d !== 0) pos = 1;
+          s.setAttribute("data-pos", String(pos));
+          s.setAttribute("aria-hidden", pos === 0 ? "false" : "true");
+          var b = s.querySelector("button");
+          b.tabIndex = pos === 0 ? 0 : -1;
+          b.setAttribute("aria-label", pos === 0
+            ? "View larger: " + (GALLERY[j].caption || "photo " + (j + 1) + " of " + n)
+            : "Show photo " + (j + 1) + " of " + n);
+        });
         dots.forEach(function (d, j) { d.classList.toggle("is-active", j === idx); });
       }
       goTo(0);
-      if (reduced || GALLERY.length < 2) return;
+      // Photos take their places without sliding in on page load; only
+      // later moves animate.
+      requestAnimationFrame(function () { requestAnimationFrame(function () { frame.classList.add("is-ready"); }); });
+      if (reduced || n < 2) return;
       function schedule() {
         clearInterval(timer);
+        if (reduced || n < 2) return;
         timer = setInterval(function () { goTo(idx + 1); }, 15000);
       }
       function stop() { clearInterval(timer); }
@@ -2107,7 +2231,62 @@ function initMascotSlots(root) {
     });
   }
 
+  /* ======================================================================
+     PUBLIC LOG, FAST (home page and log.html)
+     One plain HTTPS request for the public delivery log, the same rows the
+     Firebase listener delivers. It needs no SDK, so it answers in a fraction
+     of a second, and it still works where Firebase's live connection is slow
+     or blocked (some in-app browsers, weak phone signal). The pages show
+     these numbers first, then Firebase keeps them live. publicLog is public
+     to read (firestore.rules), so no key or sign-in is involved.
+     ====================================================================== */
+  var PUBLIC_LOG_URL = "https://firestore.googleapis.com/v1/projects/stock-the-block/databases/(default)/documents/publicLog";
+  function fetchPublicLog() {
+    function value(f) {
+      if (!f) return undefined;
+      if ("stringValue" in f) return f.stringValue;
+      if ("integerValue" in f) return Number(f.integerValue);
+      if ("doubleValue" in f) return f.doubleValue;
+      if ("booleanValue" in f) return f.booleanValue;
+      // Lists and maps: a published temperature log is a list of { t, c }.
+      if ("arrayValue" in f) return (f.arrayValue.values || []).map(value);
+      if ("mapValue" in f) {
+        var o = {}, m = f.mapValue.fields || {};
+        Object.keys(m).forEach(function (k) { o[k] = value(m[k]); });
+        return o;
+      }
+      return undefined;
+    }
+    function page(token, rows) {
+      var url = PUBLIC_LOG_URL + "?pageSize=300" + (token ? "&pageToken=" + encodeURIComponent(token) : "");
+      return fetch(url, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("publicLog " + r.status);
+        return r.json();
+      }).then(function (j) {
+        (j.documents || []).forEach(function (d) {
+          var f = d.fields || {}, row = { id: d.name.split("/").pop() };
+          Object.keys(f).forEach(function (k) { row[k] = value(f[k]); });
+          rows.push(row);
+        });
+        return j.nextPageToken ? page(j.nextPageToken, rows) : rows;
+      });
+    }
+    return page(null, []);
+  }
+  /* A delivery's public photo (publicPhotos/{deliveryId}), as a data URL,
+     or null if it has none. Copied there by an admin's portal once the
+     delivery is accepted (assets/admin.js). */
+  function fetchPublicPhoto(id) {
+    var url = PUBLIC_LOG_URL.replace(/publicLog$/, "publicPhotos") + "/" + encodeURIComponent(id);
+    return fetch(url).then(function (r) {
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error("publicPhotos " + r.status);
+      return r.json().then(function (j) { return (j.fields && j.fields.dataUrl && j.fields.dataUrl.stringValue) || null; });
+    });
+  }
+
   global.STB = {
+    fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,
@@ -2128,10 +2307,13 @@ function initMascotSlots(root) {
     getVar: getVar, initTheme: initTheme,
     initNav: initNav, initReveals: initReveals,
     SITES: SITES, SITE_STATUS: SITE_STATUS, initSites: initSites,
-    RECEIVING_SITE: RECEIVING_SITE, BOROUGHS: BOROUGHS,
+    RECEIVING_SITE: RECEIVING_SITE, RECEIVING_SITES: RECEIVING_SITES, BOROUGHS: BOROUGHS,
     siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
     initScrollFx: initScrollFx,
     EMBLEMS: EMBLEMS, initEmblems: initEmblems,
     initSmoothScroll: initSmoothScroll
   };
+
+  // The gliding scroll from the home page, on every page.
+  initSmoothScroll();
 })(window);

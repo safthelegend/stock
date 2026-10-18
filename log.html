@@ -6,6 +6,12 @@
 <meta name="color-scheme" content="light dark">
 <title>Delivery log: Stock the Block</title>
 <meta name="description" content="The public record of every Stock the Block delivery: the date, the weight and whether it has been checked.">
+<meta property="og:image" content="https://stocktheblock.com/og-image.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Stock The Block: reducing in-school food waste, one meal at a time. Built by students, for the people.">
+<meta name="twitter:image" content="https://stocktheblock.com/og-image.png?v=2">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232E5A22'/><rect x='3' y='8' width='26' height='12' rx='5' fill='%23EAF2DE'/><path d='M16 11.5v5' stroke='%232E5A22' stroke-width='3' stroke-linecap='round'/><path d='M10 25q6 3.5 12 0' fill='none' stroke='%23E8871E' stroke-width='3.5' stroke-linecap='round'/></svg>">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <script>
@@ -16,9 +22,13 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=18">
+<link rel="stylesheet" href="assets/site.css?v=22">
 <style>
-  .page-head { padding-bottom:40px; }
+  /* The page opens like the home page's sections and the team page: a
+     centred green title with the orange rule under it. */
+  .log-head { padding-top:120px; }
+  .log-head .sec-head { margin-bottom:48px; }
+  @media (max-width:640px) { .log-head { padding-top:88px; } .log-head .sec-head { margin-bottom:32px; } }
   .log-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 32px; }
   .log-stat { background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:18px 20px; }
   .log-stat .n { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(26px,3.4vw,36px); letter-spacing:-0.03em; color:var(--brand); margin:0; font-variant-numeric:tabular-nums; }
@@ -27,47 +37,168 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background:var(--surface); transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease; }
   .chip[aria-pressed="true"] { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; overflow:hidden; }
-  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 20px; border-bottom:1px solid var(--brand-line); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; }
+  .mhead { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:14px 22px; border-bottom:1px solid var(--brand-line); font-size:14px; color:var(--text-secondary); }
+  .mhead .mlabel { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:15px; color:var(--text); }
   .mhead .left, .mhead .right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .thead, .mrow { display:grid; grid-template-columns:minmax(120px,1.2fr) minmax(90px,1fr) minmax(80px,0.8fr) minmax(150px,1.2fr); gap:12px; padding:0 20px; }
-  .thead { border-bottom:1px solid var(--brand-line-soft); }
-  .thead button, .thead .lab { display:flex; align-items:center; gap:5px; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.08em; color:var(--text-secondary); text-transform:uppercase; background:none; border:none; padding:10px 0; cursor:pointer; text-align:left; }
-  .thead .lab { cursor:default; }
-  .thead button:hover { color:var(--brand); }
-  .thead .caret { display:inline-block; opacity:0; transition:transform 200ms ease,opacity 200ms ease; }
-  .mrow { padding-top:14px; padding-bottom:14px; border-bottom:1px solid var(--brand-line-soft); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:14px; color:var(--text); }
-  .mrow:last-child { border-bottom:none; }
-  .mrow .stcell { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
-  .tbtn { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; padding:3px 9px; border-radius:999px; cursor:pointer;
-    border:1px solid var(--brand-line-mid); background:none; color:var(--brand); }
-  .tbtn[aria-expanded="true"] { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
-  .tlog { grid-column:1 / -1; display:grid; gap:6px; padding:6px 0 4px; font-size:12px; color:var(--text-secondary); }
-  .tlog p { margin:0; }
-  .mrow:hover { background:var(--tint); }
-  .mrow .lbs, .mrow .foods { font-variant-numeric:tabular-nums; }
-  .mrow .st { font-weight:500; display:inline-flex; align-items:center; gap:7px; }
-  .mrow .st::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; flex:none; }
-  .mrow .st.s-accepted { color:var(--brand); }
-  .mrow .st.s-pending { color:var(--accent-text); }
-  .empty-state { display:flex; flex-direction:column; align-items:center; gap:14px; padding:48px 24px 52px; text-align:center; }
-  .empty-state .mascot-slot { width:88px; }
-  .empty-state p { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; }
-  .log-note { font-size:14px; line-height:1.6; color:var(--text-secondary); margin:18px 0 0; max-width:70ch; }
+  /* --- the log, one day at a time -----------------------------------------
+     Each day is a dropdown: the date, and how many deliveries and pounds.
+     Open, it lists that day's deliveries, one line each: the school, its
+     status and weight, and "See details", which opens the fridge it went
+     to, the foods, and its photo once that's public. The newest day starts
+     open. Same type as the rest of the site: Plus Jakarta Sans for names,
+     Inter for everything else. */
+  .days { display:block; }
+  .day { border-bottom:1px solid var(--brand-line-soft); }
+  .day:last-child { border-bottom:none; }
+  .day-head { width:100%; display:flex; align-items:center; gap:12px; padding:18px 22px; background:none; border:none; cursor:pointer;
+    text-align:left; color:var(--text); font:inherit; transition:background-color 160ms ease; }
+  .day-head:hover { background:var(--tint); }
+  .day-head:focus-visible, .dv-more:focus-visible { outline:2px solid var(--brand); outline-offset:-2px; }
+  .day-date { flex:1; min-width:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:17px; letter-spacing:-0.01em; }
+  .day-sum { font-size:14px; color:var(--text-secondary); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .chev { flex:none; width:18px; height:18px; color:var(--text-secondary); transition:transform 300ms cubic-bezier(0.22,1,0.36,1); }
+  .day.is-open > .day-head .chev, .dv.is-open .dv-more .chev { transform:rotate(180deg); }
+
+  /* Opening is smooth: the panel grows from nothing to its full height. */
+  .fold { display:grid; grid-template-rows:0fr; transition:grid-template-rows 360ms cubic-bezier(0.22,1,0.36,1); }
+  .is-open > .fold { grid-template-rows:1fr; }
+  .fold-in { overflow:hidden; min-height:0; }
+  :not(.is-open) > .fold > .fold-in { visibility:hidden; transition:visibility 0s 360ms; }
+
+  .dlist { list-style:none; margin:0; padding:0 22px 14px; }
+  .dv { border-top:1px solid var(--line-soft); }
+  .dv-row { display:flex; align-items:center; gap:10px 18px; flex-wrap:wrap; padding:14px 0; }
+  .dv-title { flex:1 1 260px; min-width:0; margin:0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:600; font-size:15.5px; line-height:1.35; color:var(--text); }
+  .dv-meta { display:flex; align-items:center; gap:16px; font-size:14px; color:var(--text-secondary); font-variant-numeric:tabular-nums; }
+  .st { display:inline-flex; align-items:center; gap:7px; font-weight:500; }
+  .st::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; flex:none; }
+  .st.s-accepted { color:var(--brand); }
+  .st.s-pending { color:var(--accent-text); }
+  .dv-more { display:inline-flex; align-items:center; gap:4px; padding:4px 2px; background:none; border:none; border-radius:6px; cursor:pointer;
+    font:inherit; font-size:14px; font-weight:600; color:var(--brand); }
+  .dv-more:hover { color:var(--accent-text); }
+
+  .dv-detail { display:grid; grid-template-columns:150px minmax(0,1fr); gap:20px; align-items:start; padding:2px 0 18px; }
+  .dv-detail.no-photo { grid-template-columns:minmax(0,1fr); }
+  .dv-photo { aspect-ratio:1; padding:0; border:none; border-radius:10px; overflow:hidden; background:var(--tint); cursor:zoom-in; }
+  .dv-photo img { display:block; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 300ms ease; }
+  .dv-photo img.is-in { opacity:1; }
+  .dv-photo:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  .dv-facts { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px 24px; margin:0; }
+  .dv-facts dt { font-size:12.5px; color:var(--text-secondary); }
+  .dv-facts dd { margin:3px 0 0; font-size:15px; line-height:1.4; color:var(--text); overflow-wrap:anywhere; }
+  .dv-facts dd.is-none { color:var(--text-secondary); }
+  /* The box's temperature log, when an admin has published it. Full width,
+     under the photo and the facts. */
+  .dv-temps { grid-column:1 / -1; display:grid; gap:8px; padding-top:14px; border-top:1px solid var(--line-soft); }
+  .dv-temps p { margin:0; font-size:13px; line-height:1.5; color:var(--text-secondary); }
+  .dv-temps .dv-temps-head { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; font-size:14px; color:var(--text); }
+  .dv-temps-head b { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; }
+  .dv-temps-head .ok { color:var(--brand); font-weight:500; }
+  .dv-temps-head .warm { color:var(--accent-text); font-weight:600; }
+
+  .more-days { display:block; margin:0 auto; padding:16px 22px; background:none; border:none; font:inherit; font-size:14.5px; font-weight:600; color:var(--brand); cursor:pointer; }
+  .more-days:hover { color:var(--accent-text); }
+
+  /* A photo, larger, over the page. Click anywhere or press Escape to close. */
+  .ph-view { border:none; padding:0; background:transparent; max-width:min(92vw, 900px); max-height:90vh; overflow:visible; }
+  .ph-view::backdrop { background:rgba(10,14,8,0.78); }
+  .ph-view img { display:block; max-width:100%; max-height:90vh; border-radius:12px; }
+
+  .empty-state { display:flex; flex-direction:column; align-items:center; gap:12px; padding:48px 24px 52px; text-align:center; }
+  .empty-state .mascot-slot { width:80px; }
+  .empty-state p { margin:0; }
   @media (max-width:640px) {
-    .mhead { padding:10px 14px; }
-    /* Four short columns fit a phone, so no sideways scrolling. */
-    .thead, .mrow { grid-template-columns:minmax(0,1.25fr) minmax(0,0.9fr) minmax(0,0.6fr) minmax(0,1fr); gap:8px; padding-left:14px; padding-right:14px; }
-    .mrow { font-size:13px; }
-    .thead button, .thead .lab { font-size:11px; letter-spacing:0.04em; }
-    /* design.css gives the old tracker a 560px minimum and side-scrolling on
-       phones; this table fits without it. */
+    .mhead { padding:12px 16px; }
+    .day-head { padding:16px; flex-wrap:wrap; }
+    .day-date { font-size:16px; flex-basis:calc(100% - 40px); }
+    .day-sum { order:3; flex-basis:100%; font-size:13.5px; margin-top:-6px; }
+    .dlist { padding:0 16px 10px; }
+    .dv-title { flex-basis:100%; font-size:15px; }
+    .dv-meta { flex:1; gap:12px; font-size:13.5px; }
+    .dv-detail { grid-template-columns:minmax(0,1fr); gap:14px; }
+    .dv-photo { max-width:260px; }
     #manifest { overflow:hidden; }
-    #manifest .thead, #manifest .mrow { min-width:0; }
     #manifest .mhead { position:static; max-width:none; }
   }
+  @media (prefers-reduced-motion: reduce) { .fold, .chev, .dv-photo img { transition:none; } }
+
+  /* --- progress chart ------------------------------------------------------ */
+  .trend { margin-top:28px; background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; padding:24px 24px 18px; }
+  .trend[hidden] { display:none; }
+  .trend-head { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:16px 32px; margin:0 0 8px; }
+  .trend-kicker { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--text-secondary); }
+  .trend-total { margin:6px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
+    font-size:clamp(34px,4.4vw,48px); line-height:1; letter-spacing:-0.04em; color:var(--brand); font-variant-numeric:tabular-nums; }
+  .trend-total .u { font-size:0.45em; letter-spacing:-0.02em; margin-left:2px; }
+  .trend-pace { margin:8px 0 0; font-size:14px; color:var(--text-secondary); }
+  .trend-goal { text-align:right; }
+  .trend-goal-v { margin:6px 0 0; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700;
+    font-size:20px; letter-spacing:-0.02em; color:var(--text); }
+  .trend-eta { color:var(--accent-text); }
+  .trend-range { margin:6px 0 0; font-size:13px; color:var(--text-secondary); }
+  .trend-chart { position:relative; height:260px; margin:4px -6px 0; }
+  .trend-chart svg { display:block; width:100%; height:100%; overflow:visible; }
+  .trend-legend { display:flex; flex-wrap:wrap; gap:6px 18px; margin:10px 0 0; font-size:12.5px; color:var(--text-secondary); }
+  .trend-legend span { display:inline-flex; align-items:center; gap:7px; }
+  .trend-legend i { display:inline-block; width:18px; height:0; border-top:3px solid var(--brand); border-radius:2px; }
+  .trend-legend .lg-proj { border-top:3px dotted var(--brand); opacity:0.7; }
+  .trend-legend .lg-band { height:10px; border:none; border-radius:3px; background:color-mix(in srgb, var(--brand) 14%, transparent); }
+  .trend-legend .lg-goal { border-top:2px dashed var(--accent); }
+
+  /* chart parts */
+  .tr-base { stroke:var(--line); stroke-width:1; }
+  .tr-grid { stroke:var(--line-soft); stroke-width:1; }
+  .tr-area { stroke:none; }
+  .tr-line { fill:none; stroke:var(--brand); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .tr-band { fill:color-mix(in srgb, var(--brand) 11%, transparent); stroke:none; }
+  .tr-proj { fill:none; stroke:var(--brand); stroke-width:2.5; stroke-linecap:round; stroke-dasharray:0.1 7; opacity:0.75; }
+  .tr-goal { stroke:var(--accent); stroke-width:1.5; stroke-dasharray:5 6; opacity:0.75; }
+  .tr-label { font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:11px; fill:var(--text-secondary); }
+  .tr-label.goal { fill:var(--accent-text); font-weight:500; }
+  .tr-label.eta { fill:var(--accent-text); font-weight:500; }
+  .tr-now-dot { fill:var(--live, #1E9E50); stroke:var(--surface); stroke-width:2.5; }
+  .tr-now-ring { fill:var(--live, #1E9E50); opacity:0; transform-box:fill-box; transform-origin:center; }
+  .trend.is-drawn .tr-now-ring { animation:trPing 2s cubic-bezier(0,0,0.2,1) infinite; }
+  @keyframes trPing { 0% { transform:scale(1); opacity:0.5; } 80%, 100% { transform:scale(3); opacity:0; } }
+  .tr-eta-dot { fill:var(--surface); stroke:var(--accent); stroke-width:2.5; }
+  /* the milestone moment */
+  .tr-hit-dot { fill:var(--brand); stroke:var(--surface); stroke-width:2.5; }
+  .tr-hit-tick { fill:none; stroke:var(--on-brand); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .tr-burst { fill:none; stroke:var(--live, #1E9E50); stroke-width:2; opacity:0; transform-box:fill-box; transform-origin:center; }
+  .tr-hit.is-burst .tr-burst { animation:trBurst 900ms cubic-bezier(0.2,0.7,0.3,1) 2; }
+  @keyframes trBurst { 0% { transform:scale(1); opacity:0.9; } 100% { transform:scale(4.4); opacity:0; } }
+  .tr-badge { opacity:0; transform:translateY(6px); transform-box:fill-box; transform-origin:center bottom;
+    transition:opacity 300ms ease, transform 420ms cubic-bezier(0.3,1.6,0.5,1); }
+  .tr-badge.is-on { opacity:1; transform:none; }
+  .tr-badge rect { fill:var(--brand); }
+  .tr-badge text { fill:var(--on-brand); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:11.5px; }
+  .tr-fade.is-hit .tr-goal { stroke:var(--live, #1E9E50); stroke-dasharray:none; stroke-width:2.5; opacity:1; }
+  .tr-fade.is-hit .tr-label.goal { fill:var(--live, #1E9E50); }
+  .tr-fade.is-glide { transition:opacity 500ms ease, transform 850ms cubic-bezier(0.22,1,0.36,1); }
+  .tr-goal, .tr-label.goal { transition:stroke 250ms ease, fill 250ms ease, stroke-width 250ms ease; }
+  .tr-pop { opacity:0; transform:scale(0.4); transform-box:fill-box; transform-origin:center; transition:opacity 350ms ease, transform 450ms cubic-bezier(0.3,1.6,0.5,1); }
+  .tr-pop.is-on { opacity:1; transform:none; }
+  .tr-fade { opacity:0; transition:opacity 500ms ease; }
+  .tr-fade.is-on { opacity:1; }
+  .tr-hover line { stroke:var(--brand-line-mid); stroke-width:1; stroke-dasharray:3 4; }
+  .tr-hover circle { fill:var(--surface); stroke:var(--brand); stroke-width:2.5; }
+  .tr-tip { position:absolute; top:0; pointer-events:none; transform:translate(-50%, -100%); margin-top:-12px; padding:6px 10px; border-radius:8px;
+    background:var(--text); color:var(--bg); font-family:'DM Mono',ui-monospace,Menlo,monospace; font-size:12px; white-space:nowrap;
+    opacity:0; transition:opacity 120ms ease; }
+  .tr-tip.is-on { opacity:1; }
+  .trend-empty { display:grid; place-items:center; height:100%; margin:0; font-size:14px; color:var(--text-secondary); }
+  @media (max-width:640px) {
+    .trend { padding:18px 14px 14px; }
+    .trend-goal { text-align:left; }
+    .trend-chart { height:210px; }
+  }
+
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=17">
+<link rel="stylesheet" href="assets/design.css?v=25">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -76,15 +207,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="wrap">
     <a href="index.html#top" class="brand">
       <span class="mascot-slot" style="width:26px;display:block;" data-state="idle"></span>
-      Stock the Block
+      Stock The Block
     </a>
     <div class="links">
-      <a href="index.html#how">How it works</a>
-      <a href="index.html#sensors">Food safety</a>
-      <a href="index.html#network">Map</a>
-      <a href="getting-started.html">Getting started</a>
-      <a href="log.html" aria-current="page">Delivery log</a>
-      <a href="index.html#join" class="cta">Work with us</a>
+      <a href="index.html#how">Our Process</a>
+      <a href="index.html#sensors">Safety</a>
+      <a href="index.html#network">Our Why</a>
+      <a href="log.html" aria-current="page">Deliveries</a>
+      <a href="team.html">Team</a>
+      <a href="index.html#join" class="cta">Work With Us</a>
       <a href="members.html" class="login">Sign in</a>
       <button id="themeToggle" type="button" aria-label="Colour theme">
         <svg data-theme-icon="light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -98,11 +229,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 <p id="themeStatus" class="vh" role="status" aria-live="polite"></p>
 
 <main>
-<header id="top" class="wrap page-head">
-  <a class="page-back" href="tracking.html">← How we track every box</a>
-  <p class="eyebrow">Delivery log</p>
-  <h1>Every delivery, on the public record.</h1>
-  <p class="body-p">Each box a member logs shows up here with its date, weight and status. It says <b>Verified</b> once an admin has checked the log against what arrived.</p>
+<header id="top" class="wrap log-head">
+  <div class="sec-head">
+    <h1 class="sec-title">Delivery Log</h1>
+    <p class="sec-lede">We value transparency. Every delivery done by every school is tracked and verified with its date, weight, and status.</p>
+  </div>
 </header>
 
 <section class="wrap" style="padding-bottom:96px;">
@@ -115,26 +246,43 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by status"></div>
   <div class="manifest" id="manifest">
     <div class="mhead">
-      <span class="left">
-        <span style="color:var(--brand); font-weight:500;">DELIVERY LOG · <span id="filterLabel">ALL</span></span>
-        <button type="button" id="csvExport" class="btn-sm" style="font-size:12px; padding:5px 10px;" disabled>Export CSV</button>
-      </span>
-      <span class="right" style="font-weight:500; font-variant-numeric:tabular-nums;"><span id="shownTotal"></span></span>
-    </div>
-    <div class="thead" id="thead">
-      <button type="button" data-key="date" aria-sort="descending">Date <span class="caret" aria-hidden="true">▾</span></button>
-      <button type="button" data-key="weightLbs" aria-sort="none">Weight <span class="caret" aria-hidden="true">▾</span></button>
-      <button type="button" data-key="foods" aria-sort="none">Foods <span class="caret" aria-hidden="true">▾</span></button>
-      <span class="lab">Status</span>
+      <span class="mlabel" id="filterLabel">Verified deliveries</span>
+      <span id="shownTotal" style="font-variant-numeric:tabular-nums;"></span>
     </div>
     <div id="mempty" class="empty-state">
       <div class="mascot-slot" data-state="empty"></div>
       <p style="font-weight:500; font-size:14px; color:var(--text);" id="emptyMsg">Loading the log…</p>
       <p style="font-size:12px; color:var(--text-secondary); max-width:44ch;" id="emptySub"></p>
     </div>
-    <div id="mbody"><noscript><p style="padding:16px 20px; font-size:14px;">Enable JavaScript to view the delivery log.</p></noscript></div>
+    <div id="days" class="days"><noscript><p style="padding:16px 22px; font-size:14px;">Enable JavaScript to view the delivery log.</p></noscript></div>
   </div>
-  <p class="log-note">What's kept off this page: who made the delivery, which school it came from, where it went, notes and photos. Those stay with our members and admins. "Foods" is how many kinds of food were in the box. Deliveries an admin rejects are taken off the log. Some boxes carry a temperature sensor; when an admin publishes a box's log, a Temperature button shows how cold it stayed (the dashed line is 41°F, the food-safety limit).</p>
+
+  <!-- A delivery's photo, larger. -->
+  <dialog class="ph-view" id="phView" aria-label="Delivery photo"><img alt=""></dialog>
+
+  <!-- Progress: cumulative pounds from verified deliveries, and where our
+       pace puts the next milestone. Drawn by the script below. -->
+  <section class="trend" id="trend" aria-labelledby="trendHd" hidden>
+    <div class="trend-head">
+      <div class="trend-now">
+        <h2 class="trend-kicker" id="trendHd">Food waste eliminated</h2>
+        <p class="trend-total"><span id="trendTotal">0</span><span class="u"> lbs</span></p>
+        <p class="trend-pace" id="trendPace"></p>
+      </div>
+      <div class="trend-goal">
+        <p class="trend-kicker">Next milestone</p>
+        <p class="trend-goal-v"><span id="trendGoal"></span> <span class="trend-eta" id="trendEta"></span></p>
+        <p class="trend-range" id="trendRange"></p>
+      </div>
+    </div>
+    <div class="trend-chart" id="trendChart" role="img"></div>
+    <div class="trend-legend" aria-hidden="true">
+      <span><i class="lg-so-far"></i>So far</span>
+      <span><i class="lg-proj"></i>Projected</span>
+      <span><i class="lg-band"></i>Likely range</span>
+      <span><i class="lg-goal"></i>Milestone</span>
+    </div>
+  </section>
 </section>
 </main>
 
@@ -147,20 +295,20 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
   </div>
   <nav class="wrap foot-links" aria-label="More pages">
-    <a href="tracking.html">How we track</a>
-    <a href="log.html">Delivery log</a>
-    <a href="why.html">Why now</a>
+    <a href="tracking.html">Tracking</a>
+    <a href="log.html">Deliveries</a>
+    <a href="why.html">Our Why?</a>
     <a href="team.html">Team</a>
-    <a href="getting-started.html">Getting started</a>
+    <a href="getting-started.html">Getting Started</a>
     <a href="why.html#sources">Sources</a>
     <a href="privacy.html">Privacy</a>
   </nav>
-  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase and CARTO map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
+  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=18"></script>
-<script src="assets/tempchart.js?v=1"></script>
+<script src="assets/site.js?v=28"></script>
+<script src="assets/tempchart.js?v=3"></script>
 <script>
 (function () {
   "use strict";
@@ -171,23 +319,25 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   STB.initNav();
 
   /* Rows come from Firestore's publicLog collection: a trimmed copy of each
-     delivery that holds only { date, weightLbs, foods, status }, plus temps
-     (the box's temperature log) when an admin has published it. The member
-     portal writes it (assets/members.js, assets/admin.js) and firestore.rules
-     lets anyone read it. */
+     delivery that holds only { date, weightLbs, foods, status, school,
+     region, site, photo }. school is the school the food came from and site
+     the fridge it went to, both as picked when it was logged; photo says it
+     has a public photo (publicPhotos/{id}). temps is the box's temperature
+     log, only when an admin has published it (assets/tempchart.js draws it).
+     Older rows may not have them yet. The member portal writes them (assets/portal.js publicEntry,
+     members.js, admin.js) and firestore.rules lets anyone read them. */
   var ROWS = null;          // null until the first load
   var STATUS = { accepted: "Verified", pending: "Awaiting review" };
   var FILTERS = [
-    { key: "all", label: "All" },
-    { key: "accepted", label: "Verified" },
-    { key: "pending", label: "Awaiting review" }
+    { key: "accepted", label: "Verified", title: "Verified deliveries" },
+    { key: "pending", label: "Awaiting review", title: "Awaiting review" }
   ];
-  var filter = "all", sortKey = "date", sortDir = "desc";
-  var openTemps = {};       // ids of rows whose temperature chart is open
+  var filter = "accepted";
 
-  function fmtDate(iso) {
+  // "Thursday, October 16, 2026"
+  function longDay(iso) {
     var p = iso.split("-").map(Number);
-    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   }
   function lbs(n) { return (Math.round(n * 10) / 10).toLocaleString("en-US") + " lbs"; }
 
@@ -203,58 +353,545 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     });
     chipsHost.appendChild(b);
   });
-  $$("#thead button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var k = b.getAttribute("data-key");
-      if (k === sortKey) sortDir = sortDir === "asc" ? "desc" : "asc";
-      else { sortKey = k; sortDir = "desc"; }
-      render();
-    });
-  });
-
+  // Newest day first; within a day, by school.
   function shown() {
-    return (ROWS || []).filter(function (r) { return filter === "all" || r.status === filter; })
+    return (ROWS || []).filter(function (r) { return r.status === filter; })
       .sort(function (a, b) {
-        var va = a[sortKey], vb = b[sortKey];
-        var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
-        if (!c) c = String(a.date).localeCompare(String(b.date));
-        return sortDir === "asc" ? c : -c;
+        return String(b.date).localeCompare(String(a.date)) ||
+          String(a.school || "~").localeCompare(String(b.school || "~")) || String(a.id).localeCompare(String(b.id));
       });
+  }
+
+  /* ---------- numbers that count up ----------
+     Like the home page: from zero the first time the log loads, then from
+     wherever they are when the log changes. */
+  var reduced = STB.reduced;
+  function counter(el, unit) {
+    var shown = 0, goal = null, raf = 0;
+    function fmt(v, dp) { return v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp }) + (unit || ""); }
+    return function (v) {
+      if (v === goal) return;
+      var from = goal === null ? 0 : shown, dp = v % 1 ? 1 : 0;
+      goal = v;
+      if (raf) cancelAnimationFrame(raf);
+      if (reduced) { shown = v; el.textContent = fmt(v, dp); return; }
+      var t0 = performance.now();
+      raf = requestAnimationFrame(function tick(now) {
+        var p = Math.min((now - t0) / 1500, 1);
+        shown = from + (v - from) * (1 - Math.pow(1 - p, 3));
+        el.textContent = fmt(p < 1 ? shown : v, dp);
+        raf = p < 1 ? requestAnimationFrame(tick) : 0;
+      });
+    };
+  }
+  var setCount = counter($("#statCount")), setLbs = counter($("#statLbs"), " lbs"), setPending = counter($("#statPending"));
+
+  /* ---------- progress chart ----------
+     The running total of pounds from verified deliveries, drawn as one
+     smooth line, then a dotted projection at our recent pace up to the next
+     milestone, with a soft band for how much sooner or later it could land
+     (30% faster or slower). Redrawn whenever the log changes. The first time
+     it scrolls into view it draws itself in: the line, then the projection,
+     then the milestone. */
+  var trend = (function () {
+    var section = $("#trend"), host = $("#trendChart");
+    var NS = "http://www.w3.org/2000/svg", DAY = 864e5;
+    var MILESTONES = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000];
+    var data = null, key = "", played = false, visible = false, lastGoal = null;
+    var setTotal = counter($("#trendTotal"));
+
+    function dayNum(iso) { var p = iso.split("-").map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / DAY); }
+    function todayNum() { var d = new Date(); return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); }
+    function fmtDay(n, year) {
+      return new Date(n * DAY).toLocaleDateString("en-US", year ? { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" } : { month: "short", day: "numeric", timeZone: "UTC" });
+    }
+    function fmtLbs(v) { return (Math.round(v * 10) / 10).toLocaleString("en-US"); }
+
+    /* The x axis counts delivery days, not calendar days: every day with a
+       verified delivery gets one evenly spaced slot, so weekends and other
+       days off take no room and the line doesn't sit flat across them. Slot
+       0 is the start, at zero. Each point keeps its real date for labels.
+       The projection works in the same slots, then turns them back into
+       dates by counting school days (Monday to Friday). */
+    function model(rows) {
+      var byDay = {};
+      rows.forEach(function (r) {
+        if (r.status !== "accepted") return;
+        var d = dayNum(r.date);
+        byDay[d] = (byDay[d] || 0) + r.weightLbs;
+      });
+      var days = Object.keys(byDay).map(Number).sort(function (a, b) { return a - b; });
+      if (!days.length) return null;
+      var pts = [{ d: 0, v: 0 }], sum = 0;
+      days.forEach(function (day, k) { sum += byDay[day]; pts.push({ d: k + 1, date: day, v: Math.round(sum * 10) / 10, real: true }); });
+      var n = days.length, total = pts[n].v, last = days[n - 1];
+
+      // Pace: average pounds per delivery day, over the last ten of them.
+      var recent = days.slice(-10);
+      var rate = recent.reduce(function (t, day) { return t + byDay[day]; }, 0) / recent.length;
+      // The goal is always the next milestone we haven't reached, however close.
+      var goal = MILESTONES.filter(function (g) { return g > total; })[0] || Math.ceil(total * 1.5);
+      // Delivery days still needed, rounded up: "likely around" errs late.
+      var need = function (r) { return r > 0 ? Math.ceil((goal - total) / r) : null; };
+
+      /* How often a school day is a delivery day so far, from the first
+         delivery to today, so the dates don't assume a delivery every day. */
+      var isSchoolDay = function (day) { var w = new Date(day * DAY).getUTCDay(); return w !== 0 && w !== 6; };
+      var now = Math.max(todayNum(), last), schoolDays = 0;
+      for (var d = days[0]; d <= now; d++) if (isSchoolDay(d)) schoolDays++;
+      var often = Math.min(1, n / Math.max(1, schoolDays));
+      var dateAfter = function (k) {
+        if (k === null) return null;
+        var left = Math.ceil(k / often), day = now;
+        while (left > 0) { day++; if (isSchoolDay(day)) left--; }
+        return day;
+      };
+      var nk = need(rate), soonK = need(rate * 1.3), lateK = need(rate * 0.7);
+      return { pts: pts, total: total, now: n, rate: rate, goal: goal, recent: recent.length,
+        eta: nk === null ? null : n + nk, etaDate: dateAfter(nk), soonDate: dateAfter(soonK), lateDate: dateAfter(lateK),
+        lastDate: last, firstDate: days[0] };
+    }
+
+    // A smooth curve through the points that never overshoots them (the
+    // same monotone curve d3 calls curveMonotoneX), so a running total never
+    // appears to dip.
+    function smooth(P) {
+      var n = P.length;
+      if (n < 3) return "M" + P.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join("L");
+      var t = [], i;
+      var sgn = function (v) { return v < 0 ? -1 : 1; };
+      for (i = 1; i < n - 1; i++) {
+        var h0 = P[i][0] - P[i - 1][0], h1 = P[i + 1][0] - P[i][0];
+        var s0 = (P[i][1] - P[i - 1][1]) / h0, s1 = (P[i + 1][1] - P[i][1]) / h1, q = (s0 * h1 + s1 * h0) / (h0 + h1);
+        t[i] = (sgn(s0) + sgn(s1)) * Math.min(Math.abs(s0), Math.abs(s1), 0.5 * Math.abs(q)) || 0;
+      }
+      t[0] = (3 * (P[1][1] - P[0][1]) / (P[1][0] - P[0][0]) - t[1]) / 2;
+      t[n - 1] = (3 * (P[n - 1][1] - P[n - 2][1]) / (P[n - 1][0] - P[n - 2][0]) - t[n - 2]) / 2;
+      var d = "M" + P[0][0].toFixed(1) + "," + P[0][1].toFixed(1);
+      for (i = 0; i < n - 1; i++) {
+        var h = (P[i + 1][0] - P[i][0]) / 3;
+        d += "C" + (P[i][0] + h).toFixed(1) + "," + (P[i][1] + h * t[i]).toFixed(1) + " " + (P[i + 1][0] - h).toFixed(1) + "," +
+          (P[i + 1][1] - h * t[i + 1]).toFixed(1) + " " + P[i + 1][0].toFixed(1) + "," + P[i + 1][1].toFixed(1);
+      }
+      return d;
+    }
+    function node(name, attrs, text) {
+      var n = document.createElementNS(NS, name);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      if (text !== undefined) n.textContent = text;
+      return n;
+    }
+    var ease = function (p) { return 1 - Math.pow(1 - p, 3); };
+
+    function draw(animate) {
+      var m = data;
+      host.replaceChildren();
+      if (!m) { host.appendChild(Object.assign(document.createElement("p"), { className: "trend-empty", textContent: "The chart starts with the first verified delivery." })); return; }
+      var W = host.clientWidth, H = host.clientHeight;
+      if (W < 120 || !H) return;            // too narrow to draw (e.g. mid-resize)
+      var padL = 8, padR = 8, padT = 28, padB = 28;
+      var x0 = 0;
+      var end = m.eta !== null ? Math.max(m.eta, m.now + 1) : m.now + 3;
+      // The projection gets at most three times the room the history has,
+      // so what has actually happened stays readable.
+      var room = m.now + Math.max(3, 3 * m.now);
+      var clipped = end > room;
+      if (clipped) end = room;
+      var x1 = end + (end - x0) * 0.05, yMax = m.goal * 1.12;
+      var X = function (d) { return padL + (d - x0) / (x1 - x0) * (W - padL - padR); };
+      var Y = function (v) { return padT + (1 - v / yMax) * (H - padT - padB); };
+      var base = Y(0), nx = X(m.now), ny = Y(m.total), gy = Y(m.goal);
+      var id = "tr" + Math.random().toString(36).slice(2, 7);
+
+      var svg = node("svg", { viewBox: "0 0 " + W + " " + H, "aria-hidden": "true" });
+      var defs = node("defs", {});
+      var grad = node("linearGradient", { id: id + "g", x1: 0, y1: 0, x2: 0, y2: 1 });
+      [["0", 0.26], ["1", 0]].forEach(function (s) {
+        var st = node("stop", { offset: s[0] });
+        st.setAttribute("style", "stop-color:var(--brand);stop-opacity:" + s[1]);
+        grad.appendChild(st);
+      });
+      var clipA = node("clipPath", { id: id + "a" }), rectA = node("rect", { x: 0, y: 0, width: W, height: H });
+      var clipP = node("clipPath", { id: id + "p" }), rectP = node("rect", { x: nx, y: 0, width: Math.max(0, W - nx), height: H });
+      clipA.appendChild(rectA); clipP.appendChild(rectP);
+      defs.append(grad, clipA, clipP);
+      svg.appendChild(defs);
+
+      svg.appendChild(node("line", { class: "tr-grid", x1: padL, x2: W - padR, y1: Y(m.goal / 2), y2: Y(m.goal / 2) }));
+      svg.appendChild(node("line", { class: "tr-base", x1: padL, x2: W - padR, y1: base, y2: base }));
+
+      var goalG = node("g", { class: "tr-fade" });
+      goalG.appendChild(node("line", { class: "tr-goal", x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      goalG.appendChild(node("text", { class: "tr-label goal", x: padL, y: gy - 9 }, fmtLbs(m.goal) + " lbs milestone"));
+      svg.appendChild(goalG);
+
+      // Projection: the likely range, then our pace, from the latest delivery on.
+      var proj = node("g", { "clip-path": "url(#" + id + "p)" });
+      if (m.rate > 0) {
+        var vAt = function (r, d) { return Math.min(m.goal, m.total + r * (d - m.now)); };
+        var hi = [], lo = [];
+        for (var i = 0; i <= 32; i++) {
+          var d = m.now + (end - m.now) * i / 32;
+          hi.push(X(d).toFixed(1) + "," + Y(vAt(m.rate * 1.3, d)).toFixed(1));
+          lo.unshift(X(d).toFixed(1) + "," + Y(vAt(m.rate * 0.7, d)).toFixed(1));
+        }
+        proj.appendChild(node("path", { class: "tr-band", d: "M" + hi.join("L") + "L" + lo.join("L") + "Z" }));
+        proj.appendChild(node("path", { class: "tr-proj", d: "M" + nx.toFixed(1) + "," + ny.toFixed(1) + "L" + X(end).toFixed(1) + "," + Y(vAt(m.rate, end)).toFixed(1) }));
+      }
+      svg.appendChild(proj);
+
+      // What has happened: the smooth running total, softly filled below.
+      var P = m.pts.map(function (p) { return [X(p.d), Y(p.v)]; });
+      var line = smooth(P);
+      var actual = node("g", { "clip-path": "url(#" + id + "a)" });
+      actual.appendChild(node("path", { class: "tr-area", fill: "url(#" + id + "g)",
+        d: line + "L" + P[P.length - 1][0].toFixed(1) + "," + base.toFixed(1) + "L" + P[0][0].toFixed(1) + "," + base.toFixed(1) + "Z" }));
+      actual.appendChild(node("path", { class: "tr-line", d: line }));
+      svg.appendChild(actual);
+
+      /* The milestone already passed (the biggest one at or below the total)
+         and where the line crossed it. It keeps a small check on the line.
+         The first time the chart plays, crossing it is a little moment:
+         the check pops, a "reached" tag shows, the goal line flashes, then
+         it glides up to the next milestone. */
+      var passed = MILESTONES.filter(function (g) { return g <= m.total; }).pop() || null;
+      var hitX = null, hitY = null, hitG = null, badge = null;
+      if (passed) {
+        for (var k = 1; k < m.pts.length; k++) {
+          if (m.pts[k].v >= passed) {
+            var pa = m.pts[k - 1], pb = m.pts[k], f = (passed - pa.v) / ((pb.v - pa.v) || 1);
+            hitX = X(pa.d + (pb.d - pa.d) * f); hitY = Y(passed);
+            break;
+          }
+        }
+      }
+      if (hitX !== null) {
+        hitG = node("g", { class: "tr-hit tr-pop" });
+        hitG.appendChild(node("circle", { class: "tr-burst", cx: hitX, cy: hitY, r: 7 }));
+        hitG.appendChild(node("circle", { class: "tr-hit-dot", cx: hitX, cy: hitY, r: 7.5 }));
+        hitG.appendChild(node("path", { class: "tr-hit-tick", d: "M" + (hitX - 3.3).toFixed(1) + "," + hitY.toFixed(1) + " l2.3,2.4 l4.3,-4.8" }));
+        svg.appendChild(hitG);
+        var tagText = fmtLbs(passed) + " lbs reached";
+        var bw = tagText.length * 6.6 + 24, bx = Math.min(Math.max(hitX - bw / 2, padL), W - padR - bw), by = Math.max(2, hitY - 40);
+        badge = node("g", { class: "tr-badge" });
+        badge.appendChild(node("rect", { x: bx.toFixed(1), y: by.toFixed(1), width: bw.toFixed(1), height: 22, rx: 11 }));
+        badge.appendChild(node("text", { x: (bx + bw / 2).toFixed(1), y: (by + 15).toFixed(1), "text-anchor": "middle" }, tagText));
+        svg.appendChild(badge);
+      }
+
+      var nowG = node("g", { class: "tr-pop" });
+      nowG.appendChild(node("circle", { class: "tr-now-ring", cx: nx, cy: ny, r: 6 }));
+      nowG.appendChild(node("circle", { class: "tr-now-dot", cx: nx, cy: ny, r: 6 }));
+      svg.appendChild(nowG);
+
+      var etaG = null;
+      if (m.eta !== null && !clipped) {
+        etaG = node("g", { class: "tr-pop" });
+        etaG.appendChild(node("circle", { class: "tr-eta-dot", cx: X(m.eta), cy: gy, r: 6 }));
+        svg.appendChild(etaG);
+      }
+
+      // Dates along the bottom: the first delivery, the latest, and the milestone.
+      var labels = node("g", { class: "tr-fade" }), ly = H - 6, placed = [];
+      function label(x, text, cls) {
+        var anchor = x < 40 ? "start" : x > W - 40 ? "end" : "middle";
+        var w = text.length * 7;
+        var left = anchor === "start" ? x : anchor === "end" ? x - w : x - w / 2;
+        if (placed.some(function (b) { return left < b[1] + 12 && left + w > b[0] - 12; })) return;
+        placed.push([left, left + w]);
+        labels.appendChild(node("text", { class: "tr-label" + (cls ? " " + cls : ""), x: x, y: ly, "text-anchor": anchor }, text));
+      }
+      var otherYear = function (day) { return new Date(day * DAY).getUTCFullYear() !== new Date().getFullYear(); };
+      label(nx, fmtDay(m.lastDate));
+      if (m.eta !== null && !clipped) label(X(m.eta), fmtDay(m.etaDate, otherYear(m.etaDate)), "eta");
+      if (m.now > 1) label(X(1), fmtDay(m.firstDate));
+      svg.appendChild(labels);
+
+      // Hover: the running total on any delivery day.
+      var hover = node("g", { class: "tr-hover", style: "display:none" });
+      var hl = node("line", { y1: padT, y2: base }), hc = node("circle", { r: 5 });
+      hover.append(hl, hc);
+      svg.appendChild(hover);
+      var tipEl = document.createElement("div");
+      tipEl.className = "tr-tip";
+      var real = m.pts.filter(function (p) { return p.real; });
+      svg.addEventListener("pointermove", function (e) {
+        var r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width;
+        var best = real.reduce(function (a, p) { return Math.abs(X(p.d) - x) < Math.abs(X(a.d) - x) ? p : a; });
+        var px = X(best.d), py = Y(best.v);
+        hl.setAttribute("x1", px); hl.setAttribute("x2", px);
+        hc.setAttribute("cx", px); hc.setAttribute("cy", py);
+        hover.style.display = "";
+        tipEl.textContent = fmtDay(best.date) + " · " + fmtLbs(best.v) + " lbs";
+        tipEl.style.left = (px / W * 100) + "%";
+        tipEl.style.top = (py / H * 100) + "%";
+        tipEl.classList.add("is-on");
+      });
+      svg.addEventListener("pointerleave", function () { hover.style.display = "none"; tipEl.classList.remove("is-on"); });
+
+      host.append(svg, tipEl);
+      host.setAttribute("aria-label", "Chart: " + fmtLbs(m.total) + " pounds of food waste eliminated so far" +
+        (m.eta !== null ? ". At our current pace we would reach " + fmtLbs(m.goal) + " pounds around " + fmtDay(m.etaDate, true) + "." : "."));
+
+      var shown = [goalG, labels, nowG].concat(etaG ? [etaG] : [], hitG ? [hitG] : []);
+      if (!animate || reduced) {
+        shown.forEach(function (g) { g.classList.add("is-on"); });
+        if (badge) badge.remove();
+        section.classList.add("is-drawn");
+        return;
+      }
+      /* The intro. With a milestone passed: the line draws up to it, the
+         goal line waiting there; the check pops, the tag shows and the goal
+         line flashes; the goal line glides up to the next milestone; the
+         line carries on to today; then the projection runs out to the new
+         milestone. Without one: the line draws, then the projection. */
+      section.classList.remove("is-drawn");
+      rectA.setAttribute("width", 0);
+      rectP.setAttribute("width", 0);
+      var goalText = goalG.querySelector("text");
+      var celebrate = hitX !== null;
+      var lineEnd = nx + 10, DRAW = 1500, HOLD = celebrate ? 1500 : 0, B = 1000;
+      var A1 = celebrate ? Math.max(600, DRAW * (hitX - padL) / Math.max(1, lineEnd - padL)) : DRAW;
+      var A2 = celebrate ? Math.max(450, DRAW - A1) : 0;
+      var lineDone = A1 + HOLD + A2, total = lineDone + B;
+      var easeIO = function (p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };
+      var hit = false, glided = false;
+      if (celebrate) {
+        goalG.style.transform = "translateY(" + (hitY - gy).toFixed(1) + "px)";
+        goalText.textContent = fmtLbs(passed) + " lbs milestone";
+        $("#trendGoal").textContent = fmtLbs(passed) + " lbs";
+        $("#trendEta").textContent = "";
+        $("#trendRange").textContent = "";
+      }
+      var t0 = performance.now();
+      requestAnimationFrame(function tick(now) {
+        var e = Math.max(0, now - t0);   // the first frame's clock can read just before t0
+        var w;
+        if (!celebrate) w = lineEnd * ease(Math.min(e / A1, 1));
+        else if (e < A1) w = padL + (hitX - padL) * easeIO(e / A1);
+        else if (e < A1 + HOLD) w = hitX;
+        else w = hitX + (lineEnd - hitX) * easeIO(Math.min((e - A1 - HOLD) / A2, 1));
+        rectA.setAttribute("width", w.toFixed(1));
+        rectP.setAttribute("width", Math.max(0, (W - nx) * ease(Math.max(0, Math.min((e - lineDone + 100) / B, 1)))).toFixed(1));
+        if (e > 150) { goalG.classList.add("is-on"); labels.classList.add("is-on"); }
+        if (celebrate && !hit && e >= A1) {
+          hit = true;
+          hitG.classList.add("is-on", "is-burst");
+          badge.classList.add("is-on");
+          goalG.classList.add("is-hit");
+          $("#trendEta").textContent = "· reached!";
+        }
+        if (celebrate && !glided && e >= A1 + HOLD * 0.55) {
+          glided = true;
+          goalG.classList.remove("is-hit");
+          goalG.classList.add("is-glide");
+          goalG.style.transform = "translateY(0px)";
+          goalText.textContent = fmtLbs(m.goal) + " lbs milestone";
+          header(m);
+        }
+        if (celebrate && e > lineDone + 300) badge.classList.remove("is-on");
+        if (e > lineDone - 150) nowG.classList.add("is-on");
+        if (e > total - 150 && etaG) etaG.classList.add("is-on");
+        if (e < total + 300) requestAnimationFrame(tick);
+        else { rectA.setAttribute("width", W); section.classList.add("is-drawn"); if (badge) badge.remove(); }
+      });
+    }
+
+    function header(m) {
+      setTotal(m ? m.total : 0);
+      if (!m) { $("#trendPace").textContent = ""; $("#trendGoal").textContent = "First delivery"; $("#trendEta").textContent = ""; $("#trendRange").textContent = ""; return; }
+      $("#trendPace").textContent = m.rate > 0
+        ? "Our pace: about " + fmtLbs(m.rate >= 10 ? Math.round(m.rate) : m.rate) + " lbs per delivery day" +
+          (m.recent > 1 ? ", over the last " + m.recent + " delivery days" : "")
+        : "No new deliveries lately";
+      $("#trendGoal").textContent = fmtLbs(m.goal) + " lbs";
+      var yr = function (n) { return new Date(n * DAY).getUTCFullYear() !== new Date().getFullYear(); };
+      $("#trendEta").textContent = m.eta !== null ? "· likely around " + fmtDay(m.etaDate, yr(m.etaDate)) : "";
+      $("#trendRange").textContent = m.eta !== null ? "Somewhere between " + fmtDay(m.soonDate, yr(m.soonDate)) + " and " + fmtDay(m.lateDate, yr(m.lateDate)) + " at this pace, counting school days" : "";
+    }
+
+    function update(rows) {
+      var m = model(rows || []);
+      var k = m ? [m.total, m.pts.length, m.etaDate, todayNum()].join("|") : "none";
+      if (k === key) return;
+      key = k;
+      var prevGoal = data ? data.goal : null;
+      data = m;
+      lastGoal = prevGoal;
+      section.hidden = false;
+      header(m);
+      // Passing a milestone while the page is open plays the moment again.
+      if (played) draw(m && lastGoal !== null && m.goal > lastGoal);
+      else if (visible || !("IntersectionObserver" in window)) { played = true; draw(true); }
+    }
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[0].isIntersecting;
+        if (visible && key && !played) { played = true; draw(true); }
+      }, { threshold: 0.35 }).observe(section);
+    }
+    if ("ResizeObserver" in window) {
+      var lastW = 0;
+      new ResizeObserver(function () {
+        var w = host.clientWidth;
+        if (played && w && w !== lastW) { lastW = w; draw(false); }
+      }).observe(host);
+    }
+    return { update: update };
+  })();
+
+  /* ---------- the log, one day at a time ----------
+     Days are dropdowns, newest first, and the newest starts open. Each
+     delivery is one line with "See details", which opens where it went,
+     its weight and foods, and its photo (fetched only then). What's open
+     stays open when the log updates live. */
+  var openDays = {}, openRows = {}, firstPaint = true, daysShown = 7, photos = {};
+  var CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+  var phView = $("#phView");
+  phView.addEventListener("click", function () { phView.close(); });
+  function mk(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function fold(id, content) {
+    var f = mk("div", "fold"), inner = mk("div", "fold-in");
+    inner.id = id;
+    inner.appendChild(content);
+    f.appendChild(inner);
+    return f;
+  }
+
+  function loadPhoto(r, btn, detail) {
+    var img = btn.querySelector("img");
+    if (img.src) return;
+    if (!photos[r.id]) photos[r.id] = STB.fetchPublicPhoto(r.id).catch(function () { return null; });
+    photos[r.id].then(function (url) {
+      if (!url) { btn.remove(); detail.classList.add("no-photo"); return; }
+      img.onload = function () { img.classList.add("is-in"); };
+      img.src = url;
+    });
+  }
+
+  /* The box sensor's readings from pickup to drop-off, as a chart, or null
+     if this delivery has no published temperature log. */
+  function tempLog(t) {
+    var s = window.STBTemp && STBTemp.summary(t);
+    if (!s) return null;
+    var box = mk("div", "dv-temps"), head = mk("p", "dv-temps-head");
+    head.appendChild(mk("b", null, "Box temperature"));
+    head.appendChild(s.over
+      ? mk("span", "warm", s.over + " of " + s.count + " readings above " + STBTemp.SAFE_MAX_F + "°F")
+      : mk("span", "ok", "Stayed at or below " + STBTemp.SAFE_MAX_F + "°F"));
+    box.appendChild(head);
+    box.appendChild(STBTemp.chart(t));
+    box.appendChild(mk("p", null, STBTemp.describe(t) + ". The dashed line is " + STBTemp.SAFE_MAX_F + "°F, the food-safety limit for cold food."));
+    return box;
+  }
+
+  function deliveryItem(r) {
+    var li = mk("li", "dv"), open = !!openRows[r.id];
+    li.classList.toggle("is-open", open);
+    var row = mk("div", "dv-row");
+    // Entries from before schools were recorded say so plainly.
+    row.appendChild(mk("h3", "dv-title", (r.school || "Partner School") + " Delivery"));
+    var meta = mk("div", "dv-meta");
+    meta.appendChild(mk("span", "st s-" + r.status, STATUS[r.status]));
+    meta.appendChild(mk("span", null, lbs(r.weightLbs)));
+    var more = mk("button", "dv-more"), word = mk("span", null, open ? "Hide details" : "See details");
+    more.type = "button";
+    more.appendChild(word);
+    more.insertAdjacentHTML("beforeend", CHEV);
+    more.setAttribute("aria-expanded", String(open));
+    more.setAttribute("aria-controls", "dv-" + r.id);
+    meta.appendChild(more);
+    row.appendChild(meta);
+
+    var detail = mk("div", "dv-detail" + (r.photo ? "" : " no-photo")), photoBtn = null;
+    if (r.photo) {
+      photoBtn = mk("button", "dv-photo");
+      photoBtn.type = "button";
+      photoBtn.setAttribute("aria-label", "See the photo larger");
+      var img = mk("img");
+      img.alt = "The food from this delivery";
+      photoBtn.appendChild(img);
+      photoBtn.addEventListener("click", function () {
+        if (!img.src) return;
+        var big = phView.querySelector("img");
+        big.src = img.src; big.alt = img.alt;
+        phView.showModal();
+      });
+      detail.appendChild(photoBtn);
+    }
+    var dl = mk("dl", "dv-facts");
+    [["From", r.school], ["Delivered to", r.site], ["Weight", lbs(r.weightLbs)], ["Foods", r.foods + (r.foods === 1 ? " kind" : " kinds")]].forEach(function (f) {
+      var d = mk("div");
+      d.appendChild(mk("dt", null, f[0]));
+      d.appendChild(mk("dd", f[1] ? null : "is-none", f[1] || "Not recorded yet"));
+      dl.appendChild(d);
+    });
+    detail.appendChild(dl);
+    var temps = tempLog(r.temps);
+    if (temps) detail.appendChild(temps);
+    li.appendChild(row);
+    li.appendChild(fold("dv-" + r.id, detail));
+
+    more.addEventListener("click", function () {
+      var now = !li.classList.contains("is-open");
+      li.classList.toggle("is-open", now);
+      if (now) openRows[r.id] = 1; else delete openRows[r.id];
+      more.setAttribute("aria-expanded", String(now));
+      word.textContent = now ? "Hide details" : "See details";
+      if (now && photoBtn) loadPhoto(r, photoBtn, detail);
+    });
+    if (open && photoBtn) loadPhoto(r, photoBtn, detail);
+    return li;
+  }
+
+  function dayGroup(date, rows) {
+    var sec = mk("section", "day"), open = !!openDays[date];
+    sec.classList.toggle("is-open", open);
+    var head = mk("button", "day-head");
+    head.type = "button";
+    head.setAttribute("aria-expanded", String(open));
+    head.setAttribute("aria-controls", "day-" + date);
+    var total = rows.reduce(function (t, r) { return t + r.weightLbs; }, 0);
+    head.appendChild(mk("span", "day-date", longDay(date)));
+    head.appendChild(mk("span", "day-sum", rows.length + (rows.length === 1 ? " delivery · " : " deliveries · ") + lbs(total)));
+    head.insertAdjacentHTML("beforeend", CHEV);
+    var list = mk("ul", "dlist");
+    rows.forEach(function (r) { list.appendChild(deliveryItem(r)); });
+    sec.appendChild(head);
+    sec.appendChild(fold("day-" + date, list));
+    head.addEventListener("click", function () {
+      var now = !sec.classList.contains("is-open");
+      sec.classList.toggle("is-open", now);
+      head.setAttribute("aria-expanded", String(now));
+      if (now) openDays[date] = 1; else delete openDays[date];
+    });
+    return sec;
   }
 
   function render() {
     var rows = shown();
-    var body = $("#mbody");
-    body.replaceChildren.apply(body, rows.map(function (r) {
-      var row = document.createElement("div");
-      row.className = "mrow";
-      [["date", fmtDate(r.date)], ["lbs", lbs(r.weightLbs)], ["foods", String(r.foods)]].forEach(function (c) {
-        var s = document.createElement("span"); s.className = c[0]; s.textContent = c[1];
-        if (c[0] === "date") s.style.color = "var(--text-secondary)";
-        row.appendChild(s);
-      });
-      var st = document.createElement("span");
-      st.className = "st s-" + r.status; st.textContent = STATUS[r.status];
-      var cell = document.createElement("span"); cell.className = "stcell"; cell.appendChild(st);
-      row.appendChild(cell);
-      if (STBTemp.summary(r.temps)) {
-        var open = !!openTemps[r.id];
-        var tb = document.createElement("button");
-        tb.type = "button"; tb.className = "tbtn"; tb.textContent = "Temperature";
-        tb.setAttribute("aria-expanded", String(open));
-        tb.addEventListener("click", function () { openTemps[r.id] = !openTemps[r.id]; render(); });
-        cell.appendChild(tb);
-        if (open) {
-          var log = document.createElement("div");
-          log.className = "tlog";
-          var line = document.createElement("p"); line.textContent = STBTemp.describe(r.temps);
-          log.appendChild(STBTemp.chart(r.temps));
-          log.appendChild(line);
-          row.appendChild(log);
-        }
-      }
-      return row;
-    }));
+    var byDay = {}, order = [];
+    rows.forEach(function (r) {
+      if (!byDay[r.date]) { byDay[r.date] = []; order.push(r.date); }
+      byDay[r.date].push(r);
+    });
+    if (firstPaint && ROWS && order.length) { openDays[order[0]] = 1; firstPaint = false; }
+    var nodes = order.slice(0, daysShown).map(function (d) { return dayGroup(d, byDay[d]); });
+    var left = order.length - daysShown;
+    if (left > 0) {
+      var moreDays = mk("button", "more-days", "Show " + Math.min(7, left) + (Math.min(7, left) === 1 ? " earlier day" : " earlier days"));
+      moreDays.type = "button";
+      moreDays.addEventListener("click", function () { daysShown += 7; render(); });
+      nodes.push(moreDays);
+    }
+    var host = $("#days");
+    host.replaceChildren.apply(host, nodes);
 
     var empty = $("#mempty");
     empty.style.display = rows.length ? "none" : "flex";
@@ -262,48 +899,25 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       $("#emptyMsg").textContent = "The log opens with the first delivery.";
       $("#emptySub").textContent = "Nothing has been logged yet. Every delivery will show up here as soon as a member logs it.";
     } else if (ROWS && !rows.length) {
-      $("#emptyMsg").textContent = "No deliveries here.";
-      $("#emptySub").textContent = "Pick All to see the full log.";
+      $("#emptyMsg").textContent = filter === "pending" ? "Nothing awaiting review." : "No verified deliveries yet.";
+      $("#emptySub").textContent = filter === "pending" ? "Every delivery logged so far has been checked." : "Deliveries show up here once an admin checks them.";
     }
 
     var total = rows.reduce(function (t, r) { return t + r.weightLbs; }, 0);
     $("#shownTotal").textContent = rows.length ? rows.length + (rows.length === 1 ? " delivery · " : " deliveries · ") + lbs(total) : "";
-    $("#filterLabel").textContent = FILTERS.filter(function (f) { return f.key === filter; })[0].label.toUpperCase();
-    var csv = $("#csvExport");
-    csv.disabled = !rows.length;
-    csv.title = rows.length ? "Download these " + rows.length + " row(s) as CSV" : "Nothing to export yet";
-
-    $$("#thead button").forEach(function (b) {
-      var on = b.getAttribute("data-key") === sortKey;
-      b.setAttribute("aria-sort", on ? (sortDir === "asc" ? "ascending" : "descending") : "none");
-      var c = b.querySelector(".caret");
-      c.style.opacity = on ? "1" : "0";
-      c.style.transform = on && sortDir === "asc" ? "rotate(180deg)" : "rotate(0deg)";
-    });
+    $("#filterLabel").textContent = FILTERS.filter(function (f) { return f.key === filter; })[0].title;
 
     if (ROWS) {
       var ok = ROWS.filter(function (r) { return r.status === "accepted"; });
-      $("#statCount").textContent = ok.length.toLocaleString("en-US");
-      $("#statLbs").textContent = lbs(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0));
-      $("#statPending").textContent = (ROWS.length - ok.length).toLocaleString("en-US");
+      setCount(ok.length);
+      setLbs(Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10);
+      setPending(ROWS.length - ok.length);
+      trend.update(ROWS);
     }
   }
 
-  $("#csvExport").addEventListener("click", function () {
-    var rows = shown();
-    if (!rows.length) return;
-    var lines = ["date,weight_lbs,foods,status"].concat(rows.map(function (r) {
-      return [r.date, r.weightLbs, r.foods, STATUS[r.status]].join(",");
-    }));
-    var blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url; a.download = "stock-the-block-delivery-log.csv";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-  });
-
   function fail() {
+    if (ROWS) return;   // the quick fetch already filled it in
     $("#emptyMsg").textContent = "The log couldn't load.";
     $("#emptySub").textContent = "Check your connection and reload the page.";
     $("#mempty").style.display = "flex";
@@ -311,11 +925,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   /* Live: a delivery shows up, or turns Verified, without a reload. Only
      well-formed rows are shown, so a bad entry can't break the table. */
+  function wellFormed(rows) {
+    return rows.filter(function (r) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
+    });
+  }
+  /* Fast first: one plain request (STB.fetchPublicLog in site.js) fills the
+     log in a fraction of a second, even where Firebase's live connection is
+     slow or blocked. Then Firebase keeps it live, and its rows win. */
+  var live = false;
+  STB.fetchPublicLog().then(function (rows) {
+    if (live) return;
+    ROWS = wellFormed(rows);
+    render();
+  }).catch(function (err) { console.warn("Delivery log, quick fetch:", err.message || err); });
   function start(fb) {
     fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
-      ROWS = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }).filter(function (r) {
-        return /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number" && STATUS[r.status];
-      });
+      live = true;
+      ROWS = wellFormed(snap.docs.map(function (d) { var r = d.data(); r.id = d.id; return r; }));
       render();
     }, function (err) { console.error(err); fail(); });
   }

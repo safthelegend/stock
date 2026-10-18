@@ -8,10 +8,10 @@
     var fmtN = function (n) { return n.toLocaleString("en-US"); };
 
     var STEPS = [
-        { num: "01", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", detail: "NYC school rules say food must be store-packaged, unopened and kept at a safe temperature before it can leave the cafeteria.", state: "collect", icon: "package" },
-        { num: "02", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box before it leaves the building.", detail: "Each box gets an ID number. We write down its weight, what’s inside and when it was packed, so every pound can be traced.", state: "pack", icon: "archive" },
-        { num: "03", title: "Walk it to a food bank/community fridge", body: "Two students walk the box to a food bank/community fridge in the same borough, and the drop-off is confirmed on the spot.", detail: "Staying inside one borough keeps every trip short, usually under 30 minutes, so food arrives the same afternoon.", state: "deliver", icon: "truck" },
-        { num: "04", title: "Post it online", body: "Every delivery goes on a public log: the date, where it came from, where it went and how much it weighed.", detail: "Entries are never edited; fixes are added as new lines. <span class=\"unverified\">Track the Box, the public log, is planned and not live yet.</span>", state: "record", icon: "clipboard-check" }
+        { label: "Collect", title: "Collect sealed leftovers", body: "At the end of lunch, students gather unopened, packaged food from the school’s share table.", state: "collect" },
+        { label: "Pack", title: "Pack it in a cold box", body: "The food is weighed and packed into an insulated box with an ice pack, and the box gets its own tracking ID.", state: "pack" },
+        { label: "Deliver", title: "Walk it to a food bank/community fridge", body: "Students walk the box to a nearby food bank/community fridge, and the drop-off is confirmed on the spot.", state: "deliver" },
+        { label: "Post", title: "Post it online", body: "Every delivery goes on our public delivery log, so anyone can see how much food was saved.", state: "record" }
     ];
     /* ---------- icon set (shared — assets/site.js) ---------- */
     var iconSVG = STB.iconSVG, initIcons = STB.initIcons;
@@ -62,85 +62,165 @@
         }
     }
 
-    /* ---------- live impact counter (hero) ----------
-       Pounds of food waste eliminated: the total weight of every verified
-       (admin-accepted) delivery on the public delivery log, using the same
-       rows and the same rule as log.html. onSnapshot keeps it live, so the
-       number moves the moment an admin accepts a delivery.
+    /* ---------- live impact: the hero card and Our Impact ----------
+       Both read the public delivery log (log.html's publicLog rows) through
+       one onSnapshot listener, so they move the moment an admin verifies a
+       delivery. "Verified" means accepted, the same rule log.html uses.
 
-       The markup holds the last known totals. They count up from zero as the
-       card fades in, then follow the live log once it loads. If the log can't
-       load, they stay up with the date they were true on, and the label stops
-       saying "live". */
-    (function () {
-        var card = $("#impact");
-        if (!card) return;
-        var numEl = $("#impactLbs"), countEl = $("#impactCount"), wordEl = $("#impactCountWord");
-        var dateEl = $("#impactDate"), liveText = $("#impactLiveText"), sr = $("#impactSR");
-        var target = parseFloat(numEl.textContent.replace(/,/g, "")) || 0;
-        var shownVal = target, raf = 0, loaded = false;
+       The totals come fast first, from one plain request (STB.fetchPublicLog),
+       then Firebase keeps them live. Until then the page holds the best
+       totals it has: the ones typed into the markup (dated by data-at on the
+       hero card) or, if newer, the ones this browser saw last time. The hero
+       number stays hidden until real totals arrive (usually a few hundred
+       milliseconds) and then counts up to them, so it never counts up to an
+       old figure first. The Our Impact numbers count up the first time they
+       scroll into view. If nothing loads, both keep the best totals they
+       have and stop saying "live". */
 
-        // 55 -> "55", 55.5 -> "55.5": one decimal only when the total has one.
-        function fmtLbs(v) {
-            var dp = target % 1 ? 1 : 0;
+    // A number that counts to its value: from zero when start() is called,
+    // then from wherever it is when the value changes. opts.dur (ms) and
+    // opts.ease (0-1 progress -> 0-1 of the way there) change the feel.
+    var easeOutCubic = function (p) { return 1 - Math.pow(1 - p, 3); };
+    function counter(el, opts) {
+        var dur = (opts && opts.dur) || 1500, ease = (opts && opts.ease) || easeOutCubic;
+        var goal = parseFloat(el.textContent.replace(/,/g, "")) || 0, shown = goal, raf = 0, started = false;
+        function fmt(v) {
+            var dp = goal % 1 ? 1 : 0;
             return v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
         }
-        function draw(v) {
-            var t = fmtLbs(v);
-            numEl.textContent = t;
-            card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4);
-        }
-        function animateTo(goal, from) {
-            target = goal;
+        function run(from) {
             if (raf) cancelAnimationFrame(raf);
-            if (reduced) { shownVal = goal; draw(goal); return; }
-            var a = from === undefined ? shownVal : from, t0 = performance.now(), dur = 1600;
+            if (reduced) { shown = goal; el.textContent = fmt(goal); return; }
+            var t0 = performance.now();
             raf = requestAnimationFrame(function tick(now) {
                 var p = Math.min((now - t0) / dur, 1);
-                shownVal = a + (goal - a) * (1 - Math.pow(1 - p, 3));
-                draw(p < 1 ? shownVal : goal);
+                shown = from + (goal - from) * ease(p);
+                el.textContent = fmt(p < 1 ? shown : goal);
+                if (el.onCount) el.onCount(el.textContent);
                 raf = p < 1 ? requestAnimationFrame(tick) : 0;
             });
         }
-        // "October 1st, 2026"
+        return {
+            start: function () { if (started) return; started = true; run(0); },
+            set: function (v) {
+                if (v === goal) return;
+                goal = v;
+                if (started) run(shown); else { shown = v; el.textContent = fmt(v); }
+            },
+            value: function () { return goal; }
+        };
+    }
+
+    (function () {
+        var card = $("#impact"), metrics = $("#metrics"), metricsLive = $("#metricsLive");
+        if (!card && !metrics) return;
+
+        /* ----- hero card ----- */
+        /* The hero total races through the first few hundred pounds, then
+           slows right down for the last few, like a meter settling: about
+           two thirds of the way in under half a second, the last handful
+           ticking up over the final second. */
+        var heroLbs = card && counter($("#impactLbs"), { dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); } });
+        var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
+        var liveText = $("#impactLiveText"), sr = $("#impactSR");
+        if (card) $("#impactLbs").onCount = function (t) { card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4); };
+
+        /* ----- Our Impact: every number counts up once, when the row first
+           scrolls into view, and each icon plays its little animation. ----- */
+        var mCounters = {};
+        if (metrics) {
+            $$("[data-count]", metrics).forEach(function (el) { mCounters[el.id || el.getAttribute("data-count")] = counter(el); });
+            var reveal = function () {
+                metrics.classList.add("is-in");
+                Object.keys(mCounters).forEach(function (k, n) { setTimeout(function () { mCounters[k].start(); }, n * 120); });
+            };
+            if (reduced || !("IntersectionObserver" in window)) reveal();
+            else new IntersectionObserver(function (es, io) {
+                if (es[0].isIntersecting) { io.disconnect(); reveal(); }
+            }, { threshold: 0.35 }).observe(metrics);
+        }
+
+        // "October 3rd, 2026"
         function longDate(d) {
             var n = d.getDate(), v = n % 100, suf = ["th", "st", "nd", "rd"];
             return d.toLocaleDateString("en-US", { month: "long" }) + " " + n + (suf[(v - 20) % 10] || suf[v] || suf[0]) + ", " + d.getFullYear();
         }
 
+        function setState(state, text) {
+            if (card) { card.setAttribute("data-state", state); liveText.textContent = text; }
+            if (metricsLive) metricsLive.setAttribute("data-state", state);
+        }
+
+        function showTotals(lbs, count, at) {
+            if (card) {
+                countEl.textContent = fmtN(count);
+                wordEl.textContent = count === 1 ? "verified delivery" : "verified deliveries";
+                dateEl.textContent = longDate(at);
+                heroLbs.set(lbs);
+            }
+            if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(count);
+            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
+        }
+
+        // This browser's last totals, if they're newer than the typed ones.
+        var CACHE = "stb-impact";
+        try {
+            var last = JSON.parse(localStorage.getItem(CACHE) || "null");
+            var typedAt = card && card.getAttribute("data-at") ? new Date(card.getAttribute("data-at") + "T23:59:59").getTime() : 0;
+            if (last && typeof last.lbs === "number" && typeof last.count === "number" && last.at > typedAt) showTotals(last.lbs, last.count, new Date(last.at));
+        } catch (e) { /* storage blocked: the typed totals stand */ }
+
+        var revealed = false;
+        function revealHero() {
+            if (revealed || !card) return;
+            revealed = true;
+            card.classList.remove("is-waiting");
+            heroLbs.start();   // count up from zero
+        }
+        if (card) { card.classList.add("is-waiting"); setTimeout(revealHero, 1500); }
+
+        var loaded = false;
         function update(rows) {
             var ok = rows.filter(function (r) {
                 return r.status === "accepted" && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && typeof r.weightLbs === "number" && typeof r.foods === "number";
             });
             var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
-            var grew = loaded && lbs > target;
-            countEl.textContent = fmtN(ok.length);
-            wordEl.textContent = ok.length === 1 ? "verified delivery" : "verified deliveries";
-            dateEl.textContent = longDate(new Date());
-            if (lbs !== target) animateTo(lbs);
+            var grew = loaded && revealed && heroLbs && lbs > heroLbs.value();
+            showTotals(lbs, ok.length, new Date());
+            try { localStorage.setItem(CACHE, JSON.stringify({ lbs: lbs, count: ok.length, at: Date.now() })); } catch (e) { /* fine */ }
+            revealHero();
             if (grew) {
                 // A delivery was just verified while the page was open.
                 card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
-                sr.textContent = fmtLbs(lbs) + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
+                sr.textContent = heroLbs.value().toLocaleString("en-US") + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
             }
             loaded = true;
         }
 
+        /* Fast first, then live. Once Firebase has delivered, the quick
+           fetch's answer (if it's later) is ignored. If Firebase can't
+           connect, the quick fetch's totals are still current as of now. */
+        var live = false;
+        STB.fetchPublicLog().then(function (rows) {
+            if (live) return;
+            update(rows);
+            setState("fresh", "Up to date");
+        }).catch(function (err) { console.warn("Impact totals, quick fetch:", err.message || err); });
+
         function start(fb) {
-            if (!fb) { card.setAttribute("data-state", "offline"); liveText.textContent = "Live updates unavailable"; return; }
+            if (!fb) { if (!loaded) setState("offline", "Live updates unavailable"); return; }
             fb.onSnapshot(fb.collection(fb.db, "publicLog"), function (snap) {
-                card.setAttribute("data-state", "live");
-                liveText.textContent = "Updating live";
+                live = true;
+                setState("live", "Updating live");
                 update(snap.docs.map(function (d) { return d.data(); }));
             }, function (err) {
                 console.warn("Live impact counter:", err.code || err);
-                card.setAttribute("data-state", "offline");
-                liveText.textContent = "Live updates paused";
+                if (loaded) setState("fresh", "Up to date");
+                else setState("offline", "Live updates paused");
             });
         }
 
-        card.setAttribute("data-state", "connecting");
-        animateTo(target, 0);   // count up from zero as the card fades in
+        setState("connecting", "Loading latest");
         if (window.STB_FIREBASE) start(window.STB_FIREBASE);
         else {
             // firebase-init.js is a module and loads after this script.
@@ -194,114 +274,103 @@
         update();
     })();
 
-    /* ---------- how it works: four animated stations on a conveyor ----------
-       Each scene is a 240×150 drawing starring the flat mascot (the same
-       mascotSVG the rest of the site uses, with its per-step mood), placed as a
-       nested <svg> so its own lid animation keeps its coordinates. Items that
-       "go into" the box are drawn behind it, so they vanish as they drop in. */
-    function sceneMascot(state, x, y, w) {
-        var svg = mascotSVG(state, {});
-        var inner = svg.slice(svg.indexOf(">") + 1, svg.lastIndexOf("</svg>"));
-        return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 260 / 300).toFixed(1) +
-            '" viewBox="0 0 300 260" overflow="visible">' + inner + "</svg>";
-    }
-    var SCENES = {
-        /* 01: an apple and a banana hop off the share table into the box; the
-           lid shuts and a strip of tape seals it. */
-        collect:
-            '<rect class="sc-table" x="14" y="128" width="212" height="7" rx="3"/>' +
-            '<path class="sc-leg" d="M32 135 V148 M208 135 V148"/>' +
-            '<g class="sc-apple"><path class="stem" d="M36 108 V102"/><path class="leaf" d="M37 104 Q42 96 49 99 Q45 106 37 104 Z"/><circle cx="36" cy="118" r="10"/></g>' +
-            '<g class="sc-banana"><path class="fruit" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/><path class="tip" d="M188 112 L185 108"/></g>' +
-            '<g class="sc-box">' + sceneMascot("collect", 65, 47, 110) + "</g>" +
-            '<rect class="sc-tape" x="109" y="77" width="22" height="8" rx="2"/>' +
-            '<path class="sc-spark" d="M176 48 L179 56 L187 59 L179 62 L176 70 L173 62 L165 59 L173 56 Z"/>',
-        /* 02: on the scale, an ice pack drops in; snowflakes, and the
-           thermometer cools from warm orange to ice blue. */
-        pack:
-            '<g class="sc-thermo"><rect class="tube" x="20" y="42" width="14" height="76" rx="7"/><rect class="mercury" x="24" y="56" width="6" height="62" rx="3"/><circle class="bulb" cx="27" cy="122" r="10"/></g>' +
-            '<rect class="sc-table" x="58" y="128" width="124" height="7" rx="3"/>' +
-            '<rect class="sc-scale" x="98" y="135" width="44" height="13" rx="3"/><text class="sc-readout" x="120" y="144.5">12 lb</text>' +
-            '<g class="sc-ice"><rect x="193" y="110" width="30" height="20" rx="5"/><path d="M208 113 V127 M202 116.5 L214 123.5 M202 123.5 L214 116.5"/></g>' +
-            '<g class="sc-box">' + sceneMascot("pack", 65, 47, 110) + "</g>" +
-            '<g class="sc-flakes"><path d="M60 40 V52 M54 43 L66 49 M54 49 L66 43"/><path d="M186 58 V68 M181 60.5 L191 65.5 M181 65.5 L191 60.5"/><path d="M150 22 V32 M145 24.5 L155 29.5 M145 29.5 L155 24.5"/></g>',
-        /* 03: a student carries the box to a food bank/community fridge; a check pops at the door. */
-        walk:
-            '<path class="sc-ground" d="M6 136 H234"/>' +
-            '<g class="sc-bank"><path class="roof" d="M170 80 L201 56 L232 80 Z"/><rect class="wall" x="175" y="80" width="52" height="56"/><rect class="door" x="194" y="106" width="14" height="30" rx="2"/><path class="heart" d="M201 97 C197 93 192 95 192 89.5 C192 86.5 195 85 197.5 86.5 C199 87.5 200 88.5 201 90 C202 88.5 203 87.5 204.5 86.5 C207 85 210 86.5 210 89.5 C210 95 205 93 201 97 Z"/></g>' +
-            '<g class="sc-walker">' +
-                '<path class="limb leg leg-a" d="M40 112 L40 134"/><path class="limb leg leg-b" d="M40 112 L40 134"/>' +
-                '<path class="limb" d="M40 94 L40 112"/><circle class="head" cx="40" cy="85" r="7.5"/>' +
-                sceneMascot("deliver", 44, 78, 42) +
-                '<path class="limb" d="M40 98 L50 104"/>' +
-            "</g>" +
-            '<g class="sc-check"><circle cx="201" cy="42" r="10"/><path d="M196 42 L199.5 45.5 L206 38.5"/></g>',
-        /* 04: a dot flies from the box to the laptop and a new row lands in the
-           public log with a check; the box cheers. */
-        post:
-            '<path class="sc-ground" d="M6 136 H92"/>' +
-            '<g class="sc-screen"><rect class="win" x="98" y="20" width="128" height="94" rx="8"/><path class="bar" d="M98 36 H226"/>' +
-                '<circle class="dot" cx="108" cy="28" r="2.6"/><circle class="dot" cx="116" cy="28" r="2.6"/><circle class="dot" cx="124" cy="28" r="2.6"/>' +
-                '<g class="sc-rows"><rect x="106" y="62" width="112" height="11" rx="3"/><rect x="106" y="79" width="112" height="11" rx="3"/><rect x="106" y="96" width="112" height="11" rx="3"/></g>' +
-                '<g class="sc-row-new"><rect class="hi" x="106" y="43" width="112" height="13" rx="3"/><path d="M111 49.5 L114 52.5 L119 46.5"/><rect class="ln" x="124" y="47.5" width="56" height="4.5" rx="2"/><rect class="ln" x="190" y="47.5" width="22" height="4.5" rx="2"/></g>' +
-                '<path class="base" d="M88 116 H236 L228 124 H96 Z"/>' +
-            "</g>" +
-            '<text class="sc-plus" x="214" y="16">+1</text>' +
-            '<circle class="sc-packet" cx="58" cy="70" r="4.5"/>' +
-            '<g class="sc-box">' + sceneMascot("confirmed", 4, 69, 80) + "</g>"
-    };
+    /* ---------- Our Process: one small animated scene per stage ----------
+       The drawings are shared with tracking.html: STB.processScene in
+       assets/site.js, styled by assets/scenes.css. */
     var SCENE_FOR = { collect: "collect", pack: "pack", deliver: "walk", record: "post" };
 
+    /* ---------- Our Process: a stepper ----------
+       Four stages in a row, joined by one line. A pulsing green dot moves
+       along it from stage to stage, every STAGE_MS (one full loop of a
+       stage's scene), and the line fills in behind it. The current stage's
+       scene plays from the start; the others wait, dimmed. Pointing at a
+       stage, or tapping its dot, jumps to it. On phones the dots and short
+       names stay in a row, and the current stage's scene and text show
+       underneath. Nothing moves until the section is on screen, and under
+       reduced motion it stays put on whichever stage was picked. */
     var stepsHost = $("#steps");
-    var belt = document.createElement("div");
-    belt.className = "belt";
-    belt.setAttribute("aria-hidden", "true");
-    belt.innerHTML = '<span class="parcel"></span><span class="parcel"></span><span class="parcel"></span>';
-    stepsHost.appendChild(belt);
-    STEPS.forEach(function (s) {
+    var STAGE_MS = 6000;
+    var procNodes = [], procScenes = [], procTexts = [];
+    var procLine = document.createElement("div");
+    procLine.className = "proc-line";
+    procLine.setAttribute("aria-hidden", "true");
+    procLine.innerHTML = '<span class="proc-fill"></span><span class="proc-runner"><span class="live-dot"></span></span>';
+    stepsHost.appendChild(procLine);
+    STEPS.forEach(function (s, i) {
         var key = SCENE_FOR[s.state];
-        var d = document.createElement("div");
-        d.className = "prow step";
-        d.setAttribute("data-prow", "");
-        d.innerHTML =
-            '<div class="stage" aria-hidden="true"><svg class="scene sc-' + key + '" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">' + SCENES[key] + "</svg></div>" +
-            '<div class="step-text"><button type="button" aria-expanded="false"><span class="num" data-pnum>' + s.num + '</span><span class="ttl" data-ptitle>' + iconSVG(s.icon) + '<span>' + s.title + '</span></span><span class="bdy" data-pbody>' + s.body + '</span><span class="caret" aria-hidden="true" style="opacity:1;">+</span></button>' +
-            '<div class="pdetail"><div><p>' + s.detail + "</p></div></div></div>";
-        var btn = d.querySelector("button");
-        btn.addEventListener("click", function () {
-            var open = d.classList.toggle("open");
-            btn.setAttribute("aria-expanded", open ? "true" : "false");
-            btn.querySelector(".caret").textContent = open ? "−" : "+";
+        var scene = document.createElement("div");
+        scene.className = "proc-scene";
+        scene.setAttribute("aria-hidden", "true");
+        scene.innerHTML = STB.processScene(key);
+        var node = document.createElement("button");
+        node.type = "button";
+        node.className = "proc-node";
+        node.setAttribute("aria-label", "Step " + (i + 1) + " of " + STEPS.length + ": " + s.title);
+        node.innerHTML = '<span class="proc-dot" aria-hidden="true"></span><span class="proc-short" aria-hidden="true">' + s.label + "</span>";
+        node.addEventListener("click", function () { setStage(i, true); });
+        var text = document.createElement("div");
+        text.className = "proc-text";
+        text.innerHTML = "<h3>" + s.title + "</h3><p>" + s.body + "</p>";
+        [scene, node, text].forEach(function (el) {
+            el.style.setProperty("--col", String(i + 1));
+            el.setAttribute("data-i", String(i));
+            stepsHost.appendChild(el);
         });
-        stepsHost.appendChild(d);
+        procNodes.push(node); procScenes.push(scene); procTexts.push(text);
     });
 
-    /* The belt runs from the first station's centre to the last one's, behind
-       the stations, so parcels ride down and disappear into each one. Re-measured
-       whenever the list changes size (a step opening, a resize). */
-    function layoutBelt() {
-        var stages = $$(".stage", stepsHost);
-        if (stages.length < 2) return;
-        var host = stepsHost.getBoundingClientRect();
-        var a = stages[0].getBoundingClientRect(), b = stages[stages.length - 1].getBoundingClientRect();
-        var top = a.top + a.height / 2 - host.top;
-        belt.style.top = top.toFixed(1) + "px";
-        belt.style.height = (b.top + b.height / 2 - host.top - top).toFixed(1) + "px";
+    var stage = -1, procTimer = 0, procInView = false, procHeld = false;
+    // Restarts a scene's animations, so the stage that just lit up plays
+    // its little story from the beginning.
+    function restartScene(svg) {
+        var els = svg.querySelectorAll("*");
+        els.forEach(function (n) { n.style.animationName = "none"; });
+        void svg.getBoundingClientRect();
+        els.forEach(function (n) { n.style.animationName = ""; });
     }
-    layoutBelt();
-    if ("ResizeObserver" in window) new ResizeObserver(layoutBelt).observe(stepsHost);
-    addEventListener("resize", layoutBelt, { passive: true });
-
-    /* Scenes only animate while their step is on screen. */
-    (function () {
-        var steps = $$(".step", stepsHost);
-        if (!("IntersectionObserver" in window)) { steps.forEach(function (el) { el.classList.add("is-playing"); }); return; }
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (en) { en.target.classList.toggle("is-playing", en.isIntersecting); });
-            stepsHost.classList.toggle("in-view", steps.some(function (el) { return el.classList.contains("is-playing"); }));
-        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.2 });
-        steps.forEach(function (el) { io.observe(el); });
-    })();
+    function setStage(i, byUser) {
+        if (i !== stage) {
+            stage = i;
+            stepsHost.style.setProperty("--progress", (i / (STEPS.length - 1)).toFixed(4));
+            procNodes.forEach(function (n, j) {
+                n.classList.toggle("is-done", j < i);
+                n.classList.toggle("is-current", j === i);
+                if (j === i) n.setAttribute("aria-current", "step"); else n.removeAttribute("aria-current");
+            });
+            procScenes.forEach(function (el, j) { el.classList.toggle("is-current", j === i); });
+            procTexts.forEach(function (el, j) { el.classList.toggle("is-current", j === i); });
+            if (!reduced) restartScene(procScenes[i].querySelector("svg"));
+        }
+        if (byUser) scheduleStage();   // a tap restarts the clock on that stage
+    }
+    function scheduleStage() {
+        clearTimeout(procTimer);
+        if (reduced || !procInView || procHeld) return;
+        procTimer = setTimeout(function () { setStage((stage + 1) % STEPS.length); scheduleStage(); }, STAGE_MS);
+    }
+    stepsHost.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var t = e.target.closest("[data-i]");
+        if (!t || t.parentNode !== stepsHost) return;
+        procHeld = true;
+        clearTimeout(procTimer);
+        setStage(+t.getAttribute("data-i"));
+    });
+    stepsHost.addEventListener("pointerleave", function () { procHeld = false; scheduleStage(); });
+    stepsHost.addEventListener("focusin", function () { procHeld = true; clearTimeout(procTimer); });
+    stepsHost.addEventListener("focusout", function () { procHeld = false; scheduleStage(); });
+    setStage(0);
+    if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) {
+            procInView = es[0].isIntersecting;
+            stepsHost.classList.toggle("in-view", procInView);
+            if (procInView) scheduleStage(); else clearTimeout(procTimer);
+        }, { threshold: 0.3 }).observe(stepsHost);
+    } else {
+        procInView = true;
+        stepsHost.classList.add("in-view");
+        scheduleStage();
+    }
 
     /* ---------- cold-chain readout ----------
        One instrument readout for one sample run. The status column states the
@@ -804,6 +873,27 @@
         paintMascot($("#mascotJoin svg"), "confirmed");
         setTimeout(function () { paintMascot($("#mascotJoin svg"), "idle"); }, 2000);
     }
+    /* Each message goes two ways at once: into Firestore (contactSubmissions),
+       and by email to the team inbox through FormSubmit (formsubmit.co), a free
+       form-to-email service. The thanks card shows if either one lands, so a
+       message isn't lost when one of them is down. FormSubmit asks the inbox
+       to confirm the very first message it gets ("Activate Form"); from then
+       on every message arrives as an email, with Reply going to the sender. */
+    var MAIL_TO = "stockingtheblock@gmail.com";
+    function emailIt(p) {
+        return fetch("https://formsubmit.co/ajax/" + MAIL_TO, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({
+                _subject: "Website message from " + p.name + " (" + p.role + ")",
+                _template: "table",
+                Name: p.name, email: p.email, Role: p.role,
+                "School or organization": p.org || "—", Message: p.message || "—"
+            })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+            if (String(j.success) !== "true") throw new Error(j.message || "Email not sent");
+        });
+    }
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (joinErr) joinErr.hidden = true;
@@ -814,11 +904,14 @@
         };
         joinBtn.disabled = true;
         joinBtn.textContent = "Sending…";
-        waitForFirebase().then(function (fb) {
+        var saved = waitForFirebase().then(function (fb) {
             if (!fb) throw new Error("firebase-unavailable");
-            payload.createdAt = fb.serverTimestamp();
-            return fb.addDoc(fb.collection(fb.db, "contactSubmissions"), payload);
-        }).then(showDone).catch(function () {
+            return fb.addDoc(fb.collection(fb.db, "contactSubmissions"), Object.assign({ createdAt: fb.serverTimestamp() }, payload));
+        });
+        var mailed = emailIt(payload);
+        Promise.allSettled([saved, mailed]).then(function (res) {
+            if (res[1].status === "rejected") console.warn("Contact form email not sent:", res[1].reason);
+            if (res[0].status === "fulfilled" || res[1].status === "fulfilled") { showDone(); return; }
             joinBtn.disabled = false;
             joinBtn.textContent = "Get in touch";
             if (joinErr) joinErr.hidden = false;
@@ -877,8 +970,8 @@
         var el = $("#sitesSummary");
         if (!el || !STB.SITES) return;
         var n = function (k) { return STB.SITES.filter(function (s) { return s.status === k; }).length; };
-        el.innerHTML = STB.SITES.length + " schools so far: " + n("setup") + " getting set up, " + n("conversation") +
-            " in talks, " + n("target") + " we plan to reach. <a href=\"getting-started.html#sites\">See the full list →</a>";
+        el.innerHTML = STB.SITES.length + " schools on the map: " + n("active") + " delivering, " + n("conversation") +
+            " in talks, " + n("target") + " planned. <a href=\"getting-started.html#sites\">See the full list →</a>";
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();
@@ -899,11 +992,13 @@
         { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
-        { kind: "section", label: "How it works", href: "#how", keywords: "steps collect pack deliver log" },
+        { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
+        { kind: "section", label: "Endorsements", href: "#endorsements", keywords: "endorsed endorsement grassroots grocery camba support backers" },
+        { kind: "section", label: "Our process", href: "#how", keywords: "how it works steps collect pack deliver log" },
         { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
-        { kind: "section", label: "The map", href: "#network", keywords: "map snap need boroughs districts" },
-        { kind: "section", label: "Learn more", href: "#learn" },
+        { kind: "section", label: "Our why: the SNAP map", href: "#network", keywords: "map snap need boroughs districts why" },
         { kind: "section", label: "Work with us", href: "#join", keywords: "contact signup form" },
+        { kind: "section", label: "Learn more", href: "#learn" },
         { kind: "template", label: "Health code memo", href: "getting-started.html#doc-health", keywords: "tcs food safety release records health department" },
         { kind: "template", label: "Box spec", href: "getting-started.html#doc-build", keywords: "insulated transport box cut sheet materials" },
         { kind: "template", label: "Partner agreement", href: "getting-started.html#doc-agreement", keywords: "one page signed school receiving site" },

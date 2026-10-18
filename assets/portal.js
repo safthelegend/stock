@@ -13,7 +13,7 @@
     const $ = STB.$;
   
     /* A hint for the public pages: while this note exists, their "Sign in"
-       button says "My portal" instead (see site.js). It's only a hint; the real
+       button says "Visit Portal" instead (see site.js). It's only a hint; the real
        check always happens here, when the portal loads. */
     function rememberMember(on) {
       try {
@@ -27,8 +27,9 @@
        these and nothing else, so every delivery names a partner the same way
        and the totals add up per school and per fridge.
   
-       Schools come from STB.SITES in site.js, the same list the map and the
-       getting-started page use. Add a school there and it shows up here too.
+       Schools come from STB.SITES in site.js, the same list the map uses:
+       only the ones marked "active" (delivering). Mark a school active there
+       and it shows up here too.
        Drop-off sites live here. Add one by adding a line; the name is what
        gets saved with each delivery, so don't rename one that's been used. */
     const DROPOFFS = [
@@ -42,13 +43,17 @@
       { name: "Community Fridge – Gowanus", address: "303 Bond St, Brooklyn, NY 11231", borough: "Brooklyn", org: "One Love Community Fridge", host: "Van Alen Institute" },
       { name: "Community Fridge – Upper West Side", address: "801 Amsterdam Ave, New York, NY 10025", borough: "Manhattan", org: "One Love Community Fridge", host: "Ryan Health" },
       // Essex Market
-      { name: "Community Fridge – Lower East Side (Essex Market)", address: "220 Broome St, New York, NY 10002", borough: "Manhattan", org: "Essex Market Community Fridge" }
+      { name: "Community Fridge – Lower East Side (Essex Market)", address: "220 Broome St, New York, NY 10002", borough: "Manhattan", org: "Essex Market Community Fridge" },
+      // Classon Community Fridge (Brooklyn Tech delivers here)
+      { name: "Community Fridge – Prospect Heights (Classon)", address: "543 Grand Ave, Brooklyn, NY 11238", borough: "Brooklyn", org: "Classon Community Fridge" },
+      // The Friendly Fridge BX (Bronx Science delivers here)
+      { name: "Community Fridge – Riverdale (The Friendly Fridge BX)", address: "4670 Manhattan College Pkwy, Bronx, NY 10471", borough: "Bronx", org: "The Friendly Fridge BX" }
     ];
     const BOROUGH_ORDER = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
     const byBorough = (a, b) => (BOROUGH_ORDER.indexOf(a.borough) - BOROUGH_ORDER.indexOf(b.borough)) || a.name.localeCompare(b.name);
   
     function schools() {
-      return (STB.SITES || []).slice().sort(byBorough).map((s) => ({ name: s.name, group: s.borough, meta: s.borough }));
+      return (STB.SITES || []).filter((s) => s.status === "active").sort(byBorough).map((s) => ({ name: s.name, group: s.borough, meta: s.borough }));
     }
     function dropoffs() {
       return DROPOFFS.slice().sort(byBorough).map((s) => ({
@@ -171,6 +176,14 @@
       return el("span", { className: "d-status s-" + status }, STATUS_LABEL[status] || status);
     }
   
+    // The badge beside the name: Admin, Member, or Not verified.
+    function showRole(role) {
+      document.querySelectorAll("[data-role]").forEach((n) => {
+        n.textContent = role === "admin" ? "Admin" : role === "member" ? "Member" : "Not verified";
+        n.classList.toggle("is-unverified", role !== "admin" && role !== "member");
+      });
+    }
+
     // Shows a message under a form. kind: "ok" | "err" | "" (neutral).
     function say(node, text, kind) {
       node.textContent = text || "";
@@ -186,11 +199,13 @@
     }
   
     /* ---------- sign-in gate ----------
-       gate({ need: "member" | "admin", onReady(ctx) })
+       gate({ need: "member" | "admin", unverified, onReady(ctx) })
        Renders the sign-in screen into #gate, watches the auth state, looks up
        the user's role document (roles/{uid}), and shows #app only when the role
-       is enough. onReady may return a cleanup function (e.g. a Firestore
-       listener's unsubscribe); it runs on sign-out so nothing keeps listening. */
+       is enough. With unverified: true, someone with no role yet (not verified
+       by an admin) gets in too, and ctx.verified tells the page. onReady may
+       return a cleanup function (e.g. a Firestore listener's unsubscribe); it
+       runs on sign-out so nothing keeps listening. */
     function gate(opts) {
       const host = $("#gate"), app = $("#app");
       let cleanup = null;
@@ -269,7 +284,7 @@
               btn, msg,
               el("div", { className: "auth-rule" }),
               el("p", { className: "auth-fine" }, el("b", {}, "First time here? "),
-                "After you sign in, an admin approves your account. Then you can start logging deliveries."),
+                "You can log deliveries as soon as you sign in. An admin verifies new accounts, and your deliveries are confirmed once you're verified."),
               el("p", { className: "auth-fine" }, icon("lock", "auth-lock"),
                 "We get your name and email from Google, never your password. Members must be 13 or older. ",
                 el("a", { href: "privacy.html#collect-members" }, "Privacy Policy")))),
@@ -314,6 +329,21 @@
             el("div", { className: "p-actions" }, needAdmin ? null : recheck, out), msg)));
       }
   
+      /* members/{uid}: the name and email admins verify people from. Saved
+         the first time someone opens the portal. Returns false if the
+         database refuses it, which it does until the updated firestore.rules
+         are published. */
+      async function saveProfile(fb, user) {
+        const ref = fb.doc(fb.db, "members", user.uid);
+        try {
+          const snap = await fb.getDoc(ref);
+          if (!snap.exists()) {
+            await fb.setDoc(ref, { name: (user.displayName || "").slice(0, 200), email: user.email, createdAt: fb.serverTimestamp() });
+          }
+          return true;
+        } catch (err) { return false; }
+      }
+
       // Looks up the role and opens the portal if it's enough. Returns true
       // if it opened.
       async function check(fb, user, quiet) {
@@ -324,7 +354,15 @@
           role = snap.exists() ? snap.data().role : null;
         } catch (err) { role = null; }
   
-        const ok = opts.need === "admin" ? role === "admin" : role === "member" || role === "admin";
+        const verified = role === "member" || role === "admin";
+        let ok = opts.need === "admin" ? role === "admin" : verified;
+        /* Not verified yet: still let them in to log deliveries, which wait
+           for an admin. Saving their profile doubles as the check that the
+           database allows it; if it refuses (older rules), they get the
+           "waiting for approval" screen instead. Verified members get a
+           profile too, in the background, so admins see everyone's name. */
+        if (!ok && opts.need === "member" && opts.unverified) ok = await saveProfile(fb, user);
+        else if (ok) saveProfile(fb, user);
         if (!ok) {
           rememberMember(false);
           if (!quiet) renderDenied(fb, user, opts.need === "admin");
@@ -332,11 +370,11 @@
         }
         document.querySelectorAll("[data-who]").forEach((n) => { n.textContent = user.email; });
         document.querySelectorAll("[data-avatar]").forEach((n) => { n.textContent = initials(user); });
-        document.querySelectorAll("[data-role]").forEach((n) => { n.textContent = role === "admin" ? "Admin" : "Member"; });
+        showRole(role);
         document.querySelectorAll("[data-admin-only]").forEach((n) => { n.hidden = role !== "admin"; });
         rememberMember(true);
         show("app");
-        cleanup = opts.onReady({ fb, user, role }) || null;
+        cleanup = opts.onReady({ fb, user, role, verified }) || null;
         return true;
       }
   
@@ -669,17 +707,34 @@
   
     /* ---------- the public log's copy of a delivery ----------
        Only what's safe to publish: the date, weight, how many kinds of food,
-       and the status, plus the temperature log once an admin has chosen to
-       publish it (tempsPublic). Returns null for a delivery that shouldn't be
-       listed (rejected ones). The fields must match firestore.rules, publicLog. */
-    function publicEntry(d) {
+       the status, and the region: the borough of the school the food came
+       from (never the school or the fridge). Returns null for a delivery that
+       shouldn't be listed (rejected ones). The fields must match
+       firestore.rules, publicLog. withRegion false leaves the region out,
+       for as long as the live rules don't accept it yet. */
+    function regionOf(school) {
+      const s = (STB.SITES || []).find((x) => x.name === school);
+      return s ? s.borough : null;
+    }
+    /* The public log's copy of a delivery: date, weight, how many foods,
+       status, the school it came from with that school's borough, the
+       fridge it went to, and the temperature log once an admin has chosen to
+       publish it (tempsPublic). With full === false, only the first four, for
+       the older database rules that don't accept the rest yet. Whether it has
+       a public photo is added by an admin's portal (assets/admin.js). */
+    function publicEntry(d, full) {
       if (d.status !== "pending" && d.status !== "accepted") return null;
       const e = { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
+      if (full === false) return e;
+      const region = regionOf(d.fromSchool);
+      if (region) e.region = region;
+      if (d.fromSchool) e.school = d.fromSchool;
+      if (d.toSite) e.site = d.toSite;
       if (d.tempsPublic && d.temps && d.temps.length) e.temps = d.temps;
       return e;
     }
 
-    window.STBP = { ready, el, icon, mascot, copyButton, today, fmtTime, fmtDate, statusPill, say, gate, buildFields, deliveryDetails, compressImage, publicEntry, newBoxId, DROPOFFS };
+    window.STBP = { ready, el, icon, mascot, initials, copyButton, today, fmtTime, fmtDate, statusPill, showRole, say, gate, buildFields, deliveryDetails, compressImage, publicEntry, newBoxId, DROPOFFS };
   
     STB.initTheme();
     STB.initMascotSlots();
