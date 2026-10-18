@@ -340,9 +340,15 @@
         Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
         // Photos no longer wanted come down with their entry's update.
         Object.keys(pub).forEach((id) => { if (pub[id].photo && !(want[id] && want[id].photo)) ops.push({ id, photoGone: true }); });
-        for (let i = 0; i < ops.length; i += 400) {   // a batch takes up to 500 writes
+        /* Small batches: the rules look up each entry's delivery (and maybe
+           its public photo) to check the entry matches it, and Firestore
+           allows only 20 such lookups in one batch. Six entries is at most
+           13 (two each, plus the admin's role), so a batch is never refused
+           just for being big. */
+        const BATCH = 6;
+        for (let i = 0; i < ops.length; i += BATCH) {
           const b = fb.writeBatch(fb.db);
-          ops.slice(i, i + 400).forEach((op) => {
+          ops.slice(i, i + BATCH).forEach((op) => {
             if (op.photoGone) { b.delete(fb.doc(fb.db, "publicPhotos", op.id)); return; }
             const ref = fb.doc(fb.db, "publicLog", op.id);
             if (op.value) b.set(ref, op.value); else b.delete(ref);
