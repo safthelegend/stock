@@ -25,6 +25,7 @@
        means the updated firestore.rules aren't published yet, and then
        everyone counts as verified, as before. */
     let verified = new Set();
+    let rejected = new Set();  // accounts an admin rejected (role "rejected")
     let rolesState = "loading";
     let people = {};         // members/{uid}: { name, email, createdAt }
     const isVerified = (uid) => rolesState !== "ok" || verified.has(uid);
@@ -85,6 +86,30 @@
       return confirm("Verify " + (email || "this account") + "?\n\nThey become a member. Their deliveries move into review and show on the public delivery log as waiting.");
     }
 
+    /* Rejects an account: role "rejected", so it can't log deliveries any
+       more, and every delivery it still has waiting is rejected with a note.
+       Not permanent: verifying the account later makes it a member. */
+    async function rejectAccount(uid) {
+      const { fb, user } = ctx;
+      await fb.setDoc(fb.doc(fb.db, "roles", uid), { role: "rejected", verifiedBy: user.email, verifiedAt: fb.serverTimestamp() });
+      const waiting = all.filter((d) => d.memberUid === uid && d.status === "pending");
+      for (let i = 0; i < waiting.length; i += 100) {
+        const b = fb.writeBatch(fb.db);
+        waiting.slice(i, i + 100).forEach((d) => b.update(fb.doc(fb.db, "deliveries", d.id), {
+          status: "rejected",
+          reviewNote: (d.reviewNote || "").trim() || "Rejected because the account wasn't verified.",
+          reviewedBy: user.email, reviewedAt: fb.serverTimestamp(), updatedAt: fb.serverTimestamp()
+        }));
+        await b.commit();
+      }
+    }
+    function askReject(uid, email) {
+      const n = all.filter((d) => d.memberUid === uid && d.status === "pending").length;
+      return confirm("Reject " + (email || "this account") + "?\n\nThey won't be able to log deliveries" +
+        (n ? ", and their " + (n === 1 ? "waiting delivery is" : n + " waiting deliveries are") + " rejected" : "") +
+        ". If this is a mistake, you can still verify them later from one of their delivery cards.");
+    }
+
     function remove(d) {
       const { fb } = ctx;
       const b = fb.writeBatch(fb.db);
@@ -131,9 +156,15 @@
       /* An unverified account's delivery can be rejected or deleted, but not
          accepted until the account is verified. */
       const held = !isVerified(d.memberUid);
-      if (held) actions.appendChild(btn("Verify account", "solid", () => {
-        if (askVerify(d.memberUid, d.memberEmail)) run(card, () => verify(d.memberUid), "Verified.");
-      }));
+      const gone = rejected.has(d.memberUid);
+      if (held) {
+        actions.appendChild(btn("Verify account", "solid", () => {
+          if (askVerify(d.memberUid, d.memberEmail)) run(card, () => verify(d.memberUid), "Verified.");
+        }));
+        if (!gone) actions.appendChild(btn("Reject account", "danger", () => {
+          if (askReject(d.memberUid, d.memberEmail)) run(card, () => rejectAccount(d.memberUid), "Account rejected.");
+        }));
+      }
       else if (d.status !== "accepted") actions.appendChild(btn("Accept", "solid", () => run(card, () => setStatus(d, "accepted"), "Accepted.")));
       if (d.status !== "rejected") actions.appendChild(btn("Reject", "danger", () => {
         if (!note.value.trim() && !confirm("Reject without a note? The member won't know why.")) return;
@@ -161,9 +192,11 @@
 
       card.append(...[
         el("header", { className: "d-head" }, P.statusPill(d.status),
-          held ? el("span", { className: "d-status s-held" }, "Unverified account") : null,
+          held ? el("span", { className: "d-status s-held" }, gone ? "Rejected account" : "Unverified account") : null,
           el("span", { className: "p-muted" }, d.memberEmail + ", logged " + P.fmtTime(d.createdAt) + reviewed)),
-        held ? el("p", { className: "d-held-note" }, "This account isn't verified yet, so the delivery is off the public log. Verify the account to accept it, or reject it if it isn't one of ours.") : null,
+        held ? el("p", { className: "d-held-note" }, gone
+          ? "An admin rejected this account, so it can't log deliveries and this one is off the public log. Verify the account if that was a mistake."
+          : "This account isn't verified yet, so the delivery is off the public log. Verify the account to accept it, or reject it if it isn't one of ours.") : null,
         el("div", { className: "d-split" }, P.deliveryDetails(d), photoBlock(d)),
         photoSwitch,
         tempsPublicToggle(d, card),
@@ -210,12 +243,13 @@
     /* ---------- new accounts to verify ----------
        Everyone who has opened the portal but isn't verified, plus anyone
        whose delivery is waiting without a profile (they signed up before
-       profiles were saved). Newest first. */
+       profiles were saved). Rejected accounts aren't listed. Newest first. */
     function waitingPeople() {
       if (rolesState !== "ok") return [];
       const out = {};
-      Object.keys(people).forEach((uid) => { if (!verified.has(uid)) out[uid] = { uid, ...people[uid] }; });
-      all.forEach((d) => { if (!verified.has(d.memberUid) && !out[d.memberUid]) out[d.memberUid] = { uid: d.memberUid, name: "", email: d.memberEmail }; });
+      const decided = (uid) => verified.has(uid) || rejected.has(uid);
+      Object.keys(people).forEach((uid) => { if (!decided(uid)) out[uid] = { uid, ...people[uid] }; });
+      all.forEach((d) => { if (!decided(d.memberUid) && !out[d.memberUid]) out[d.memberUid] = { uid: d.memberUid, name: "", email: d.memberEmail }; });
       const n = (uid) => all.filter((d) => d.memberUid === uid && d.status !== "rejected").length;
       return Object.values(out).map((p) => ({ ...p, deliveries: n(p.uid) }))
         .sort((a, b) => (b.createdAt ? b.createdAt.toMillis() : 0) - (a.createdAt ? a.createdAt.toMillis() : 0));
@@ -229,18 +263,20 @@
       host.replaceChildren(
         el("header", { className: "newm-head" },
           el("h2", {}, "New accounts to verify ", el("span", { className: "p-count" }, list.length)),
-          el("p", { className: "p-muted" }, "They've signed in but aren't verified. They can log deliveries, which wait here and stay off the public log until you verify them.")),
+          el("p", { className: "p-muted" }, "They've signed in but aren't verified. They can log deliveries, which wait here and stay off the public log until you verify them. Reject anyone who isn't one of ours.")),
         el("ul", { className: "newm-list" }, list.map((p) => {
           const row = el("li", { className: "newm-row" });
           const go = el("button", { type: "button", className: "btn-sm solid" }, "Verify");
           go.addEventListener("click", () => { if (askVerify(p.uid, p.email)) run(row, () => verify(p.uid), "Verified."); });
+          const no = el("button", { type: "button", className: "btn-sm danger" }, "Reject");
+          no.addEventListener("click", () => { if (askReject(p.uid, p.email)) run(row, () => rejectAccount(p.uid), "Rejected."); });
           const bits = [p.email];
           if (p.createdAt && p.createdAt.toDate) bits.push("joined " + P.fmtTime(p.createdAt));
           bits.push(p.deliveries === 1 ? "1 delivery logged" : p.deliveries + " deliveries logged");
           row.append(
             el("span", { className: "avatar", ariaHidden: "true" }, P.initials({ displayName: p.name, email: p.email })),
             el("div", { className: "newm-who" }, el("b", {}, p.name || p.email || "Unnamed account"), el("span", {}, bits.join(" · "))),
-            go,
+            el("div", { className: "newm-acts" }, go, no),
             el("p", { className: "p-msg", role: "status" }));
           return row;
         })));
@@ -387,6 +423,7 @@
         }, (err) => console.error("Couldn't read the public delivery log:", err));
         const stopRoles = c.fb.onSnapshot(c.fb.collection(c.fb.db, "roles"), (snap) => {
           verified = new Set(snap.docs.filter((d) => ["member", "admin"].includes(d.data().role)).map((d) => d.id));
+          rejected = new Set(snap.docs.filter((d) => d.data().role === "rejected").map((d) => d.id));
           rolesState = "ok";
           if (loaded) render();
           syncPublicLog();
@@ -399,7 +436,7 @@
         return () => {
           stop(); stopPub(); stopRoles(); stopPeople();
           ctx = null; all = []; pub = null; loaded = false; editing = null;
-          verified = new Set(); rolesState = "loading"; people = {};
+          verified = new Set(); rejected = new Set(); rolesState = "loading"; people = {};
         };
       }
     };

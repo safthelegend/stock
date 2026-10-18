@@ -512,11 +512,12 @@
 .newm-who { display:grid; gap:2px; min-width:0; }
 .newm-who b { font-size:15px; color:var(--text); overflow-wrap:anywhere; }
 .newm-who span { font-size:13px; color:var(--text-secondary); overflow-wrap:anywhere; }
+.newm-acts { display:flex; flex-wrap:wrap; gap:8px; }
 .newm-row .p-msg { grid-column:2 / -1; margin:0; }
 .newm-row .p-msg:empty { display:none; }
 @media (max-width:560px) {
   .newm-row { grid-template-columns:auto minmax(0,1fr); }
-  .newm-row .btn-sm { grid-column:2; justify-self:start; }
+  .newm-acts { grid-column:2; justify-self:start; }
 }
 
 /* Review: whether a delivery's photo goes on the public log (admin.js). */

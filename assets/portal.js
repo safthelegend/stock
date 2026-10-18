@@ -294,7 +294,7 @@
       /* Signed in, but no role yet (or not enough of one). Shows where they
          are in the approval, the ID an admin needs, and a way to check again
          without reloading. */
-      function renderDenied(fb, user, needAdmin) {
+      function renderDenied(fb, user, needAdmin, rejected) {
         const out = el("button", { type: "button", className: "btn-sm" }, "Sign out");
         out.addEventListener("click", () => fb.signOut(fb.auth));
         const recheck = el("button", { type: "button", className: "btn-sm solid" }, "Check again");
@@ -313,6 +313,12 @@
         const body = needAdmin
           ? [el("h1", { className: "auth-h" }, "Admins only"),
              el("p", { className: "auth-p" }, "This page is for Stock the Block admins. Your account doesn't have admin access.")]
+          : rejected
+          ? [el("h1", { className: "auth-h" }, "This account can't use the portal"),
+             el("p", { className: "auth-p" }, "An admin didn't approve this account, so it can't log deliveries. If you're part of Stock the Block, ask an admin to verify you, then press Check again."),
+             el("div", { className: "uid" },
+               el("div", { className: "uid-text" }, el("span", { className: "uid-l" }, "Your member ID"), el("code", {}, user.uid)),
+               copyButton(user.uid))]
           : [el("h1", { className: "auth-h" }, "You're almost in"),
              el("p", { className: "auth-p" }, "An admin needs to approve your account before you can log deliveries."),
              el("ol", { className: "steps" },
@@ -356,6 +362,12 @@
   
         const verified = role === "member" || role === "admin";
         let ok = opts.need === "admin" ? role === "admin" : verified;
+        // Rejected by an admin: no way in, not even as unverified.
+        if (role === "rejected") {
+          rememberMember(false);
+          if (!quiet) renderDenied(fb, user, false, true);
+          return false;
+        }
         /* Not verified yet: still let them in to log deliveries, which wait
            for an admin. Saving their profile doubles as the check that the
            database allows it; if it refuses (older rules), they get the

@@ -14,22 +14,31 @@ service cloud.firestore {
     // A verified account: one an admin has given a role.
     function isMember() { return signedIn() && role() in ['member', 'admin']; }
     function isSensor() { return signedIn() && role() == 'sensor'; }
+    // An account an admin rejected: it can't log deliveries.
+    function notRejected() { return signedIn() && role() != 'rejected'; }
 
     function str(v, max) { return v is string && v.size() <= max; }
 
-    // ---------- roles/{uid}: { role: "member" | "admin" | "sensor", verifiedBy?, verifiedAt? } ----------
-    // Having a role is what makes an account verified. Admins verify new
-    // members from the portal's Review tab (assets/admin.js), which can only
-    // ever grant "member". Admin and sensor roles are still given by hand in
-    // the console, so nobody can make themselves or anyone else an admin.
-    match /roles/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-      allow create: if isAdmin()
-        && request.resource.data.keys().hasOnly(['role', 'verifiedBy', 'verifiedAt'])
-        && request.resource.data.role == 'member'
+    // ---------- roles/{uid}: { role: "member" | "admin" | "sensor" | "rejected", verifiedBy?, verifiedAt? } ----------
+    // "member" or "admin" is what makes an account verified. Admins verify
+    // or reject new accounts from the portal's Review tab (assets/admin.js),
+    // which can only ever set "member" or "rejected", and can switch an
+    // account between those two or remove the role (back to unverified).
+    // verifiedBy/verifiedAt record which admin decided and when, either way.
+    // Admin and sensor roles are still given by hand in the console, and the
+    // portal can't change or remove them, so nobody can make themselves or
+    // anyone else an admin.
+    function validRoleDecision() {
+      return request.resource.data.keys().hasOnly(['role', 'verifiedBy', 'verifiedAt'])
+        && request.resource.data.role in ['member', 'rejected']
         && request.resource.data.verifiedBy == request.auth.token.email
         && request.resource.data.verifiedAt == request.time;
-      allow update, delete: if false;
+    }
+    match /roles/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if isAdmin() && validRoleDecision();
+      allow update: if isAdmin() && validRoleDecision() && resource.data.role in ['member', 'rejected'];
+      allow delete: if isAdmin() && resource.data.role in ['member', 'rejected'];
     }
 
     // ---------- members/{uid}: { name, email, createdAt } ----------
@@ -86,8 +95,8 @@ service cloud.firestore {
     match /deliveries/{id} {
       // Anyone signed in logs their own, always as pending, with no review
       // fields. An unverified account's deliveries wait in Review, off the
-      // public log, until an admin verifies it.
-      allow create: if signedIn()
+      // public log, until an admin verifies it. A rejected account can't.
+      allow create: if notRejected()
         && validDelivery(request.resource.data)
         && request.resource.data.memberUid == request.auth.uid
         && request.resource.data.memberEmail == request.auth.token.email
@@ -194,7 +203,7 @@ service cloud.firestore {
     match /deliveryPhotos/{id} {
       // getAfter() looks at the delivery as it will be once this batch lands,
       // so a photo can only be attached to your own delivery, in the same write.
-      allow create: if signedIn()
+      allow create: if notRejected()
         && request.resource.data.keys().hasOnly(['memberUid', 'dataUrl'])
         && request.resource.data.memberUid == request.auth.uid
         && request.resource.data.dataUrl is string

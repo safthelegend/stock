@@ -201,6 +201,8 @@
     function watchVerified(c) {
       return c.fb.onSnapshot(c.fb.doc(c.fb.db, "roles", c.user.uid), (snap) => {
         const role = snap.exists() ? snap.data().role : null;
+        // Rejected while the portal is open: reload, and the sign-in check says so.
+        if (ctx === c && role === "rejected") { location.reload(); return; }
         if (ctx !== c || ctx.verified || (role !== "member" && role !== "admin")) return;
         ctx.verified = true;
         ctx.role = role;
