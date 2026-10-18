@@ -551,6 +551,7 @@
       const weight = el("input", { type: "number", min: "0.1", max: "500", step: "0.1", required: true, value: v.weightLbs || "", placeholder: "e.g. 12.5" });
       weight.setAttribute("inputmode", "decimal");
       const notes = el("textarea", { rows: 3, maxLength: 2000, value: v.notes || "", placeholder: "Anything the reviewer should know" });
+      const crew = el("textarea", { rows: 2, maxLength: 1000, value: v.crew || "", placeholder: "e.g. Sonam, Sajid, Priya" });
   
       const earlier = (value, list) => value && !list.some((x) => x.name === value)
         ? [{ name: value, group: "Typed in before the partner list", meta: "Pick a partner above to replace it" }] : [];
@@ -600,11 +601,12 @@
   
       host.replaceChildren(
         sec(1, "Box", isNew
-          ? "This delivery's tracking ID. Write it on the box label. Temperature readings will attach to it once the box sensors are ready."
+          ? "This delivery's tracking ID. Write it on the box label."
           : "The box ID can't be changed.", boxCard),
         sec(2, "Trip", "Where the food came from and where it went.",
           el("div", { className: "p-grid p-grid-date" }, el("label", {}, cap("Delivery date"), date)),
-          el("div", { className: "route" }, field("Picked up from", from), field("Delivered to", to))),
+          el("div", { className: "route" }, field("Picked up from", from), field("Delivered to", to)),
+          el("label", { className: "p-full" }, cap("Members who helped with this delivery"), crew)),
         sec(3, "What was in the box", "List each food and how much. Then weigh the whole box.",
           el("fieldset", { className: "p-fieldset" }, el("legend", {}, "Foods"),
             el("div", { className: "p-item-head", ariaHidden: "true" }, el("span", {}, "Food"), el("span", {}, "Amount")),
@@ -627,7 +629,7 @@
         if (!(w > 0 && w <= 500)) { weight.focus(); throw new Error("Weight has to be between 0.1 and 500 lbs."); }
         return {
           date: date.value, boxId, fromSchool: from.value(), toSite: to.value(),
-          weightLbs: Math.round(w * 10) / 10, items, notes: notes.value.trim()
+          weightLbs: Math.round(w * 10) / 10, items, notes: notes.value.trim(), crew: crew.value.trim()
         };
       }
       return { read };
@@ -649,7 +651,24 @@
           fact("Foods", foods + (foods === 1 ? " kind" : " kinds"))),
         el("ul", { className: "d-items" }, (d.items || []).map((it) =>
           el("li", {}, el("span", {}, it.name), it.qty ? el("span", { className: "d-qty" }, it.qty) : null))),
-        d.notes ? el("p", { className: "d-notes" }, d.notes) : null);
+        d.crew ? el("p", { className: "d-crew" }, el("b", {}, "Team: "), d.crew) : null,
+        d.notes ? el("p", { className: "d-notes" }, d.notes) : null,
+        tempBlock(d));
+    }
+
+    /* The delivery's temperature log, if the box sensor recorded one.
+       tempchart.js draws it; it's loaded after this file, so it's looked up
+       when a card is drawn, not when this file runs. */
+    function tempBlock(d) {
+      const T = window.STBTemp;
+      const s = T && T.summary(d.temps);
+      if (!s) return null;
+      return el("div", { className: "d-temps" },
+        el("p", { className: "d-temps-head" }, el("b", {}, "Temperature"),
+          el("span", { className: s.over ? "d-temps-warm" : "p-muted" },
+            s.over ? s.over + " of " + s.count + " readings above " + T.SAFE_MAX_F + "°F" : "Stayed at or below " + T.SAFE_MAX_F + "°F")),
+        T.chart(d.temps),
+        el("p", { className: "p-muted" }, T.describe(d.temps)));
     }
   
     /* ---------- photo: shrink before upload ----------
@@ -698,10 +717,11 @@
       return s ? s.borough : null;
     }
     /* The public log's copy of a delivery: date, weight, how many foods,
-       status, the school it came from with that school's borough, and the
-       fridge it went to. With full === false, only the first four, for the
-       older database rules that don't accept the rest yet. Whether it has a
-       public photo is added by an admin's portal (assets/admin.js). */
+       status, the school it came from with that school's borough, the
+       fridge it went to, and the temperature log once an admin has chosen to
+       publish it (tempsPublic). With full === false, only the first four, for
+       the older database rules that don't accept the rest yet. Whether it has
+       a public photo is added by an admin's portal (assets/admin.js). */
     function publicEntry(d, full) {
       if (d.status !== "pending" && d.status !== "accepted") return null;
       const e = { date: d.date, weightLbs: d.weightLbs, foods: (d.items || []).length, status: d.status };
@@ -710,6 +730,7 @@
       if (region) e.region = region;
       if (d.fromSchool) e.school = d.fromSchool;
       if (d.toSite) e.site = d.toSite;
+      if (d.tempsPublic && d.temps && d.temps.length) e.temps = d.temps;
       return e;
     }
 

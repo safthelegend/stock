@@ -166,11 +166,25 @@
         held ? el("p", { className: "d-held-note" }, "This account isn't verified yet, so the delivery is off the public log. Verify the account to accept it, or reject it if it isn't one of ours.") : null,
         el("div", { className: "d-split" }, P.deliveryDetails(d), photoBlock(d)),
         photoSwitch,
-        el("div", { className: "d-temps p-muted" }, d.temps && d.temps.length ? d.temps.length + " temperature readings" : "No temperature readings (sensors not connected yet)."),
+        tempsPublicToggle(d, card),
         note, actions, msg].filter(Boolean));
       return card;
     }
   
+    /* Temperature logs are private until an admin publishes one here. Then
+       its entry on the public log (log.html) gets the readings too, via
+       syncPublicLog below. A rejected delivery isn't on the public log at all. */
+    function tempsPublicToggle(d, card) {
+      if (!d.temps || !d.temps.length) return el("p", { className: "p-muted d-notemps" }, "No temperature log.");
+      const box = el("input", { type: "checkbox", checked: !!d.tempsPublic });
+      box.addEventListener("change", () => run(card, () => ctx.fb.updateDoc(ctx.fb.doc(ctx.fb.db, "deliveries", d.id),
+        { tempsPublic: box.checked, updatedAt: ctx.fb.serverTimestamp() }),
+        box.checked ? "The temperature log is on the public delivery log." : "The temperature log is private again.")
+        .then(() => { if (!card.querySelector(".p-msg").classList.contains("is-ok")) box.checked = !box.checked; }));
+      return el("label", { className: "d-pubphoto" }, box,
+        el("span", {}, el("b", {}, "Show the temperature log on the public log"), " (" + d.temps.length + " readings). Off until you turn it on."));
+    }
+
     function editCard(d) {
       const card = el("article", { className: "d-card d-admin is-editing" });
       card.dataset.id = d.id;
@@ -274,11 +288,13 @@
     let syncing = false, syncAgain = false;
     /* The school and region fields need the updated firestore.rules. Until
        they're published, a write with them is refused, so this falls back to
-       leaving them out and stops asking for them. */
+       leaving them out and stops asking for them. Temperatures ride along
+       with them (P.publicEntry adds both only for the full entry). */
     let withRegion = true;
     const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
       (!withRegion || ((a.region || null) === (b.region || null) && (a.school || null) === (b.school || null) &&
-        (a.site || null) === (b.site || null) && !!a.photo === !!b.photo));
+        (a.site || null) === (b.site || null) && !!a.photo === !!b.photo &&
+        JSON.stringify(a.temps || null) === JSON.stringify(b.temps || null)));
     /* Photos: an accepted delivery's photo is copied to publicPhotos (which
        anyone can read) unless an admin turned it off, and its public log
        entry says photo: true. Turning it off, or the delivery leaving

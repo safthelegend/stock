@@ -2248,6 +2248,13 @@ function processScene(key) {
       if ("integerValue" in f) return Number(f.integerValue);
       if ("doubleValue" in f) return f.doubleValue;
       if ("booleanValue" in f) return f.booleanValue;
+      // Lists and maps: a published temperature log is a list of { t, c }.
+      if ("arrayValue" in f) return (f.arrayValue.values || []).map(value);
+      if ("mapValue" in f) {
+        var o = {}, m = f.mapValue.fields || {};
+        Object.keys(m).forEach(function (k) { o[k] = value(m[k]); });
+        return o;
+      }
       return undefined;
     }
     function page(token, rows) {

@@ -15,17 +15,26 @@
     const drop = $("#photoDrop");
     let fields = null;     // { read() } from buildFields
     let photoData = null;  // compressed data URL, or null
+    let photoBusy = false; // true while a photo is still being shrunk
+    let photoSeq = 0;      // bumps on every pick or clear; stale shrinks are ignored
     let ctx = null;        // { fb, user, role, verified } once signed in
     let lastMine = null;   // the latest "My deliveries" snapshot, to redraw on verification
+    const temp = STBT.recorder($("#tempRecorder"));
   
     /* Each fresh form gets a new box ID straight away, so the member can
-       write it on the box label before they save. */
+       write it on the box label before they save. If a temperature recording
+       was left running (the page was closed mid-delivery), its box ID is kept. */
     function resetForm() {
-      fields = P.buildFields($("#deliveryFields"), { boxId: P.newBoxId() });
+      const boxId = STBT.savedBoxId() || P.newBoxId();
+      fields = P.buildFields($("#deliveryFields"), { boxId });
+      temp.attach(ctx, boxId);
       clearPhoto();
     }
   
     function clearPhoto() {
+      photoSeq++;
+      photoBusy = false;
+      submitBtn.disabled = false;
       photoData = null;
       photoInput.value = "";
       preview.replaceChildren();
@@ -37,9 +46,19 @@
       photoData = null;
       preview.hidden = true;
       if (!file) return;
+      /* Shrinking a phone photo takes a moment. Saving is blocked until it's
+         done, or the delivery would go through with no photo attached. The
+         ticket makes sure only the newest pick wins if the member swaps photos. */
+      const ticket = ++photoSeq;
+      photoBusy = true;
+      submitBtn.disabled = true;
       say("Shrinking photo…");
       try {
-        photoData = await P.compressImage(file);
+        const data = await P.compressImage(file);
+        if (ticket !== photoSeq) return;
+        photoData = data;
+        photoBusy = false;
+        submitBtn.disabled = false;
         const kb = Math.round(photoData.length * 0.75 / 1024);   // base64 is ~4/3 the real size
         const rm = el("button", { type: "button", className: "btn-sm quiet" }, P.icon("x"), "Remove");
         rm.addEventListener("click", () => { clearPhoto(); photoInput.focus(); });
@@ -51,6 +70,7 @@
         drop.hidden = true;
         say("");
       } catch (err) {
+        if (ticket !== photoSeq) return;
         clearPhoto();
         say(err.message, "err");
       }
@@ -87,8 +107,10 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!ctx) return;
+      if (photoBusy) { say("One moment, the photo is still shrinking."); return; }
       let data;
       try { data = fields.read(); } catch (err) { say(err.message, "err"); return; }
+      const temps = temp.readings();   // also stops a recording that's still running
   
       const { fb, user } = ctx;
       saved.hidden = true;
@@ -106,7 +128,7 @@
           ...data,                       // spread: copies every field of data in
           memberUid: user.uid,
           memberEmail: user.email,
-          temps: [],                     // filled by the sensor modules later
+          temps,                         // the box sensor's readings between Start and Stop
           hasPhoto: !!photoData,
           status: "pending",
           reviewNote: "",
@@ -132,6 +154,7 @@
             throw err;
           })
           .catch((err) => console.warn("Public log entry not written yet:", err.code || err));
+        temp.finish();
         resetForm();
         say("");
         showSaved(data.boxId);
@@ -256,7 +279,7 @@
   
         showTab(location.hash.slice(1));
         return () => {
-          stopMine(); if (stopReview) stopReview(); if (stopVerified) stopVerified();
+          stopMine(); if (stopReview) stopReview(); if (stopVerified) stopVerified(); temp.detach();
           ctx = null; isAdmin = false; lastMine = null; renderVerifyNote(null);
         };
       }

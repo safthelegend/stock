@@ -89,6 +89,14 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .dv-facts dt { font-size:12.5px; color:var(--text-secondary); }
   .dv-facts dd { margin:3px 0 0; font-size:15px; line-height:1.4; color:var(--text); overflow-wrap:anywhere; }
   .dv-facts dd.is-none { color:var(--text-secondary); }
+  /* The box's temperature log, when an admin has published it. Full width,
+     under the photo and the facts. */
+  .dv-temps { grid-column:1 / -1; display:grid; gap:8px; padding-top:14px; border-top:1px solid var(--line-soft); }
+  .dv-temps p { margin:0; font-size:13px; line-height:1.5; color:var(--text-secondary); }
+  .dv-temps .dv-temps-head { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; font-size:14px; color:var(--text); }
+  .dv-temps-head b { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; }
+  .dv-temps-head .ok { color:var(--brand); font-weight:500; }
+  .dv-temps-head .warm { color:var(--accent-text); font-weight:600; }
 
   .more-days { display:block; margin:0 auto; padding:16px 22px; background:none; border:none; font:inherit; font-size:14.5px; font-weight:600; color:var(--brand); cursor:pointer; }
   .more-days:hover { color:var(--accent-text); }
@@ -299,7 +307,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=27"></script>
+<script src="assets/site.js?v=28"></script>
+<script src="assets/tempchart.js?v=3"></script>
 <script>
 (function () {
   "use strict";
@@ -313,8 +322,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      delivery that holds only { date, weightLbs, foods, status, school,
      region, site, photo }. school is the school the food came from and site
      the fridge it went to, both as picked when it was logged; photo says it
-     has a public photo (publicPhotos/{id}). Older rows may not have them
-     yet. The member portal writes them (assets/portal.js publicEntry,
+     has a public photo (publicPhotos/{id}). temps is the box's temperature
+     log, only when an admin has published it (assets/tempchart.js draws it).
+     Older rows may not have them yet. The member portal writes them (assets/portal.js publicEntry,
      members.js, admin.js) and firestore.rules lets anyone read them. */
   var ROWS = null;          // null until the first load
   var STATUS = { accepted: "Verified", pending: "Awaiting review" };
@@ -765,6 +775,22 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     });
   }
 
+  /* The box sensor's readings from pickup to drop-off, as a chart, or null
+     if this delivery has no published temperature log. */
+  function tempLog(t) {
+    var s = window.STBTemp && STBTemp.summary(t);
+    if (!s) return null;
+    var box = mk("div", "dv-temps"), head = mk("p", "dv-temps-head");
+    head.appendChild(mk("b", null, "Box temperature"));
+    head.appendChild(s.over
+      ? mk("span", "warm", s.over + " of " + s.count + " readings above " + STBTemp.SAFE_MAX_F + "°F")
+      : mk("span", "ok", "Stayed at or below " + STBTemp.SAFE_MAX_F + "°F"));
+    box.appendChild(head);
+    box.appendChild(STBTemp.chart(t));
+    box.appendChild(mk("p", null, STBTemp.describe(t) + ". The dashed line is " + STBTemp.SAFE_MAX_F + "°F, the food-safety limit for cold food."));
+    return box;
+  }
+
   function deliveryItem(r) {
     var li = mk("li", "dv"), open = !!openRows[r.id];
     li.classList.toggle("is-open", open);
@@ -807,6 +833,8 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       dl.appendChild(d);
     });
     detail.appendChild(dl);
+    var temps = tempLog(r.temps);
+    if (temps) detail.appendChild(temps);
     li.appendChild(row);
     li.appendChild(fold("dv-" + r.id, detail));
 

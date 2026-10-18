@@ -37,7 +37,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITES_JSON = join(ROOT, "assets", "geo", "sites.json");
 const SITE_JS = join(ROOT, "assets", "site.js");
 
-const UA = "stock-the-block-site-build/1.0 (https://safthelegend.github.io/stock/)";
+const UA = "stock-the-block-site-build/1.0 (https://stocktheblock.com/)";
 const ENDPOINT = "https://nominatim.openstreetmap.org/search";
 const CITY_HINT = "New York City, NY, USA";
 
