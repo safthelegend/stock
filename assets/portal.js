@@ -47,7 +47,9 @@
       // Classon Community Fridge (Brooklyn Tech delivers here)
       { name: "Community Fridge – Prospect Heights (Classon)", address: "543 Grand Ave, Brooklyn, NY 11238", borough: "Brooklyn", org: "Classon Community Fridge" },
       // The Friendly Fridge BX (Bronx Science delivers here)
-      { name: "Community Fridge – Riverdale (The Friendly Fridge BX)", address: "4670 Manhattan College Pkwy, Bronx, NY 10471", borough: "Bronx", org: "The Friendly Fridge BX" }
+      { name: "Community Fridge – Riverdale (The Friendly Fridge BX)", address: "4670 Manhattan College Pkwy, Bronx, NY 10471", borough: "Bronx", org: "The Friendly Fridge BX" },
+      // Woodside Ave fridge (Cardozo and Aviation deliver here)
+      { name: "Community Fridge – Elmhurst (Woodside Ave)", address: "77-02 Woodside Ave, Queens, NY 11373", borough: "Queens", org: "Woodside Ave Community Fridge" }
     ];
     const BOROUGH_ORDER = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
     const byBorough = (a, b) => (BOROUGH_ORDER.indexOf(a.borough) - BOROUGH_ORDER.indexOf(b.borough)) || a.name.localeCompare(b.name);

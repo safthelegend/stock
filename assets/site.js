@@ -1608,8 +1608,8 @@ function processScene(key) {
     { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
     { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
     { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
-    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "active", joined: 5 },
-    { name: "Aviation High School", borough: "Queens", status: "active", joined: 6 },
+    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "active", joined: 5, dropoff: "Woodside Ave Community Fridge" },
+    { name: "Aviation High School", borough: "Queens", status: "active", joined: 6, dropoff: "Woodside Ave Community Fridge" },
     { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
     { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
@@ -1628,7 +1628,8 @@ function processScene(key) {
     { name: "Essex Market Community Fridge", borough: "Manhattan", status: "active", kind: "receiving" },
     { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
     { name: "Classon Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
-    { name: "The Friendly Fridge BX", borough: "Bronx", status: "active", kind: "receiving" }
+    { name: "The Friendly Fridge BX", borough: "Bronx", status: "active", kind: "receiving" },
+    { name: "Woodside Ave Community Fridge", borough: "Queens", status: "active", kind: "receiving" }
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
