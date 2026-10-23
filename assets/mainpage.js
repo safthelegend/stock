@@ -79,10 +79,11 @@
 
     // A number that counts to its value: from zero when start() is called,
     // then from wherever it is when the value changes. opts.dur (ms) and
-    // opts.ease (0-1 progress -> 0-1 of the way there) change the feel.
+    // opts.ease (0-1 progress -> 0-1 of the way there) change the feel;
+    // opts.onDone runs each time it lands on its value.
     var easeOutCubic = function (p) { return 1 - Math.pow(1 - p, 3); };
     function counter(el, opts) {
-        var dur = (opts && opts.dur) || 1500, ease = (opts && opts.ease) || easeOutCubic;
+        var dur = (opts && opts.dur) || 1500, ease = (opts && opts.ease) || easeOutCubic, onDone = (opts && opts.onDone) || function () {};
         var goal = parseFloat(el.textContent.replace(/,/g, "")) || 0, shown = goal, raf = 0, started = false;
         function fmt(v) {
             var dp = goal % 1 ? 1 : 0;
@@ -90,14 +91,19 @@
         }
         function run(from) {
             if (raf) cancelAnimationFrame(raf);
-            if (reduced) { shown = goal; el.textContent = fmt(goal); return; }
-            var t0 = performance.now();
+            if (reduced) { shown = goal; el.textContent = fmt(goal); onDone(goal); return; }
+            /* The clock starts on the first frame actually drawn, so a page
+               opened in a background tab still counts up when it's shown,
+               and the first frame can't land before zero. */
+            var t0 = null;
             raf = requestAnimationFrame(function tick(now) {
+                if (t0 === null) t0 = now;
                 var p = Math.min((now - t0) / dur, 1);
                 shown = from + (goal - from) * ease(p);
                 el.textContent = fmt(p < 1 ? shown : goal);
                 if (el.onCount) el.onCount(el.textContent);
                 raf = p < 1 ? requestAnimationFrame(tick) : 0;
+                if (p >= 1) onDone(goal);
             });
         }
         return {
@@ -107,7 +113,9 @@
                 goal = v;
                 if (started) run(shown); else { shown = v; el.textContent = fmt(v); }
             },
-            value: function () { return goal; }
+            value: function () { return goal; },
+            text: function () { return fmt(goal); },
+            busy: function () { return !!raf; }
         };
     }
 
@@ -120,10 +128,79 @@
            slows right down for the last few, like a meter settling: about
            two thirds of the way in under half a second, the last handful
            ticking up over the final second. */
-        var heroLbs = card && counter($("#impactLbs"), { dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); } });
+        var heroLbs = card && counter($("#impactLbs"), {
+            dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); },
+            onDone: function (v) { cheer(v); }
+        });
         var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
         var liveText = $("#impactLiveText"), sr = $("#impactSR");
-        if (card) $("#impactLbs").onCount = function (t) { card.classList.toggle("is-long", t.replace(/\D/g, "").length > 4); };
+        var numEl = $("#impactLbs"), figEl = card && $(".impact-fig", card);
+        // Celebrate the moment the count passes a milestone, not after it settles.
+        if (card) numEl.onCount = function (t) {
+            var v = parseFloat(t.replace(/,/g, "")) || 0;
+            if (v > cheeredHere) cheer(v);
+        };
+
+        /* The number and "lbs" shrink together when the total is too wide
+           for the card (--fit in design.css). Sized for the total it's
+           counting to, so it doesn't jump at the end; 10,000 and up also
+           take the smaller "is-long" size. */
+        function fitNumber() {
+            if (!card || !figEl) return;
+            var keep = numEl.textContent, final = heroLbs.text();
+            card.classList.toggle("is-long", final.replace(/\D/g, "").length > 4);
+            numEl.textContent = final;
+            figEl.style.setProperty("--fit", "1");
+            var have = figEl.clientWidth, need = figEl.scrollWidth;
+            figEl.style.setProperty("--fit", need > have && have > 0 ? Math.max(0.5, have / need * 0.97).toFixed(3) : "1");
+            numEl.textContent = keep;
+        }
+        if (card) {
+            fitNumber();
+            addEventListener("resize", fitNumber, { passive: true });
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNumber);
+        }
+
+        /* ----- milestones: food confetti -----
+           When the count goes past a milestone (1,000 lbs, then 2,500,
+           5,000, ...), food rains down the whole screen (STB.foodConfetti),
+           the moment the number passes it, on every visit. Only for the
+           real total, not the typed or remembered ones shown while it
+           loads. It waits until someone can see it: the tab showing and the
+           counter on screen (a link to index.html#join opens the page far
+           below it). The Confetti button rains it again any time. */
+        var MILESTONES = [1000, 2500, 5000, 10000, 25000, 50000, 100000], cheeredHere = 0, waiting = false;
+        function onScreen(el) {
+            var r = el.getBoundingClientRect();
+            return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+        }
+        /* lbs is the number on screen. Only the newest milestone the real
+           total has reached is celebrated (one rain per count, even if it
+           passes 1,000 and 2,500 on the way), and only once the number
+           shown has got there, which also keeps a count running down
+           from a higher remembered figure from celebrating. */
+        function cheer(lbs) {
+            if (!loaded) return;   // only for the real total
+            var goal = heroLbs.value();
+            var hit = MILESTONES.filter(function (m) { return goal >= m; }).pop();
+            if (!hit || hit <= cheeredHere || Math.min(lbs, goal) < hit) return;
+            if (document.visibilityState !== "visible" || !onScreen(numEl)) { waitToCheer(numEl); return; }
+            cheeredHere = hit;   // counted even if a shower is already falling
+            STB.foodConfetti();
+            sr.textContent = "Milestone: more than " + hit.toLocaleString("en-US") + " pounds of food waste eliminated.";
+        }
+        // Try again when the tab comes back or the counter scrolls into view.
+        function waitToCheer(num) {
+            if (waiting) return;
+            waiting = true;
+            var retry = function () { if (!heroLbs.busy()) cheer(heroLbs.value()); };
+            document.addEventListener("visibilitychange", retry);
+            if ("IntersectionObserver" in window) {
+                new IntersectionObserver(function (es) { if (es[0].isIntersecting) retry(); }, { threshold: 0.5 }).observe(num);
+            } else addEventListener("scroll", retry, { passive: true });
+        }
+        var confettiBtn = $("#confettiBtn");
+        if (confettiBtn) confettiBtn.addEventListener("click", function () { STB.foodConfetti(); });
 
         /* ----- Our Impact: every number counts up once, when the row first
            scrolls into view, and each icon plays its little animation. ----- */
@@ -157,6 +234,7 @@
                 wordEl.textContent = count === 1 ? "verified delivery" : "verified deliveries";
                 dateEl.textContent = longDate(at);
                 heroLbs.set(lbs);
+                fitNumber();
             }
             if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(count);
             if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
@@ -186,15 +264,19 @@
             });
             var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
             var grew = loaded && revealed && heroLbs && lbs > heroLbs.value();
+            loaded = true;   // before the counter moves, so a milestone it lands on counts
+            if (grew) {
+                // A delivery was just verified while the page was open. Said
+                // before the counter moves, so a milestone message wins.
+                card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
+                sr.textContent = lbs.toLocaleString("en-US") + " pounds of food waste eliminated, from " + ok.length +
+                    (ok.length === 1 ? " verified delivery." : " verified deliveries.");
+            }
             showTotals(lbs, ok.length, new Date());
             try { localStorage.setItem(CACHE, JSON.stringify({ lbs: lbs, count: ok.length, at: Date.now() })); } catch (e) { /* fine */ }
             revealHero();
-            if (grew) {
-                // A delivery was just verified while the page was open.
-                card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
-                sr.textContent = heroLbs.value().toLocaleString("en-US") + " pounds of food waste eliminated, from " + ok.length + " " + wordEl.textContent + ".";
-            }
-            loaded = true;
+            // Already showing this total (nothing to count): check now.
+            if (heroLbs && !heroLbs.busy()) cheer(lbs);
         }
 
         /* Fast first, then live. Once Firebase has delivered, the quick
