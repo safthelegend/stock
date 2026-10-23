@@ -1608,9 +1608,9 @@ function processScene(key) {
     { name: "Midwood High School", borough: "Brooklyn", status: "active", joined: 2, dropoff: "Brooklyn community fridge" },
     { name: "Brooklyn Technical High School", borough: "Brooklyn", status: "active", joined: 3, dropoff: "Classon Community Fridge" },
     { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
-    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "conversation" },
+    { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "active", joined: 5 },
+    { name: "Aviation High School", borough: "Queens", status: "active", joined: 6 },
     { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
-    { name: "Aviation High School", borough: "Queens", status: "conversation" },
     { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
 
