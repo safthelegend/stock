@@ -130,7 +130,7 @@
            ticking up over the final second. */
         var heroLbs = card && counter($("#impactLbs"), {
             dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); },
-            onDone: function (v) { cheer(v); }
+            onDone: function (v) { gild(v); cheer(v); }
         });
         var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
         var liveText = $("#impactLiveText"), sr = $("#impactSR");
@@ -138,8 +138,16 @@
         // Celebrate the moment the count passes a milestone, not after it settles.
         if (card) numEl.onCount = function (t) {
             var v = parseFloat(t.replace(/,/g, "")) || 0;
+            gild(v);
             if (v > cheeredHere) cheer(v);
         };
+        /* During the 1,000 lbs celebration (STB.celebrating, the same window
+           as the announcement bar), the number turns gold the moment the
+           real count passes 1,000 (.is-gold in design.css). */
+        function gild(v) {
+            if (!card || !STB.celebrating) return;
+            card.classList.toggle("is-gold", !!loaded && Math.min(v, heroLbs.value()) >= 1000);
+        }
 
         /* The number and "lbs" shrink together when the total is too wide
            for the card (--fit in design.css). Sized for the total it's
@@ -237,7 +245,8 @@
                 fitNumber();
             }
             if (mCounters.metricDeliveries) mCounters.metricDeliveries.set(count);
-            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs);
+            // Our Impact shows pounds by the hundred, with a plus: 1,017 is "1,000+".
+            if (mCounters.metricLbs) mCounters.metricLbs.set(lbs >= 100 ? Math.floor(lbs / 100) * 100 : lbs);
         }
 
         // This browser's last totals, if they're newer than the typed ones.
