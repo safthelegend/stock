@@ -2014,7 +2014,8 @@ function processScene(key) {
     { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
     { name: "Rachel Carson", full: "Rachel Carson High School", logo: "assets/schools/mask/rachel-carson.png" },
     { name: "CUNY Baruch College", full: "Baruch College", logo: "assets/schools/mask/baruch-college.png", wide: true },
-    { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" }
+    { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" },
+    { name: "Cardozo", full: "Benjamin N. Cardozo High School", logo: "assets/schools/mask/cardozo.png" }
   ];
 
   function initEmblems() {

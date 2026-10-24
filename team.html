@@ -219,6 +219,17 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       </ul>
     </section>
 
+    <section class="crew crew-rep" aria-labelledby="repsHd" data-no-anchor>
+      <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">1</span></h2>
+      <ul class="crew-grid">
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role30">
+          <span class="p-head"><span class="p-id"><span class="p-name">Muntasir Mushran</span><span class="p-role">School Representative</span></span></span>
+          <span class="p-foot"><span class="p-school">Benjamin N. Cardozo High School</span><span class="p-more" id="role30">Represents Cardozo, our Queens partner school, and is the team’s link to its students and staff.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+      </ul>
+    </section>
+
     <section class="crew crew-lead" aria-labelledby="leadersHd" data-no-anchor>
       <h2 class="crew-title" id="leadersHd">Leadership Team <span class="crew-count">9</span></h2>
       <ul class="crew-grid">
@@ -361,7 +372,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
 </footer>
 
-<script src="assets/site.js?v=30"></script>
+<script src="assets/site.js?v=31"></script>
 <script>
 (function () {
   "use strict";
@@ -389,7 +400,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       stamp.style.setProperty("--logo", "url(\"" + new URL(e.logo, document.baseURI).href + "\")");
     } else {
       stamp.className = "p-stamp is-initials";
-      stamp.textContent = school.split(/\s+/).filter(function (w) { return /^[A-Z]/.test(w) && !/^(High|School|The)$/.test(w); })
+      stamp.textContent = school.split(/\s+/).filter(function (w) { return /^[A-Z]/.test(w) && !/^(High|School|The)$/.test(w) && !/^[A-Z]\.$/.test(w); })
         .slice(0, 2).map(function (w) { return w[0]; }).join("");
     }
     card.querySelector(".p-head").appendChild(stamp);
@@ -422,7 +433,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     { kind: "page", label: "Delivery log", href: "log.html", keywords: "tracker manifest delivery log deliveries weight status record" },
     { kind: "page", label: "Privacy Policy", href: "privacy.html", keywords: "privacy data personal information cookies policy legal" },
     { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
-    { kind: "page", label: "Our team", href: "team.html", keywords: "team founder board leadership site operations students schools roles" },
+    { kind: "page", label: "Our team", href: "team.html", keywords: "team founder board representatives leadership site operations students schools roles" },
     { kind: "page", label: "Team roles", href: "roles.html" },
     { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
     { kind: "section", label: "Our process", href: "index.html#how", keywords: "how it works steps collect pack deliver log" },
