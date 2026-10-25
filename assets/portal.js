@@ -49,7 +49,12 @@
       // The Friendly Fridge BX (Bronx Science delivers here)
       { name: "Community Fridge – Riverdale (The Friendly Fridge BX)", address: "4670 Manhattan College Pkwy, Bronx, NY 10471", borough: "Bronx", org: "The Friendly Fridge BX" },
       // Woodside Ave fridge (Cardozo and Aviation deliver here)
-      { name: "Community Fridge – Elmhurst (Woodside Ave)", address: "77-02 Woodside Ave, Queens, NY 11373", borough: "Queens", org: "Woodside Ave Community Fridge" }
+      { name: "Community Fridge – Elmhurst (Woodside Ave)", address: "77-02 Woodside Ave, Queens, NY 11373", borough: "Queens", org: "Woodside Ave Community Fridge" },
+      // Astoria: Al-Hikmah Mosque (across 31st Ave from Bryant) and Steinway St
+      { name: "Community Fridge – Astoria (Al-Hikmah Mosque)", address: "48-01 31st Ave, Astoria, NY 11103", borough: "Queens", org: "Al-Hikmah Mosque" },
+      { name: "Community Fridge – Steinway", address: "25-82 Steinway St, Astoria, NY 11103", borough: "Queens", org: "Steinway Community Fridge" },
+      // Brighton Beach, near Rachel Carson
+      { name: "Community Fridge – Brighton Beach (ICNA Relief)", address: "281 Neptune Ave, Brooklyn, NY 11235", borough: "Brooklyn", org: "ICNA Relief" }
     ];
     const BOROUGH_ORDER = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
     const byBorough = (a, b) => (BOROUGH_ORDER.indexOf(a.borough) - BOROUGH_ORDER.indexOf(b.borough)) || a.name.localeCompare(b.name);

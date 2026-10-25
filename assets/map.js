@@ -8,13 +8,11 @@
      Act 1  the need      — choropleth of one published indicator, by
                             community district. Real, cited, and the counts
                             in the caption are computed from the data file.
-     Act 2  our story     — real, in the order it happened: Stuyvesant and
-                            the Essex Market fridge, then Midwood and a
-                            Brooklyn fridge, then Brooklyn Tech and the
-                            Classon fridge, then Bronx Science and the
-                            Friendly Fridge BX, then the
-                            schools we're in talks with. Ends on "today",
-                            which is also where the map rests.
+     Act 2  our story     — real, in the order it happened: each partner
+                            school in the order it joined (STB.SITES,
+                            "joined") with the fridge it delivers to, then
+                            any schools we're in talks with. Ends on
+                            "today", which is also where the map rests.
      Act 3  if it spreads — anonymous dots blooming across the districts with
                             the highest need. HYPOTHETICAL. A banner stays on
                             screen the whole time it runs, the dots are never
@@ -303,11 +301,18 @@
 
        Acts 1 and 2 are real and sourced. Act 3 is a hypothetical, and the
        watermark inside the map frame says so for as long as it is on screen. */
+    /* Act 2 (our story) has one step per partner school, plus one for the
+       schools we're in talks with when there are any, so it's sized from
+       STB.SITES: adding a school never cuts the story short. Each step gets
+       2.6s, or less when there are many, so the act stays under about 18s.
+       TODAY is where the map rests; everything after it follows on. */
+    var STORY_STEPS = partners().length + ((STB.SITES || []).some(function (s) { return s.status === "conversation"; }) ? 1 : 0);
+    var STEP_MS = Math.max(1600, Math.min(2600, Math.floor(18000 / Math.max(1, STORY_STEPS))));
+    var TODAY_MS = 7800 + STEP_MS * STORY_STEPS;
     var TL = {
       ACT1: 0, SPOT_AT: 2600, SPOT_EACH: 1250, SPOT_N: 4,
-      ACT2: 7800, STEP: 2600,            /* our story: one step per partner, then "in talks" */
-      TODAY: 20800,                      /* where the map rests: ACT2 + STEP x (partners + 1) */
-      ACT3A: 23800, ACT3B: 26800, ACT3C: 29600, ACT4: 32800, END: 35900
+      ACT2: 7800, STEP: STEP_MS, TODAY: TODAY_MS,
+      ACT3A: TODAY_MS + 3000, ACT3B: TODAY_MS + 6000, ACT3C: TODAY_MS + 8800, ACT4: TODAY_MS + 12000, END: TODAY_MS + 15100
     };
     var SEED_STOPS = [14, 27];   /* how far the bloom has got by 3B and 3C */
 
@@ -551,7 +556,8 @@
         var boros = {};
         fridges.forEach(function (f) { boros[f.borough] = 1; });
         say("Today: " + part.length + " partner schools delivering to community fridges in " +
-            joinNames(Object.keys(boros).map(function (b) { return { name: b }; })) + ", and " + talks.length + " more schools in talks.");
+            joinNames(Object.keys(boros).map(function (b) { return { name: b }; })) +
+            (talks.length ? ", and " + talks.length + (talks.length === 1 ? " more school in talks." : " more schools in talks.") : "."));
       } else if (t < TL.ACT3B) {
         say("If one school inspires the next: the pattern spreads to the districts where need is highest.");
       } else if (t < TL.ACT3C) {
