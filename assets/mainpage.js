@@ -1060,9 +1060,12 @@
     (function () {
         var el = $("#sitesSummary");
         if (!el || !STB.SITES) return;
+        // "8 partner schools delivering, 1 more planned." No grand total.
         var n = function (k) { return STB.SITES.filter(function (s) { return s.status === k; }).length; };
-        el.innerHTML = STB.SITES.length + " schools on the map: " + n("active") + " delivering, " + n("conversation") +
-            " in talks, " + n("target") + " planned. <a href=\"getting-started.html#sites\">See the full list →</a>";
+        var parts = [[n("active"), n("active") === 1 ? " partner school delivering" : " partner schools delivering"],
+            [n("conversation"), " in talks"], [n("target"), " more planned"]]
+            .filter(function (p) { return p[0]; }).map(function (p) { return p[0] + p[1]; });
+        el.innerHTML = parts.join(", ") + ". <a href=\"getting-started.html#sites\">See the full list →</a>";
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
     STB.initEmblems();

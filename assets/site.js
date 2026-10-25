@@ -1610,7 +1610,8 @@ function processScene(key) {
     { name: "Bronx High School of Science", borough: "Bronx", status: "active", joined: 4, dropoff: "The Friendly Fridge BX" },
     { name: "Benjamin N. Cardozo High School", borough: "Queens", status: "active", joined: 5, dropoff: "Woodside Ave Community Fridge" },
     { name: "Aviation High School", borough: "Queens", status: "active", joined: 6, dropoff: "Woodside Ave Community Fridge" },
-    { name: "Rachel Carson High School", borough: "Brooklyn", status: "conversation" },
+    { name: "William Cullen Bryant High School", borough: "Queens", status: "active", joined: 7, dropoff: "Al-Hikmah Mosque Community Fridge" },
+    { name: "Rachel Carson High School for Coastal Studies", borough: "Brooklyn", status: "active", joined: 8, dropoff: "ICNA Relief Community Fridge" },
     { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
 
@@ -1629,7 +1630,10 @@ function processScene(key) {
     { name: "Brooklyn community fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
     { name: "Classon Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
     { name: "The Friendly Fridge BX", borough: "Bronx", status: "active", kind: "receiving" },
-    { name: "Woodside Ave Community Fridge", borough: "Queens", status: "active", kind: "receiving" }
+    { name: "Woodside Ave Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
+    { name: "Al-Hikmah Mosque Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
+    { name: "Steinway Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
+    { name: "ICNA Relief Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
