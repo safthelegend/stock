@@ -142,11 +142,11 @@
             if (v > cheeredHere) cheer(v);
         };
         /* During the 1,000 lbs celebration (STB.celebrating, the same window
-           as the announcement bar), the number turns gold the moment the
-           real count passes 1,000 (.is-gold in design.css). */
+           as the announcement bar), the number turns blue the moment the
+           real count passes 1,000 (.is-blue in design.css). */
         function gild(v) {
             if (!card || !STB.celebrating) return;
-            card.classList.toggle("is-gold", !!loaded && Math.min(v, heroLbs.value()) >= 1000);
+            card.classList.toggle("is-blue", !!loaded && Math.min(v, heroLbs.value()) >= 1000);
         }
 
         /* The number and "lbs" shrink together when the total is too wide

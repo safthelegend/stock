@@ -657,13 +657,13 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 /* --- announcement ticker (STB.initTicker in site.js) ---------------------
    A thin strip above the nav, dressed like it: clear at the top of the
    page and frosted once you scroll, just as the nav is, in the site's
-   quiet text, with "1,000" in gold and the message crawling through it. It fades out at both edges. While it's
+   quiet text, with "1,000" in blue and the message crawling through it. It fades out at both edges. While it's
    up, the nav and the page move down by its height (--ticker-h). Hovering
-   or focusing it pauses the crawl. --tk-gold is a deeper gold on light
+   or focusing it pauses the crawl. --tk-blue is a deeper blue on light
    pages and a brighter one on dark. */
-:root { --tk-gold:#B07D0C; }
-:root[data-theme="dark"], :root[data-theme="stock"] { --tk-gold:#E8BC45; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --tk-gold:#E8BC45; } }
+:root { --tk-blue:#1F6FB8; }
+:root[data-theme="dark"], :root[data-theme="stock"] { --tk-blue:#5DAEF0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --tk-blue:#5DAEF0; } }
 html.has-ticker body { padding-top:var(--ticker-h, 32px); }
 html.has-ticker nav.bar { top:var(--ticker-h, 32px); }
 .tk { position:fixed; top:0; left:0; right:0; z-index:56; display:flex; align-items:stretch; height:32px; background:var(--nav-bg);
@@ -677,7 +677,7 @@ html.has-ticker nav.bar { top:var(--ticker-h, 32px); }
 .tk-half { display:flex; }
 .tk-msg { padding:0 32px 0 0; }
 .tk-msg::after { content:"\2022"; margin-left:32px; color:var(--brand-line-mid); }
-.tk-gold { color:var(--tk-gold); font-weight:800; }
+.tk-blue { color:var(--tk-blue); font-weight:800; }
 .tk-sep { margin:0 10px; color:var(--brand-line-mid); }
 @keyframes tkCrawl { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .tk:hover .tk-track, .tk:focus-within .tk-track { animation-play-state:paused; }
@@ -696,22 +696,22 @@ body:has(nav.bar:not(.on)) .tk { background:transparent; -webkit-backdrop-filter
 .tk.is-still .tk-msg::after { content:none; }
 @media (max-width:640px) { .tk { font-size:11px; letter-spacing:0.06em; } }
 
-/* --- the counter turns gold for the 1,000 lbs celebration ----------------
+/* --- the counter turns blue for the 1,000 lbs celebration ----------------
    While STB.celebrating, once the count passes 1,000 the number and "lbs"
-   turn gold with a highlight that sweeps across them every few seconds
-   (mainpage.js adds .is-gold). The gradient is plain gold at both ends, so
-   the loop never jumps. Reduced motion keeps the gold, without the sweep. */
-.impact.is-gold .impact-num, .impact.is-gold .impact-unit {
-  background-image:linear-gradient(105deg, #B8860B 0%, #B8860B 38%, #F6D365 46%, #FFF4C9 50%, #F6D365 54%, #B8860B 62%, #B8860B 100%);
+   turn blue with a highlight that sweeps across them every few seconds
+   (mainpage.js adds .is-blue). The gradient is plain blue at both ends, so
+   the loop never jumps. Reduced motion keeps the blue, without the sweep. */
+.impact.is-blue .impact-num, .impact.is-blue .impact-unit {
+  background-image:linear-gradient(105deg, #1F6FB8 0%, #1F6FB8 38%, #7DBDF0 46%, #E6F4FF 50%, #7DBDF0 54%, #1F6FB8 62%, #1F6FB8 100%);
   background-size:300% 100%; background-position:100% 0;
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
-  animation:goldShine 4.6s ease-in-out infinite; }
-@keyframes goldShine { 0% { background-position:100% 0; } 50%, 100% { background-position:0% 0; } }
-:root[data-theme="dark"] .impact.is-gold .impact-num, :root[data-theme="dark"] .impact.is-gold .impact-unit,
-:root[data-theme="stock"] .impact.is-gold .impact-num, :root[data-theme="stock"] .impact.is-gold .impact-unit {
-  background-image:linear-gradient(105deg, #E2B23A 0%, #E2B23A 38%, #F8DC80 46%, #FFF6D8 50%, #F8DC80 54%, #E2B23A 62%, #E2B23A 100%); }
+  animation:blueShine 4.6s ease-in-out infinite; }
+@keyframes blueShine { 0% { background-position:100% 0; } 50%, 100% { background-position:0% 0; } }
+:root[data-theme="dark"] .impact.is-blue .impact-num, :root[data-theme="dark"] .impact.is-blue .impact-unit,
+:root[data-theme="stock"] .impact.is-blue .impact-num, :root[data-theme="stock"] .impact.is-blue .impact-unit {
+  background-image:linear-gradient(105deg, #4A9FE8 0%, #4A9FE8 38%, #9AD0F6 46%, #EAF6FF 50%, #9AD0F6 54%, #4A9FE8 62%, #4A9FE8 100%); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .impact.is-gold .impact-num, :root:not([data-theme]) .impact.is-gold .impact-unit {
-    background-image:linear-gradient(105deg, #E2B23A 0%, #E2B23A 38%, #F8DC80 46%, #FFF6D8 50%, #F8DC80 54%, #E2B23A 62%, #E2B23A 100%); }
+  :root:not([data-theme]) .impact.is-blue .impact-num, :root:not([data-theme]) .impact.is-blue .impact-unit {
+    background-image:linear-gradient(105deg, #4A9FE8 0%, #4A9FE8 38%, #9AD0F6 46%, #EAF6FF 50%, #9AD0F6 54%, #4A9FE8 62%, #4A9FE8 100%); }
 }
-@media (prefers-reduced-motion: reduce) { .impact.is-gold .impact-num, .impact.is-gold .impact-unit { animation:none; background-position:0 0; } }
+@media (prefers-reduced-motion: reduce) { .impact.is-blue .impact-num, .impact.is-blue .impact-unit { animation:none; background-position:0 0; } }

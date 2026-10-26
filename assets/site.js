@@ -2389,12 +2389,12 @@ function processScene(key) {
      portal doesn't show it. While it's up, html gets "has-ticker" and
      --ticker-h, which push the nav and the page down (design.css).
      STB.celebrating is true for the same window; the home page counter
-     uses it to turn gold.
+     uses it to turn blue.
      ====================================================================== */
   var TICKER = {
     id: "1000lbs",
     until: "2026-11-08",
-    html: 'Celebrating <span class="tk-gold">1,000</span> pounds <span class="tk-sep" aria-hidden="true">|</span> ' +
+    html: 'Celebrating <span class="tk-blue">1,000</span> pounds <span class="tk-sep" aria-hidden="true">|</span> ' +
       "Thank you to our volunteers, cafeteria staff, and partners"
   };
   var celebrating = Date.now() <= new Date(TICKER.until + "T23:59:59").getTime();
