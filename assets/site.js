@@ -2077,6 +2077,7 @@ function processScene(key) {
     {src: "/assets/gallery/stb2.JPG"},
     {src: "/assets/gallery/stb3.JPG"},
     {src: "/assets/gallery/stb4.JPG"},
+    {src: "/assets/gallery/stb5.JPG"},
 
   ];
 
