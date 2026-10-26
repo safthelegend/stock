@@ -23,7 +23,8 @@
     { "name": "Woodside Ave Community Fridge", "lat": 40.7455, "lon": -73.8890, "precision": "address" },
     { "name": "Al-Hikmah Mosque Community Fridge", "lat": 40.7584, "lon": -73.9103, "precision": "address" },
     { "name": "Steinway Community Fridge", "lat": 40.7661, "lon": -73.9135, "precision": "address" },
-    { "name": "ICNA Relief Community Fridge", "lat": 40.5814, "lon": -73.9638, "precision": "address" }
+    { "name": "ICNA Relief Community Fridge", "lat": 40.5814, "lon": -73.9638, "precision": "address" },
+    { "name": "Rogers Avenue Fridge", "lat": 40.6503, "lon": -73.9526, "precision": "address" }
   ],
   "boroughView": {
     "Manhattan": { "lat": 40.7780, "lon": -73.9700, "zoom": 12 },

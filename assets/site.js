@@ -1633,7 +1633,8 @@ function processScene(key) {
     { name: "Woodside Ave Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
     { name: "Al-Hikmah Mosque Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
     { name: "Steinway Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
-    { name: "ICNA Relief Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
+    { name: "ICNA Relief Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
+    { name: "Rogers Avenue Fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 

@@ -19,7 +19,7 @@
    ============================================================================ */
 "use strict";
 
-var CACHE_VERSION = "v40";
+var CACHE_VERSION = "v41";
 var CACHE = "stb-" + CACHE_VERSION;
 
 /* Precached on install. Relative to the worker's scope, so this keeps working
@@ -37,7 +37,7 @@ var PRECACHE = [
   "404.html",
   "assets/site.css?v=22",
   "assets/design.css?v=27",
-  "assets/site.js?v=33",
+  "assets/site.js?v=35",
   "assets/map.js?v=18",
   "assets/mainpage.css?v=5",
   "assets/scenes.css?v=1",
