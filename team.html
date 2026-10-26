@@ -129,7 +129,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   /* Representatives' descriptions run longer, so their cards reserve more room. */
   .crew-rep .p-foot { min-height:12.6em; }
-  .crew-rep li:last-child .p-foot { min-height:16em; }
+  .crew-rep li:nth-child(4) .p-foot { min-height:16em; }
   .crew-ops:not(.crew-vol) .p-foot { min-height:7.7em; }
 
   /* Tier mascots: a tilted sticker at the right of each tier's heading row. Each
@@ -153,7 +153,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .crew-ops .crew-grid > li { flex-basis:100%; }
     .crew-ops .p-foot { min-height:3.2em; }
     .crew-rep .p-foot { min-height:12em; }
-    .crew-rep li:last-child .p-foot { min-height:14em; }
+    .crew-rep li:nth-child(4) .p-foot { min-height:14em; }
     .crew-ops:not(.crew-vol) .p-foot { min-height:5em; }
     .crew-founder .p-foot { min-height:4.6em; }
     .team-page { padding:88px 0 24px; }
