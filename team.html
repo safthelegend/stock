@@ -89,11 +89,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .person:hover .p-plus::after { transform:rotate(0deg); opacity:0; }
   }
 
-  /* Three tiers, told apart without reading the headings. The executive
-     board sits on its own tinted panel, with larger cards and the orange
-     accent along the top. The leadership team keeps the standard card.
-     Site operations is the most compact: smaller cards, four to a row, and
-     a plain top edge. */
+  /* Six tiers, told apart without reading the headings. The founder stands
+     alone in one larger card. The executive board sits on its own tinted
+     panel, with larger cards and the orange accent along the top.
+     Representatives and mentors keep the standard card. Site operators and
+     volunteers are the most compact: smaller cards, four to a row, and a
+     plain top edge. */
   .crew-exec { padding:36px 28px 40px; border-radius:24px; border:1px solid var(--brand-line);
     background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 9%, var(--surface)), color-mix(in srgb, var(--brand) 3%, var(--bg))); }
   .crew-exec .crew-title { font-size:clamp(28px,3.2vw,36px); color:var(--brand); }
@@ -115,11 +116,31 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .crew-ops .p-plus { bottom:16px; right:16px; }
   @media (max-width:900px) { .crew-ops .crew-grid > li { flex-basis:calc((100% - 12px) / 2); } }
 
+  /* The founder: one centred card, a step up from the executive board's. */
+  .crew-founder .crew-grid { max-width:420px; }
+  .crew-founder .crew-grid > li { flex-basis:100%; }
+  .crew-founder .person { border-top:5px solid var(--accent); padding:30px 30px 26px; box-shadow:0 14px 34px -26px var(--paper-shadow); }
+  .crew-founder .p-name { font-size:25px; }
+  .crew-founder .p-role { font-size:14.5px; }
+  .crew-founder .p-foot { font-size:15px; min-height:5.2em; }
+  .crew-founder .p-stamp { width:64px; height:64px; }
+  .crew-founder .p-stamp.is-wide { width:92px; height:46px; }
+  .crew-founder .p-plus { bottom:22px; right:22px; }
+
+  /* Representatives' descriptions run longer, so their cards reserve more room. */
+  .crew-rep .p-foot { min-height:12.6em; }
+  .crew-rep li:last-child .p-foot { min-height:16em; }
+  .crew-ops:not(.crew-vol) .p-foot { min-height:7.7em; }
+
   .team-emblems { padding:24px 0 72px; }
   @media (max-width:640px) {
     .crew-exec { padding:24px 14px 26px; border-radius:18px; }
     .crew-ops .crew-grid > li { flex-basis:100%; }
     .crew-ops .p-foot { min-height:3.2em; }
+    .crew-rep .p-foot { min-height:12em; }
+    .crew-rep li:last-child .p-foot { min-height:14em; }
+    .crew-ops:not(.crew-vol) .p-foot { min-height:5em; }
+    .crew-founder .p-foot { min-height:4.6em; }
     .team-page { padding:88px 0 24px; }
     .crew + .crew { margin-top:48px; }
     .crew-grid { gap:12px; }
@@ -168,14 +189,20 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       <p class="team-hint">Hover over anyone, or tap them on a phone, to see what they do.</p>
     </header>
 
-    <section class="crew crew-exec" aria-labelledby="execHd" data-no-anchor>
-      <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">9</span></h2>
+    <section class="crew crew-founder" aria-labelledby="founderHd" data-no-anchor>
+      <h2 class="crew-title" id="founderHd">Founder</h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role1">
           <span class="p-head"><span class="p-id"><span class="p-name">Saif Iftikhar</span><span class="p-role">Founder</span></span></span>
           <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role1">Sets the program’s direction, leads partnerships with schools, and oversees every team.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
+      </ul>
+    </section>
+
+    <section class="crew crew-exec" aria-labelledby="execHd" data-no-anchor>
+      <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">8</span></h2>
+      <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role2">
           <span class="p-head"><span class="p-id"><span class="p-name">Sajid Rahman</span><span class="p-role">Deputy Director</span></span></span>
           <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role2">Helps run the whole program day to day and keeps every team moving together.</span></span>
@@ -220,83 +247,72 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-rep" aria-labelledby="repsHd" data-no-anchor>
-      <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">1</span></h2>
+      <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">4</span></h2>
       <ul class="crew-grid">
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role30">
-          <span class="p-head"><span class="p-id"><span class="p-name">Muntasir Mushran</span><span class="p-role">School Representative</span></span></span>
-          <span class="p-foot"><span class="p-school">Benjamin N. Cardozo High School</span><span class="p-more" id="role30">Represents Cardozo, our Queens partner school, and is the team’s link to its students and staff.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
-      </ul>
-    </section>
-
-    <section class="crew crew-lead" aria-labelledby="leadersHd" data-no-anchor>
-      <h2 class="crew-title" id="leadersHd">Leadership Team <span class="crew-count">9</span></h2>
-      <ul class="crew-grid">
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role10">
-          <span class="p-head"><span class="p-id"><span class="p-name">Taseen Khan</span><span class="p-role">Nutrition Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role10">Looks at what food goes out and helps keep deliveries useful and balanced.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role11">
-          <span class="p-head"><span class="p-id"><span class="p-name">Samiul Alam</span><span class="p-role">Volunteer Training Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role11">Trains new volunteers on safe food handling, packing and drop-offs.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role12">
-          <span class="p-head"><span class="p-id"><span class="p-name">Aditya Roy</span><span class="p-role">Tech Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role12">Supports the website, the member portal and the delivery tools day to day.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role13">
-          <span class="p-head"><span class="p-id"><span class="p-name">Ayeman Kasif</span><span class="p-role">Records &amp; Data Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role13">Keeps delivery records accurate, so the numbers on the public log are right.</span></span>
+          <span class="p-head"><span class="p-id"><span class="p-name">Ayeman Kasif</span><span class="p-role">Representative</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role13">Leads Stock the Block at their school: runs the school’s chapter, oversees its site operators, recruits volunteers, and serves as the main point of contact between the school and the executive board.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role15">
-          <span class="p-head"><span class="p-id"><span class="p-name">Shafeen Basher</span><span class="p-role">Partner Relations Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role15">Stays in touch with partner schools and fridges so every handoff goes smoothly.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role16">
-          <span class="p-head"><span class="p-id"><span class="p-name">Radwan Rumi</span><span class="p-role">Food Safety Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role16">Checks boxes, ice packs and temperatures so food stays safe on every run.</span></span>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role30">
+          <span class="p-head"><span class="p-id"><span class="p-name">Muntasir Mushran</span><span class="p-role">Representative</span></span></span>
+          <span class="p-foot"><span class="p-school">Benjamin N. Cardozo High School</span><span class="p-more" id="role30">Leads Stock the Block at their school: runs the school’s chapter, oversees its site operators, recruits volunteers, and serves as the main point of contact between the school and the executive board.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role17">
-          <span class="p-head"><span class="p-id"><span class="p-name">Isaiah Diaz</span><span class="p-role">Research Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role17">Gathers the data and sources behind our work, like food waste and SNAP numbers.</span></span>
+          <span class="p-head"><span class="p-id"><span class="p-name">Isaiah Diaz</span><span class="p-role">Research Representative</span></span></span>
+          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role17">Leads Stock the Block at their school: runs the school’s chapter, oversees its site operators, recruits volunteers, and serves as the main point of contact between the school and the executive board. Also leads research on school food waste and recovery to support the program’s data and outreach.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role29">
-          <span class="p-head"><span class="p-id"><span class="p-name">Feruz Mamatov</span><span class="p-role">Grants &amp; Sponsorships Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role29">Secures grants and in-kind support for cold-chain gear and transport, so no one pays out of pocket.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role18">
-          <span class="p-head"><span class="p-id"><span class="p-name">Kamronbek Nizamidinov</span><span class="p-role">Manhattan Site Operator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role18">Runs day-to-day pickups at our Manhattan school and is its point of contact.</span></span>
+          <span class="p-head"><span class="p-id"><span class="p-name">Feruz Mamatov</span><span class="p-role">Finance Representative, Grants &amp; Scholarships</span></span></span>
+          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role29">Leads Stock the Block at their school: runs the school’s chapter, oversees its site operators, recruits volunteers, and serves as the main point of contact between the school and the executive board. Also researches grant and scholarship opportunities for the program and its members, and helps prepare applications with the executive board.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
       </ul>
     </section>
 
     <section class="crew crew-ops" aria-labelledby="opsHd" data-no-anchor>
-      <h2 class="crew-title" id="opsHd">Site Operations <span class="crew-count">11</span></h2>
+      <h2 class="crew-title" id="opsHd">Site Operators <span class="crew-count">12</span></h2>
       <ul class="crew-grid">
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role21">
-          <span class="p-head"><span class="p-id"><span class="p-name">Ahmet Sarisein</span><span class="p-role">Collection Coordinator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role21">Collects sealed food from share tables, packs it for transport and logs each box.</span></span>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role18">
+          <span class="p-head"><span class="p-id"><span class="p-name">Kamronbek Nizamidinov</span><span class="p-role">Manhattan Dispatch Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role18">Plans the Manhattan pickup routes and assigns runs from Stuy to partner pantries.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role22">
-          <span class="p-head"><span class="p-id"><span class="p-name">Takla Tsering</span><span class="p-role">Brooklyn Site Operator</span></span></span>
-          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role22">Runs day-to-day pickups at a Brooklyn partner school and is its point of contact.</span></span>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role10">
+          <span class="p-head"><span class="p-id"><span class="p-name">Taseen Khan</span><span class="p-role">Inventory Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role10">Sorts and counts recovered items and tracks what goes to which pantry.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role11">
+          <span class="p-head"><span class="p-id"><span class="p-name">Samiul Alam</span><span class="p-role">Shift Scheduler</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role11">Schedules pickup shifts and onboards new volunteers.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role12">
+          <span class="p-head"><span class="p-id"><span class="p-name">Aditya Roy</span><span class="p-role">Tech Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role12">Maintains the temperature loggers and keeps Track the Box running on the ground.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role15">
+          <span class="p-head"><span class="p-id"><span class="p-name">Shafeen Basher</span><span class="p-role">Partnerships Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role15">Manages day-to-day contact with partner pantries, confirms drop-off times, and gets manifests signed at handoff.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role16">
+          <span class="p-head"><span class="p-id"><span class="p-name">Radwan Rumi</span><span class="p-role">Data &amp; Records Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role16">Keeps pickup logs, manifests, and temperature records organized and auditable.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role23">
           <span class="p-head"><span class="p-id"><span class="p-name">Nafees Hye</span><span class="p-role">Communications Staffer</span></span></span>
           <span class="p-foot"><span class="p-school">The Springs School</span><span class="p-more" id="role23">Helps with social media, team updates and recruiting materials.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role22">
+          <span class="p-head"><span class="p-id"><span class="p-name">Takla Tsering</span><span class="p-role">Brooklyn Site Operator</span></span></span>
+          <span class="p-foot"><span class="p-school">Midwood High School</span><span class="p-more" id="role22">Runs day-to-day pickups at a Brooklyn partner school and is its point of contact.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role24">
@@ -319,16 +335,58 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
           <span class="p-foot"><span class="p-school">Brooklyn Technical High School</span><span class="p-more" id="role27">Runs day-to-day pickups at a Brooklyn partner school and is its point of contact.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
-        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role14">
-          <span class="p-head"><span class="p-id"><span class="p-name">Mohammad Nuban</span><span class="p-role">Manhattan Site Operator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role14">Runs day-to-day pickups at our Manhattan school and is its point of contact.</span></span>
-          <span class="p-plus" aria-hidden="true"></span>
-        </button></li>
+      </ul>
+    </section>
+
+    <section class="crew crew-ops crew-vol" aria-labelledby="volHd" data-no-anchor>
+      <h2 class="crew-title" id="volHd">Volunteers <span class="crew-count">8</span></h2>
+      <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role19">
-          <span class="p-head"><span class="p-id"><span class="p-name">Arefin Dhrubo</span><span class="p-role">Manhattan Site Operator</span></span></span>
-          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role19">Runs day-to-day pickups at our Manhattan school and is its point of contact.</span></span>
+          <span class="p-head"><span class="p-id"><span class="p-name">Arefin Dhrubo</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role19">Helps with share table collection, packing, and pickup runs at their school.</span></span>
           <span class="p-plus" aria-hidden="true"></span>
         </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role41">
+          <span class="p-head"><span class="p-id"><span class="p-name">Norayz Sohail</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role41">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role21">
+          <span class="p-head"><span class="p-id"><span class="p-name">Ahmet Sarisein</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role21">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role42">
+          <span class="p-head"><span class="p-id"><span class="p-name">Hamza Sattar</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role42">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role43">
+          <span class="p-head"><span class="p-id"><span class="p-name">Mohamed Arnob</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role43">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role44">
+          <span class="p-head"><span class="p-id"><span class="p-name">Josh Twae</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role44">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role45">
+          <span class="p-head"><span class="p-id"><span class="p-name">Muhammad Haad</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role45">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+        <li><button type="button" class="person" aria-expanded="false" aria-describedby="role14">
+          <span class="p-head"><span class="p-id"><span class="p-name">Mohammad Nuban</span><span class="p-role">Volunteer</span></span></span>
+          <span class="p-foot"><span class="p-school">Stuyvesant High School</span><span class="p-more" id="role14">Helps with share table collection, packing, and pickup runs at their school.</span></span>
+          <span class="p-plus" aria-hidden="true"></span>
+        </button></li>
+      </ul>
+    </section>
+
+    <section class="crew crew-mentor" aria-labelledby="mentorsHd" data-no-anchor>
+      <h2 class="crew-title" id="mentorsHd">Mentors <span class="crew-count">2</span></h2>
+      <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role20">
           <span class="p-head"><span class="p-id"><span class="p-name">Savlatbek Narzilloev</span><span class="p-role">CUNY Expansion Lead</span></span></span>
           <span class="p-foot"><span class="p-school">Queens College</span><span class="p-more" id="role20">Leads the program’s expansion to CUNY campuses.</span></span>
@@ -433,7 +491,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     { kind: "page", label: "Delivery log", href: "log.html", keywords: "tracker manifest delivery log deliveries weight status record" },
     { kind: "page", label: "Privacy Policy", href: "privacy.html", keywords: "privacy data personal information cookies policy legal" },
     { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
-    { kind: "page", label: "Our team", href: "team.html", keywords: "team founder board representatives leadership site operations students schools roles" },
+    { kind: "page", label: "Our team", href: "team.html", keywords: "team founder executive board representatives site operators volunteers mentors students schools roles" },
     { kind: "page", label: "Team roles", href: "roles.html" },
     { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
     { kind: "section", label: "Our process", href: "index.html#how", keywords: "how it works steps collect pack deliver log" },
