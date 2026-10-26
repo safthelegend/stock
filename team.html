@@ -132,6 +132,21 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .crew-rep li:last-child .p-foot { min-height:16em; }
   .crew-ops:not(.crew-vol) .p-foot { min-height:7.7em; }
 
+  /* Tier mascots: a tilted sticker at the right of each tier's heading row. Each
+     is the site mascot with one accessory on top; the face is unchanged. They sit
+     absolutely inside their tier, above its cards, and are purely decorative. */
+  .crew { position:relative; }
+  .tier-mascot { position:absolute; right:0; width:120px; height:auto; z-index:1; pointer-events:none; overflow:visible;
+    transform:rotate(11deg); transform-origin:50% 60%; top:calc(34px - var(--mh)); }
+  .crew-exec .tier-mascot { right:-14px; }
+  .tier-mascot[data-tier="founder"] { --mh:116.8px; }
+  .tier-mascot[data-tier="exec"]    { --mh:96px; }
+  .tier-mascot[data-tier="rep"]     { --mh:116.8px; }
+  .tier-mascot[data-tier="ops"]     { --mh:116.8px; }
+  .tier-mascot[data-tier="vol"]     { --mh:110.4px; }
+  .tier-mascot[data-tier="mentor"]  { --mh:110.4px; }
+  .crew + .crew { margin-top:96px; }
+
   .team-emblems { padding:24px 0 72px; }
   @media (max-width:640px) {
     .crew-exec { padding:24px 14px 26px; border-radius:18px; }
@@ -142,7 +157,15 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .crew-ops:not(.crew-vol) .p-foot { min-height:5em; }
     .crew-founder .p-foot { min-height:4.6em; }
     .team-page { padding:88px 0 24px; }
-    .crew + .crew { margin-top:48px; }
+    .tier-mascot { width:68px; right:-4px; top:calc(-12px - var(--mh)); }
+    .crew-exec .tier-mascot { right:-4px; top:calc(14px - var(--mh)); }
+    .tier-mascot[data-tier="founder"] { --mh:66.2px; }
+    .tier-mascot[data-tier="exec"]    { --mh:54.4px; }
+    .tier-mascot[data-tier="rep"]     { --mh:66.2px; }
+    .tier-mascot[data-tier="ops"]     { --mh:66.2px; }
+    .tier-mascot[data-tier="vol"]     { --mh:62.6px; }
+    .tier-mascot[data-tier="mentor"]  { --mh:62.6px; }
+    .crew + .crew { margin-top:88px; }
     .crew-grid { gap:12px; }
     .crew-grid > li { flex-basis:100%; }
     .person { padding:18px 18px 16px; }
@@ -190,6 +213,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </header>
 
     <section class="crew crew-founder" aria-labelledby="founderHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="founder" viewBox="0 -64 300 292" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><circle cx="96" cy="147" r="34" fill="none" stroke="var(--mascot-stroke)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="215" cy="147" r="34" fill="none" stroke="var(--mascot-stroke)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M130 147 L181 147" fill="none" stroke="var(--mascot-stroke)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="96" y="-50" width="108" height="64" rx="8" fill="var(--mascot-stroke)" stroke="var(--mascot-stroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M96 -2 H204" fill="none" stroke="var(--accent)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 16 H238" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="founderHd">Founder</h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role1">
@@ -201,6 +225,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-exec" aria-labelledby="execHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="exec" viewBox="0 8 300 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><clipPath id="tm-body"><rect x="26" y="26" width="248" height="188" rx="22"/></clipPath><g clip-path="url(#tm-body)"><path d="M26 140 L72 214 L26 214 Z" fill="var(--mascot-stroke)"/><path d="M274 140 L228 214 L274 214 Z" fill="var(--mascot-stroke)"/></g><path d="M150 224 L110 204 V244 Z" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 224 L190 204 V244 Z" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><rect x="138" y="212" width="24" height="24" rx="7" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">8</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role2">
@@ -247,6 +272,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-rep" aria-labelledby="repsHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="rep" viewBox="0 8 300 292" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><path d="M70 12 C14 90 14 190 132 238" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M230 12 C286 90 286 190 168 238" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><rect x="150" y="226" width="0" height="0"/><path d="M132 238 H168" fill="none" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><rect x="114" y="236" width="72" height="56" rx="10" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M114 254 H186" fill="none" stroke="var(--mascot-stroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="136" cy="273" r="6" fill="var(--mascot-stroke)" stroke="var(--mascot-stroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 270 H174 M150 280 H168" fill="none" stroke="var(--mascot-stroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">5</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role13">
@@ -278,6 +304,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-ops" aria-labelledby="opsHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="ops" viewBox="0 -60 300 292" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><path d="M52 18 C52 -40 98 -54 150 -54 C202 -54 248 -40 248 18 Z" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 -54 V16" fill="none" stroke="var(--mascot-stroke)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 20 H268" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="opsHd">Site Operators <span class="crew-count">8</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role18">
@@ -324,6 +351,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-ops crew-vol" aria-labelledby="volHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="vol" viewBox="0 -40 300 276" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><path d="M72 20 C72 -22 108 -34 150 -34 C192 -34 228 -22 228 20 Z" fill="var(--mascot-stroke)" stroke="var(--mascot-stroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 -34 C134 -16 134 4 138 20 M150 -34 C166 -16 166 4 162 20" fill="none" stroke="var(--mascot-fill)" stroke-width="5" stroke-linecap="round"/><circle cx="150" cy="-36" r="7" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 12 L26 -2 L24 12" fill="var(--mascot-stroke)" stroke="var(--mascot-stroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M262 224 C226 200 238 174 262 188 C286 174 298 200 262 224 Z" fill="var(--accent)" stroke="var(--mascot-stroke)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="volHd">Volunteers <span class="crew-count">11</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role19">
@@ -385,6 +413,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-mentor" aria-labelledby="mentorsHd" data-no-anchor>
+      <svg class="tier-mascot" data-tier="mentor" viewBox="0 -46 300 276" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="20" y="20" width="260" height="200" rx="28" fill="var(--mascot-fill)" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M26 93 L274 93" fill="none" stroke="var(--mascot-stroke)" stroke-width="12"/><path d="M63 163 L96 131 L128 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M182 163 L215 131 L247 163" fill="none" stroke="var(--mascot-stroke)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 184 Q151 212 193 184" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><path d="M150 -34 L270 6 L150 46 L30 6 Z" fill="var(--mascot-stroke)" stroke="var(--mascot-stroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 6 L244 8 V58" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M244 58 V88" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="6" r="8" fill="var(--accent)" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h2 class="crew-title" id="mentorsHd">Mentors <span class="crew-count">2</span></h2>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role20">
