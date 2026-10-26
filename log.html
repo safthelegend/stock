@@ -85,6 +85,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .dv-photo img { display:block; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 300ms ease; }
   .dv-photo img.is-in { opacity:1; }
   .dv-photo:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  /* More than one photo: the first one big, the rest small underneath. */
+  .dv-photos { display:grid; gap:6px; }
+  .dv-thumbs { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; }
+  .dv-thumbs .dv-photo { border-radius:7px; }
   .dv-facts { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px 24px; margin:0; }
   .dv-facts dt { font-size:12.5px; color:var(--text-secondary); }
   .dv-facts dd { margin:3px 0 0; font-size:15px; line-height:1.4; color:var(--text); overflow-wrap:anywhere; }
@@ -118,7 +122,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .dv-title { flex-basis:100%; font-size:15px; }
     .dv-meta { flex:1; gap:12px; font-size:13.5px; }
     .dv-detail { grid-template-columns:minmax(0,1fr); gap:14px; }
-    .dv-photo { max-width:260px; }
+    .dv-photos { max-width:260px; }
     #manifest { overflow:hidden; }
     #manifest .mhead { position:static; max-width:none; }
   }
@@ -307,7 +311,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </footer>
 
 <script type="module" src="assets/firebase-init.js?v=3"></script>
-<script src="assets/site.js?v=33"></script>
+<script src="assets/site.js?v=34"></script>
 <script src="assets/tempchart.js?v=3"></script>
 <script>
 (function () {
@@ -764,14 +768,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     return f;
   }
 
-  function loadPhoto(r, btn, detail) {
-    var img = btn.querySelector("img");
-    if (img.src) return;
-    if (!photos[r.id]) photos[r.id] = STB.fetchPublicPhoto(r.id).catch(function () { return null; });
-    photos[r.id].then(function (url) {
-      if (!url) { btn.remove(); detail.classList.add("no-photo"); return; }
-      img.onload = function () { img.classList.add("is-in"); };
-      img.src = url;
+  /* A delivery's photos are publicPhotos/<id>, then <id>_2, <id>_3... (see
+     assets/portal.js, photoDocId). r.photos says how many, when it's more
+     than one. A photo that's gone takes its spot away with it. */
+  function photoId(r, i) { return i === 0 ? r.id : r.id + "_" + (i + 1); }
+  function loadPhotos(r, wrap, detail) {
+    if (wrap.dataset.loaded) return;
+    wrap.dataset.loaded = "1";
+    Array.prototype.forEach.call(wrap.querySelectorAll(".dv-photo"), function (btn, i) {
+      var key = photoId(r, i), img = btn.querySelector("img");
+      if (!photos[key]) photos[key] = STB.fetchPublicPhoto(key).catch(function () { return null; });
+      photos[key].then(function (url) {
+        if (!url) {
+          if (i === 0) { wrap.remove(); detail.classList.add("no-photo"); } else btn.remove();
+          return;
+        }
+        img.onload = function () { img.classList.add("is-in"); };
+        img.src = url;
+      });
     });
   }
 
@@ -809,21 +823,32 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     meta.appendChild(more);
     row.appendChild(meta);
 
-    var detail = mk("div", "dv-detail" + (r.photo ? "" : " no-photo")), photoBtn = null;
+    var detail = mk("div", "dv-detail" + (r.photo ? "" : " no-photo")), photoWrap = null;
     if (r.photo) {
-      photoBtn = mk("button", "dv-photo");
-      photoBtn.type = "button";
-      photoBtn.setAttribute("aria-label", "See the photo larger");
-      var img = mk("img");
-      img.alt = "The food from this delivery";
-      photoBtn.appendChild(img);
-      photoBtn.addEventListener("click", function () {
-        if (!img.src) return;
-        var big = phView.querySelector("img");
-        big.src = img.src; big.alt = img.alt;
-        phView.showModal();
-      });
-      detail.appendChild(photoBtn);
+      var n = Math.min(r.photos || 1, 4), thumbs = null;
+      photoWrap = mk("div", "dv-photos");
+      for (var i = 0; i < n; i++) {
+        var btn = mk("button", "dv-photo");
+        btn.type = "button";
+        btn.setAttribute("aria-label", n === 1 ? "See the photo larger" : "See photo " + (i + 1) + " of " + n + " larger");
+        var img = mk("img");
+        img.alt = n === 1 ? "The food from this delivery" : "The food from this delivery, photo " + (i + 1) + " of " + n;
+        btn.appendChild(img);
+        btn.addEventListener("click", (function (img) {
+          return function () {
+            if (!img.src) return;
+            var big = phView.querySelector("img");
+            big.src = img.src; big.alt = img.alt;
+            phView.showModal();
+          };
+        })(img));
+        if (i === 0) photoWrap.appendChild(btn);
+        else {
+          if (!thumbs) photoWrap.appendChild(thumbs = mk("div", "dv-thumbs"));
+          thumbs.appendChild(btn);
+        }
+      }
+      detail.appendChild(photoWrap);
     }
     var dl = mk("dl", "dv-facts");
     [["From", r.school], ["Delivered to", r.site], ["Weight", lbs(r.weightLbs)], ["Foods", r.foods + (r.foods === 1 ? " kind" : " kinds")]].forEach(function (f) {
@@ -844,9 +869,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       if (now) openRows[r.id] = 1; else delete openRows[r.id];
       more.setAttribute("aria-expanded", String(now));
       word.textContent = now ? "Hide details" : "See details";
-      if (now && photoBtn) loadPhoto(r, photoBtn, detail);
+      if (now && photoWrap) loadPhotos(r, photoWrap, detail);
     });
-    if (open && photoBtn) loadPhoto(r, photoBtn, detail);
+    if (open && photoWrap) loadPhotos(r, photoWrap, detail);
     return li;
   }
 

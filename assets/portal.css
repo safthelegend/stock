@@ -68,6 +68,8 @@
    .p-msg.is-ok { color:var(--brand); font-weight:600; }
    .p-msg.is-err { color:var(--accent-text); font-weight:600; }
    
+   .p-previews { display:grid; gap:10px; margin-top:10px; }
+   .p-previews[hidden] { display:none; }
    .p-preview { display:flex; align-items:center; gap:14px; font-size:13px; color:var(--text-secondary); padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); }
    .p-preview[hidden] { display:none; }
    .p-preview img { width:72px; height:72px; object-fit:cover; border-radius:8px; border:1px solid var(--line); flex:none; }
@@ -103,6 +105,7 @@
    /* Admin: details and photo side by side. */
    .d-split { display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:20px; align-items:start; }
    @media (max-width:640px) { .d-split { grid-template-columns:minmax(0,1fr); } }
+   .d-photo { display:grid; gap:8px; }
    .d-photo img { width:100%; border-radius:8px; border:1px solid var(--line); display:block; }
    /* A saved delivery's temperature log (portal.js, tempBlock). */
    .d-temps { display:grid; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid var(--line-soft); font-size:13px; }

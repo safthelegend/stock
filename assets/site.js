@@ -2073,7 +2073,10 @@ function processScene(key) {
     {src: "assets/gallery/EmptyFridge.JPG"},
     {src: "assets/gallery/fridgeday1.jpeg"},
     {src: "assets/gallery/BagsDay1.jpeg"},
-    {src: "assets/gallery/BagsDay2.jpeg"},
+    {src: "/assets/gallery/stb1.JPG"},
+    {src: "/assets/gallery/stb2.JPG"},
+    {src: "/assets/gallery/stb3.JPG"},
+    {src: "/assets/gallery/stb4.JPG"},
 
   ];
 

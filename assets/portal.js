@@ -724,6 +724,16 @@
       }
     }
   
+    /* ---------- more than one photo ----------
+       A delivery can have up to MAX_PHOTOS photos, one Firestore document
+       each (a document holds only one ~850 KB photo). The first keeps the
+       delivery's own id, so deliveries from before this still work; the rest
+       are "<id>_2", "<id>_3"... The same ids are used in publicPhotos.
+       photoCount(d) is how many a delivery has: older ones only say hasPhoto. */
+    const MAX_PHOTOS = 4;
+    const photoDocId = (id, i) => i === 0 ? id : id + "_" + (i + 1);
+    const photoCount = (d) => !d.hasPhoto ? 0 : (Number(d.photoCount) || 1);
+
     /* ---------- the public log's copy of a delivery ----------
        Only what's safe to publish: the date, weight, how many kinds of food,
        the status, and the region: the borough of the school the food came
@@ -753,7 +763,7 @@
       return e;
     }
 
-    window.STBP = { ready, el, icon, mascot, initials, copyButton, today, fmtTime, fmtDate, statusPill, showRole, say, gate, buildFields, deliveryDetails, compressImage, publicEntry, newBoxId, DROPOFFS };
+    window.STBP = { ready, el, icon, mascot, initials, copyButton, today, fmtTime, fmtDate, statusPill, showRole, say, gate, buildFields, deliveryDetails, compressImage, MAX_PHOTOS, photoDocId, photoCount, publicEntry, newBoxId, DROPOFFS };
   
     STB.initTheme();
     STB.initMascotSlots();

@@ -14,9 +14,10 @@
     const preview = $("#photoPreview");
     const drop = $("#photoDrop");
     let fields = null;     // { read() } from buildFields
-    let photoData = null;  // compressed data URL, or null
-    let photoBusy = false; // true while a photo is still being shrunk
-    let photoSeq = 0;      // bumps on every pick or clear; stale shrinks are ignored
+    /* The photos picked so far, in the order they were picked: { data } where
+       data is the compressed data URL, or null while it's still shrinking. */
+    let photos = [];
+    let photoSeq = 0;      // bumps on every clear; shrinks from before it are ignored
     let ctx = null;        // { fb, user, role, verified } once signed in
     let lastMine = null;   // the latest "My deliveries" snapshot, to redraw on verification
     const temp = STBT.recorder($("#tempRecorder"));
@@ -31,61 +32,77 @@
       clearPhoto();
     }
   
+    const busy = () => photos.some((p) => !p.data);
+
     function clearPhoto() {
       photoSeq++;
-      photoBusy = false;
-      submitBtn.disabled = false;
-      photoData = null;
+      photos = [];
       photoInput.value = "";
-      preview.replaceChildren();
-      preview.hidden = true;
-      drop.hidden = false;
+      renderPhotos();
     }
-  
-    async function takePhoto(file) {
-      photoData = null;
-      preview.hidden = true;
-      if (!file) return;
-      /* Shrinking a phone photo takes a moment. Saving is blocked until it's
-         done, or the delivery would go through with no photo attached. The
-         ticket makes sure only the newest pick wins if the member swaps photos. */
-      const ticket = ++photoSeq;
-      photoBusy = true;
-      submitBtn.disabled = true;
-      say("Shrinking photo…");
-      try {
-        const data = await P.compressImage(file);
-        if (ticket !== photoSeq) return;
-        photoData = data;
-        photoBusy = false;
-        submitBtn.disabled = false;
-        const kb = Math.round(photoData.length * 0.75 / 1024);   // base64 is ~4/3 the real size
+
+    /* The list of picked photos, each with its own Remove button. The drop
+       area stays until there are MAX_PHOTOS, and saving waits while any
+       photo is still shrinking, or the delivery would go through without it. */
+    function renderPhotos() {
+      const ready = photos.filter((p) => p.data);
+      preview.replaceChildren(...photos.map((p, i) => {
+        if (!p.data) return el("div", { className: "p-preview" },
+          el("div", { className: "p-preview-text" }, el("b", {}, "Shrinking photo…"), el("span", {}, "One moment.")));
+        const kb = Math.round(p.data.length * 0.75 / 1024);   // base64 is ~4/3 the real size
         const rm = el("button", { type: "button", className: "btn-sm quiet" }, P.icon("x"), "Remove");
-        rm.addEventListener("click", () => { clearPhoto(); photoInput.focus(); });
-        preview.replaceChildren(
-          el("img", { src: photoData, alt: "Photo you're about to attach" }),
-          el("div", { className: "p-preview-text" }, el("b", {}, "Photo ready"), el("span", {}, "About " + kb + " KB once it uploads.")),
+        rm.addEventListener("click", () => { photos.splice(photos.indexOf(p), 1); say(""); renderPhotos(); photoInput.focus(); });
+        return el("div", { className: "p-preview" },
+          el("img", { src: p.data, alt: "Photo " + (i + 1) + " you're about to attach" }),
+          el("div", { className: "p-preview-text" }, el("b", {}, "Photo " + (i + 1) + " ready"), el("span", {}, "About " + kb + " KB once it uploads.")),
           rm);
-        preview.hidden = false;
-        drop.hidden = true;
-        say("");
-      } catch (err) {
-        if (ticket !== photoSeq) return;
-        clearPhoto();
-        say(err.message, "err");
+      }));
+      preview.hidden = !photos.length;
+      drop.hidden = photos.length >= P.MAX_PHOTOS;
+      $("#photoDropTitle").textContent = photos.length ? "Add another photo" : "Add photos";
+      $("#photoDropHint").textContent = photos.length
+        ? (P.MAX_PHOTOS - photos.length) + " more allowed." + (ready.length === photos.length ? "" : " Still shrinking the last one.")
+        : "Take one or choose several files. They're shrunk before they upload.";
+      submitBtn.disabled = busy();
+    }
+
+    // Shrinks each picked file in turn (one at a time keeps phones from running out of memory).
+    async function takePhotos(files) {
+      files = Array.from(files || []);   // copied first: clearing the input empties its file list
+      photoInput.value = "";   // so picking the same file again still counts as a change
+      if (!files.length) return;
+      const room = P.MAX_PHOTOS - photos.length;
+      if (files.length > room) say(room ? "Only " + P.MAX_PHOTOS + " photos per delivery, so just the first " + room + " were added." : "That's already " + P.MAX_PHOTOS + " photos, the most per delivery.", "err");
+      else say("");
+      const slots = files.slice(0, Math.max(0, room)).map((file) => ({ file, data: null }));
+      if (!slots.length) return;
+      photos.push(...slots);
+      const ticket = photoSeq;
+      renderPhotos();
+      for (const slot of slots) {
+        try {
+          const data = await P.compressImage(slot.file);
+          if (ticket !== photoSeq) return;
+          slot.data = data;
+        } catch (err) {
+          if (ticket !== photoSeq) return;
+          photos.splice(photos.indexOf(slot), 1);
+          say(err.message, "err");
+        }
+        delete slot.file;
+        renderPhotos();
       }
     }
-  
-    photoInput.addEventListener("change", () => takePhoto(photoInput.files[0]));
-    // Dropping a file on the photo area works too, on a computer.
+
+    photoInput.addEventListener("change", () => takePhotos(photoInput.files));
+    // Dropping files on the photo area works too, on a computer.
     ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("is-over"); }));
     ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("is-over")));
     drop.addEventListener("drop", (e) => {
       e.preventDefault();
-      const file = e.dataTransfer && e.dataTransfer.files[0];
-      if (file) takePhoto(file);
+      if (e.dataTransfer) takePhotos(e.dataTransfer.files);
     });
-  
+
     function say(text, kind) { P.say(msg, text, kind); }
   
     /* After a save the form is fresh again (with a new box ID), so the note
@@ -107,7 +124,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!ctx) return;
-      if (photoBusy) { say("One moment, the photo is still shrinking."); return; }
+      if (busy()) { say("One moment, a photo is still shrinking."); return; }
       let data;
       try { data = fields.read(); } catch (err) { say(err.message, "err"); return; }
       const temps = temp.readings();   // also stops a recording that's still running
@@ -119,25 +136,26 @@
       try {
         /* doc(collection(...)) with no id makes a new document reference with a
            random id, without writing anything yet. We need that id first so the
-           photo document can share it. */
+           photo documents can share it. */
         const ref = fb.doc(fb.collection(fb.db, "deliveries"));
-        /* A batch writes both documents together: either both land or neither
-           does, so there's never a delivery pointing at a photo that failed. */
+        /* A batch writes the delivery and its photos together: all land or
+           none do, so there's never a delivery pointing at a photo that failed. */
         const batch = fb.writeBatch(fb.db);
         batch.set(ref, {
           ...data,                       // spread: copies every field of data in
           memberUid: user.uid,
           memberEmail: user.email,
           temps,                         // the box sensor's readings between Start and Stop
-          hasPhoto: !!photoData,
+          hasPhoto: photos.length > 0,
+          photoCount: photos.length,
           status: "pending",
           reviewNote: "",
           createdAt: fb.serverTimestamp(),
           updatedAt: fb.serverTimestamp()
         });
-        if (photoData) {
-          batch.set(fb.doc(fb.db, "deliveryPhotos", ref.id), { memberUid: user.uid, dataUrl: photoData });
-        }
+        photos.forEach((p, i) => {
+          batch.set(fb.doc(fb.db, "deliveryPhotos", P.photoDocId(ref.id, i)), { memberUid: user.uid, dataUrl: p.data });
+        });
         await batch.commit();
         /* The public log (log.html) gets a trimmed copy: no names, schools,
            sites, notes or photo. See firestore.rules, publicLog. It's written
@@ -166,7 +184,7 @@
             : "The database refused this. Your account may not be a member yet, or a field is over its limit.")
           : "Couldn't save. Check your connection and try again. Nothing was sent.", "err");
       } finally {
-        submitBtn.disabled = false;
+        submitBtn.disabled = busy();
       }
     });
   

@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/site.css?v=22">
   <link rel="stylesheet" href="assets/design.css?v=27">
-  <link rel="stylesheet" href="assets/portal.css?v=14">
+  <link rel="stylesheet" href="assets/portal.css?v=15">
 </head>
 
 <body class="portal">
@@ -102,15 +102,15 @@
 
             <section class="f-sec">
               <header class="f-sec-head"><span class="f-num">5</span>
-                <div><h3>Photo <span class="p-opt">optional</span></h3><p>A quick photo of the food helps the reviewer, and once the delivery is accepted it’s shown on the public delivery log. Food only, never people.</p></div>
+                <div><h3>Photos <span class="p-opt">optional, up to 4</span></h3><p>A few quick photos of the food help the reviewer, and once the delivery is accepted they’re shown on the public delivery log. Food only, never people.</p></div>
               </header>
               <div class="f-body">
-                <input type="file" id="photo" class="vh-file" accept="image/*">
+                <input type="file" id="photo" class="vh-file" accept="image/*" multiple>
                 <label for="photo" id="photoDrop" class="drop">
                   <span class="drop-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.5-2h7L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-9Z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
-                  <span class="drop-text"><b>Add a photo</b><span>Take one or choose a file. It's shrunk before it uploads.</span></span>
+                  <span class="drop-text"><b id="photoDropTitle">Add photos</b><span id="photoDropHint">Take one or choose several files. They're shrunk before they upload.</span></span>
                 </label>
-                <div id="photoPreview" class="p-preview" hidden></div>
+                <div id="photoPreview" class="p-previews" hidden></div>
               </div>
             </section>
 
@@ -167,11 +167,11 @@
   </footer>
 
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=33"></script>
-  <script src="assets/portal.js?v=15"></script>
+  <script src="assets/site.js?v=34"></script>
+  <script src="assets/portal.js?v=16"></script>
   <script src="assets/tempchart.js?v=3"></script>
   <script src="assets/temps.js?v=1"></script>
-  <script src="assets/admin.js?v=11"></script>
-  <script src="assets/members.js?v=9"></script>
+  <script src="assets/admin.js?v=12"></script>
+  <script src="assets/members.js?v=10"></script>
 </body>
 </html>

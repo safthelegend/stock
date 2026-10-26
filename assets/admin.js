@@ -16,7 +16,7 @@
     let all = [];            // every delivery, newest first
     let filter = "pending";
     const drafts = {};       // reviewer notes being typed, by delivery id
-    const photos = {};       // loaded photos, by delivery id
+    const photos = {};       // loaded photos (a list of data URLs), by delivery id
     let editing = null;      // id of the card open for editing, or null
     let onPending = () => {}; // told the waiting count, for the badge on the tab
 
@@ -114,34 +114,36 @@
       const { fb } = ctx;
       const b = fb.writeBatch(fb.db);
       b.delete(fb.doc(fb.db, "deliveries", d.id));
-      if (d.hasPhoto) b.delete(fb.doc(fb.db, "deliveryPhotos", d.id));
+      for (let i = 0; i < P.photoCount(d); i++) b.delete(fb.doc(fb.db, "deliveryPhotos", P.photoDocId(d.id, i)));
       return b.commit();
     }
   
     /* ---------- one card ---------- */
     function photoBlock(d) {
-      if (!d.hasPhoto) return el("p", { className: "p-muted d-nophoto" }, "No photo attached.");
+      const n = P.photoCount(d);
+      if (!n) return el("p", { className: "p-muted d-nophoto" }, "No photo attached.");
       const wrap = el("div", { className: "d-photo" });
-      if (photos[d.id]) {
-        wrap.appendChild(el("img", { src: photos[d.id], alt: "Photo of delivery from " + d.fromSchool }));
-        return wrap;
-      }
+      const show = (urls) => wrap.replaceChildren(...urls.map((url, i) =>
+        el("img", { src: url, alt: "Photo " + (i + 1) + " of delivery from " + d.fromSchool })));
+      if (photos[d.id]) { show(photos[d.id]); return wrap; }
       /* Photos load on request, not with the list, so opening Review doesn't
          download every photo ever taken. */
-      const btn = el("button", { type: "button", className: "p-link" }, "Show photo");
+      const btn = el("button", { type: "button", className: "p-link" }, n === 1 ? "Show photo" : "Show " + n + " photos");
       btn.addEventListener("click", async () => {
-        btn.disabled = true; btn.textContent = "Loading photo…";
+        btn.disabled = true; btn.textContent = n === 1 ? "Loading photo…" : "Loading photos…";
         try {
-          const snap = await ctx.fb.getDoc(ctx.fb.doc(ctx.fb.db, "deliveryPhotos", d.id));
-          if (!snap.exists()) { btn.textContent = "Photo is missing"; return; }
-          photos[d.id] = snap.data().dataUrl;
-          wrap.replaceChildren(el("img", { src: photos[d.id], alt: "Photo of delivery from " + d.fromSchool }));
+          const snaps = await Promise.all(Array.from({ length: n }, (_, i) =>
+            ctx.fb.getDoc(ctx.fb.doc(ctx.fb.db, "deliveryPhotos", P.photoDocId(d.id, i)))));
+          const urls = snaps.filter((snap) => snap.exists()).map((snap) => snap.data().dataUrl);
+          if (!urls.length) { btn.textContent = n === 1 ? "Photo is missing" : "Photos are missing"; return; }
+          photos[d.id] = urls;
+          show(urls);
         } catch (err) { btn.disabled = false; btn.textContent = "Couldn't load. Try again"; }
       });
       wrap.appendChild(btn);
       return wrap;
     }
-  
+
     function viewCard(d) {
       const card = el("article", { className: "d-card d-admin" });
       const msg = el("p", { className: "p-msg", role: "status" });
@@ -173,21 +175,23 @@
       if (d.status !== "pending") actions.appendChild(btn("Move back to waiting", "", () => run(card, () => setStatus(d, "pending"), "Moved back to waiting.")));
       actions.appendChild(btn("Edit details", "", () => { editing = d.id; render(); }));
       actions.appendChild(btn("Delete", "quiet", () => {
-        if (!confirm("Delete this delivery and its photo for good? This can't be undone.")) return;
+        if (!confirm("Delete this delivery and its photos for good? This can't be undone.")) return;
         run(card, () => remove(d), "Deleted.");
       }));
   
       const reviewed = d.reviewedBy ? " · reviewed by " + d.reviewedBy + " " + P.fmtTime(d.reviewedAt) : "";
-      /* Whether this photo goes on the public delivery log once the delivery
+      /* Whether the photos go on the public delivery log once the delivery
          is accepted. On unless an admin turns it off. */
       let photoSwitch = null;
       if (d.hasPhoto) {
         const cb = el("input", { type: "checkbox", checked: d.photoPublic !== false });
         cb.addEventListener("change", () => run(card, () => ctx.fb.updateDoc(ctx.fb.doc(ctx.fb.db, "deliveries", d.id),
           { photoPublic: cb.checked, updatedAt: ctx.fb.serverTimestamp() }),
-          cb.checked ? "The photo will show on the public log once accepted." : "The photo stays private."));
+          cb.checked ? "The photos will show on the public log once accepted." : "The photos stay private."));
+        const many = P.photoCount(d) > 1;
         photoSwitch = el("label", { className: "d-pubphoto" }, cb,
-          el("span", {}, el("b", {}, "Show this photo on the public log"), " once it's accepted. Turn this off if it shows a person or anything private."));
+          el("span", {}, el("b", {}, many ? "Show these photos on the public log" : "Show this photo on the public log"),
+            " once it's accepted. Turn this off if " + (many ? "any of them shows" : "it shows") + " a person or anything private."));
       }
 
       card.append(...[
@@ -329,7 +333,7 @@
     let withRegion = true;
     const sameEntry = (a, b) => a && b && a.date === b.date && a.weightLbs === b.weightLbs && a.foods === b.foods && a.status === b.status &&
       (!withRegion || ((a.region || null) === (b.region || null) && (a.school || null) === (b.school || null) &&
-        (a.site || null) === (b.site || null) && !!a.photo === !!b.photo &&
+        (a.site || null) === (b.site || null) && pubCount(a) === pubCount(b) &&
         JSON.stringify(a.temps || null) === JSON.stringify(b.temps || null)));
     /* Photos: an accepted delivery's photo is copied to publicPhotos (which
        anyone can read) unless an admin turned it off, and its public log
@@ -338,6 +342,8 @@
        refuses (rules not published yet). */
     let photosOff = false;
     const photoWanted = (d) => withRegion && !photosOff && d.status === "accepted" && d.hasPhoto && d.photoPublic !== false;
+    // How many public photos a public log entry says it has.
+    function pubCount(e) { return !e || !e.photo ? 0 : (e.photos || 1); }
 
     async function syncPublicLog() {
       if (!ctx || !pub || !loaded || rolesState === "loading") return;
@@ -345,20 +351,25 @@
       syncing = true;
       try {
         const { fb } = ctx;
-        /* Copy any newly public photos first, so an entry never says
-           photo: true before its picture is there. One at a time: each is
-           up to about 900 KB. */
-        const hasPublic = new Set(Object.keys(pub).filter((id) => pub[id].photo));
-        for (const d of all) {
-          if (!photoWanted(d) || hasPublic.has(d.id)) continue;
-          try {
-            const snap = await fb.getDoc(fb.doc(fb.db, "deliveryPhotos", d.id));
-            if (!snap.exists()) continue;
-            await fb.setDoc(fb.doc(fb.db, "publicPhotos", d.id), { dataUrl: snap.data().dataUrl });
-            hasPublic.add(d.id);
-          } catch (err) {
-            if (err.code === "permission-denied") { photosOff = true; break; }
-            console.error("Couldn't publish a delivery photo:", err);
+        /* Copy any newly public photos first, in order, so an entry never
+           says it has a photo before the picture is there. One at a time:
+           each is up to about 900 KB. hasPublic counts, by delivery id, how
+           many of its photos are public. */
+        const hasPublic = {};
+        Object.keys(pub).forEach((id) => { if (pub[id].photo) hasPublic[id] = pubCount(pub[id]); });
+        copying: for (const d of all) {
+          if (!photoWanted(d)) continue;
+          for (let i = hasPublic[d.id] || 0; i < P.photoCount(d); i++) {
+            try {
+              const snap = await fb.getDoc(fb.doc(fb.db, "deliveryPhotos", P.photoDocId(d.id, i)));
+              if (!snap.exists()) break;
+              await fb.setDoc(fb.doc(fb.db, "publicPhotos", P.photoDocId(d.id, i)), { dataUrl: snap.data().dataUrl });
+              hasPublic[d.id] = i + 1;
+            } catch (err) {
+              if (err.code === "permission-denied") { photosOff = true; break copying; }
+              console.error("Couldn't publish a delivery photo:", err);
+              break;
+            }
           }
         }
 
@@ -368,19 +379,23 @@
         all.forEach((d) => {
           if (d.status === "pending" && !isVerified(d.memberUid)) return;
           const e = P.publicEntry(d, withRegion); if (!e) return;
-          if (photoWanted(d) && hasPublic.has(d.id)) e.photo = true;
+          const n = photoWanted(d) ? hasPublic[d.id] || 0 : 0;
+          if (n) e.photo = true;
+          if (n > 1) e.photos = n;
           want[d.id] = e;
         });
         const ops = [];
         Object.keys(want).forEach((id) => { if (!sameEntry(pub[id], want[id])) ops.push({ id, value: want[id] }); });
         Object.keys(pub).forEach((id) => { if (!want[id]) ops.push({ id, value: null }); });
         // Photos no longer wanted come down with their entry's update.
-        Object.keys(pub).forEach((id) => { if (pub[id].photo && !(want[id] && want[id].photo)) ops.push({ id, photoGone: true }); });
+        Object.keys(pub).forEach((id) => {
+          for (let i = pubCount(want[id]); i < pubCount(pub[id]); i++) ops.push({ id: P.photoDocId(id, i), photoGone: true });
+        });
         /* Small batches: the rules look up each entry's delivery (and maybe
-           its public photo) to check the entry matches it, and Firestore
-           allows only 20 such lookups in one batch. Six entries is at most
-           13 (two each, plus the admin's role), so a batch is never refused
-           just for being big. */
+           its first and last public photo) to check the entry matches it, and
+           Firestore allows only 20 such lookups in one batch. Six entries is
+           at most 19 (three each, plus the admin's role), so a batch is never
+           refused just for being big. */
         const BATCH = 6;
         for (let i = 0; i < ops.length; i += BATCH) {
           const b = fb.writeBatch(fb.db);
