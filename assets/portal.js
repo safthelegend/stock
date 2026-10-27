@@ -56,7 +56,7 @@
       // Brighton Beach, near Rachel Carson
       { name: "Community Fridge – Brighton Beach (ICNA Relief)", address: "281 Neptune Ave, Brooklyn, NY 11235", borough: "Brooklyn", org: "ICNA Relief" },
       // Flatbush, on Rogers Ave just off Church Ave
-      { name: "Rogers Avenue Fridge", address: "830 Rogers Ave, Brooklyn, NY 11226", borough: "Brooklyn", org: "Rogers Avenue Fridge" }
+      { name: "Rogers Avenue Community Fridge", address: "830 Rogers Ave, Brooklyn, NY 11226", borough: "Brooklyn", org: "Rogers Avenue Community Fridge" }
     ];
     const BOROUGH_ORDER = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
     const byBorough = (a, b) => (BOROUGH_ORDER.indexOf(a.borough) - BOROUGH_ORDER.indexOf(b.borough)) || a.name.localeCompare(b.name);
