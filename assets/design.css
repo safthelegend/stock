@@ -657,13 +657,13 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 /* --- announcement ticker (STB.initTicker in site.js) ---------------------
    A thin strip above the nav, dressed like it: clear at the top of the
    page and frosted once you scroll, just as the nav is, in the site's
-   quiet text, with "1,000" in blue and the message crawling through it. It fades out at both edges. While it's
+   quiet text, with "1,000" in gold and the message crawling through it. It fades out at both edges. While it's
    up, the nav and the page move down by its height (--ticker-h). Hovering
-   or focusing it pauses the crawl. --tk-blue is a deeper blue on light
+   or focusing it pauses the crawl. --tk-gold is a deeper gold on light
    pages and a brighter one on dark. */
-:root { --tk-blue:#1F6FB8; }
-:root[data-theme="dark"], :root[data-theme="stock"] { --tk-blue:#5DAEF0; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --tk-blue:#5DAEF0; } }
+:root { --tk-gold:#B07D0C; }
+:root[data-theme="dark"], :root[data-theme="stock"] { --tk-gold:#E8BC45; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --tk-gold:#E8BC45; } }
 html.has-ticker body { padding-top:var(--ticker-h, 32px); }
 html.has-ticker nav.bar { top:var(--ticker-h, 32px); }
 .tk { position:fixed; top:0; left:0; right:0; z-index:56; display:flex; align-items:stretch; height:32px; background:var(--nav-bg);
@@ -677,7 +677,7 @@ html.has-ticker nav.bar { top:var(--ticker-h, 32px); }
 .tk-half { display:flex; }
 .tk-msg { padding:0 32px 0 0; }
 .tk-msg::after { content:"\2022"; margin-left:32px; color:var(--brand-line-mid); }
-.tk-blue { color:var(--tk-blue); font-weight:800; }
+.tk-gold { color:var(--tk-gold); font-weight:800; }
 .tk-sep { margin:0 10px; color:var(--brand-line-mid); }
 @keyframes tkCrawl { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .tk:hover .tk-track, .tk:focus-within .tk-track { animation-play-state:paused; }

@@ -37,7 +37,7 @@ var PRECACHE = [
   "404.html",
   "assets/site.css?v=22",
   "assets/design.css?v=28",
-  "assets/site.js?v=36",
+  "assets/site.js?v=35",
   "assets/map.js?v=18",
   "assets/mainpage.css?v=5",
   "assets/scenes.css?v=1",
