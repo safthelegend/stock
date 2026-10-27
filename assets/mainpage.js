@@ -129,11 +129,21 @@
            two thirds of the way in under half a second, the last handful
            ticking up over the final second. */
         var heroLbs = card && counter($("#impactLbs"), {
-            dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); }
+            dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); },
+            onDone: function (v) { tint(v); }
         });
         var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
         var liveText = $("#impactLiveText"), sr = $("#impactSR");
         var numEl = $("#impactLbs"), figEl = card && $(".impact-fig", card);
+        // Turn blue the moment the count passes 1,000, not after it settles.
+        if (card) numEl.onCount = function (t) { tint(parseFloat(t.replace(/,/g, "")) || 0); };
+        /* During the 1,000 lbs celebration (STB.celebrating, the same window
+           as the announcement bar), the number turns blue the moment the
+           real count passes 1,000 (.is-blue in design.css). */
+        function tint(v) {
+            if (!card || !STB.celebrating) return;
+            card.classList.toggle("is-blue", !!loaded && Math.min(v, heroLbs.value()) >= 1000);
+        }
 
         /* The number and "lbs" shrink together when the total is too wide
            for the card (--fit in design.css). Sized for the total it's
@@ -229,6 +239,8 @@
             showTotals(lbs, ok.length, new Date());
             try { localStorage.setItem(CACHE, JSON.stringify({ lbs: lbs, count: ok.length, at: Date.now() })); } catch (e) { /* fine */ }
             revealHero();
+            // Already showing this total (nothing to count): colour it now.
+            if (heroLbs && !heroLbs.busy()) tint(lbs);
         }
 
         /* Fast first, then live. Once Firebase has delivered, the quick

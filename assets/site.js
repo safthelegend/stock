@@ -2300,8 +2300,78 @@ function processScene(key) {
     });
   }
 
+  /* ======================================================================
+     ANNOUNCEMENT TICKER (every public page)
+     A thin strip across the top, above the nav and dressed like it (the
+     same translucent, blurred background), with a message scrolling
+     through it like a news crawl. It's for a limited time: it stops
+     showing after TICKER.until (end of that day, local time), and anyone
+     can close it with the x, which is remembered until then. The member
+     portal doesn't show it. While it's up, html gets "has-ticker" and
+     --ticker-h, which push the nav and the page down (design.css).
+     STB.celebrating is true for the same window; the home page counter
+     uses it to turn gold.
+     ====================================================================== */
+  var TICKER = {
+    id: "1000lbs",
+    until: "2026-11-08",
+    html: 'Celebrating <span class="tk-gold">1,000</span> pounds <span class="tk-sep" aria-hidden="true">|</span> ' +
+      "Thank you to our volunteers, cafeteria staff, and partners"
+  };
+  var celebrating = Date.now() <= new Date(TICKER.until + "T23:59:59").getTime();
+
+  function initTicker() {
+    if (!celebrating || !document.body || document.body.classList.contains("portal")) return;
+    var key = "stb-ticker-" + TICKER.id;
+    try { if (localStorage.getItem(key) === "closed") return; } catch (e) { /* storage blocked: show it */ }
+
+    var root = document.documentElement;
+    var bar = document.createElement("div");
+    bar.className = "tk";
+    bar.setAttribute("role", "region");
+    bar.setAttribute("aria-label", "Announcement");
+    bar.innerHTML = '<div class="tk-view"><div class="tk-track"></div></div>' +
+      '<button type="button" class="tk-close" aria-label="Hide this announcement">' +
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+    document.body.insertBefore(bar, document.body.firstChild);
+    var view = bar.querySelector(".tk-view"), track = bar.querySelector(".tk-track");
+    var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* The track holds two identical halves, each the message repeated
+       enough times to be wider than the bar, and slides left by one half
+       on a loop, so it never shows a gap. Screen readers get one copy. */
+    function build() {
+      if (still) {
+        bar.classList.add("is-still");
+        track.innerHTML = '<span class="tk-msg">' + TICKER.html + "</span>";
+      } else {
+        track.innerHTML = '<span class="tk-msg">' + TICKER.html + "</span>";
+        var unit = track.firstChild.getBoundingClientRect().width || 600;
+        var per = Math.max(1, Math.ceil(view.clientWidth / unit) + 1), half = "";
+        for (var i = 0; i < per; i++) half += '<span class="tk-msg"' + (i ? ' aria-hidden="true"' : "") + ">" + TICKER.html + "</span>";
+        track.innerHTML = '<div class="tk-half">' + half + '</div><div class="tk-half" aria-hidden="true">' + half + "</div>";
+        // About 60px a second, whatever the screen width.
+        track.style.setProperty("--tk-dur", (track.firstChild.getBoundingClientRect().width / 60).toFixed(1) + "s");
+      }
+      root.style.setProperty("--ticker-h", bar.offsetHeight + "px");
+    }
+    root.classList.add("has-ticker");
+    build();
+    var resizeTimer = 0;
+    addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(build, 150); }, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+
+    bar.querySelector(".tk-close").addEventListener("click", function () {
+      try { localStorage.setItem(key, "closed"); } catch (e) { /* storage blocked: gone for this page only */ }
+      bar.remove();
+      root.classList.remove("has-ticker");
+      root.style.removeProperty("--ticker-h");
+    });
+  }
+
   global.STB = {
     fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene,
+    celebrating: celebrating, initTicker: initTicker,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,
     initUnits: initUnits, renderUnits: renderUnits, unitMode: unitMode,
@@ -2331,4 +2401,6 @@ function processScene(key) {
 
   // The gliding scroll from the home page, on every page.
   initSmoothScroll();
+  // The limited-time announcement bar, on every public page.
+  initTicker();
 })(window);
