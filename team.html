@@ -29,8 +29,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .team-page .sec-head { margin-bottom:48px; }
   .team-hint { margin:14px auto 0; font-size:13.5px; color:var(--text-secondary); }
 
-  /* Three groups, each a grid of cards. */
-  .crew + .crew { margin-top:64px; }
+  /* Six groups, each a grid of cards. */
   .crew-title { display:flex; align-items:baseline; justify-content:center; gap:10px; margin:0 0 24px; text-align:center;
     font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800;
     font-size:clamp(24px,2.6vw,30px); letter-spacing:-0.03em; color:var(--text); }
@@ -53,7 +52,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     line-height:1.3; letter-spacing:-0.01em; color:var(--text); }
   .p-role { margin-top:6px; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700;
     font-size:13px; line-height:1.35; color:var(--brand); }
-  .p-foot { position:relative; display:block; margin-top:14px; min-height:4.5em; font-size:14px; line-height:1.45; }
+  .p-foot { position:relative; display:block; flex:1 0 auto; margin-top:14px; min-height:4.5em; font-size:14px; line-height:1.45; }
   .p-school, .p-more { position:absolute; left:0; right:0; transition:opacity 220ms ease, transform 260ms cubic-bezier(0.22,1,0.36,1); }
   .p-school { bottom:0; right:26px; font-size:13.5px; color:var(--text-secondary); }   /* clear of the + */
   .p-more { right:22px; }
@@ -89,14 +88,28 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .person:hover .p-plus::after { transform:rotate(0deg); opacity:0; }
   }
 
-  /* Six tiers, told apart without reading the headings. The founder stands
-     alone in one larger card. The executive board sits on its own tinted
-     panel, with larger cards and the orange accent along the top.
-     Representatives and mentors keep the standard card. Site operators and
-     volunteers are the most compact: smaller cards, four to a row, and a
-     plain top edge. */
-  .crew-exec { padding:36px 28px 40px; border-radius:24px; border:1px solid var(--brand-line);
-    background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 9%, var(--surface)), color-mix(in srgb, var(--brand) 3%, var(--bg))); }
+  /* Six tiers, each on its own soft panel, told apart without reading the
+     headings. The tints alternate warm and green; the executive board keeps
+     the strongest green and the orange accent along its cards. The founder
+     stands alone in one larger card on a narrower, warmer panel. Site
+     operators and volunteers are the most compact: smaller cards, four to a
+     row, and a plain top edge. */
+  .crew { position:relative; isolation:isolate; padding:40px 32px; border-radius:24px; border:1px solid var(--brand-line);
+    background:var(--tier-bg); }
+  /* Jump-link targets sit above the panel, so a tier scrolled to from the
+     links at the top lands with its mascot in full view below the nav. */
+  .tier-anchor { position:absolute; top:-130px; left:0; scroll-margin-top:96px; }
+  .crew + .crew { margin-top:96px; }
+  .crew-founder { --tier-bg:linear-gradient(160deg, color-mix(in srgb, var(--accent) 17%, var(--surface)), color-mix(in srgb, var(--accent) 6%, var(--surface)));
+    max-width:620px; margin-inline:auto; border-color:color-mix(in srgb, var(--accent) 34%, transparent); }
+  .crew-exec { --tier-bg:linear-gradient(180deg, color-mix(in srgb, var(--brand) 10%, var(--tint)), color-mix(in srgb, var(--tint) 45%, var(--surface))); }
+  .crew-rep, .crew-vol { --tier-bg:color-mix(in srgb, var(--accent) 9%, var(--surface)); border-color:color-mix(in srgb, var(--accent) 28%, transparent); }
+  .crew-ops:not(.crew-vol), .crew-mentor { --tier-bg:color-mix(in srgb, var(--tint) 70%, var(--surface)); }
+
+  /* Each tier's heading sits top left, with a line on what the tier does. */
+  .crew-head { position:relative; margin:0 0 24px; padding-right:calc(var(--mw) + 20px); }
+  .crew-head .crew-title { justify-content:flex-start; text-align:left; margin:0; }
+  .crew-sub { margin:8px 0 0; max-width:52ch; font-size:15.5px; line-height:1.5; color:var(--text-secondary); text-wrap:pretty; }
   .crew-exec .crew-title { font-size:clamp(28px,3.2vw,36px); color:var(--brand); }
   .crew-exec .crew-count { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
   .crew-exec .person { border-top:4px solid var(--accent); padding:24px 24px 22px; box-shadow:0 14px 34px -26px var(--paper-shadow); }
@@ -117,7 +130,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   @media (max-width:900px) { .crew-ops .crew-grid > li { flex-basis:calc((100% - 12px) / 2); } }
 
   /* The founder: one centred card, a step up from the executive board's. */
-  .crew-founder .crew-grid { max-width:420px; }
+  .crew-founder .crew-grid { max-width:460px; }
   .crew-founder .crew-grid > li { flex-basis:100%; }
   .crew-founder .person { border-top:5px solid var(--accent); padding:30px 30px 26px; box-shadow:0 14px 34px -26px var(--paper-shadow); }
   .crew-founder .p-name { font-size:25px; }
@@ -132,9 +145,58 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .crew-rep li:nth-child(4) .p-foot { min-height:16em; }
   .crew-ops:not(.crew-vol) .p-foot { min-height:7.7em; }
 
+  /* Tier mascots. Each is the traced Stock the Block mascot with one
+     accessory; the face is the same on all six. It stands at the top right
+     of its tier, tilted, poking up over the panel's edge, with its bottom
+     tucked behind the cards: z-index -1 inside the tier's own stacking
+     context puts it above the panel and below every card and heading. The
+     heading keeps clear of it (padding-right on .crew-head). Decorative only. */
+  .crew { --mw:210px; }
+  .tier-mascot { position:absolute; z-index:-1; right:-6px; bottom:calc(-24px - var(--tuck)); width:var(--mw); height:auto;
+    pointer-events:none; overflow:visible; transform:rotate(10deg); transform-origin:50% 60%; }
+  .tier-mascot[data-tier="founder"] { --tuck:30px; }
+  .tier-mascot[data-tier="exec"]    { --tuck:6px; }
+  .tier-mascot[data-tier="rep"]     { --tuck:8px; }
+  .tier-mascot[data-tier="ops"]     { --tuck:30px; }
+  .tier-mascot[data-tier="vol"]     { --tuck:10px; }
+  .tier-mascot[data-tier="mentor"]  { --tuck:30px; }
+  .crew-founder { --mw:170px; }
+  /* When a tier scrolls into view its mascot rises up from behind the cards
+     (only with JavaScript on and motion allowed; see the script below). */
+  .js-peek .tier-mascot { opacity:0; transform:translateY(36px) rotate(4deg);
+    transition:transform 750ms cubic-bezier(0.22,1,0.36,1), opacity 350ms ease; }
+  .js-peek .crew.is-in .tier-mascot { opacity:1; transform:rotate(10deg); }
+
+  /* The page header: who's on the team, and a jump link to each tier. */
+  .team-sum { margin:18px auto 0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12.5px;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--brand); }
+  .tier-nav { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:22px auto 0; max-width:720px; }
+  .tier-nav a { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:13.5px;
+    color:var(--brand); text-decoration:none; padding:7px 14px; border-radius:999px; border:1.5px solid var(--brand-line-mid);
+    background:var(--surface); transition:background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+  .tier-nav a:hover { background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+  .tier-nav a:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+  .team-page .sec-head { margin-bottom:112px; }
+
+  @media (max-width:999px) { .crew { --mw:160px; } .crew-founder { --mw:140px; } }
   .team-emblems { padding:24px 0 72px; }
   @media (max-width:640px) {
-    .crew-exec { padding:24px 14px 26px; border-radius:18px; }
+    .crew { padding:22px 14px 24px; border-radius:18px; --mw:96px; }
+    .tier-anchor { top:-112px; }
+    .crew-founder { --mw:96px; }
+    .crew + .crew { margin-top:88px; }
+    .team-page .sec-head { margin-bottom:96px; }
+    /* On a phone the mascot sits just above the heading, over the panel's
+       top edge, so the heading keeps the full width. */
+    .crew-head { padding-right:0; }
+    .tier-mascot { bottom:auto; top:calc(-12px - var(--mw) * var(--ar)); right:-8px; }
+    .tier-mascot[data-tier="founder"] { --ar:0.982; }
+    .tier-mascot[data-tier="exec"]    { --ar:0.813; }
+    .tier-mascot[data-tier="rep"]     { --ar:0.983; }
+    .tier-mascot[data-tier="ops"]     { --ar:0.961; }
+    .tier-mascot[data-tier="vol"]     { --ar:0.957; }
+    .tier-mascot[data-tier="mentor"]  { --ar:0.929; }
+    .crew-sub { font-size:14.5px; }
     .crew-ops .crew-grid > li { flex-basis:100%; }
     .crew-ops .p-foot { min-height:3.2em; }
     .crew-rep .p-foot { min-height:12em; }
@@ -142,12 +204,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     .crew-ops:not(.crew-vol) .p-foot { min-height:5em; }
     .crew-founder .p-foot { min-height:4.6em; }
     .team-page { padding:88px 0 24px; }
-    .crew + .crew { margin-top:48px; }
     .crew-grid { gap:12px; }
     .crew-grid > li { flex-basis:100%; }
     .person { padding:18px 18px 16px; }
     .p-foot { min-height:3.2em; }
   }
+  @media (max-width:360px) { .crew-exec .crew-title { font-size:24px; } }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
 <link rel="stylesheet" href="assets/design.css?v=28">
@@ -186,11 +248,24 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <header class="sec-head">
       <h1 class="sec-title" id="teamHd">Our Team</h1>
       <p class="sec-lede">Built by students, for the public.</p>
+      <p class="team-sum" data-team-sum hidden></p>
+      <nav class="tier-nav" aria-label="Jump to a team">
+        <a href="#founder">Founder</a>
+        <a href="#executive-board">Executive Board</a>
+        <a href="#representatives">Representatives</a>
+        <a href="#site-operators">Site Operators</a>
+        <a href="#volunteers">Volunteers</a>
+        <a href="#mentors">Mentors</a>
+      </nav>
       <p class="team-hint">Hover over anyone, or tap them on a phone, to see what they do.</p>
     </header>
 
     <section class="crew crew-founder" aria-labelledby="founderHd" data-no-anchor>
-      <h2 class="crew-title" id="founderHd">Founder</h2>
+      <span class="tier-anchor" id="founder"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="founder" viewBox="100 -30 940 923" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><rect x="380" y="-6" width="320" height="200" rx="24" fill="#3B592A" stroke="#3B592A" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M392 146 H688" fill="none" stroke="#DB8D3C" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/><path d="M300 198 H780" fill="none" stroke="#3B592A" stroke-width="41" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="founderHd">Founder</h2>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role1">
           <span class="p-head"><span class="p-id"><span class="p-name">Saif Iftikhar</span><span class="p-role">Founder</span></span></span>
@@ -201,7 +276,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-exec" aria-labelledby="execHd" data-no-anchor>
-      <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">8</span></h2>
+      <span class="tier-anchor" id="executive-board"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="exec" viewBox="100 186 940 764" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><path d="M762 746 L780 680 L812 718 L842 670 L866 746 Z" fill="#DB8D3C" stroke="#3B592A" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M754 746 V808 Q754 824 770 824 H858 Q874 824 874 808 V746" fill="#ECF3E1" stroke="#3B592A" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M740 746 H888" fill="none" stroke="#3B592A" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/><path d="M540 873 L420 813 V933 Z" fill="#DB8D3C" stroke="#3B592A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M540 873 L660 813 V933 Z" fill="#DB8D3C" stroke="#3B592A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><rect x="504" y="837" width="72" height="72" rx="20" fill="#DB8D3C" stroke="#3B592A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="execHd">Executive Board <span class="crew-count">8</span></h2>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role2">
           <span class="p-head"><span class="p-id"><span class="p-name">Sajid Rahman</span><span class="p-role">Deputy Director</span></span></span>
@@ -247,7 +326,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-rep" aria-labelledby="repsHd" data-no-anchor>
-      <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">6</span></h2>
+      <span class="tier-anchor" id="representatives"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="rep" viewBox="100 186 940 924" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><path d="M330 206 C160 400 160 700 500 962" fill="none" stroke="#DB8D3C" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/><path d="M749 206 C919 400 919 700 579 962" fill="none" stroke="#DB8D3C" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/><rect x="455" y="958" width="170" height="134" rx="22" fill="#ECF3E1" stroke="#3B592A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M455 1004 H625" fill="none" stroke="#3B592A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><circle cx="502" cy="1046" r="14" fill="#3B592A" stroke="#3B592A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M536 1036 H592 M536 1062 H576" fill="none" stroke="#3B592A" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="repsHd">Representatives <span class="crew-count">6</span></h2>
+        <p class="crew-sub">Lead Stock the Block at their own schools.</p>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role13">
           <span class="p-head"><span class="p-id"><span class="p-name">Ayeman Kasif</span><span class="p-role">Representative</span></span></span>
@@ -283,7 +367,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-ops" aria-labelledby="opsHd" data-no-anchor>
-      <h2 class="crew-title" id="opsHd">Site Operators <span class="crew-count">8</span></h2>
+      <span class="tier-anchor" id="site-operators"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="ops" viewBox="100 -10 940 903" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><path d="M250 200 C250 60 380 20 540 20 C700 20 830 60 830 200 Z" fill="#DB8D3C" stroke="#3B592A" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M540 20 V196" fill="none" stroke="#3B592A" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/><path d="M190 204 H890" fill="none" stroke="#3B592A" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="opsHd">Site Operators <span class="crew-count">8</span></h2>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role18">
           <span class="p-head"><span class="p-id"><span class="p-name">Kamronbek Nizamidinov</span><span class="p-role">Manhattan Dispatch Operator</span></span></span>
@@ -329,7 +417,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-ops crew-vol" aria-labelledby="volHd" data-no-anchor>
-      <h2 class="crew-title" id="volHd">Volunteers <span class="crew-count">11</span></h2>
+      <span class="tier-anchor" id="volunteers"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="vol" viewBox="100 10 940 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M320 186 L150 140 L144 190 Z" fill="#3B592A" stroke="#3B592A" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><path d="M300 206 C300 80 400 50 540 50 C680 50 780 80 780 206 Z" fill="#3B592A" stroke="#3B592A" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M540 50 C495 100 495 160 505 206 M540 50 C585 100 585 160 575 206" fill="none" stroke="#ECF3E1" stroke-width="14" stroke-linecap="round"/><circle cx="540" cy="46" r="20" fill="#DB8D3C" stroke="#3B592A" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M920 900 C820 830 850 760 920 800 C990 760 1020 830 920 900 Z" fill="#DB8D3C" stroke="#3B592A" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="volHd">Volunteers <span class="crew-count">11</span></h2>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role19">
           <span class="p-head"><span class="p-id"><span class="p-name">Arefin Dhrubo</span><span class="p-role">Volunteer</span></span></span>
@@ -390,7 +482,11 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     </section>
 
     <section class="crew crew-mentor" aria-labelledby="mentorsHd" data-no-anchor>
-      <h2 class="crew-title" id="mentorsHd">Mentors <span class="crew-count">2</span></h2>
+      <span class="tier-anchor" id="mentors"></span>
+      <div class="crew-head">
+        <svg class="tier-mascot" data-tier="mentor" viewBox="100 20 940 873" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="150.5" y="226" width="779" height="627" rx="54" fill="#ECF3E1" stroke="#3B592A" stroke-width="41"/><path d="M150.5 431.5 H929.5" stroke="#3B592A" stroke-width="40"/><path d="M301 636 L375.5 562 L450 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M630 636 L704.5 562 L779 636" fill="none" stroke="#3B592A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><path d="M421 702 Q539.5 785 658 702" fill="none" stroke="#DB8D3C" stroke-width="32" stroke-linecap="round"/><path d="M540 40 L900 160 L540 280 L180 160 Z" fill="#3B592A" stroke="#3B592A" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M540 160 L820 168 V330" fill="none" stroke="#DB8D3C" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M820 330 V420" fill="none" stroke="#DB8D3C" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/><circle cx="540" cy="160" r="22" fill="#DB8D3C" stroke="#DB8D3C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 class="crew-title" id="mentorsHd">Mentors <span class="crew-count">2</span></h2>
+      </div>
       <ul class="crew-grid">
         <li><button type="button" class="person" aria-expanded="false" aria-describedby="role20">
           <span class="p-head"><span class="p-id"><span class="p-name">Savlatbek Narzilloev</span><span class="p-role">CUNY Expansion Lead</span></span></span>
@@ -468,6 +564,53 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     }
     card.querySelector(".p-head").appendChild(stamp);
   });
+
+  /* The header line ("35 people · 9 schools"), counted from the cards so it
+     never goes stale. */
+  var sum = $("[data-team-sum]");
+  if (sum) {
+    var people = $$(".person"), schools = {};
+    people.forEach(function (card) { schools[card.querySelector(".p-school").textContent.trim()] = 1; });
+    var n = Object.keys(schools).length;
+    sum.textContent = people.length + " people · " + n + (n === 1 ? " school" : " schools");
+    sum.hidden = false;
+  }
+
+  /* Each tier's mascot rises up from behind its cards the first time the
+     tier scrolls into view. Without JavaScript, or with reduced motion, the
+     mascots simply stay put. */
+  if (!reduced && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("js-peek");
+    var peek = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("is-in");
+        peek.unobserve(en.target);
+      });
+    }, { rootMargin: "0px 0px -15% 0px", threshold: 0.1 });
+    $$(".crew").forEach(function (t) { peek.observe(t); });
+  }
+
+  /* Each card reserves exactly the room its own description needs, so the
+     text never spills out of the card and nothing moves when it appears.
+     (The min-heights in the CSS are the fallback without JavaScript.)
+     Re-measured when the width changes and once the fonts have loaded. */
+  function fitCards() {
+    $$(".person").forEach(function (card) {
+      var foot = card.querySelector(".p-foot");
+      foot.style.minHeight = "";
+      var need = Math.max(card.querySelector(".p-more").offsetHeight, card.querySelector(".p-school").offsetHeight);
+      foot.style.minHeight = Math.ceil(need) + "px";
+    });
+  }
+  var fitQueued = false, lastW = innerWidth;
+  addEventListener("resize", function () {
+    if (innerWidth === lastW || fitQueued) return;
+    lastW = innerWidth; fitQueued = true;
+    requestAnimationFrame(function () { fitQueued = false; fitCards(); });
+  });
+  fitCards();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCards);
 
   /* Tap (or click, or Enter) a card to show what the role does; tap again
      to hide it. On a computer, hovering shows it too (CSS). */
