@@ -393,37 +393,8 @@ footer .wrap.top { padding-top:56px; }
 .impact-meta #impactCount { font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
 .impact-link { display:inline-block; margin-top:10px; font-size:14px; font-weight:600; color:var(--brand); }
 .impact-link:hover { text-decoration:underline; text-underline-offset:3px; }
-/* The link and the Confetti button share one row under the totals. */
-.impact-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 16px; margin-top:10px; }
-.impact-actions .impact-link { margin-top:0; }
-.confetti-btn { display:inline-flex; align-items:center; gap:6px; padding:4px 12px 4px 9px; border-radius:999px; border:1px solid var(--brand-line-mid);
-  background:transparent; color:var(--brand); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600;
-  font-size:13px; line-height:1.4; cursor:pointer; transition:background-color 160ms ease, border-color 160ms ease, transform 160ms ease; }
-.confetti-btn:hover { background:var(--tint); border-color:var(--brand); }
-.confetti-btn:active { transform:scale(0.96); }
-.confetti-btn:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
-.confetti-btn svg { width:15px; height:15px; display:block; }
 @media (prefers-reduced-motion: reduce) { .live-dot::after, .impact.is-bump .impact-num, .impact { animation:none !important; } }
 
-/* --- food confetti (STB.foodConfetti in site.js) -------------------------
-   The pieces are drawn like the apple and banana in the process scenes:
-   flat fills with the mascot's outline colour, so they follow the theme. */
-/* Above everything, the map's layers included (Leaflet goes up to 1000);
-   it never takes clicks. */
-.fc-layer { position:fixed; inset:0; z-index:1200; pointer-events:none; overflow:hidden; }
-.fc-piece { position:absolute; left:0; top:0; will-change:transform, opacity; }
-.fc-piece svg { display:block; width:100%; height:100%; overflow:visible; }
-.fc-line { fill:none; stroke:var(--mascot-stroke); stroke-width:2.2; stroke-linecap:round; }
-.fc-leaf { fill:var(--brand); }
-.fc-apple, .fc-banana, .fc-orange, .fc-milk, .fc-milk-top, .fc-milk-cap { stroke:var(--mascot-stroke); stroke-width:2.2; stroke-linejoin:round; }
-.fc-apple { fill:#D9534F; }
-.fc-banana { fill:#F2C14E; }
-.fc-orange { fill:#F29A38; }
-.fc-dot { fill:#C9741E; }
-.fc-milk { fill:#FFFFFF; }
-.fc-milk-top { fill:#EEF4FA; }
-.fc-milk-cap { fill:#FFFFFF; }
-.fc-milk-band { fill:var(--ice); }
 
 /* The hero status pill turns green now that deliveries are running. */
 #heroStatus.is-live .prelaunch-tag::before { background:var(--live); animation:livePulse 2.2s ease-out infinite; }
@@ -443,8 +414,6 @@ footer .wrap.top { padding-top:56px; }
   .impact-label { font-size:16px; margin-top:4px; }
   .impact-meta { font-size:12.5px; margin-top:5px; line-height:1.4; }
   .impact-link { display:none; }
-  .impact-actions { justify-content:flex-start; margin-top:8px; }
-  .confetti-btn { font-size:12px; padding:3px 10px 3px 8px; }
 }
 @media (max-width:700px) and (max-height:780px) {
   .hero-grid { grid-template-columns:88px minmax(0,1fr); row-gap:16px; }
@@ -654,64 +623,6 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
   .endorse-camba { height:100px; }
 }
 
-/* --- announcement ticker (STB.initTicker in site.js) ---------------------
-   A thin strip above the nav, dressed like it: clear at the top of the
-   page and frosted once you scroll, just as the nav is, in the site's
-   quiet text, with "1,000" in gold and the message crawling through it. It fades out at both edges. While it's
-   up, the nav and the page move down by its height (--ticker-h). Hovering
-   or focusing it pauses the crawl. --tk-gold is a deeper gold on light
-   pages and a brighter one on dark. */
-:root { --tk-gold:#B07D0C; }
-:root[data-theme="dark"], :root[data-theme="stock"] { --tk-gold:#E8BC45; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --tk-gold:#E8BC45; } }
-html.has-ticker body { padding-top:var(--ticker-h, 32px); }
-html.has-ticker nav.bar { top:var(--ticker-h, 32px); }
-.tk { position:fixed; top:0; left:0; right:0; z-index:56; display:flex; align-items:stretch; height:32px; background:var(--nav-bg);
-  -webkit-backdrop-filter:saturate(180%) blur(18px); backdrop-filter:saturate(180%) blur(18px);
-  transition:background-color 220ms ease; color:var(--text-secondary); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600;
-  font-size:12px; letter-spacing:0.08em; text-transform:uppercase; }
-.tk-view { flex:1; min-width:0; overflow:hidden; display:flex; align-items:center;
-  -webkit-mask-image:linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
-  mask-image:linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent); }
-.tk-track { display:flex; width:max-content; white-space:nowrap; animation:tkCrawl var(--tk-dur, 30s) linear infinite; }
-.tk-half { display:flex; }
-.tk-msg { padding:0 32px 0 0; }
-.tk-msg::after { content:"\2022"; margin-left:32px; color:var(--brand-line-mid); }
-.tk-gold { color:var(--tk-gold); font-weight:800; }
-.tk-sep { margin:0 10px; color:var(--brand-line-mid); }
-@keyframes tkCrawl { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-.tk:hover .tk-track, .tk:focus-within .tk-track { animation-play-state:paused; }
-.tk-close { flex:none; width:36px; display:grid; place-items:center; background:none; border:none; color:var(--text-secondary); cursor:pointer;
-  transition:color 160ms ease; }
-.tk-close:hover { color:var(--text); }
-.tk-close:focus-visible { outline:2px solid var(--brand); outline-offset:-4px; border-radius:6px; }
-/* Like the nav: clear at the top of the page, frosted once you scroll
-   (the nav gets .on), so the two always read as one bar. Browsers
-   without :has() just keep it frosted. */
-body:has(nav.bar:not(.on)) .tk { background:transparent; -webkit-backdrop-filter:none; backdrop-filter:none; }
-/* Reduced motion: the message sits still, wrapping if it has to. */
-.tk.is-still { height:auto; min-height:32px; }
-.tk.is-still .tk-view { -webkit-mask-image:none; mask-image:none; padding:7px 12px; }
-.tk.is-still .tk-track { animation:none; white-space:normal; width:auto; }
-.tk.is-still .tk-msg::after { content:none; }
-@media (max-width:640px) { .tk { font-size:11px; letter-spacing:0.06em; } }
-
-/* --- the counter turns gold for the 1,000 lbs celebration ----------------
-   While STB.celebrating, once the count passes 1,000 the number and "lbs"
-   turn gold with a highlight that sweeps across them every few seconds
-   (mainpage.js adds .is-gold). The gradient is plain gold at both ends, so
-   the loop never jumps. Reduced motion keeps the gold, without the sweep. */
-.impact.is-gold .impact-num, .impact.is-gold .impact-unit {
-  background-image:linear-gradient(105deg, #B8860B 0%, #B8860B 38%, #F6D365 46%, #FFF4C9 50%, #F6D365 54%, #B8860B 62%, #B8860B 100%);
-  background-size:300% 100%; background-position:100% 0;
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
-  animation:goldShine 4.6s ease-in-out infinite; }
-@keyframes goldShine { 0% { background-position:100% 0; } 50%, 100% { background-position:0% 0; } }
-:root[data-theme="dark"] .impact.is-gold .impact-num, :root[data-theme="dark"] .impact.is-gold .impact-unit,
-:root[data-theme="stock"] .impact.is-gold .impact-num, :root[data-theme="stock"] .impact.is-gold .impact-unit {
-  background-image:linear-gradient(105deg, #E2B23A 0%, #E2B23A 38%, #F8DC80 46%, #FFF6D8 50%, #F8DC80 54%, #E2B23A 62%, #E2B23A 100%); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .impact.is-gold .impact-num, :root:not([data-theme]) .impact.is-gold .impact-unit {
-    background-image:linear-gradient(105deg, #E2B23A 0%, #E2B23A 38%, #F8DC80 46%, #FFF6D8 50%, #F8DC80 54%, #E2B23A 62%, #E2B23A 100%); }
-}
-@media (prefers-reduced-motion: reduce) { .impact.is-gold .impact-num, .impact.is-gold .impact-unit { animation:none; background-position:0 0; } }
+/* "Built by students from": full school names, so long ones wrap onto two
+   centred lines under their logo instead of stretching the row. */
+.emblem.has-logo .emblem-name { white-space:normal; max-width:150px; text-align:center; line-height:1.3; }
