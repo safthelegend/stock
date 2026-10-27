@@ -1634,7 +1634,7 @@ function processScene(key) {
     { name: "Al-Hikmah Mosque Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
     { name: "Steinway Community Fridge", borough: "Queens", status: "active", kind: "receiving" },
     { name: "ICNA Relief Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" },
-    { name: "Rogers Avenue Fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
+    { name: "Rogers Avenue Community Fridge", borough: "Brooklyn", status: "active", kind: "receiving" }
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
@@ -2012,15 +2012,19 @@ function processScene(key) {
      file is, and a school with no logo yet is left out of the carousel.
      ====================================================================== */
   var EMBLEMS = [
-    { name: "Stuyvesant", full: "Stuyvesant High School", logo: "assets/schools/Stuyvesant.svg" },
-    { name: "CUNY Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
-    { name: "James Madison", full: "James Madison High School", logo: "assets/schools/mask/james-madison.png" },
-    { name: "Midwood", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
-    { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
-    { name: "Rachel Carson", full: "Rachel Carson High School", logo: "assets/schools/mask/rachel-carson.png" },
     { name: "CUNY Baruch College", full: "Baruch College", logo: "assets/schools/mask/baruch-college.png", wide: true },
-    { name: "Brooklyn Tech", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" },
-    { name: "Cardozo", full: "Benjamin N. Cardozo High School", logo: "assets/schools/mask/cardozo.png" }
+    { name: "CUNY Queens College", full: "Queens College", logo: "assets/schools/mask/queens-college.png" },
+    { name: "James Madison High School", full: "James Madison High School", logo: "assets/schools/mask/james-madison.png" },
+    { name: "Midwood High School", full: "Midwood High School", logo: "assets/schools/mask/midwood.png" },
+    { name: "Wellspring Schools", full: "NYCMC Wellspring Schools", logo: "assets/schools/mask/wellsprings-school.png", wide: true },
+    { name: "Rachel Carson High School", full: "Rachel Carson High School", logo: "assets/schools/mask/rachel-carson.png" },
+    { name: "Brooklyn Technical High School", full: "Brooklyn Technical High School", logo: "assets/schools/mask/brooklyn-tech.png" },
+    { name: "Benjamin Cardozo High School", full: "Benjamin N. Cardozo High School", logo: "assets/schools/mask/cardozo.png" },
+    { name: "Stuyvesant High School", full: "Stuyvesant High School", logo: "assets/schools/Stuyvesant.svg" },
+    { name: "Aviation High School", full: "Aviation High School", logo: "assets/schools/mask/aviation.png", wide: true },
+    { name: "William Cullen Bryant High School", full: "William Cullen Bryant High School", logo: "assets/schools/mask/william-cullen-bryant.png" },
+    { name: "Baccalaureate School for Global Education", full: "Baccalaureate School for Global Education", logo: "assets/schools/mask/bsge.png" },
+    { name: "Bronx High School of Science", full: "Bronx High School of Science", logo: "assets/schools/mask/bronx-science.png" }
   ];
 
   function initEmblems() {
@@ -2243,89 +2247,6 @@ function processScene(key) {
   }
 
   /* ======================================================================
-     FOOD CONFETTI (home page)
-     A shower of the food we move, drawn like the apple and banana in the
-     process scenes (flat fills, the mascot's outline): apples, bananas,
-     milk cartons and oranges. They fall across the whole screen like rain,
-     each swaying a little and turning as it goes, then the layer removes
-     itself. Transforms and opacity only, and purely decorative
-     (aria-hidden). Under reduced motion the pieces fade in and out where
-     they are instead of falling. Colours come from .fc-* in design.css, so
-     they follow the theme.
-     ====================================================================== */
-  var FOOD = {
-    apple:
-      '<path class="fc-line" d="M20 12 V6"/><path class="fc-leaf" d="M21 8 Q26 2 32 4 Q28 10 21 8 Z"/>' +
-      '<path class="fc-apple" d="M20 14 C14 10 7 14 8 23 C9 32 15 37 20 35 C25 37 31 32 32 23 C33 14 26 10 20 14 Z"/>',
-    banana:
-      '<g transform="translate(-184 -97)"><path class="fc-banana" d="M188 112 Q200 130 222 118 Q219 115 217 112 Q203 120 194 108 Z"/>' +
-      '<path class="fc-line" d="M188 112 L185 108"/></g>',
-    milk:
-      '<path class="fc-milk-top" d="M12 15 L16 8 H24 L28 15 Z"/><rect class="fc-milk-cap" x="16" y="4.5" width="8" height="3.5" rx="1"/>' +
-      '<rect class="fc-milk" x="12" y="15" width="16" height="21" rx="2"/><rect class="fc-milk-band" x="13" y="22" width="14" height="7"/>',
-    orange:
-      '<path class="fc-leaf" d="M20 11 Q24 5 30 7 Q26 13 20 11 Z"/><circle class="fc-orange" cx="20" cy="23" r="12"/>' +
-      '<circle class="fc-dot" cx="16" cy="19" r="1.4"/>'
-  };
-  var FOOD_KINDS = ["apple", "banana", "milk", "orange"];
-
-  /* Returns true if the shower started, false if it didn't (no animation
-     support, or two already falling). */
-  function foodConfetti() {
-    if (!document.body || !document.body.animate) return false;
-    if (document.querySelectorAll(".fc-layer").length >= 2) return false;
-    var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var W = innerWidth, H = innerHeight;
-    // About one piece per 22px of width: a light shower, not a blizzard.
-    var n = Math.round(Math.max(24, Math.min(64, W / 22)));
-
-    var layer = document.createElement("div");
-    layer.className = "fc-layer";
-    layer.setAttribute("aria-hidden", "true");
-    document.body.appendChild(layer);
-    var left = n;
-    function done() { if (--left === 0) layer.remove(); }
-
-    for (var i = 0; i < n; i++) {
-      var size = (W < 640 ? 18 : 22) + Math.random() * 12;
-      var el = document.createElement("span");
-      el.className = "fc-piece";
-      el.style.width = el.style.height = size.toFixed(1) + "px";
-      el.innerHTML = '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">' + FOOD[FOOD_KINDS[i % FOOD_KINDS.length]] + "</svg>";
-      layer.appendChild(el);
-
-      // Spread evenly across the width (one slot each, jittered in it).
-      var x0 = (i + Math.random()) / n * W - size / 2, frames = [], dur, delay, f;
-      if (still) {
-        var at = "translate(" + x0.toFixed(1) + "px," + (Math.random() * (H - size)).toFixed(1) + "px)";
-        frames = [{ transform: at, opacity: 0 }, { transform: at, opacity: 1, offset: 0.25 }, { transform: at, opacity: 1, offset: 0.7 }, { transform: at, opacity: 0 }];
-        dur = 1600;
-        delay = Math.random() * 500;
-      } else {
-        // From just above the top to just below the bottom. Bigger pieces
-        // fall a little faster; each sways side to side as it goes.
-        var fall = H + size * 2 + 40, speed = 300 + (size - 18) * 10 + Math.random() * 160;
-        var sway = 14 + Math.random() * 26, waves = 0.8 + Math.random() * 1.2, phase = Math.random() * Math.PI * 2;
-        var spin = (Math.random() < 0.5 ? -1 : 1) * (90 + Math.random() * 240), r0 = Math.random() * 360;
-        dur = fall / speed * 1000;
-        delay = Math.random() * 1600;
-        for (f = 0; f <= 16; f++) {
-          var p = f / 16;
-          var x = x0 + Math.sin(phase + p * waves * Math.PI * 2) * sway, y = -size - 20 + fall * p;
-          frames.push({
-            transform: "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) rotate(" + (r0 + spin * p).toFixed(1) + "deg)",
-            opacity: p < 0.85 ? 1 : Math.max(0, 1 - (p - 0.85) / 0.15)
-          });
-        }
-      }
-      var a = el.animate(frames, { duration: dur, delay: delay, easing: "linear", fill: "both" });
-      a.onfinish = done;
-      a.oncancel = done;
-    }
-    return true;
-  }
-
-  /* ======================================================================
      PUBLIC LOG, FAST (home page and log.html)
      One plain HTTPS request for the public delivery log, the same rows the
      Firebase listener delivers. It needs no SDK, so it answers in a fraction
@@ -2449,7 +2370,7 @@ function processScene(key) {
   }
 
   global.STB = {
-    fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene, foodConfetti: foodConfetti,
+    fetchPublicLog: fetchPublicLog, fetchPublicPhoto: fetchPublicPhoto, processScene: processScene,
     celebrating: celebrating, initTicker: initTicker,
     initPalette: initPalette, initProgress: initProgress,
     initSectionHighlight: initSectionHighlight, initAnchors: initAnchors,

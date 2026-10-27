@@ -393,37 +393,8 @@ footer .wrap.top { padding-top:56px; }
 .impact-meta #impactCount { font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
 .impact-link { display:inline-block; margin-top:10px; font-size:14px; font-weight:600; color:var(--brand); }
 .impact-link:hover { text-decoration:underline; text-underline-offset:3px; }
-/* The link and the Confetti button share one row under the totals. */
-.impact-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 16px; margin-top:10px; }
-.impact-actions .impact-link { margin-top:0; }
-.confetti-btn { display:inline-flex; align-items:center; gap:6px; padding:4px 12px 4px 9px; border-radius:999px; border:1px solid var(--brand-line-mid);
-  background:transparent; color:var(--brand); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600;
-  font-size:13px; line-height:1.4; cursor:pointer; transition:background-color 160ms ease, border-color 160ms ease, transform 160ms ease; }
-.confetti-btn:hover { background:var(--tint); border-color:var(--brand); }
-.confetti-btn:active { transform:scale(0.96); }
-.confetti-btn:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
-.confetti-btn svg { width:15px; height:15px; display:block; }
 @media (prefers-reduced-motion: reduce) { .live-dot::after, .impact.is-bump .impact-num, .impact { animation:none !important; } }
 
-/* --- food confetti (STB.foodConfetti in site.js) -------------------------
-   The pieces are drawn like the apple and banana in the process scenes:
-   flat fills with the mascot's outline colour, so they follow the theme. */
-/* Above everything, the map's layers included (Leaflet goes up to 1000);
-   it never takes clicks. */
-.fc-layer { position:fixed; inset:0; z-index:1200; pointer-events:none; overflow:hidden; }
-.fc-piece { position:absolute; left:0; top:0; will-change:transform, opacity; }
-.fc-piece svg { display:block; width:100%; height:100%; overflow:visible; }
-.fc-line { fill:none; stroke:var(--mascot-stroke); stroke-width:2.2; stroke-linecap:round; }
-.fc-leaf { fill:var(--brand); }
-.fc-apple, .fc-banana, .fc-orange, .fc-milk, .fc-milk-top, .fc-milk-cap { stroke:var(--mascot-stroke); stroke-width:2.2; stroke-linejoin:round; }
-.fc-apple { fill:#D9534F; }
-.fc-banana { fill:#F2C14E; }
-.fc-orange { fill:#F29A38; }
-.fc-dot { fill:#C9741E; }
-.fc-milk { fill:#FFFFFF; }
-.fc-milk-top { fill:#EEF4FA; }
-.fc-milk-cap { fill:#FFFFFF; }
-.fc-milk-band { fill:var(--ice); }
 
 /* The hero status pill turns green now that deliveries are running. */
 #heroStatus.is-live .prelaunch-tag::before { background:var(--live); animation:livePulse 2.2s ease-out infinite; }
@@ -443,8 +414,6 @@ footer .wrap.top { padding-top:56px; }
   .impact-label { font-size:16px; margin-top:4px; }
   .impact-meta { font-size:12.5px; margin-top:5px; line-height:1.4; }
   .impact-link { display:none; }
-  .impact-actions { justify-content:flex-start; margin-top:8px; }
-  .confetti-btn { font-size:12px; padding:3px 10px 3px 8px; }
 }
 @media (max-width:700px) and (max-height:780px) {
   .hero-grid { grid-template-columns:88px minmax(0,1fr); row-gap:16px; }
@@ -715,3 +684,7 @@ body:has(nav.bar:not(.on)) .tk { background:transparent; -webkit-backdrop-filter
     background-image:linear-gradient(105deg, #4A9FE8 0%, #4A9FE8 38%, #9AD0F6 46%, #EAF6FF 50%, #9AD0F6 54%, #4A9FE8 62%, #4A9FE8 100%); }
 }
 @media (prefers-reduced-motion: reduce) { .impact.is-blue .impact-num, .impact.is-blue .impact-unit { animation:none; background-position:0 0; } }
+
+/* "Built by students from": full school names, so long ones wrap onto two
+   centred lines under their logo instead of stretching the row. */
+.emblem.has-logo .emblem-name { white-space:normal; max-width:150px; text-align:center; line-height:1.3; }

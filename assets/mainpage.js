@@ -130,21 +130,17 @@
            ticking up over the final second. */
         var heroLbs = card && counter($("#impactLbs"), {
             dur: 2600, ease: function (p) { return 1 - Math.pow(1 - p, 5); },
-            onDone: function (v) { gild(v); cheer(v); }
+            onDone: function (v) { tint(v); }
         });
         var countEl = $("#impactCount"), wordEl = $("#impactCountWord"), dateEl = $("#impactDate");
         var liveText = $("#impactLiveText"), sr = $("#impactSR");
         var numEl = $("#impactLbs"), figEl = card && $(".impact-fig", card);
-        // Celebrate the moment the count passes a milestone, not after it settles.
-        if (card) numEl.onCount = function (t) {
-            var v = parseFloat(t.replace(/,/g, "")) || 0;
-            gild(v);
-            if (v > cheeredHere) cheer(v);
-        };
+        // Turn blue the moment the count passes 1,000, not after it settles.
+        if (card) numEl.onCount = function (t) { tint(parseFloat(t.replace(/,/g, "")) || 0); };
         /* During the 1,000 lbs celebration (STB.celebrating, the same window
            as the announcement bar), the number turns blue the moment the
            real count passes 1,000 (.is-blue in design.css). */
-        function gild(v) {
+        function tint(v) {
             if (!card || !STB.celebrating) return;
             card.classList.toggle("is-blue", !!loaded && Math.min(v, heroLbs.value()) >= 1000);
         }
@@ -169,46 +165,6 @@
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNumber);
         }
 
-        /* ----- milestones: food confetti -----
-           When the count goes past a milestone (1,000 lbs, then 2,500,
-           5,000, ...), food rains down the whole screen (STB.foodConfetti),
-           the moment the number passes it, on every visit. Only for the
-           real total, not the typed or remembered ones shown while it
-           loads. It waits until someone can see it: the tab showing and the
-           counter on screen (a link to index.html#join opens the page far
-           below it). The Confetti button rains it again any time. */
-        var MILESTONES = [1000, 2500, 5000, 10000, 25000, 50000, 100000], cheeredHere = 0, waiting = false;
-        function onScreen(el) {
-            var r = el.getBoundingClientRect();
-            return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
-        }
-        /* lbs is the number on screen. Only the newest milestone the real
-           total has reached is celebrated (one rain per count, even if it
-           passes 1,000 and 2,500 on the way), and only once the number
-           shown has got there, which also keeps a count running down
-           from a higher remembered figure from celebrating. */
-        function cheer(lbs) {
-            if (!loaded) return;   // only for the real total
-            var goal = heroLbs.value();
-            var hit = MILESTONES.filter(function (m) { return goal >= m; }).pop();
-            if (!hit || hit <= cheeredHere || Math.min(lbs, goal) < hit) return;
-            if (document.visibilityState !== "visible" || !onScreen(numEl)) { waitToCheer(numEl); return; }
-            cheeredHere = hit;   // counted even if a shower is already falling
-            STB.foodConfetti();
-            sr.textContent = "Milestone: more than " + hit.toLocaleString("en-US") + " pounds of food waste eliminated.";
-        }
-        // Try again when the tab comes back or the counter scrolls into view.
-        function waitToCheer(num) {
-            if (waiting) return;
-            waiting = true;
-            var retry = function () { if (!heroLbs.busy()) cheer(heroLbs.value()); };
-            document.addEventListener("visibilitychange", retry);
-            if ("IntersectionObserver" in window) {
-                new IntersectionObserver(function (es) { if (es[0].isIntersecting) retry(); }, { threshold: 0.5 }).observe(num);
-            } else addEventListener("scroll", retry, { passive: true });
-        }
-        var confettiBtn = $("#confettiBtn");
-        if (confettiBtn) confettiBtn.addEventListener("click", function () { STB.foodConfetti(); });
 
         /* ----- Our Impact: every number counts up once, when the row first
            scrolls into view, and each icon plays its little animation. ----- */
@@ -273,10 +229,9 @@
             });
             var lbs = Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10;
             var grew = loaded && revealed && heroLbs && lbs > heroLbs.value();
-            loaded = true;   // before the counter moves, so a milestone it lands on counts
+            loaded = true;
             if (grew) {
-                // A delivery was just verified while the page was open. Said
-                // before the counter moves, so a milestone message wins.
+                // A delivery was just verified while the page was open.
                 card.classList.remove("is-bump"); void card.offsetWidth; card.classList.add("is-bump");
                 sr.textContent = lbs.toLocaleString("en-US") + " pounds of food waste eliminated, from " + ok.length +
                     (ok.length === 1 ? " verified delivery." : " verified deliveries.");
@@ -284,8 +239,8 @@
             showTotals(lbs, ok.length, new Date());
             try { localStorage.setItem(CACHE, JSON.stringify({ lbs: lbs, count: ok.length, at: Date.now() })); } catch (e) { /* fine */ }
             revealHero();
-            // Already showing this total (nothing to count): check now.
-            if (heroLbs && !heroLbs.busy()) cheer(lbs);
+            // Already showing this total (nothing to count): colour it now.
+            if (heroLbs && !heroLbs.busy()) tint(lbs);
         }
 
         /* Fast first, then live. Once Firebase has delivered, the quick
@@ -1087,7 +1042,7 @@
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
         { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
-        { kind: "section", label: "Endorsements", href: "#endorsements", keywords: "endorsed endorsement grassroots grocery camba support backers" },
+        { kind: "section", label: "Partners", href: "#partners", keywords: "partner partners endorsed endorsement grassroots grocery camba support backers" },
         { kind: "section", label: "Our process", href: "#how", keywords: "how it works steps collect pack deliver log" },
         { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
         { kind: "section", label: "Our why: the SNAP map", href: "#network", keywords: "map snap need boroughs districts why" },
