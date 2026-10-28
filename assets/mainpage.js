@@ -1023,6 +1023,171 @@
         el.innerHTML = parts.join(", ") + ". <a href=\"getting-started.html#sites\">See the full list →</a>";
     })();
     if (STB.initNetworkMap) STB.initNetworkMap();
+    /* ---------- Partners & Press: a strip of logos ----------
+       Built from the cards in #partners (one .endorse-card each: logo,
+       kicker, name, blurb, link), so a new partner or press mention is just
+       a new card in index.html. The logos scroll past like "Built by
+       students from". Hovering one (tapping it on a phone, or Enter on the
+       keyboard) stops the strip, glides that logo over to the left and
+       brings its blurb in beside it. Moving away, the x, Escape or a tap
+       outside sends it back and the strip carries on. Under reduced motion,
+       or without scripts, the cards stay as they are. */
+    (function () {
+        var section = $("#partners"), cards = section ? $$(".endorse-card", section) : [];
+        if (!cards.length || reduced || !document.body.animate) return;
+        var items = cards.map(function (c) {
+            var link = $(".endorse-link", c), kicker = $(".endorse-kicker", c);
+            return {
+                mark: $(".endorse-mark", c),
+                kicker: kicker ? kicker.textContent.trim() : "",
+                name: $(".endorse-name", c).textContent.trim(),
+                text: $(".endorse-text", c).textContent.replace(/\s+/g, " ").trim(),
+                href: link ? link.href : "",
+                linkText: link ? link.textContent.replace(/[→\s]+/g, " ").trim() : ""
+            };
+        });
+
+        var pp = document.createElement("div");
+        pp.className = "pp";
+        pp.innerHTML = '<div class="pp-track"><div class="pp-rail"></div></div>' +
+            '<div class="pp-spot" role="region" aria-label="About this partner"><div class="pp-slot"></div><div class="pp-copy" aria-live="polite"></div>' +
+            '<button type="button" class="pp-close" aria-label="Back to all partners"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" ' +
+            'stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
+        $(".endorse-grid", section).after(pp);
+        section.classList.add("pp-on");
+        var rail = $(".pp-rail", pp), spot = $(".pp-spot", pp), slot = $(".pp-slot", pp), copy = $(".pp-copy", pp), closeBtn = $(".pp-close", pp);
+
+        function markFor(i) {
+            var m = items[i].mark.cloneNode(true);
+            m.removeAttribute("style");
+            m.setAttribute("aria-hidden", "true");
+            return m;
+        }
+        function el(tag, cls, text) { var e = document.createElement(tag); e.className = cls; if (text) e.textContent = text; return e; }
+
+        /* The strip: one row of the logos, repeated until it's wider than
+           the strip, then that row twice so the loop never shows a gap.
+           Only the first set can be tabbed to. */
+        function build() {
+            var row = el("ul", "pp-row"), reps = 0;
+            rail.replaceChildren(row);
+            do {
+                items.forEach(function (it, i) {
+                    var li = document.createElement("li"), b = el("button", "pp-item");
+                    b.type = "button";
+                    b.setAttribute("data-i", String(i));
+                    if (reps) { b.tabIndex = -1; li.setAttribute("aria-hidden", "true"); }
+                    else b.setAttribute("aria-label", it.name + ": read about them");
+                    b.appendChild(markFor(i));
+                    li.appendChild(b);
+                    row.appendChild(li);
+                });
+                reps++;
+            } while (row.scrollWidth < pp.clientWidth && reps < 12);
+            var copyRow = row.cloneNode(true);
+            copyRow.setAttribute("aria-hidden", "true");
+            $$("button", copyRow).forEach(function (b) { b.tabIndex = -1; b.removeAttribute("aria-label"); });
+            rail.appendChild(copyRow);
+            rail.style.setProperty("--pp-dur", (row.scrollWidth / 42).toFixed(1) + "s");   // about 42px a second
+        }
+        build();
+
+        function rel(node) {
+            var r = node.getBoundingClientRect(), p = pp.getBoundingClientRect();
+            return { x: r.left - p.left, y: r.top - p.top, w: r.width, h: r.height };
+        }
+        var EASE = "cubic-bezier(0.22,1,0.36,1)";
+        var openBtn = null, fly = null, busy = false, wantClose = false, byKeyboard = false;
+
+        function show(btn) {
+            if (busy || openBtn) return;
+            var i = +btn.getAttribute("data-i"), it = items[i], src = $(".endorse-mark", btn);
+            busy = true;
+            openBtn = btn;
+            // Fill the spotlight: the logo's slot on the left, the words on the right.
+            slot.replaceChildren(markFor(i));
+            var parts = [el("p", "endorse-kicker", it.kicker), el("h3", "endorse-name", it.name), el("p", "endorse-text", it.text)];
+            if (it.href) {
+                var link = el("a", "doc-toggle endorse-link", it.linkText + " ");
+                link.href = it.href; link.target = "_blank"; link.rel = "noopener";
+                link.appendChild(el("span", "", "→")).setAttribute("aria-hidden", "true");
+                parts.push(link);
+            }
+            copy.replaceChildren.apply(copy, parts);
+            pp.classList.add("is-open");
+            // The box grows to fit the blurb; the spotlight's own height is set
+            // first so the logo's landing spot doesn't move while it grows.
+            spot.style.height = "";
+            var h = Math.max(spot.offsetHeight, parseFloat(getComputedStyle(pp).getPropertyValue("--pp-h0")) || 190);
+            spot.style.height = h + "px";
+            pp.style.height = h + "px";
+            // The logo flies from where it was in the strip to its slot.
+            var a = rel(src), b = rel(slot.firstChild);
+            fly = markFor(i);
+            fly.classList.add("pp-fly");
+            fly.style.left = b.x + "px"; fly.style.top = b.y + "px"; fly.style.width = b.w + "px"; fly.style.height = b.h + "px";
+            pp.appendChild(fly);
+            src.style.visibility = "hidden";
+            fly.animate([{ transform: "translate(" + (a.x - b.x) + "px," + (a.y - b.y) + "px) scale(" + (a.w / b.w) + ")" }, { transform: "none" }],
+                { duration: 560, easing: EASE }).onfinish = function () {
+                    pp.classList.add("is-told");
+                    busy = false;
+                    if (byKeyboard) closeBtn.focus({ preventScroll: true });
+                    if (wantClose) hide();
+                };
+        }
+
+        function hide() {
+            if (!openBtn) return;
+            if (busy) { wantClose = true; return; }
+            wantClose = false;
+            busy = true;
+            var btn = openBtn, src = $(".endorse-mark", btn);
+            pp.classList.remove("is-told");
+            var a = rel(src), b = rel(fly);
+            var back = fly.animate([{ transform: "none" }, { transform: "translate(" + (a.x - b.x) + "px," + (a.y - b.y) + "px) scale(" + (a.w / b.w) + ")" }],
+                { duration: 480, delay: 90, easing: EASE, fill: "forwards" });
+            setTimeout(function () { pp.classList.remove("is-open"); pp.style.height = ""; }, 260);
+            back.onfinish = function () {
+                src.style.visibility = "";
+                fly.remove();
+                fly = null;
+                slot.replaceChildren();
+                spot.style.height = "";
+                openBtn = null;
+                busy = false;
+                if (byKeyboard) btn.focus({ preventScroll: true });
+                byKeyboard = false;
+            };
+        }
+
+        // Hover (with a mouse): a short pause first, so sweeping across the
+        // strip doesn't set them off.
+        var hoverTimer = 0;
+        rail.addEventListener("pointerover", function (e) {
+            if (e.pointerType !== "mouse") return;
+            var btn = e.target.closest(".pp-item");
+            clearTimeout(hoverTimer);
+            if (btn) hoverTimer = setTimeout(function () { show(btn); }, 160);
+        });
+        rail.addEventListener("pointerout", function (e) { if (e.pointerType === "mouse") clearTimeout(hoverTimer); });
+        pp.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { clearTimeout(hoverTimer); hide(); } });
+        // Tap or Enter.
+        rail.addEventListener("click", function (e) {
+            var btn = e.target.closest(".pp-item");
+            if (!btn) return;
+            byKeyboard = e.detail === 0;
+            show(btn);
+        });
+        closeBtn.addEventListener("click", function (e) { byKeyboard = e.detail === 0; hide(); });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape" && openBtn) { byKeyboard = true; hide(); } });
+        document.addEventListener("pointerdown", function (e) { if (openBtn && !pp.contains(e.target)) hide(); });
+        var resizeTimer = 0;
+        addEventListener("resize", function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () { if (!openBtn) build(); }, 200);
+        }, { passive: true });
+    })();
     STB.initEmblems();
     STB.initGallery();
     STB.initSmoothScroll();
@@ -1042,7 +1207,7 @@
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
         { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
-        { kind: "section", label: "Partners", href: "#partners", keywords: "partner partners endorsed endorsement grassroots grocery camba support backers" },
+        { kind: "section", label: "Partners & Press", href: "#partners", keywords: "partner partners press news media endorsed endorsement grassroots grocery camba support backers" },
         { kind: "section", label: "Our process", href: "#how", keywords: "how it works steps collect pack deliver log" },
         { kind: "section", label: "Food safety: the ice pack", href: "#sensors", keywords: "temperature cold chain ice pack logger" },
         { kind: "section", label: "Our why: the SNAP map", href: "#network", keywords: "map snap need boroughs districts why" },
