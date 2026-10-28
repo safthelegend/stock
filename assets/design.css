@@ -595,7 +595,7 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
    One card per endorser, side by side: their logo on a soft panel, then who
    they are and a link out. Logos are one-colour masks made by
    tools/emblems.py, painted brand green so they read in every theme. */
-.endorse-grid { max-width:1040px; margin:0 auto; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:24px; }
+.endorse-grid { max-width:1040px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:24px; }
 .endorse-card { display:flex; flex-direction:column; gap:26px; background:var(--surface); border:1px solid var(--brand-line);
   border-radius:20px; padding:28px; box-shadow:0 24px 50px -36px var(--paper-shadow); }
 .endorse-logo { display:grid; grid-template-columns:minmax(0,1fr); place-items:center; height:190px; padding:28px; border-radius:14px; background:var(--tint);
@@ -609,6 +609,9 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 .endorse-camba { height:128px; aspect-ratio:364 / 269;
   -webkit-mask:url("endorsements/mask/camba.png") center / contain no-repeat;
   mask:url("endorsements/mask/camba.png") center / contain no-repeat; }
+.endorse-wapo { height:128px; aspect-ratio:1179 / 815;
+  -webkit-mask:url("endorsements/mask/washington-post.png") center / contain no-repeat;
+  mask:url("endorsements/mask/washington-post.png") center / contain no-repeat; }
 .endorse-body { display:flex; flex-direction:column; flex:1; }
 .endorse-kicker { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.12em;
   text-transform:uppercase; color:var(--brand); }
@@ -621,6 +624,7 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
   .endorse-card { gap:20px; padding:20px; border-radius:16px; }
   .endorse-logo { height:150px; padding:24px; }
   .endorse-camba { height:100px; }
+  .endorse-wapo { height:100px; }
 }
 
 /* --- announcement ticker (STB.initTicker in site.js) ---------------------
@@ -688,3 +692,56 @@ body:has(nav.bar:not(.on)) .tk { background:transparent; -webkit-backdrop-filter
 /* "Built by students from": full school names, so long ones wrap onto two
    centred lines under their logo instead of stretching the row. */
 .emblem.has-logo .emblem-name { white-space:normal; max-width:150px; text-align:center; line-height:1.3; }
+
+/* --- Partners & Press: a scrolling strip of logos (mainpage.js) ----------
+   The cards above are the source; with scripts on and motion allowed they
+   become this strip. Hovering a logo (tapping it on a phone) stops the
+   strip, glides that logo over to the left and brings its blurb in beside
+   it; moving away sends it back. The strip keeps a fixed height (--pp-h0)
+   so the logos never shift while one is out; the box grows to fit the
+   blurb. Without scripts, or with reduced motion, the cards stay. */
+#partners.pp-on .endorse-grid { display:none; }
+/* The strip is short, so the section needn't keep its usual tail of space. */
+#partners.pp-on { padding-bottom:32px; }
+.pp { position:relative; max-width:1040px; margin:0 auto; --pp-h0:120px; --pp-logo:72px; --pp-logo-big:116px;
+  height:var(--pp-h0); transition:height 420ms cubic-bezier(0.22,1,0.36,1); }
+.pp-track { position:absolute; left:0; right:0; top:0; height:var(--pp-h0); overflow:hidden; display:flex; align-items:center;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); transition:opacity 280ms ease; }
+.pp-rail { display:flex; width:max-content; animation:ppScroll var(--pp-dur, 30s) linear infinite; }
+.pp:hover .pp-rail, .pp:focus-within .pp-rail, .pp.is-open .pp-rail { animation-play-state:paused; }
+@keyframes ppScroll { to { transform:translateX(-50%); } }
+.pp-row { list-style:none; margin:0; padding:0; display:flex; align-items:center; }
+.pp-row li { flex:none; padding:0 44px; }
+.pp-item { display:grid; place-items:center; padding:16px 18px; border:none; border-radius:14px; background:none; cursor:pointer;
+  transition:background-color 200ms ease; }
+.pp-item:hover { background:var(--tint); }
+.pp-item:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+.pp .endorse-mark { width:auto; height:var(--pp-logo); max-width:none; max-height:none; }
+.pp.is-open .pp-track { opacity:0; pointer-events:none; }
+
+.pp-spot { position:absolute; left:0; right:0; top:0; min-height:var(--pp-h0); box-sizing:border-box; display:grid;
+  grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); align-items:center; gap:36px; padding:24px 60px 24px 24px;
+  visibility:hidden; pointer-events:none; }
+.pp.is-open .pp-spot { visibility:visible; pointer-events:auto; }
+.pp-slot { justify-self:center; display:grid; place-items:center; }
+.pp .pp-slot .endorse-mark { height:var(--pp-logo-big); max-width:100%; visibility:hidden; }
+.pp-copy { opacity:0; transform:translateX(16px); transition:opacity 340ms ease, transform 440ms cubic-bezier(0.22,1,0.36,1); }
+.pp.is-told .pp-copy { opacity:1; transform:none; }
+.pp-copy .endorse-text { margin-bottom:14px; }
+.pp-copy .endorse-link { display:inline-flex; }
+.pp-close { position:absolute; top:12px; right:12px; width:36px; height:36px; display:grid; place-items:center; border-radius:50%;
+  border:1px solid var(--brand-line); background:var(--surface); color:var(--text-secondary); cursor:pointer; opacity:0;
+  transition:opacity 260ms ease, color 160ms ease, border-color 160ms ease; }
+.pp.is-told .pp-close { opacity:1; }
+.pp-close:hover { color:var(--text); border-color:var(--brand-line-mid); }
+.pp-close:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+.pp-fly { position:absolute; z-index:2; pointer-events:none; transform-origin:0 0; will-change:transform; }
+@media (max-width:760px) {
+  .pp { --pp-h0:96px; --pp-logo:52px; --pp-logo-big:64px; }
+  #partners.pp-on { padding-bottom:20px; }
+  .pp-row li { padding:0 24px; }
+  .pp-spot { grid-template-columns:minmax(0,1fr); align-content:start; align-items:start; gap:14px; padding:18px 52px 20px 16px; }
+  .pp-slot { justify-self:start; }
+}
+
