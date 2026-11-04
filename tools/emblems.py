@@ -27,7 +27,12 @@ GREEN = (0x2E, 0x5A, 0x22)          # brand green; the CSS mask recolours it per
 # light or transparent background; light marks inside become cut-outs).
 # "alpha": the logo is every non-transparent pixel, whatever its colour, for
 # logos drawn in light colours on a transparent background.
-MODE = {"wellsprings-school": "alpha", "camba": "alpha"}
+# A list reads different parts of a logo differently, left to right: (up to
+# this fraction of the width, luminance for solid, luminance for clear). ICNA
+# Relief: in the round badge the wheat stays a soft tint behind a solid "FOR";
+# in the wordmark the orange "Relief" is as solid as the green "ICNA".
+MODE = {"wellsprings-school": "alpha", "camba": "alpha",
+        "icna-relief": [(0.36, 0.55, 0.80), (1.0, 0.64, 0.88)]}
 INK_SOLID, INK_CLEAR = 0.45, 0.78   # luminance: below SOLID is opaque, above CLEAR is clear
 
 
@@ -71,12 +76,15 @@ def write_png(path, w, h, rows):
         f.write(chunk(b"IEND", b""))
 
 
-def mask_alpha(px, mode):
+def mask_alpha(px, mode, across=0.0):
     r, g, b, a = px
     if mode == "alpha":
         return a
+    solid, clear = INK_SOLID, INK_CLEAR
+    if isinstance(mode, list):
+        solid, clear = next((s, c) for upto, s, c in mode if across <= upto)
     lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
-    k = (INK_CLEAR - lum) / (INK_CLEAR - INK_SOLID)
+    k = (clear - lum) / (clear - solid)
     return int(round(a * max(0.0, min(1.0, k))))
 
 
@@ -88,7 +96,7 @@ def convert(name):
         subprocess.run(["sips", "-s", "format", "bmp", os.path.join(SRC, name), "--out", bmp],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         w, h, rows = read_bmp(bmp)
-    alpha = [[mask_alpha(px, mode) for px in row] for row in rows]
+    alpha = [[mask_alpha(px, mode, x / w) for x, px in enumerate(row)] for row in rows]
     # Crop to the logo itself (plus a hair of padding) so every emblem sits
     # the same size in its slot regardless of how much margin the file had.
     ys = [y for y in range(h) if any(v > 24 for v in alpha[y])]
@@ -102,7 +110,7 @@ def convert(name):
     out_rows = [[GREEN + (alpha[y][x],) for x in range(x0, x1)] for y in range(y0, y1)]
     dest = os.path.join(OUT, key + ".png")
     write_png(dest, x1 - x0, y1 - y0, out_rows)
-    print("  %-28s -> mask/%s.png  (%dx%d, %s)" % (name, key, x1 - x0, y1 - y0, mode))
+    print("  %-28s -> mask/%s.png  (%dx%d, %s)" % (name, key, x1 - x0, y1 - y0, mode if isinstance(mode, str) else "regions"))
 
 
 def main():
