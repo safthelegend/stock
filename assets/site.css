@@ -933,6 +933,15 @@ nav.bar.menu-open .nav-burger .nb-top { transform:translateY(5px) rotate(45deg);
 nav.bar.menu-open .nav-burger .nb-mid { opacity:0; }
 nav.bar.menu-open .nav-burger .nb-bot { transform:translateY(-5px) rotate(-45deg); }
 .nav-menu { display:none; }
+/* Narrow phones, including Android phones with "Display size" turned up,
+   which report widths around 320-360px: the bar's logo, Sign in, theme
+   switch and menu button needed about 341px and pushed the menu button off
+   the right edge. Slimmer side padding and gaps make it fit. */
+@media (max-width:380px) {
+  nav.bar .wrap { padding:0 12px; gap:8px; }
+  nav.bar a.brand { gap:8px; }
+  nav.bar .links { flex:none; gap:2px; }
+}
 @media (max-width:880px) {
   .nav-burger { display:flex; }
   nav.bar.menu-open { background:var(--bg); }
