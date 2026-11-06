@@ -612,6 +612,9 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 .endorse-icna { width:300px; aspect-ratio:1409 / 494;
   -webkit-mask:url("endorsements/mask/icna-relief.png") center / contain no-repeat;
   mask:url("endorsements/mask/icna-relief.png") center / contain no-repeat; }
+.endorse-onelove { height:128px; aspect-ratio:1 / 1;
+  -webkit-mask:url("endorsements/mask/one-love.png") center / contain no-repeat;
+  mask:url("endorsements/mask/one-love.png") center / contain no-repeat; }
 .endorse-wapo { height:128px; aspect-ratio:1179 / 815;
   -webkit-mask:url("endorsements/mask/washington-post.png") center / contain no-repeat;
   mask:url("endorsements/mask/washington-post.png") center / contain no-repeat; }
@@ -627,7 +630,7 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
   .endorse-card { gap:20px; padding:20px; border-radius:16px; }
   .endorse-logo { height:150px; padding:24px; }
   .endorse-camba { height:100px; }
-  .endorse-wapo { height:100px; }
+  .endorse-wapo, .endorse-onelove { height:100px; }
 }
 
 /* "Built by students from": full school names, so long ones wrap onto two
