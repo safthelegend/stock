@@ -262,7 +262,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 
   <section class="ls" id="schoolStatus" aria-labelledby="schoolStatusHd" hidden>
     <h2 class="ls-title" id="schoolStatusHd">Every school</h2>
-    <p class="ls-note">Status comes straight from this log. A school reads Delivering when it has a verified delivery in the last 30 days.</p>
+    <p class="ls-note">Status comes straight from this log. A school reads Delivering when it has a verified delivery in the last 30 days, or when we've confirmed its runs and they're still being added here.</p>
     <div id="schoolRows"></div>
   </section>
 
@@ -922,6 +922,9 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
      so a status can't drift from the deliveries behind it. A partner school
      reads Delivering with a verified delivery in the last FRESH_DAYS days. */
   var FRESH_DAYS = 30;
+  /* Schools the team has confirmed are delivering but whose runs aren't in
+     the log yet. Only applies until a first verified delivery appears. */
+  var CONFIRMED_DELIVERING = ["Rachel Carson High School for Coastal Studies"];
   var SCHOOL_STATES = {
     active: { order: 0, label: "Delivering", cls: "s-active" },
     between: { order: 1, label: "Between runs", cls: "s-between" },
@@ -944,7 +947,10 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     });
     var sites = STB.SITES.map(function (s) {
       var last = latest[s.name], key = s.status;
-      if (s.status === "active") key = !last ? "starting" : daysAgo(last) <= FRESH_DAYS ? "active" : "between";
+      if (s.status === "active") {
+        if (last) key = daysAgo(last) <= FRESH_DAYS ? "active" : "between";
+        else key = CONFIRMED_DELIVERING.indexOf(s.name) !== -1 ? "active" : "starting";
+      }
       return { site: s, last: last, state: SCHOOL_STATES[key] };
     }).sort(function (a, b) { return a.state.order - b.state.order || a.site.name.localeCompare(b.site.name); });
 
