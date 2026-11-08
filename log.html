@@ -35,6 +35,18 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   .log-stat .n { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:800; font-size:clamp(26px,3.4vw,36px); letter-spacing:-0.03em; color:var(--brand); margin:0; font-variant-numeric:tabular-nums; }
   .log-stat .l { font-size:14px; color:var(--text-secondary); margin:4px 0 0; }
   @media (max-width:640px) { .log-stats { grid-template-columns:minmax(0,1fr); gap:10px; } .log-stat { padding:14px 16px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; } .log-stat .n { font-size:24px; order:2; } .log-stat .l { margin:0; } }
+  /* Every school and where it stands: the home page's card and status tag,
+     with the school's emblem. The status is worked out from this log. */
+  .ls { margin:0 0 40px; }
+  .ls-title { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:700; font-size:20px; letter-spacing:-0.01em; color:var(--text); margin:0 0 4px; }
+  .ls-note { font-size:14px; color:var(--text-secondary); margin:0 0 16px; }
+  .ls .site-rows { grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr)); }
+  .ls .site-row { animation:none; font-size:15px; padding:12px 14px; grid-template-columns:40px minmax(0,1fr) auto; grid-template-areas:"mark nm status" "mark meta status"; align-items:center; gap:2px 12px; }
+  .ls .site-row .nm { align-self:end; font-size:15px; }
+  .ls .site-row .meta { align-self:start; }
+  .ls .site-row .status.s-between { color:var(--accent-text); background:transparent; border:1px solid var(--accent-text); }
+  .ls-mark { grid-area:mark; width:40px; height:40px; }
+  .ls-mark.has-logo { background:var(--brand); -webkit-mask:var(--logo) center / contain no-repeat; mask:var(--logo) center / contain no-repeat; }
   .chip { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; padding:8px 14px; border-radius:999px; cursor:pointer; border:1px solid var(--brand-line-mid); color:var(--brand); background:var(--surface); transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease; }
   .chip[aria-pressed="true"] { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
   .manifest { margin-top:20px; background:var(--surface); border:1px solid var(--brand-line); border-radius:12px; overflow:hidden; }
@@ -247,6 +259,12 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     <div class="log-stat"><p class="n" id="statLbs">–</p><p class="l">of food waste eliminated</p></div>
     <div class="log-stat"><p class="n" id="statPending">–</p><p class="l">awaiting review</p></div>
   </div>
+
+  <section class="ls" id="schoolStatus" aria-labelledby="schoolStatusHd" hidden>
+    <h2 class="ls-title" id="schoolStatusHd">Every school</h2>
+    <p class="ls-note">Status comes straight from this log. A school reads Delivering when it has a verified delivery in the last 30 days.</p>
+    <div id="schoolRows"></div>
+  </section>
 
   <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;" role="group" aria-label="Filter deliveries by status"></div>
   <div class="manifest" id="manifest">
@@ -900,6 +918,57 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
     return sec;
   }
 
+  /* Every school in STB.SITES and where it stands, worked out from the log
+     so a status can't drift from the deliveries behind it. A partner school
+     reads Delivering with a verified delivery in the last FRESH_DAYS days. */
+  var FRESH_DAYS = 30;
+  var SCHOOL_STATES = {
+    active: { order: 0, label: "Delivering", cls: "s-active" },
+    between: { order: 1, label: "Between runs", cls: "s-between" },
+    starting: { order: 2, label: "Getting started", cls: "s-conversation" },
+    conversation: { order: 3, label: "In talks", cls: "s-conversation" },
+    target: { order: 4, label: "Planned", cls: "s-target" }
+  };
+  function daysAgo(iso) {
+    var p = iso.split("-").map(Number), n = new Date();
+    return Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(p[0], p[1] - 1, p[2])) / 86400000);
+  }
+  function shortDay(iso) {
+    var p = iso.split("-").map(Number);
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+  function renderSchools() {
+    var latest = {};
+    ROWS.forEach(function (r) {
+      if (r.status === "accepted" && r.school && (!latest[r.school] || r.date > latest[r.school])) latest[r.school] = r.date;
+    });
+    var sites = STB.SITES.map(function (s) {
+      var last = latest[s.name], key = s.status;
+      if (s.status === "active") key = !last ? "starting" : daysAgo(last) <= FRESH_DAYS ? "active" : "between";
+      return { site: s, last: last, state: SCHOOL_STATES[key] };
+    }).sort(function (a, b) { return a.state.order - b.state.order || a.site.name.localeCompare(b.site.name); });
+
+    var list = mk("ul", "site-rows");
+    sites.forEach(function (x) {
+      var li = mk("li", "site-row"), mark = mk("span", "ls-mark");
+      var emblem = STB.EMBLEMS.filter(function (e) { return e.logo && x.site.name.indexOf(e.full) === 0; })[0];
+      mark.setAttribute("aria-hidden", "true");
+      if (emblem) {
+        mark.classList.add("has-logo");
+        mark.style.setProperty("--logo", "url(\"" + new URL(emblem.logo, document.baseURI).href + "\")");
+      }
+      var meta = mk("span", "meta");
+      meta.appendChild(mk("span", "boro", x.site.borough + (x.last ? " · Last delivery " + shortDay(x.last) : "")));
+      li.appendChild(mark);
+      li.appendChild(mk("span", "nm", x.site.name));
+      li.appendChild(meta);
+      li.appendChild(mk("span", "status " + x.state.cls, x.state.label));
+      list.appendChild(li);
+    });
+    $("#schoolRows").replaceChildren(list);
+    $("#schoolStatus").hidden = false;
+  }
+
   function render() {
     var rows = shown();
     var byDay = {}, order = [];
@@ -939,6 +1008,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
       setLbs(Math.round(ok.reduce(function (t, r) { return t + r.weightLbs; }, 0) * 10) / 10);
       setPending(ROWS.length - ok.length);
       trend.update(ROWS);
+      renderSchools();
     }
   }
 
