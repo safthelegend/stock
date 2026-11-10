@@ -16,6 +16,7 @@
     { "name": "Bronx High School of Science", "lat": 40.8736, "lon": -73.8907, "precision": "address" },
     { "name": "Benjamin N. Cardozo High School", "lat": 40.7522, "lon": -73.7574, "precision": "address" },
     { "name": "Aviation High School", "lat": 40.7433, "lon": -73.9296, "precision": "address" },
+    { "name": "New Hyde Park Memorial High School", "lat": 40.7416, "lon": -73.6761, "precision": "address" },
     { "name": "Essex Market Community Fridge", "lat": 40.7178, "lon": -73.9890, "precision": "address" },
     { "name": "Brooklyn community fridge", "lat": 40.6500, "lon": -73.9500, "precision": "borough" },
     { "name": "Classon Community Fridge", "lat": 40.6787, "lon": -73.9619, "precision": "address" },
@@ -32,6 +33,7 @@
     "Brooklyn": { "lat": 40.6500, "lon": -73.9500, "zoom": 12 },
     "Queens": { "lat": 40.7100, "lon": -73.8200, "zoom": 11 },
     "Staten Island": { "lat": 40.5800, "lon": -74.1500, "zoom": 12 },
+    "Nassau County": { "lat": 40.7300, "lon": -73.6500, "zoom": 12 },
     "all": { "lat": 40.7050, "lon": -73.9400, "zoom": 10 }
   }
 }

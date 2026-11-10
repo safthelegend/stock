@@ -1612,6 +1612,9 @@ function processScene(key) {
     { name: "Aviation High School", borough: "Queens", status: "active", joined: 6, dropoff: "Woodside Ave Community Fridge" },
     { name: "William Cullen Bryant High School", borough: "Queens", status: "active", joined: 7, dropoff: "Al-Hikmah Mosque Community Fridge" },
     { name: "Rachel Carson High School for Coastal Studies", borough: "Brooklyn", status: "active", joined: 8, dropoff: "ICNA Relief Community Fridge" },
+    /* Our first school outside the city, in Nassau County on Long Island. Add
+       its dropoff once its receiving fridge or pantry is settled. */
+    { name: "New Hyde Park Memorial High School", borough: "Nassau County", status: "active", joined: 9 },
     { name: "James Madison High School", borough: "Brooklyn", status: "target" }
   ];
 
@@ -1638,7 +1641,8 @@ function processScene(key) {
   ];
   var RECEIVING_SITE = RECEIVING_SITES[0];   // the first one, for older callers
 
-  var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
+  /* The five boroughs, plus Nassau County for our Long Island school. */
+  var BOROUGHS = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island", "Nassau County"];
 
   /* One filter state, read by the list and by the map. Filtering either one
      filters both, because there is only one of them to filter. */
@@ -1684,7 +1688,7 @@ function processScene(key) {
       SITE_STATUS.map(function (o) { return { key: o.key, label: o.label, n: count(o.key) }; })));
 
     if (boroFilter) {
-      buildGroup(boroFilter, "siteBorough", [{ key: "all", label: "All boroughs", n: boroCount("all") }].concat(
+      buildGroup(boroFilter, "siteBorough", [{ key: "all", label: "All areas", n: boroCount("all") }].concat(
         BOROUGHS.map(function (b) { return { key: b, label: b, n: boroCount(b) }; })));
     }
 
@@ -2024,7 +2028,8 @@ function processScene(key) {
     { name: "Aviation High School", full: "Aviation High School", logo: "assets/schools/mask/aviation.png", wide: true },
     { name: "William Cullen Bryant High School", full: "William Cullen Bryant High School", logo: "assets/schools/mask/william-cullen-bryant.png" },
     { name: "Baccalaureate School for Global Education", full: "Baccalaureate School for Global Education", logo: "assets/schools/mask/bsge.png" },
-    { name: "Bronx High School of Science", full: "Bronx High School of Science", logo: "assets/schools/mask/bronx-science.png" }
+    { name: "Bronx High School of Science", full: "Bronx High School of Science", logo: "assets/schools/mask/bronx-science.png" },
+    { name: "New Hyde Park Memorial High School", full: "New Hyde Park Memorial High School", logo: "assets/schools/mask/new-hyde-park.png" }
   ];
 
   function initEmblems() {
