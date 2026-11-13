@@ -612,6 +612,9 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 .endorse-icna { width:300px; aspect-ratio:1409 / 494;
   -webkit-mask:url("endorsements/mask/icna-relief.png") center / contain no-repeat;
   mask:url("endorsements/mask/icna-relief.png") center / contain no-repeat; }
+.endorse-cafcu { width:300px; aspect-ratio:312 / 126;
+  -webkit-mask:url("endorsements/mask/cafeteria-culture.png") center / contain no-repeat;
+  mask:url("endorsements/mask/cafeteria-culture.png") center / contain no-repeat; }
 .endorse-onelove { height:128px; aspect-ratio:1 / 1;
   -webkit-mask:url("endorsements/mask/one-love.png") center / contain no-repeat;
   mask:url("endorsements/mask/one-love.png") center / contain no-repeat; }

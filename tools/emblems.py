@@ -32,7 +32,10 @@ GREEN = (0x2E, 0x5A, 0x22)          # brand green; the CSS mask recolours it per
 # Relief: in the round badge the wheat stays a soft tint behind a solid "FOR";
 # in the wordmark the orange "Relief" is as solid as the green "ICNA".
 MODE = {"wellsprings-school": "alpha", "camba": "alpha",
-        "icna-relief": [(0.36, 0.55, 0.80), (1.0, 0.64, 0.88)]}
+        "icna-relief": [(0.36, 0.55, 0.80), (1.0, 0.64, 0.88)],
+        # Cafeteria Culture: the green and orange lettering is solid; the pale
+        # blue circle and yellow dot behind it stay clear.
+        "cafeteria-culture": [(1.0, 0.70, 0.80)]}
 INK_SOLID, INK_CLEAR = 0.45, 0.78   # luminance: below SOLID is opaque, above CLEAR is clear
 
 
