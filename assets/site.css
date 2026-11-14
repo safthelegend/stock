@@ -73,22 +73,27 @@
   --placeholder:#9BA093;
   --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
-/* Blue. The third mode, opt-in only. It keeps the key "stock" from the green
-   brand mode it replaced, so a choice saved in a reader's browser still works. */
+/* Stock — brand mode. Forest-green ground, cream text, orange accent.
+   The hues are the site's own two brand colours; nothing new is introduced.
+
+   The exact --brand green (#2E5A22) cannot serve as the text-bearing ground:
+   against it the palette's oranges reach only 3.04:1 (#E8871E) and 3.77:1
+   (#F0A040), short of the 4.5:1 this mode has to clear. So the ground is the
+   palette's own darker forest, --brand-press #234618, over one darker shade of
+   the same hue for the page behind it — and the accent is #F0A040, the orange
+   the dark theme already uses. Every pair below clears WCAG AA. */
 :root[data-theme="stock"] {
-  /* The blue mode: the navy, cream and sky blue of our weekly review posts.
-     The mascot keeps its own cream and green, as it does on those posts. */
-  --bg:#1E3358; --surface:#263F6B; --tint:#2B4675; --text:#F2F0E1; --text-secondary:#C3CCDD;
-  --rule:#45608F; --brand:#9CC4EE; --accent:#F0A040; --accent-text:#F0A040; --mascot-fill:#ECF3E1; --mascot-stroke:#3B592A;
-  --on-brand:#16284A; --brand-press:#B9D7F5;
-  --line:rgba(242,240,225,0.16); --line-soft:rgba(242,240,225,0.09);
-  --brand-line:rgba(156,196,238,0.34); --brand-line-soft:rgba(156,196,238,0.18); --brand-line-mid:rgba(156,196,238,0.46);
-  --nav-bg:rgba(30,51,88,0.78);
+  --bg:#1B3511; --surface:#234618; --tint:#234618; --text:#EAF2DE; --text-secondary:#C4C9BC;
+  --rule:#3D6B2E; --brand:#8FBF6F; --accent:#F0A040; --accent-text:#F0A040; --mascot-fill:#234618; --mascot-stroke:#8FBF6F;
+  --on-brand:#1B3511; --brand-press:#A5D186;
+  --line:rgba(234,242,222,0.16); --line-soft:rgba(234,242,222,0.09);
+  --brand-line:rgba(143,191,111,0.34); --brand-line-soft:rgba(143,191,111,0.18); --brand-line-mid:rgba(143,191,111,0.46);
+  --nav-bg:rgba(27,53,17,0.74);
   --sensor-shell:#8C6FC0; --sensor-board:#6B4C9A; --sensor-deep:#513A75;
-  --paper-shadow:rgba(0,0,0,0.5); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
-  --box-side:#D6E5C4; --box-interior:#C6D9B0;
-  --box-shine:rgba(255,255,255,0.72);
-  --placeholder:#B4BED2;
+  --paper-shadow:rgba(0,0,0,0.55); --paper-y:4px; --paper-blur:8px; --grain-op:0.07;
+  --box-side:#1B3612; --box-interior:#132608;
+  --box-shine:rgba(234,242,222,0.32);
+  --placeholder:#B9BFB0;
   --ice:#BFE0FF; --ice-soft:rgba(190,225,255,0.14);
 }
 @media (prefers-contrast: more) {
@@ -99,7 +104,7 @@
     --paper-shadow:rgba(29,29,31,0.5); --grain-op:0;
   }
   :root[data-theme="dark"] { --rule:#6E7566; --line:rgba(240,242,236,0.5); --line-soft:rgba(240,242,236,0.3); --text-secondary:#C4C9BC; --tint:#14170F; }
-  :root[data-theme="stock"] { --rule:#8FA8D0; --line:rgba(242,240,225,0.5); --line-soft:rgba(242,240,225,0.3); --text-secondary:#F2F0E1; --brand-line:rgba(156,196,238,0.75); --brand-line-soft:rgba(156,196,238,0.42); --brand-line-mid:rgba(156,196,238,0.85); --grain-op:0; }
+  :root[data-theme="stock"] { --rule:#7FA96C; --line:rgba(234,242,222,0.5); --line-soft:rgba(234,242,222,0.3); --text-secondary:#EAF2DE; --brand-line:rgba(143,191,111,0.75); --brand-line-soft:rgba(143,191,111,0.42); --brand-line-mid:rgba(143,191,111,0.85); --grain-op:0; }
 }
 
 /* Theme control. A labelled button showing the mode it will switch to next;

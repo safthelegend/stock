@@ -383,12 +383,9 @@ footer .wrap.top { padding-top:56px; }
   line-height:0.95; letter-spacing:-0.05em; color:var(--brand); font-variant-numeric:tabular-nums; white-space:nowrap; }
 /* --fit (set by mainpage.js) shrinks the number and "lbs" together when the
    total is too wide for the card, so they never spill out of it. */
-/* The headline figure is red, so it is the one thing on the page that isn't
-   brand green. Lighter in dark mode to keep its contrast. */
-.impact-num, .impact-unit { color:#C4332B; }
-:root[data-theme="dark"] .impact-num, :root[data-theme="dark"] .impact-unit { color:#FF7A70; }
-:root[data-theme="stock"] .impact-num, :root[data-theme="stock"] .impact-unit { color:#FF8A80; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme]) .impact-num, :root:not([data-theme]) .impact-unit { color:#FF7A70; } }
+/* The headline figure is salmon pink in every theme, the one thing on the
+   page that isn't brand green or orange. */
+.impact-num, .impact-unit { color:#FF8A80; }
 .impact-num { font-size:calc(clamp(72px,8vw,124px) * var(--fit, 1)); }
 .impact.is-long .impact-num { font-size:calc(clamp(52px,5.4vw,84px) * var(--fit, 1)); }
 .impact-unit { font-size:calc(clamp(30px,3vw,46px) * var(--fit, 1)); letter-spacing:-0.03em; }
