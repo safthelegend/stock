@@ -65,11 +65,11 @@ nav.bar .links a[aria-current="page"]:hover { color:var(--brand); box-shadow:non
 .prelaunch-line { font-size:clamp(18px,1.7vw,21px); }
 .prelaunch-sub { max-width:52ch; }
 @media (prefers-reduced-motion: reduce) { .prelaunch-tag::before { animation:none !important; } }
-/* The hero status is a full sentence, so it sets in sentence case rather
-   than the tag's caps, and softens its corners if it has to wrap. */
+/* The hero status is a full sentence, so it sets as a plain line of text
+   with the live dot, not the tag's capped pill. */
 #heroStatus { max-width:none; }
-#heroStatus .prelaunch-tag { text-transform:none; letter-spacing:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-weight:500; font-size:13.5px; line-height:1.4; margin:0; }
-@media (max-width:520px) { #heroStatus .prelaunch-tag { border-radius:14px; align-items:flex-start; } #heroStatus .prelaunch-tag::before { margin-top:5px; } }
+#heroStatus .prelaunch-tag { padding:0; border:none; border-radius:0; background:none; box-shadow:none; color:var(--text-secondary); text-transform:none; letter-spacing:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-weight:500; font-size:13.5px; line-height:1.4; margin:0; }
+@media (max-width:520px) { #heroStatus .prelaunch-tag { align-items:flex-start; } #heroStatus .prelaunch-tag::before { margin-top:5px; } }
 
 /* --- statband: the 4% is the number to remember -------------------------- */
 .statband .grid { grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);
