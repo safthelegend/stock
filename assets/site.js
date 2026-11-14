@@ -309,7 +309,7 @@ function processScene(key) {
      Pages pass an onChange callback; index.html uses it to repaint scenes that
      read colours from the custom properties rather than from CSS. */
   var THEMES = ["light", "dark", "stock"];
-  var THEME_LABEL = { light: "Light", dark: "Dark", stock: "Stock" };
+  var THEME_LABEL = { light: "Light", dark: "Dark", stock: "Blue" };
   var STORE_KEY = "stb-theme";
   var html = document.documentElement;
   var sysDark = matchMedia("(prefers-color-scheme: dark)");

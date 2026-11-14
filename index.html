@@ -35,10 +35,10 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=23">
+  <link rel="stylesheet" href="assets/site.css?v=24">
   <link rel="stylesheet" href="assets/mainpage.css?v=5">
   <link rel="stylesheet" href="assets/scenes.css?v=1">
-  <link rel="stylesheet" href="assets/design.css?v=34">
+  <link rel="stylesheet" href="assets/design.css?v=37">
 </head>
 
 <body>
@@ -47,7 +47,7 @@
   <nav class="bar" id="nav">
     <div class="wrap">
       <a href="index.html#top" class="brand" aria-current="page">
-        <img src="assets/stocky-mark.png?v=1" width="104" height="84" alt="" style="display:block;flex:none;width:26px;height:auto;">
+        <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="" style="display:block;flex:none;width:32px;height:auto;">
         Stock The Block
       </a>
       <div class="links">
@@ -56,6 +56,7 @@
         <a href="index.html#network">Our Why</a>
         <a href="log.html">Deliveries</a>
         <a href="team.html">Team</a>
+        <a href="partners.html">Partners</a>
         <a href="index.html#join" class="cta">Work With Us</a>
         <a href="members.html" class="login">Sign in</a>
         <button id="themeToggle" type="button" aria-label="Colour theme">
@@ -86,7 +87,6 @@
   <div id="heropin">
     <header id="top" class="wrap hero-grid">
       <div class="hero-text">
-        <p class="eyebrow" data-reveal>Reducing in-school food waste, one meal at a time.</p>
         <h1 class="hero-h1" style="animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 100ms both;">
           Connecting schools’ leftover lunch food to local food banks/community fridges.
           <em>Every meal tracked.</em>
@@ -147,7 +147,7 @@
           <p class="metric-label">Student Volunteers</p>
         </li>
         <li class="metric is-live">
-          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-box"><circle class="mi-blob" cx="58" cy="62" r="36"/><g class="mi-crate"><path class="mi-side mi-line" d="M30 50 L38 42 H92 L84 50 Z"/><rect class="mi-body mi-line" x="26" y="50" width="58" height="46" rx="7"/><path class="mi-line" d="M26 62 H84"/><path class="mi-line mi-eye" d="M40 76 L45 71 L50 76 M60 76 L65 71 L70 76"/><path class="mi-smile" d="M47 84 Q55 90 63 84"/></g><g class="mi-badge"><circle cx="90" cy="38" r="15"/><path class="mi-tick" d="M83 38 L88 43 L97 33"/></g></svg></span>
+          <span class="metric-ico" aria-hidden="true"><svg viewBox="0 0 120 120" class="mi mi-box"><circle class="mi-blob" cx="62" cy="56" r="36"/><rect class="mi-fill mi-line" x="46" y="16" width="42" height="82" rx="7"/><path class="mi-line" d="M46 44 H88"/><path class="mi-line" d="M55 26 V35 M55 54 V68"/><g class="mi-crate"><rect class="mi-body mi-line" x="18" y="66" width="38" height="32" rx="5"/><path class="mi-line" d="M18 77 H56"/><rect class="mi-accent mi-line" x="32" y="66" width="10" height="17" rx="1.5"/></g><path class="mi-line" d="M10 98 H106"/></svg></span>
           <p class="metric-num"><span id="metricDeliveries" data-count="40">40</span></p>
           <p class="metric-label">Successful Deliveries</p>
         </li>
@@ -265,6 +265,8 @@
           </div>
         </article>
       </div>
+      <p class="sec-more"><a class="doc-toggle" href="partners.html" style="text-decoration:none;">See everyone we work
+          with <span aria-hidden="true">→</span></a></p>
     </div>
   </section>
 
@@ -524,7 +526,7 @@
   <footer>
     <div class="wrap top">
       <span style="display:flex; align-items:center; gap:12px;">
-        <span class="mascot-slot" style="width:40px; flex:none; display:block;" data-state="idle"></span>
+        <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="" style="display:block;flex:none;width:44px;height:auto;">
         <span>© 2026 Stock the Block · student-run food recovery, NYC &amp; Long Island</span>
       </span>
       <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
@@ -543,6 +545,7 @@
       <a href="log.html">Deliveries</a>
       <a href="why.html">Our Why?</a>
       <a href="team.html">Team</a>
+      <a href="partners.html">Partners &amp; Press</a>
       <a href="getting-started.html">Getting Started</a>
       <a href="why.html#sources">Sources</a>
       <a href="privacy.html">Privacy</a>
@@ -553,9 +556,9 @@
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=39"></script>
+  <script src="assets/site.js?v=40"></script>
   <script src="assets/map.js?v=19"></script>
-  <script src="assets/mainpage.js?v=25"></script>
+  <script src="assets/mainpage.js?v=26"></script>
   
 </body>
 </html>

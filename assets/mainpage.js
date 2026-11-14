@@ -1191,6 +1191,7 @@
         { kind: "page", label: "Privacy Policy", href: "privacy.html", keywords: "privacy data personal information cookies policy legal" },
         { kind: "page", label: "Why now", href: "why.html", keywords: "snap cuts funding limits sources" },
         { kind: "page", label: "Meet the team", href: "team.html", keywords: "team founder students story schools" },
+        { kind: "page", label: "Partners & Press", href: "partners.html", keywords: "partner partners press news media schools fridges food banks organizations who we work with" },
         { kind: "page", label: "Team roles", href: "roles.html" },
         { kind: "page", label: "Getting started", href: "getting-started.html", keywords: "start begin school setup checklist" },
         { kind: "section", label: "Our impact", href: "#our-impact", keywords: "impact deliveries pounds volunteers partner schools photos gallery" },
