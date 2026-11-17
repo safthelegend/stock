@@ -111,7 +111,9 @@
    the change itself is announced through a visually hidden live region. */
 #themeToggle { display:inline-flex; align-items:center; gap:7px; min-height:36px; padding:0 10px; background:none; border:1px solid var(--line); border-radius:999px; cursor:pointer; color:var(--text); font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-weight:600; font-size:13px; letter-spacing:0; transition:border-color 180ms ease, color 180ms ease; }
 #themeToggle:hover { border-color:var(--brand-line-mid); color:var(--brand); }
-#themeToggle .theme-name { line-height:1; }
+/* Icon only: the word next to it read like one more menu link. Its name is
+   in the tooltip and the accessible label (site.js). */
+#themeToggle .theme-name { display:none; }
 #themeToggle svg { flex:none; }
 .vh { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0; }
 * { box-sizing: border-box; }
