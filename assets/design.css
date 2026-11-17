@@ -383,14 +383,13 @@ footer .wrap.top { padding-top:56px; }
   line-height:0.95; letter-spacing:-0.05em; color:var(--brand); font-variant-numeric:tabular-nums; white-space:nowrap; }
 /* --fit (set by mainpage.js) shrinks the number and "lbs" together when the
    total is too wide for the card, so they never spill out of it. */
-/* The headline figure is salmon pink in every theme, the one thing on the
-   page that isn't brand green or orange. */
-.impact-num, .impact-unit { color:#FF8A80; }
+/* The headline figure is the bright brand orange (--accent) in every theme. */
+.impact-num, .impact-unit { color:var(--accent); }
 .impact-num { font-size:calc(clamp(72px,8vw,124px) * var(--fit, 1)); }
 .impact.is-long .impact-num { font-size:calc(clamp(52px,5.4vw,84px) * var(--fit, 1)); }
 .impact-unit { font-size:calc(clamp(30px,3vw,46px) * var(--fit, 1)); letter-spacing:-0.03em; }
 .impact.is-bump .impact-num { animation:impactBump 1.2s ease-out; }
-@keyframes impactBump { 0% { color:var(--live); } 100% { color:var(--brand); } }
+@keyframes impactBump { 0% { color:var(--live); } }
 .impact-label { margin:6px 0 0; font-size:clamp(18px,1.6vw,21px); font-weight:700; letter-spacing:-0.02em; line-height:1.2; color:var(--text); }
 .impact-meta { margin:10px 0 0; font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
 .impact-meta #impactCount { font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
@@ -624,6 +623,9 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
 .endorse-wapo { height:128px; aspect-ratio:1179 / 815;
   -webkit-mask:url("endorsements/mask/washington-post.png") center / contain no-repeat;
   mask:url("endorsements/mask/washington-post.png") center / contain no-repeat; }
+.endorse-senate { height:136px; aspect-ratio:1 / 1;
+  -webkit-mask:url("endorsements/mask/ny-state-senate.png") center / contain no-repeat;
+  mask:url("endorsements/mask/ny-state-senate.png") center / contain no-repeat; }
 .endorse-body { display:flex; flex-direction:column; flex:1; }
 .endorse-kicker { margin:0; font-family:'DM Mono',ui-monospace,Menlo,monospace; font-weight:500; font-size:12px; letter-spacing:0.12em;
   text-transform:uppercase; color:var(--brand); }
@@ -636,7 +638,7 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
   .endorse-card { gap:20px; padding:20px; border-radius:16px; }
   .endorse-logo { height:150px; padding:24px; }
   .endorse-camba { height:100px; }
-  .endorse-wapo, .endorse-onelove { height:100px; }
+  .endorse-wapo, .endorse-onelove, .endorse-senate { height:100px; }
 }
 
 /* "Built by students from": full school names, so long ones wrap onto two

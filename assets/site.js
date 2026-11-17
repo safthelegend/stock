@@ -348,6 +348,7 @@ function processScene(key) {
       /* The label names the current mode; the accessible name has to say what
          pressing it will do, or the control reads as a status, not an action. */
       toggle.setAttribute("aria-label", "Colour theme: " + THEME_LABEL[cur] + ". Switch to " + THEME_LABEL[next] + ".");
+      toggle.title = "Theme: " + THEME_LABEL[cur];
     }
 
     toggle.addEventListener("click", function () {
@@ -1790,6 +1791,8 @@ function processScene(key) {
       var el = id && document.getElementById(id);
       if (el) byId[id] = a;
     });
+    /* Safety has no link of its own; it's part of Our Process. */
+    if (byId.how && !byId.sensors && document.getElementById("sensors")) byId.sensors = byId.how;
     var visible = {};
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting ? en.intersectionRatio : 0; });
