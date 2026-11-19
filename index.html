@@ -35,10 +35,10 @@
     rel="stylesheet">
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=13">
   <link rel="stylesheet" href="assets/vendor/leaflet/MarkerCluster.css?v=13">
-  <link rel="stylesheet" href="assets/site.css?v=26">
+  <link rel="stylesheet" href="assets/site.css?v=27">
   <link rel="stylesheet" href="assets/mainpage.css?v=5">
   <link rel="stylesheet" href="assets/scenes.css?v=1">
-  <link rel="stylesheet" href="assets/design.css?v=39">
+  <link rel="stylesheet" href="assets/design.css?v=40">
 </head>
 
 <body>
@@ -414,11 +414,13 @@
             </div>
           </div>
           <div class="cell fade-in-up" data-stat style="transition-delay:180ms">
-            <p class="figure fig" id="statSchools">9</p>
+            <p class="figure fig" id="statSchools">10</p>
             <p class="cap">Partner Schools</p>
           </div>
         </div>
       </div>
+      <!-- Where the figures above and the what-if slider come from. -->
+      <p class="stat-cite">Sources: <a href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/" target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the average a school recovered in its first year of share tables in a <a href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025 study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
       <p class="sec-note">Darker areas have more residents on SNAP. Pins show our partner schools, the community
         fridges they deliver to, and the schools we’re talking to next. Press play to see how we got here and where it
         could go.</p>
@@ -533,40 +535,37 @@
     </div>
   </section>
 
-  <footer>
-    <div class="wrap top">
-      <span style="display:flex; align-items:center; gap:12px;">
-        <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="" style="display:block;flex:none;width:44px;height:auto;">
-        <span>© 2026 Stock the Block · student-run food recovery, NYC &amp; Long Island</span>
-      </span>
-      <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
+  <footer class="site-foot">
+    <div class="wrap">
+      <div class="foot-main">
+        <a class="foot-brand" href="index.html">
+          <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="">
+          <span><span class="foot-name">Stock The Block</span>
+            <span class="foot-tag">Student-run food recovery across NYC &amp; Long Island.</span></span>
+        </a>
+        <nav class="foot-links" aria-label="More pages">
+          <a href="tracking.html">Tracking</a>
+          <a href="log.html">Deliveries</a>
+          <a href="why.html">Our Why?</a>
+          <a href="team.html">Team</a>
+          <a href="partners.html">Partners &amp; Press</a>
+          <a href="getting-started.html">Getting Started</a>
+        </nav>
+      </div>
+      <div class="foot-base">
+        <p>© 2026 Stock The Block. No analytics, ads or tracking cookies.</p>
+        <nav class="foot-legal" aria-label="Sources and privacy">
+          <a href="why.html#sources">Sources</a>
+          <a href="privacy.html">Privacy</a>
+        </nav>
+      </div>
     </div>
-    <div class="wrap foot-sources">
-      <p>Sources: <a
-          href="https://comptroller.nyc.gov/reports/review-of-schools-food-donation-and-composting-efforts/"
-          target="_blank" rel="noopener">NYC Comptroller, FY25</a> (67 of the 1,675 buildings that serve school food
-        donated it). The slider is an estimate: it assumes each added building saves about 2,156 lbs of food a year, the
-        average a school recovered in its first year of share tables in a <a
-          href="https://www.medrxiv.org/content/10.1101/2025.06.23.25330059v1.full" target="_blank" rel="noopener">2025
-          study of six Midwestern states</a> (preprint), and counts 1.2 lbs as one meal (Feeding America).</p>
-    </div>
-    <nav class="wrap foot-links" aria-label="More pages">
-      <a href="tracking.html">Tracking</a>
-      <a href="log.html">Deliveries</a>
-      <a href="why.html">Our Why?</a>
-      <a href="team.html">Team</a>
-      <a href="partners.html">Partners &amp; Press</a>
-      <a href="getting-started.html">Getting Started</a>
-      <a href="why.html#sources">Sources</a>
-      <a href="privacy.html">Privacy</a>
-    </nav>
-    <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
   </footer>
 
   <script src="assets/vendor/leaflet/leaflet.js?v=13"></script>
   <script src="assets/vendor/leaflet/leaflet.markercluster.js?v=13"></script>
   <script type="module" src="assets/firebase-init.js?v=3"></script>
-  <script src="assets/site.js?v=42"></script>
+  <script src="assets/site.js?v=43"></script>
   <script src="assets/map.js?v=19"></script>
   <script src="assets/mainpage.js?v=27"></script>
   
