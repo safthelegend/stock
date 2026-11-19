@@ -95,7 +95,7 @@ nav.bar .links a[aria-current="page"]:hover { color:var(--brand); box-shadow:non
 /* Inside Our Why, between the lede and the map's note. */
 #network .statband { margin-bottom:48px; }
 #network .statband .grid { padding:0; }
-#network .statband + .sec-note { margin-top:0; }
+#network .statband + .sec-note, #network .stat-cite + .sec-note { margin-top:0; }
 @media (max-width:640px) { #network .statband { margin-bottom:32px; } }
 
 /* --- instrument band: #sensors + #boxpin + #tracker ----------------------
@@ -233,7 +233,6 @@ form.join input, form.join select, form.join textarea { width:100%; min-width:0;
 /* One continuous surface: the footer shares the page background and is set
    apart by space, not by a rule or a colour change. */
 footer { background:transparent; border-top:none; }
-footer .wrap.top { padding-top:56px; }
 .sources-list li { padding-left:2.2em; text-indent:-2.2em; }
 
 /* --- nav always visible, with a Sign in button --------------------------
@@ -274,7 +273,6 @@ footer .wrap.top { padding-top:56px; }
      line can't fit, which left one word stranded on a line of its own. Here
      they flow as one sentence and balance, so no line ends up a lone word. */
   h2.hd .mask-l, h2.hd .mask-l > span { display:inline; }
-  footer .wrap.top { padding-top:40px; }
 
   /* Home hero (#heropin exists only there; other pages also use #top for
      their header): fits one screen, so the pinned lid-and-fruit scroll plays
@@ -576,13 +574,13 @@ h2.sec-title > .anchor-link { left:auto; right:-1.6em; top:0.2em; }
   .proc-fill, .proc-runner { transition:none; }
 }
 
-/* --- Work With Us and the footer sources ---------------------------------- */
+/* --- Work With Us, and the sources under the home page figures ------------ */
 .join-wrap { max-width:720px; margin:0 auto; }
 .join-foot { display:flex; align-items:center; justify-content:center; gap:12px; margin:28px 0 0; }
 .join-foot p { margin:0; font-size:15px; line-height:1.5; color:var(--text-secondary); }
 .join-foot a { color:var(--brand); font-weight:600; }
-.foot-sources p { margin:0; padding:4px 0 8px; max-width:120ch; font-size:12.5px; line-height:1.6; color:var(--text-secondary); }
-.foot-sources a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
+.stat-cite { margin:16px auto 22px; max-width:100ch; font-size:12.5px; line-height:1.6; color:var(--text-secondary); }
+.stat-cite a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
 
 @media (max-width:700px) {
   .sec { padding:44px 0; }

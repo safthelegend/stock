@@ -15,7 +15,53 @@
 
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* LITE MODE. On a slow or low-memory device the site runs the way it does
+   for someone who has asked their phone for reduced motion: no gliding
+   scroll, no scroll-driven box, no looping scenes or strips, everything
+   simply in place. It also drops the blur behind the nav and the live
+   counter (site.css, html.lite), which is costly to repaint on every scroll.
+   It turns on when:
+     - the device says it has 2 GB of memory or less (or 4 GB with 4 cores
+       or fewer), or the visitor has asked to save data;
+     - or the frame watcher (watchFrames, near the end of this file) sees
+       animation falling under ~30 frames a second. That is remembered on
+       this device for a week, so every page after it starts out lite.
+   ?lite=1 on any page turns it on, ?lite=0 off; either is remembered. */
+var LITE_KEY = "stb-lite", LITE_DAYS = 7;
+var lite = (function () {
+  var saved = null;
+  try {
+    var q = /[?&]lite=([01])(?:&|$)/.exec(location.search);
+    if (q) localStorage.setItem(LITE_KEY, q[1] === "1" ? "on" : "off");
+    saved = localStorage.getItem(LITE_KEY);
+  } catch (e) {}
+  if (saved === "off") return false;
+  if (saved === "on") return true;
+  if (saved && /^auto:\d+$/.test(saved) && Date.now() - Number(saved.slice(5)) < LITE_DAYS * 864e5) return true;
+  var n = navigator, mem = n.deviceMemory, cores = n.hardwareConcurrency, conn = n.connection;
+  return !!((conn && conn.saveData) || (mem && mem <= 2) || (mem && mem <= 4 && cores && cores <= 4));
+})();
+var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches || lite;
+/* Lite from the start: mark the page, and switch on every stylesheet rule
+   written for prefers-reduced-motion by rewriting that condition to one that
+   always holds. Stylesheets in <head> have all loaded by the time this runs. */
+function startLite() {
+  document.documentElement.classList.add("lite");
+  var RM = /\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)/gi;
+  function walk(rules) {
+    for (var i = 0; i < rules.length; i++) {
+      var r = rules[i];
+      if (r.media && r.type === 4 && /prefers-reduced-motion\s*:\s*reduce/i.test(r.media.mediaText)) {
+        r.media.mediaText = r.media.mediaText.replace(RM, "(min-width: 0px)");
+      }
+      if (r.cssRules) walk(r.cssRules);
+    }
+  }
+  Array.prototype.forEach.call(document.styleSheets, function (sh) {
+    try { walk(sh.cssRules); } catch (e) { /* another site's stylesheet (fonts): not ours to read */ }
+  });
+}
+if (lite) startLite();
 var mob = innerWidth < 768;
 var f = mob ? 0.5 : 1;
 var EXP = "cubic-bezier(0.4, 0.14, 0.3, 1)", PRO = "cubic-bezier(0.2, 0, 0.38, 0.9)";
@@ -1966,7 +2012,7 @@ function processScene(key) {
       return false;
     }
     addEventListener("wheel", function (e) {
-      if (e.defaultPrevented || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || scrollsItself(e.target)) return;
+      if (reduced || e.defaultPrevented || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || scrollsItself(e.target)) return;
       e.preventDefault();
       if (!raf) target = current = scrollY;
       var unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1;
@@ -1995,7 +2041,7 @@ function processScene(key) {
     }
     document.addEventListener("click", function (e) {
       var a = e.target.closest && e.target.closest("a[href*='#']");
-      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target) return;
+      if (reduced || !a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target) return;
       var url = new URL(a.href, location.href);
       var here = location.pathname.replace(/index\.html$/, ""), there = url.pathname.replace(/index\.html$/, "");
       if (url.origin !== location.origin || there !== here || url.hash.length < 2) return;
@@ -2334,9 +2380,61 @@ function processScene(key) {
     siteState: siteState, onSiteState: onSiteState, matchesSiteState: matchesSiteState,
     initScrollFx: initScrollFx,
     EMBLEMS: EMBLEMS, initEmblems: initEmblems,
-    initSmoothScroll: initSmoothScroll
+    initSmoothScroll: initSmoothScroll,
+    lite: lite
   };
 
   // The gliding scroll from the home page, on every page.
   initSmoothScroll();
+
+  /* ======================================================================
+     FRAME WATCHER (lite mode, see the top of this file)
+     Times the frames during the page's opening seconds and the first few
+     times the visitor scrolls. A stretch counts as slow when its typical
+     (median) frame takes over 30ms, i.e. under ~33 frames a second; two slow
+     stretches switch lite mode on. On this page that stops the gliding
+     scroll and the blur at once; the scroll-driven pieces go still from the
+     next page, since pulling them out from under the visitor mid-scroll
+     would be worse than the lag. A stretch is at most 60 frames, so a long
+     scroll is judged several times. Hidden tabs and pauses over 250ms are
+     not counted, and it gives up after eight smooth stretches.
+     ====================================================================== */
+  function watchFrames() {
+    if (reduced || !global.requestAnimationFrame || !global.performance) return;
+    try { if (localStorage.getItem(LITE_KEY) === "off") return; } catch (e) {}
+    var slow = 0, smooth = 0, gaps = [], last = 0, until = 0, running = false;
+    function settle() {
+      running = false; last = 0;
+      if (gaps.length >= 20) {
+        var g = gaps.sort(function (a, b) { return a - b; });
+        if (g[g.length >> 1] > 30) slow++; else smooth++;
+      }
+      gaps = [];
+      if (slow >= 2) goLite();
+      else if (smooth >= 8) removeEventListener("scroll", onScroll);
+    }
+    function tick(t) {
+      if (document.visibilityState !== "visible") { gaps = []; running = false; last = 0; return; }
+      if (last && t - last < 250) gaps.push(t - last);
+      last = t;
+      /* A stretch ends after 60 frames, or once things go quiet. */
+      if (t < until && gaps.length < 60) requestAnimationFrame(tick); else settle();
+    }
+    function watch(ms) {
+      until = performance.now() + ms;
+      if (!running) { running = true; requestAnimationFrame(tick); }
+    }
+    function onScroll() { watch(1200); }
+    function goLite() {
+      removeEventListener("scroll", onScroll);
+      reduced = lite = true;
+      global.STB.lite = true;
+      document.documentElement.classList.add("lite");
+      if (smoothScroll) smoothScroll.stop();
+      try { localStorage.setItem(LITE_KEY, "auto:" + Date.now()); } catch (e) {}
+    }
+    watch(2500);
+    addEventListener("scroll", onScroll, { passive: true });
+  }
+  watchFrames();
 })(window);

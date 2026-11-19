@@ -23,7 +23,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css?v=26">
+<link rel="stylesheet" href="assets/site.css?v=27">
 <style>
   /* The page opens like the home page's sections: a centred green title. */
   .team-page { padding:120px 0 40px; }
@@ -213,7 +213,7 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
   @media (max-width:360px) { .crew-exec .crew-title { font-size:24px; } }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-<link rel="stylesheet" href="assets/design.css?v=39">
+<link rel="stylesheet" href="assets/design.css?v=40">
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to content</a>
@@ -532,28 +532,34 @@ try { var t = localStorage.getItem("stb-theme"); if (t === "light" || t === "dar
 </section>
 </main>
 
-<footer>
-  <div class="wrap top">
-    <span style="display:flex; align-items:center; gap:12px;">
-      <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="" style="display:block;flex:none;width:44px;height:auto;">
-      <span>© 2026 Stock the Block · student-run food recovery, NYC &amp; Long Island</span>
-    </span>
-    <span class="mono" style="font-weight:500;">Delivering now · looking for more partner schools</span>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-main">
+      <a class="foot-brand" href="index.html">
+        <img src="assets/stocky-mark.svg?v=1" width="828" height="675" alt="">
+        <span><span class="foot-name">Stock The Block</span>
+          <span class="foot-tag">Student-run food recovery across NYC &amp; Long Island.</span></span>
+      </a>
+      <nav class="foot-links" aria-label="More pages">
+        <a href="tracking.html">Tracking</a>
+        <a href="log.html">Deliveries</a>
+        <a href="why.html">Our Why?</a>
+        <a href="team.html" aria-current="page">Team</a>
+        <a href="partners.html">Partners &amp; Press</a>
+        <a href="getting-started.html">Getting Started</a>
+      </nav>
+    </div>
+    <div class="foot-base">
+      <p>© 2026 Stock The Block. No analytics, ads or tracking cookies.</p>
+      <nav class="foot-legal" aria-label="Sources and privacy">
+        <a href="why.html#sources">Sources</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
   </div>
-  <nav class="wrap foot-links" aria-label="More pages">
-    <a href="tracking.html">Tracking</a>
-    <a href="log.html">Deliveries</a>
-    <a href="why.html">Our Why?</a>
-    <a href="team.html">Team</a>
-    <a href="partners.html">Partners &amp; Press</a>
-    <a href="getting-started.html">Getting Started</a>
-    <a href="why.html#sources">Sources</a>
-    <a href="privacy.html">Privacy</a>
-  </nav>
-  <div class="privacy">No analytics, no advertising, no tracking cookies. Some features rely on outside services (GitHub, Google Fonts, Google Firebase, FormSubmit and OpenStreetMap map tiles), which receive basic technical details such as your IP address. See our <a href="privacy.html">Privacy Policy</a> for what we collect and why.</div>
 </footer>
 
-<script src="assets/site.js?v=42"></script>
+<script src="assets/site.js?v=43"></script>
 <script>
 (function () {
   "use strict";
