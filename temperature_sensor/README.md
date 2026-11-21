@@ -24,8 +24,10 @@ DS18B20 ──► ESP32 ──Wi-Fi──► phone hotspot ──► Firebase �
 The DS18B20 adapter board has the 4.7 kΩ pull-up built in, so no extra
 resistor is needed.
 
-The LED on GPIO 25 is on while the sensor is online and signed in, and blinks
-fast in setup mode.
+The ESP32's built-in blue LED (GPIO 2) shows what it's doing, so no LED
+needs wiring: **on** while it's trying to get online (joining the hotspot,
+signing in), **on for 5 more seconds** once it's online, then **off** to save
+battery. **Fast blinking** means setup mode.
 
 ## One-time setup for each sensor (an admin does this)
 

@@ -33,7 +33,7 @@
 
 // ---------- pins and timing ----------
 #define ONE_WIRE_BUS 4                         // DS18B20 data wire
-#define LED_PIN 25                             // on = connected and signed in; fast blink = setup mode
+#define LED_PIN 2                              // the board's blue LED; see showStatus() for what it means
 #define BOOT_PIN 0                             // the BOOT button on the ESP32 board
 const unsigned long READ_EVERY_MS = 60000;     // one reading a minute
 
@@ -340,6 +340,22 @@ void setup() {
   configTime(0, 0, "pool.ntp.org", "time.google.com");
 }
 
+// ---------- the blue status light ----------
+// On while it's trying to get online (joining the hotspot, getting the time,
+// signing in), on for 5 more seconds once it's online so you can see it
+// worked, then off to save battery. If the hotspot drops, it comes back on
+// until it reconnects. (Fast blinking is setup mode, in runSetupMode.)
+const unsigned long SHOW_ONLINE_MS = 5000;
+
+void showStatus(bool online) {
+  static bool wasOnline = false;
+  static unsigned long onlineSince = 0;
+  if (online && !wasOnline) onlineSince = millis();   // just got online: start the 5 seconds
+  wasOnline = online;
+  bool lightOn = !online || millis() - onlineSince < SHOW_ONLINE_MS;
+  digitalWrite(LED_PIN, lightOn ? HIGH : LOW);
+}
+
 void loop() {
   checkSetupButton();
 
@@ -363,7 +379,7 @@ void loop() {
   if (wifiMulti.run(5000) != WL_CONNECTED) {
     if (wasOnline) Serial.println("Lost Wi-Fi, readings will wait in memory");
     wasOnline = false;
-    digitalWrite(LED_PIN, LOW);
+    showStatus(false);   // trying to join: light on
     delay(1000);
     return;
   }
@@ -373,9 +389,9 @@ void loop() {
   }
 
   // 3. Send what's waiting, oldest first, once we know the time and are signed in.
-  if (!timeKnown()) { delay(200); return; }
-  if (!tokenFresh() && !signIn()) { digitalWrite(LED_PIN, LOW); delay(10000); return; }
-  digitalWrite(LED_PIN, HIGH);
+  if (!timeKnown()) { showStatus(false); delay(200); return; }
+  if (!tokenFresh() && !signIn()) { showStatus(false); delay(10000); return; }
+  showStatus(true);      // online and signed in: light on for 5 s, then off
 
   int sentThisLoop = 0;
   while (queueCount > 0 && sentThisLoop < 20) {   // a few at a time, so readings keep happening
